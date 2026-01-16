@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor - Animated Friends</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AI Tutor">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1998/1998614.png">
+    
+    <link rel="manifest" href="manifest.json">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* This prevents the "flash" of hidden elements on refresh */
+        [x-cloak] { display: none !important; }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: block;   
+            transition: background 0.5s ease;
+        }
+
+        .no-scroll {
+            overflow: hidden !important;
+            height: 100vh;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .font-kids { font-family: 'Fredoka One', cursive; }
+        
+        .chat-bubble {
+            position: relative;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15);
+            border: 6px solid white;
+        }
+
+        /* --- CHARACTER ANIMATIONS --- */
+        .char-float {
+            animation: floating 5s ease-in-out infinite;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+            z-index: 10; /* Keep character above background effects */
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-30px) rotate(3deg); }
+        }
+
+        .wiggle-speak {
+            animation: wiggle 0.4s ease-in-out infinite;
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: scale(1.1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(3deg); }
+            75% { transform: scale(1.1) rotate(-3deg); }
+        }
+
+        /* --- NEW AURA / PARTICLE EFFECTS --- */
+        
+        /* 1. Glow Effect */
+        .effect-glow {
+            filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange);
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); }
+            50% { filter: drop-shadow(0 0 60px #fff700) drop-shadow(0 0 20px #ff9100); }
+        }
+
+        /* 2. Sparkles Animation */
+        .sparkle-particle {
+            position: absolute;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+        }
+
+        /* 3. Fireflies Animation */
+        .firefly-particle {
+            position: absolute;
+            width: 10px; height: 10px;
+            background: #bef264;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #bef264, 0 0 20px #bef264;
+            animation: fly-around 4s ease-in-out infinite;
+        }
+        @keyframes fly-around {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+            33% { transform: translate(30px, -30px) scale(1.2); }
+            66% { transform: translate(-20px, 20px) scale(0.8); }
+            100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+        }
+
+        /* 4. Stars Orbit Animation */
+        .orbit-container {
+            position: absolute;
+            inset: -40px;
+            animation: spin-orbit 8s linear infinite;
+        }
+        .star-item {
+            position: absolute;
+            animation: counter-spin 8s linear infinite; /* Keeps the star upright */
+        }
+        @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
+        @keyframes counter-spin { 100% { transform: rotate(-360deg); } }
+
+        /* 5. Magic Dust (Rising) */
+        .dust-particle {
+            position: absolute;
+            bottom: 0;
+            animation: float-up 3s linear infinite;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(20px) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.5) rotate(45deg); opacity: 0; }
+        }
+
+        /* --- UI ELEMENTS --- */
+
+        .btn-grad {
+            transition: 0.5s;
+            background-size: 200% auto;
+        }
+        .btn-grad:hover { background-position: right center; }
+        
+        .char-btn {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        .char-btn:hover { transform: scale(1.2); }
+        .char-btn.active { transform: scale(1.3); border-color: white; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        
+        .char-locked { filter: grayscale(100%); opacity: 0.7; }
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .mic-active {
+            animation: pulse-red 1.5s infinite;
+            color: #ef4444 !important;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+
+        .premium-glow {
+            animation: glow-gold 2s infinite;
+        }
+        @keyframes glow-gold {
+            0% { box-shadow: 0 0 5px #ffd700; }
+            50% { box-shadow: 0 0 20px #ffd700, 0 0 10px #ffea00; }
+            100% { box-shadow: 0 0 5px #ffd700; }
+        }
+
+        .gift-bounce {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        .safe-badge {
+            background: #10b981;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center; gap: 4px;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            width: fit-content;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #3b82f6;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+            .daily-reward-btn {
+                padding: 0.5rem !important;
+                width: 52px;
+                height: 52px;
+            }
+            .daily-reward-btn span.gift-bounce {
+                font-size: 1.25rem !important;
+            }
+            .daily-reward-btn span.text-pink-500 {
+                font-size: 7px !important;
+            }
+            .safe-badge {
+                font-size: 7px;
+                padding: 2px 8px;
+            }
+        }
+    </style>
+</head>
+<body x-data="aiTutor()" :style="'background: ' + currentChar.bg">
+
+    <div x-show="isLoading" class="fixed inset-0 z-[200] bg-white/80 flex items-center justify-center backdrop-blur-sm" x-transition>
+        <div class="flex flex-col items-center">
+            <div class="spinner mb-4"></div>
+            <p class="font-kids text-blue-500">Syncing magic...</p>
+        </div>
+    </div>
+
+    <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center p-4 transition-all duration-700">
+        <div class="bg-white rounded-[2.5rem] p-8 sm:p-12 w-full max-w-md shadow-2xl text-center border-8 border-white/20 relative overflow-hidden animate__animated animate__zoomIn">
+            
+            <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
+
+            <div class="relative z-10">
+                <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
+                <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
+                <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
+
+                <div x-show="!hasAccount" class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
+                        <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
+                        <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Secret PIN (4 Digits)</label>
+                        <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em] transition-all">
+                        <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
+                    </div>
+                    
+                    <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
+                                I confirm I am the parent/guardian and agree to the 
+                                <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
+                                <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
+                                I consent to kid-safe AI processing (COPPA/GDPR).
+                            </span>
+                        </label>
+                    </div>
+
+                    <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
+                        Start Learning! 🚀
+                    </button>
+                    <div class="flex items-center justify-center gap-2 mt-3 opacity-80">
+                         <i class="fas fa-shield-alt text-green-500"></i>
+                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">No data sold. 100% Private.</p>
+                    </div>
+                    
+                    <p class="text-center mt-2 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true">Already have an account? Login</p>
+                </div>
+
+                <div x-show="hasAccount" class="space-y-6">
+                    <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
+                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Welcome Back</p>
+                        <input type="email" x-model="loginForm.email" placeholder="Enter parent email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Your 4-Digit PIN</label>
+                        <input type="password" maxlength="4" x-model="loginForm.pin" @keyup.enter="handleLogin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-3xl tracking-[0.5em]">
+                    </div>
+
+                    <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                        Unlock App 🔓
+                    </button>
+                    
+                    <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
+                </div>
+
+                <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
+                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Legal & Privacy</h3>
+                    <div class="flex justify-center gap-6">
+                        <button @click="showLegalDoc = 'privacy'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Privacy Policy</button>
+                        <button @click="showLegalDoc = 'terms'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Terms of Service</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="absolute top-4 left-4 z-40 flex flex-col gap-3">
+        <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
+            <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
+            <span class="text-[10px] font-bold text-pink-500 uppercase">Daily Gift</span>
+        </button>
+        <div class="safe-badge animate__animated animate__fadeInLeft">
+            <i class="fas fa-shield-alt"></i> Kid-Safe AI
+        </div>
+    </div>
+
+    <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
+        <div x-show="!isPremium" class="hidden md:block bg-white px-4 py-2 rounded-xl shadow-lg border-2 border-orange-400">
+            <p class="text-[10px] font-bold text-orange-600 uppercase text-center">Free Questions</p>
+            <div class="w-20 h-2 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
+            </div>
+        </div>
+
+        <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-1 sm:gap-2">
+            <span class="text-xl sm:text-3xl">💰</span>
+            <span class="font-kids text-lg sm:text-2xl text-yellow-700" x-text="coins"></span>
+        </div>
+
+        <button @click="showShop = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400">
+            <span class="text-xl sm:text-3xl">🪄</span>
+        </button>
+
+        <button @click="openParentPortal()" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-gray-400">
+            <span class="text-xl sm:text-2xl">🔒</span>
+        </button>
+    </div>
+
+    <div class="container max-w-6xl mx-auto px-4 pt-28 sm:pt-12 pb-8 sm:pb-12">
+        <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
+            <template x-for="char in characters">
+                <button 
+                    @click="trySetChar(char)"
+                    class="char-btn w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-white flex items-center justify-center text-3xl sm:text-4xl border-4 border-transparent shadow-lg"
+                    :class="{
+                        'active border-white': currentChar.name === char.name, 
+                        'opacity-60': currentChar.name !== char.name && (!char.premium || isPremium),
+                        'char-locked': char.premium && !isPremium
+                    }"
+                >
+                    <span x-text="char.icon"></span>
+                    <div x-show="char.premium && !isPremium" class="lock-overlay">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </button>
+            </template>
+        </div>
+
+        <div class="text-center mb-6 sm:mb-10">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-kids drop-shadow-lg tracking-wider animate__animated animate__bounceInDown"
+                :style="'color: ' + currentChar.accent"
+                x-text="currentChar.name">
+            </h1>
+            <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + currentChar.accent" x-text="'Teacher of ' + currentChar.subject + ' ✨'"></p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-10 sm:gap-8 lg:gap-12">
+            
+            <div class="relative flex flex-col items-center order-2 lg:order-1">
+                
+                <div class="relative char-float select-none cursor-pointer transition-all duration-300" 
+                     :class="[isSpeaking ? 'wiggle-speak' : '', getEquippedItemData().effectType === 'glow' ? 'effect-glow' : '']">
+                     
+                     <template x-if="getEquippedItemData().effectType === 'sparkles'">
+                         <div class="absolute inset-0 pointer-events-none">
+                            <template x-for="i in 6">
+                                <div class="sparkle-particle text-yellow-400 text-4xl"
+                                     :style="'top: ' + (Math.random() * 100) + '%; left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's'">
+                                     ✨
+                                </div>
+                            </template>
+                         </div>
+                     </template>
+
+                     <template x-if="getEquippedItemData().effectType === 'fireflies'">
+                        <div class="absolute inset-0 pointer-events-none">
+                           <template x-for="i in 5">
+                               <div class="firefly-particle"
+                                    :style="'top: ' + (Math.random() * 80 + 10) + '%; left: ' + (Math.random() * 80 + 10) + '%; animation-delay: ' + (Math.random() * 3) + 's'">
+                               </div>
+                           </template>
+                        </div>
+                    </template>
+
+                    <template x-if="getEquippedItemData().effectType === 'stars'">
+                        <div class="orbit-container pointer-events-none">
+                            <div class="star-item text-4xl text-yellow-300" style="top: 0; left: 50%; transform: translateX(-50%);">⭐</div>
+                            <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; left: 10%;">⭐</div>
+                            <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; right: 10%;">⭐</div>
+                        </div>
+                    </template>
+
+                    <template x-if="getEquippedItemData().effectType === 'dust'">
+                        <div class="absolute inset-0 pointer-events-none overflow-visible">
+                           <template x-for="i in 8">
+                               <div class="dust-particle text-blue-300 text-2xl"
+                                    :style="'left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's; animation-duration: ' + (2 + Math.random()) + 's'">
+                                    🪄
+                               </div>
+                           </template>
+                        </div>
+                    </template>
+
+                     <div class="text-[6rem] sm:text-[9rem] md:text-[12rem] lg:text-[15rem]" x-text="currentMoodIcon"></div>
+                </div>
+                
+                <div x-show="isThinking" class="absolute -top-8 left-8 sm:-top-10 sm:left-10 animate__animated animate__fadeIn">
+                    <div class="bg-white rounded-full px-4 py-2 shadow-lg flex gap-2">
+                        <div class="w-3 h-3 rounded-full animate-bounce" :style="'background: ' + currentChar.accent"></div>
+                        <div class="w-3 h-3 rounded-full animate-bounce" style="animation-delay: 0.2s; background: #ff512f"></div>
+                        <div class="w-3 h-3 rounded-full animate-bounce" style="animation-delay: 0.4s; background: #24d4dd"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full max-w-2xl order-1 lg:order-2">
+                <div class="chat-bubble p-6 sm:p-8 md:p-10 mb-8 min-h-[180px] sm:min-h-[220px] flex flex-col justify-between transition-all duration-500"
+                     :style="'border-color: ' + currentChar.accent">
+                    <div>
+                        <span class="font-kids text-base sm:text-lg uppercase tracking-widest block mb-2" :style="'color: ' + currentChar.accent" x-text="currentChar.name + ' says:'"></span>
+                        <p class="text-xl sm:text-2xl md:text-3xl text-gray-800 font-semibold leading-relaxed" x-text="displayText"></p>
+                    </div>
+                    
+                    <div class="flex justify-end mt-6" x-show="hasAnswered && !isThinking">
+                        <button 
+                            @click="speak(displayText)"
+                            class="flex items-center gap-3 px-5 sm:px-6 py-2 sm:py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4"
+                            :style="'background: ' + currentChar.accent + '22; color: ' + currentChar.accent + '; border-color: ' + currentChar.accent + '44'"
+                        >
+                            <i class="fas" :class="isSpeaking ? 'fa-pause-circle' : 'fa-play-circle'"></i>
+                            <span x-text="isSpeaking ? 'Stop' : 'Listen'"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative bg-white rounded-3xl shadow-2xl p-2 sm:p-3 border-4 transition-all flex items-center gap-2 sm:gap-4 pr-2 sm:pr-3"
+                     :style="'border-color: ' + currentChar.accent + '44'">
+                    
+                    <button 
+                        @click="startListening()"
+                        class="ml-2 sm:ml-4 text-2xl transition-all hover:scale-110"
+                        :class="isListening ? 'mic-active' : 'text-gray-400'"
+                        :style="!isListening ? 'color: ' + currentChar.accent : ''"
+                    >
+                        <i class="fas fa-microphone"></i>
+                    </button>
+
+                    <input 
+                        type="text" 
+                        x-model="userQuery" 
+                        @keyup.enter="askTutor()"
+                        :placeholder="isListening ? 'Listening...' : 'Ask about ' + currentChar.subject + '...'" 
+                        class="flex-1 bg-transparent px-2 py-3 sm:py-4 outline-none text-base sm:text-xl font-bold text-gray-700"
+                    >
+                    
+                    <button 
+                        @click="askTutor()"
+                        class="btn-grad text-white rounded-2xl px-3 py-2 sm:px-8 sm:py-4 font-kids text-base sm:text-xl shadow-lg transform transition hover:scale-105 active:scale-90 mr-1 sm:mr-0"
+                        :style="'background: linear-gradient(to right, ' + currentChar.accent + ', #ff512f)'"
+                    >
+                        ASK! 🚀
+                    </button>
+                </div>
+
+                <div class="mt-6 sm:mt-8 flex flex-wrap gap-2 sm:gap-3 justify-center">
+                    <template x-for="q in suggestions">
+                        <button 
+                            @click="userQuery = q; askTutor()"
+                            class="bg-white hover:bg-opacity-90 px-3 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-sm hover:shadow-md transition-all border-2"
+                            :style="'color: ' + currentChar.accent + '; border-color: ' + currentChar.accent + '22'"
+                            x-text="q">
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
+            <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
+            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
+                
+                <template x-if="showLegalDoc === 'privacy'">
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                            <p class="font-bold text-green-700 flex items-center gap-2"><i class="fas fa-shield-alt"></i> STRICT NO DATA SALE POLICY</p>
+                            <p class="text-xs text-green-800 mt-1">We do NOT sell, trade, or rent your child's personal identification information to others. Ever.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">1. Information We Collect (Strictly Necessary Only)</h3>
+                            <ul class="list-disc ml-4 text-xs space-y-1 mt-1">
+                                <li><strong>Parent Email:</strong> Used solely for account recovery and login.</li>
+                                <li><strong>PIN Code:</strong> Encrypted locally and used for parental controls.</li>
+                                <li><strong>Progress Data:</strong> Coins, inventory, and learning stats (synced securely).</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">2. What We Do NOT Collect</h3>
+                            <p>We do NOT store voice recordings. Voice inputs are processed instantly and discarded. We do not collect GPS location or physical addresses.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">3. AI & COPPA Compliance</h3>
+                            <p>Our AI interactions are filtered for safety. No personally identifiable information (PII) is sent to AI models for training purposes. We use stateless inference APIs.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">4. Your Rights</h3>
+                            <p>You can delete your account and all associated data instantly via the "Reset Account" button in the login screen.</p>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="showLegalDoc === 'terms'">
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800">1. Acceptance of Terms</h3>
+                            <p>By accessing AI Tutor, you agree to be bound by these Terms of Service. This app is intended for educational use by children under parental supervision.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">2. Parental Responsibility</h3>
+                            <p>You represent that you are the parent or legal guardian of the child using this app. You are responsible for maintaining the confidentiality of your PIN.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">3. Subscriptions & Payments</h3>
+                            <p>Premium features are offered on a monthly basis. You may cancel at any time via the Parent Portal. (Note: This is a demo application; payments are simulated).</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">4. Limitation of Liability</h3>
+                            <p>The app is provided "as is". While we strive for educational accuracy, AI responses may occasionally vary. We are not liable for incidental damages.</p>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showShop" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto">
+            <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            
+            <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600">Magic Auras</h2>
+            <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8">Add magic effects to your teacher!</p>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
+                <template x-for="item in shopItems">
+                    <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-105"
+                         :class="equippedItem === item.id ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200' : 'bg-gray-50 border-gray-100'">
+                        
+                        <div class="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white rounded-full shadow-inner text-3xl sm:text-5xl">
+                            <span x-text="item.icon"></span>
+                            <div x-show="inventory.includes(item.id)" class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-xs border-2 border-white">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center w-full">
+                            <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
+                            <div x-show="!inventory.includes(item.id)" class="text-yellow-600 font-bold text-xs sm:text-sm bg-yellow-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block">
+                                <span x-text="item.price"></span> 💰
+                            </div>
+                        </div>
+
+                        <button 
+                            @click="inventory.includes(item.id) ? toggleEquip(item.id) : buyItem(item)"
+                            class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
+                            :class="inventory.includes(item.id) 
+                                ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') 
+                                : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
+                            :disabled="!inventory.includes(item.id) && coins < item.price"
+                        >
+                            <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? 'Active ✨' : 'Activate') : 'Buy Now'"></span>
+                        </button>
+                    </div>
+                </template>
+            </div>
+            
+            <div class="mt-6 sm:mt-8 flex justify-center">
+                <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
+                    <span class="text-xl sm:text-2xl">💰</span>
+                    <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="'You have ' + coins + ' coins'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showRewards" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
+            <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <h2 class="text-4xl font-kids text-pink-500 mb-2">Daily Rewards!</h2>
+            <p class="font-bold text-gray-500 mb-6">Come back every day for free coins!</p>
+            <div class="grid grid-cols-4 gap-3 mb-8">
+                <template x-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
+                    <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
+                         :class="todayIndex === index ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50 opacity-60'">
+                        <span class="text-[10px] font-bold uppercase" x-text="day"></span>
+                        <span class="text-xl" x-text="index === 6 ? '🎁' : '💰'"></span>
+                        <span class="text-xs font-bold text-gray-600" x-text="index === 6 ? '100' : '50'"></span>
+                    </div>
+                </template>
+            </div>
+            <button @click="claimReward()" :disabled="rewardClaimedToday"
+                class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
+                :class="rewardClaimedToday ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'">
+                <span x-text="rewardClaimedToday ? 'See You Tomorrow!' : (todayIndex === 6 ? 'Claim 100 Coins! ✨' : 'Claim 50 Coins! ✨')"></span>
+            </button>
+        </div>
+    </div>
+
+    <div x-show="showPremiumModal" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-yellow-100">
+            <button @click="showPremiumModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-yellow-800 hover:text-white">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <div class="text-center">
+                <div class="text-6xl mb-4">👑</div>
+                <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
+                <p class="text-yellow-900 font-bold text-lg mb-6">Unlock the full power of learning!</p>
+                <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlimited Questions</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock All 5 Subject Teachers</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Weekly Parent Reports</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock Stickers & Fun Items</span></div>
+                </div>
+                <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl transform transition hover:scale-105 w-full border-b-4 border-yellow-200">
+                    Get Premium ($4.99/mo)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showCheckout" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-6 bg-slate-900 bg-opacity-95 overflow-y-auto" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] max-w-md w-full p-8 shadow-2xl text-center my-auto">
+            <h2 class="text-3xl font-kids text-slate-800 mb-2">Secure Checkout</h2>
+            <p class="text-gray-500 mb-6">Unlock <span class="font-bold text-slate-800">1 Month Premium</span> for $4.99</p>
+            
+            <div class="text-left space-y-4 mb-8">
+                <div>
+                    <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Cardholder Name</label>
+                    <input type="text" x-model="checkoutForm.name" placeholder="John Doe" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Card Number</label>
+                    <div class="relative">
+                        <input type="text" x-model="checkoutForm.card" placeholder="0000 0000 0000 0000" maxlength="19" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
+                        <i class="fas fa-credit-card absolute right-4 top-5 text-slate-300"></i>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Expiry Date</label>
+                        <input type="text" x-model="checkoutForm.expiry" placeholder="MM/YY" maxlength="5" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">CVV</label>
+                        <input type="password" x-model="checkoutForm.cvv" placeholder="***" maxlength="3" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button 
+                    @click="processPayment" 
+                    :disabled="!checkoutForm.name || !checkoutForm.card || !checkoutForm.expiry || !checkoutForm.cvv"
+                    class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:grayscale"
+                >
+                    <i class="fas fa-lock mr-2"></i> Complete Payment
+                </button>
+                <button @click="showCheckout = false" class="w-full py-4 text-black font-bold hover:text-slate-600">Cancel</button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-6 italic">Simulation: Do not enter real sensitive information.</p>
+        </div>
+    </div>
+
+    <div x-show="showParentPortal" x-cloak
+         class="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-slate-900 bg-opacity-95"
+         x-transition.opacity>
+        <div x-show="!parentAuthenticated" class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl animate__animated animate__fadeInUp">
+            <h2 class="text-2xl font-kids text-gray-700 mb-2">Parents Only</h2>
+            <p class="text-sm text-gray-500 mb-6" x-text="isChangingPin ? 'Enter NEW 4-digit PIN' : 'Enter PIN to see history'"></p>
+            <input type="password" maxlength="4" x-model="pinInput" @keyup.enter="verifyPin" class="w-full text-center text-4xl tracking-[1em] font-bold border-b-4 border-gray-200 outline-none mb-8 focus:border-blue-500">
+            <div class="flex gap-2">
+                <button @click="closeParentPortal" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold">Cancel</button>
+                <button @click="verifyPin" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold" x-text="isChangingPin ? 'Save' : 'Open'"></button>
+            </div>
+        </div>
+        <div x-show="parentAuthenticated" class="bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] flex flex-col p-8 shadow-2xl animate__animated animate__zoomIn">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-3xl font-kids text-slate-800 leading-none">Parent Dashboard</h2>
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Safety & Controls</span>
+                </div>
+                <button @click="closeParentPortal" class="text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scroll pr-2 mt-2">
+                <div class="mb-6 p-4 rounded-2xl border-2" :class="isPremium ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-lg" :class="isPremium ? 'text-green-700' : 'text-yellow-800'">Premium Status</h3>
+                            <p class="text-sm opacity-80" x-text="isPremium ? 'All features unlocked! 🌟' : 'Free Version (Limited)'"></p>
+                            <template x-if="isPremium && premiumExpiry">
+                                <p class="text-[10px] text-green-600 font-bold mt-1" x-text="'Expires: ' + new Date(premiumExpiry).toLocaleDateString()"></p>
+                            </template>
+                        </div>
+                        <button @click="isPremium ? cancelSubscription() : showCheckout = true" class="px-4 py-2 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95" :class="isPremium ? 'bg-red-100 text-red-600' : 'bg-yellow-400 text-yellow-900 premium-glow'">
+                            <span x-text="isPremium ? 'Cancel Subscription' : 'Unlock All ($4.99/mo)'"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-6 p-6 rounded-3xl bg-indigo-600 text-white shadow-xl relative overflow-hidden">
+                    <div x-show="!isPremium" class="absolute inset-0 bg-indigo-900/80 z-20 flex flex-col items-center justify-center p-4 text-center">
+                        <i class="fas fa-lock text-3xl mb-2"></i>
+                        <p class="font-kids">Learning Reports are Premium</p>
+                        <p class="text-[10px] opacity-70">Upgrade to track your child's progress</p>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-4">
+                            <div><h3 class="font-kids text-xl">Weekly Learning Report</h3><p class="text-indigo-100 text-xs font-bold uppercase tracking-wider">Activity Insights</p></div>
+                            <span class="bg-indigo-400 px-3 py-1 rounded-full text-[10px] font-bold">AUTOMATED</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-white/10 p-3 rounded-2xl"><span class="text-xs block opacity-70">Questions</span><span class="text-2xl font-bold" x-text="parentLogs.length"></span></div>
+                            <div class="bg-white/10 p-3 rounded-2xl"><span class="text-xs block opacity-70">Words Read</span><span class="text-2xl font-bold" x-text="learningStats.wordsLearned"></span></div>
+                        </div>
+                        <div class="text-center bg-indigo-800/50 rounded-xl py-2 mt-2">
+                             <p class="text-xs font-bold text-indigo-200 opacity-90"><i class="fas fa-calendar-check mr-2"></i>Reports are sent automatically every Sunday.</p>
+                             <p class="text-[10px] text-indigo-300 mt-1" x-text="'Sent to: ' + registeredEmail"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-6 p-6 rounded-3xl bg-green-600 text-white shadow-xl relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-center mb-4">
+                            <div><h3 class="font-kids text-xl">🛡️ Safe AI Mode</h3><p class="text-green-100 text-[10px] font-bold uppercase">Active Filter System</p></div>
+                            <div class="bg-white text-green-600 px-3 py-1 rounded-full text-[10px] font-bold">LOCKED ON</div>
+                        </div>
+                        <ul class="text-xs space-y-2 opacity-90 mb-4">
+                            <li><i class="fas fa-check-circle mr-2"></i> No external links or ads</li>
+                            <li><i class="fas fa-check-circle mr-2"></i> Filtered responses for kid-safety</li>
+                            <li><i class="fas fa-check-circle mr-2"></i> Blocked sensitive topics</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Activity Log</h3>
+                <div class="space-y-4">
+                    <template x-for="log in parentLogs.slice().reverse()">
+                        <div class="bg-slate-50 p-4 rounded-2xl border-l-4 border-blue-500">
+                            <div class="flex justify-between text-[10px] text-gray-400 uppercase font-bold mb-1">
+                                <span x-text="log.time"></span>
+                                <span x-text="'With ' + log.char"></span>
+                            </div>
+                            <p class="text-slate-700 font-bold">Kid asked: <span class="font-normal" x-text="log.query"></span></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t flex flex-wrap items-center justify-between gap-4">
+                <div class="flex gap-4">
+                    <button @click="clearLogs" class="text-red-500 font-bold text-xs hover:underline uppercase tracking-widest">Clear Data</button>
+                    <button @click="startPinChange" class="text-blue-500 font-bold text-xs hover:underline uppercase tracking-widest">Change PIN</button>
+                </div>
+                <button @click="closeParentPortal" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-kids text-sm">Exit Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js");
+        }
+
+        function aiTutor() {
+            return {
+                supabase: null,
+                isLoading: false,
+                isLoggedIn: false,
+                hasAccount: false,
+                savedProfile: null,
+                loginForm: { name: '', email: '', pin: '' },
+                registeredEmail: '',
+                
+                legalAccepted: false,
+                showLegalDoc: null,
+
+                userQuery: '',
+                displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
+                isThinking: false,
+                isSpeaking: false,
+                isListening: false,
+                hasAnswered: false,
+                currentMoodIcon: '🦖',
+                suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
+                isPremium: false,
+                premiumExpiry: null,
+                showCheckout: false,
+                checkoutForm: { name: '', card: '', expiry: '', cvv: '' },
+                maxFreeQuestions: 5,
+                dailyQuestionsUsed: 0,
+                lastUsageDate: new Date().toDateString(),
+                
+                coins: 0, 
+                
+                showRewards: false,
+                rewardClaimedToday: false,
+                todayIndex: (new Date().getDay() + 6) % 7, 
+                showPremiumModal: false,
+                safetySettings: {
+                    blockedWords: localStorage.getItem('blocked_words') || 'war, killing, blood, gun, scary',
+                    forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
+                },
+                showParentPortal: false,
+                parentAuthenticated: false,
+                isChangingPin: false,
+                pinInput: '',
+                masterPin: '1234', 
+                parentLogs: [],
+                learningStats: {
+                    wordsLearned: 0,
+                    subjects: { nature: 0, space: 0, heroes: 0, science: 0, dinosaurs: 0, art: 0, health: 0 }
+                },
+                xp: 0,
+                level: 1,
+
+                showShop: false,
+                inventory: [],
+                equippedItem: null,
+                shopItems: [
+                    { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
+                    { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
+                    { id: 'fireflies', name: 'Fireflies', icon: '🐝', price: 350, effectType: 'fireflies' },
+                    { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
+                    { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
+                ],
+                characters: [
+                    { 
+                        name: "Professor Dino", 
+                        subject: "History", 
+                        suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
+                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
+                    },
+                    { 
+                        name: "Rocket Robot", 
+                        subject: "Robots and AI", 
+                        suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
+                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
+                    },
+                    { 
+                        name: "Starry Alien", 
+                        subject: "Space Exploration", 
+                        suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
+                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
+                    },
+                    { 
+                        name: "Magic Cat", 
+                        subject: "Science", 
+                        suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
+                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
+                    },
+                    { 
+                        name: "Bouncy Bee", 
+                        subject: "Nature", 
+                        suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
+                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
+                    }
+                ],
+                currentChar: null,
+                
+                async init() {
+                    this.currentChar = this.characters[0];
+                    this.currentMoodIcon = this.currentChar.icon;
+                    this.isLoading = true;
+
+                    try {
+                        // 1. Fetch Config from Server
+                        const res = await fetch('/api/config');
+                        const config = await res.json();
+                        
+                        // 2. Initialize Supabase
+                        this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
+
+                        // 3. Check for existing session in localStorage (just email)
+                        const storedEmail = localStorage.getItem('parent_email');
+                        if (storedEmail) {
+                            this.loginForm.email = storedEmail;
+                            this.hasAccount = true;
+                            // Attempt auto-login if they have a "session" (simulated by having email)
+                            // We will require PIN on full reload, but let's check if they exist
+                        }
+                    } catch (e) {
+                        console.error("Initialization error:", e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+
+                    this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
+                },
+
+                async handleSignup() {
+                    if (!this.loginForm.name || !this.loginForm.email || this.loginForm.pin.length !== 4) {
+                        alert("Please fill in all fields. PIN must be 4 digits.");
+                        return;
+                    }
+                    if(!this.legalAccepted) {
+                        alert("Please agree to the Privacy Policy and Terms.");
+                        return;
+                    }
+
+                    this.isLoading = true;
+                    const email = this.loginForm.email.toLowerCase().trim();
+
+                    try {
+                        // Create profile in Supabase
+                        const { data, error } = await this.supabase.from('profiles').insert([
+                            {
+                                email: email,
+                                name: this.loginForm.name,
+                                pin: this.loginForm.pin,
+                                coins: 50, // Welcome bonus
+                                xp: 0,
+                                learning_stats: this.learningStats,
+                                parent_logs: []
+                            }
+                        ]);
+
+                        if (error) throw error;
+
+                        localStorage.setItem('parent_email', email);
+                        this.registeredEmail = email;
+                        this.masterPin = this.loginForm.pin;
+                        this.savedProfile = { name: this.loginForm.name, email: email };
+                        this.coins = 50; // Set initial welcome coins
+                        this.isLoggedIn = true;
+                        this.hasAccount = true;
+                        this.playPing();
+
+                    } catch (err) {
+                        if (err.code === '23505') { // Unique violation
+                            alert("This email is already registered. Please login.");
+                            this.hasAccount = true;
+                        } else {
+                            alert("Error creating account: " + err.message);
+                        }
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                async handleLogin() {
+                    this.isLoading = true;
+                    const email = this.loginForm.email.toLowerCase().trim();
+
+                    try {
+                        const { data, error } = await this.supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('email', email)
+                            .single();
+
+                        if (error || !data) {
+                            alert("Account not found. Please check email or create an account.");
+                            this.isLoading = false;
+                            return;
+                        }
+
+                        if (data.pin !== this.loginForm.pin) {
+                            alert("Incorrect PIN.");
+                            this.loginForm.pin = '';
+                            this.isLoading = false;
+                            return;
+                        }
+
+                        // Success - Load Data
+                        this.registeredEmail = email;
+                        this.savedProfile = { name: data.name, email: email };
+                        this.masterPin = data.pin;
+                        this.coins = data.coins || 0;
+                        this.xp = data.xp || 0;
+                        this.isPremium = data.is_premium || false;
+                        this.premiumExpiry = data.premium_expiry;
+                        this.inventory = data.inventory || [];
+                        this.equippedItem = data.equipped_item;
+                        this.parentLogs = data.parent_logs || [];
+                        this.learningStats = data.learning_stats || this.learningStats;
+                        
+                        // Load Daily Data
+                        const dailyData = data.daily_usage || {};
+                        const today = new Date().toDateString();
+                        if (dailyData.date !== today) {
+                            this.dailyQuestionsUsed = 0;
+                            this.rewardClaimedToday = false;
+                        } else {
+                            this.dailyQuestionsUsed = dailyData.questions_used || 0;
+                            this.rewardClaimedToday = dailyData.reward_claimed || false;
+                        }
+
+                        localStorage.setItem('parent_email', email);
+                        this.updateLevel();
+                        this.checkPremiumExpiration();
+                        this.isLoggedIn = true;
+                        this.playPing();
+
+                    } catch (err) {
+                        console.error(err);
+                        alert("Login failed. Check connection.");
+                    } finally {
+                        this.isLoading = false;
+                        this.loginForm.pin = '';
+                    }
+                },
+
+                // --- CLOUD SYNC HELPER ---
+                async syncData() {
+                    if (!this.registeredEmail) return;
+                    
+                    const updateData = {
+                        coins: this.coins,
+                        xp: this.xp,
+                        inventory: this.inventory,
+                        equipped_item: this.equippedItem,
+                        learning_stats: this.learningStats,
+                        parent_logs: this.parentLogs,
+                        is_premium: this.isPremium,
+                        premium_expiry: this.premiumExpiry,
+                        daily_usage: {
+                            date: new Date().toDateString(),
+                            questions_used: this.dailyQuestionsUsed,
+                            reward_claimed: this.rewardClaimedToday
+                        }
+                    };
+
+                    await this.supabase
+                        .from('profiles')
+                        .update(updateData)
+                        .eq('email', this.registeredEmail);
+                },
+
+                toggleScroll(disable) {
+                    if (disable) {
+                        document.body.classList.add('no-scroll');
+                    } else {
+                        document.body.classList.remove('no-scroll');
+                    }
+                },
+
+                async buyItem(item) {
+                    if (this.coins >= item.price) {
+                        this.coins -= item.price;
+                        this.inventory.push(item.id);
+                        this.equipItem(item.id);
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            colors: ['#00ff00', '#ffffff']
+                        });
+                        this.playPing();
+                        await this.syncData(); // SYNC
+                    }
+                },
+                async equipItem(itemId) {
+                    this.equippedItem = itemId;
+                    await this.syncData(); // SYNC
+                },
+                async toggleEquip(itemId) {
+                    if (this.equippedItem === itemId) {
+                        this.equippedItem = null;
+                    } else {
+                        this.equippedItem = itemId;
+                    }
+                    await this.syncData(); // SYNC
+                },
+                getEquippedItemData() {
+                    return this.shopItems.find(i => i.id === this.equippedItem) || {};
+                },
+                
+                checkPremiumExpiration() {
+                    if (this.isPremium && this.premiumExpiry) {
+                        const now = new Date().getTime();
+                        if (now > this.premiumExpiry) {
+                            this.isPremium = false;
+                            this.premiumExpiry = null;
+                            alert("Your monthly premium subscription has expired. Please renew to access all characters!");
+                            this.setChar(this.characters[0]);
+                            this.syncData(); // SYNC
+                        }
+                    }
+                },
+                async processPayment() {
+                    this.isPremium = true;
+                    const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+                    this.premiumExpiry = new Date().getTime() + thirtyDaysInMs;
+                    
+                    this.showCheckout = false;
+                    this.checkoutForm = { name: '', card: '', expiry: '', cvv: '' }; 
+                    
+                    confetti({
+                        particleCount: 200,
+                        spread: 100,
+                        colors: ['#FFD700', '#FFA500', '#FFFFFF']
+                    });
+                    alert("Payment Successful! Premium features unlocked for 30 days.");
+                    await this.syncData(); // SYNC
+                },
+                async cancelSubscription() {
+                    if(confirm("Are you sure you want to cancel? You will lose access to premium characters immediately.")) {
+                        this.isPremium = false;
+                        this.premiumExpiry = null;
+                        this.setChar(this.characters[0]);
+                        await this.syncData(); // SYNC
+                    }
+                },
+                
+                async claimReward() {
+                    if (this.rewardClaimedToday) return;
+                    let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
+                    this.coins = Number(this.coins) + rewardAmount;
+                    this.rewardClaimedToday = true;
+                    
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FF69B4', '#00BFFF']
+                    });
+                    this.playPing();
+                    await this.syncData(); // SYNC
+                },
+                trySetChar(char) {
+                    if (char.premium && !this.isPremium) {
+                        this.showPremiumModal = true;
+                        this.toggleScroll(true);
+                    } else {
+                        this.setChar(char);
+                    }
+                },
+                openParentPortal() {
+                    this.showParentPortal = true;
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = false;
+                    this.pinInput = '';
+                    this.toggleScroll(true);
+                },
+                startPinChange() {
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = true;
+                    this.pinInput = '';
+                },
+                async verifyPin() {
+                    if (this.isChangingPin) {
+                        if (this.pinInput.length === 4) {
+                            this.masterPin = this.pinInput;
+                            // Update PIN in Supabase
+                            await this.supabase.from('profiles').update({ pin: this.pinInput }).eq('email', this.registeredEmail);
+                            
+                            alert("PIN updated!");
+                            this.isChangingPin = false;
+                            this.parentAuthenticated = true;
+                            this.pinInput = '';
+                        }
+                    } else {
+                        if(this.pinInput === this.masterPin) {
+                            this.parentAuthenticated = true;
+                        } else {
+                            this.pinInput = '';
+                        }
+                    }
+                },
+                closeParentPortal() {
+                    this.showParentPortal = false;
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = false;
+                    this.pinInput = '';
+                    this.toggleScroll(false);
+                },
+                logActivity(query) {
+                    const entry = {
+                        query: query,
+                        time: new Date().toLocaleString(),
+                        char: this.currentChar.name
+                    };
+                    this.parentLogs.push(entry);
+                    // We sync in finishThinking to reduce DB calls
+                },
+                async clearLogs() {
+                    if(confirm("Clear all history and progress?")) {
+                        this.parentLogs = [];
+                        this.coins = 0;
+                        this.learningStats = { wordsLearned: 0, subjects: { nature: 0, space: 0, heroes: 0, science: 0, dinosaurs: 0, art: 0, health: 0 }};
+                        this.inventory = [];
+                        this.equippedItem = null;
+                        await this.syncData(); // SYNC
+                    }
+                },
+                updateProgress(query, response) {
+                    const words = response.split(' ').length;
+                    this.learningStats.wordsLearned += words;
+                    const queryLower = query.toLowerCase();
+                    if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
+                    if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
+                    if (queryLower.match(/batman|spider-man|hero|super|avenger|wonder woman/)) this.learningStats.subjects.heroes += 10;
+                    if (queryLower.match(/volcano|science|math|robot|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
+                    if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight/)) this.learningStats.subjects.dinosaurs += 10;
+                    if (queryLower.match(/music|piano|guitar|song|sing|draw|paint|color|art|artist|dance/)) this.learningStats.subjects.art += 10;
+                    if (queryLower.match(/fruit|veggie|healthy|strong|teeth|sleep|water|exercise|body/)) this.learningStats.subjects.health += 10;
+                },
+                startListening() {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRecognition) return;
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'en-US';
+                    recognition.onstart = () => { this.isListening = true; window.speechSynthesis.cancel(); this.isSpeaking = false; };
+                    recognition.onresult = (event) => { this.userQuery = event.results[0][0].transcript; this.isListening = false; this.askTutor(); };
+                    recognition.onerror = () => { this.isListening = false; };
+                    recognition.onend = () => { this.isListening = false; };
+                    recognition.start();
+                },
+                setChar(char) {
+                    this.currentChar = char;
+                    this.currentMoodIcon = char.icon;
+                    this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
+                    this.suggestions = char.suggestions;
+                    this.hasAnswered = false;
+                    window.speechSynthesis.cancel();
+                    this.isSpeaking = false;
+                },
+                updateLevel() {
+                    this.level = Math.floor(this.xp / 100) + 1;
+                },
+                isQuerySafe(query) {
+                    const lowerQuery = query.toLowerCase();
+                    const blocked = this.safetySettings.blockedWords.split(',').map(w => w.trim().toLowerCase());
+                    const combinedFilters = [...blocked, ...this.safetySettings.forbiddenTopics];
+                    return !combinedFilters.some(word => word !== "" && lowerQuery.includes(word));
+                },
+                async askTutor() {
+                    if (!this.userQuery.trim()) return;
+                    if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
+                        this.showPremiumModal = true;
+                        this.toggleScroll(true);
+                        return;
+                    }
+                    if (!this.isQuerySafe(this.userQuery)) {
+                        this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
+                        this.userQuery = '';
+                        this.currentMoodIcon = '🤔';
+                        return;
+                    }
+
+                    const savedQuery = this.userQuery;
+                    this.logActivity(this.userQuery);
+                    window.speechSynthesis.cancel();
+                    this.isSpeaking = false;
+                    this.isThinking = true;
+                    this.hasAnswered = false;
+                    this.displayText = "Thinking... 🧠✨";
+                    this.currentMoodIcon = this.currentChar.mood_think;
+
+                    try {
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children aged 5-8. 
+                        RULES:
+                        1. Answer strictly about ${this.currentChar.subject}.
+                        2. Be very brief (MAX 2-3 short sentences).
+                        3. Use simple, exciting words. No complex jargon.
+                        4. End every single response with a curious question and an emoji.
+                        5. Be super friendly and encouraging.`;
+
+                        const response = await fetch("/api/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": savedQuery }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        const aiMessage = data.choices[0].message.content;
+                        
+                        if (!this.isPremium) {
+                            this.dailyQuestionsUsed++;
+                        }
+
+                        this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
+                    } catch (error) {
+                        console.error("API Error:", error);
+                        this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
+                    }
+                },
+                async finishThinking(response, originalQuery) {
+                    this.displayText = response;
+                    this.isThinking = false;
+                    this.hasAnswered = true;
+                    this.userQuery = '';
+                    this.currentMoodIcon = this.currentChar.mood_happy;
+                    this.xp += 20;
+                    this.updateLevel();
+                    this.playPing();
+                    this.updateProgress(originalQuery, response);
+                    
+                    // SAVE ALL PROGRESS TO DB
+                    await this.syncData();
+                },
+                playPing() {
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = context.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, context.currentTime);
+                    osc.connect(context.destination);
+                    osc.start();
+                    osc.stop(context.currentTime + 0.1);
+                },
+                speak(text) {
+                    if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
+                    const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                    const msg = new SpeechSynthesisUtterance(cleanText);
+                    const voices = window.speechSynthesis.getVoices();
+                    let baseVoice = voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.name.includes('Samantha')) || voices[0];
+                    msg.voice = baseVoice;
+                    msg.pitch = this.currentChar.pitch; 
+                    msg.rate = this.currentChar.rate;
+                    msg.onstart = () => { this.isSpeaking = true; };
+                    msg.onend = () => { this.isSpeaking = false; };
+                    window.speechSynthesis.speak(msg);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
