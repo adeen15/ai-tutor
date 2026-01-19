@@ -999,9 +999,19 @@
                         // NEW: If coming from payment success, sync data immediately
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') === 'success') {
+                            // 1. Load basic profile first
                             if (storedEmail) {
                                 await this.loadUserProfile(storedEmail);
                             }
+                            
+                            // 2. FORCE PREMIUM ON CLIENT SIDE (Instant Fix)
+                            this.isPremium = true;
+                            this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 Days from now
+
+                            // 3. Save this to DB so it persists (Self-Healing)
+                            await this.syncData();
+
+                            // 4. Update UI
                             this.showPremiumModal = false;
                             this.showParentPortal = true;
                             this.parentAuthenticated = true;
