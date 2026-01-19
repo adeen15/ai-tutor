@@ -6,13 +6,6 @@ const path = require('path');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 
-// --- DEBUG CHECK ---
-console.log("-----------------------------------");
-console.log("🔍 Server Starting...");
-if (process.env.LEMONSQUEEZY_WEBHOOK_SECRET) console.log("✅ WEBHOOK SECRET: Loaded");
-else console.log("❌ WEBHOOK SECRET: MISSING");
-console.log("-----------------------------------");
-
 const app = express();
 app.use(cors());
 
@@ -25,7 +18,17 @@ app.use(express.json({
 
 app.use(express.static(__dirname));
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+// Initialize Supabase
+// We use a check here to prevent crashing if keys are missing during build
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+let supabase;
+
+if (supabaseUrl && supabaseKey) {
+    supabase = createClient(supabaseUrl, supabaseKey);
+} else {
+    console.log("⚠️ Supabase Keys missing. Database features will not work.");
+}
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '2nd gemini app.html'));
@@ -67,7 +70,7 @@ app.post('/api/create-checkout', async (req, res) => {
         const { userEmail } = req.body;
         console.log("Creating checkout for:", userEmail); 
 
-        // Define your app URL here (Make sure this matches your Vercel link!)
+        // Define your app URL here
         const APP_URL = "https://ai-tutor-murex.vercel.app"; 
 
         const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
@@ -83,11 +86,11 @@ app.post('/api/create-checkout', async (req, res) => {
                     attributes: {
                         checkout_data: {
                             email: userEmail,
-                            custom: { user_email: userEmail },
-                            // THIS LINE FIXES THE REDIRECT:
-                            product_options: {
-                                redirect_url: APP_URL
-                            }
+                            custom: { user_email: userEmail }
+                        },
+                        // CORRECTION: product_options goes here (outside checkout_data)
+                        product_options: {
+                            redirect_url: APP_URL
                         }
                     },
                     relationships: {
@@ -99,10 +102,16 @@ app.post('/api/create-checkout', async (req, res) => {
         });
 
         const data = await response.json();
+        
+        // Better error logging
+        if (data.errors) {
+            console.error("LS Error:", JSON.stringify(data.errors, null, 2));
+            return res.status(500).json({ error: data.errors[0].detail });
+        }
+
         if (data.data && data.data.attributes) {
             res.json({ url: data.data.attributes.url });
         } else {
-            console.error("LS Error:", data);
             res.status(500).json({ error: "Failed to create checkout" });
         }
     } catch (error) {
@@ -116,12 +125,18 @@ app.post('/api/webhook', async (req, res) => {
         console.log("🔔 Webhook received!");
 
         const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+        
+        if (!secret) {
+            console.error("❌ Webhook Secret is MISSING in Vercel.");
+            return res.status(500).send("Server Configuration Error");
+        }
+
         const hmac = crypto.createHmac('sha256', secret);
         const digest = Buffer.from(hmac.update(req.rawBody).digest('hex'), 'utf8');
         const signature = Buffer.from(req.get('X-Signature') || '', 'utf8');
 
         if (!crypto.timingSafeEqual(digest, signature)) {
-            console.log("❌ Invalid Webhook Signature (Password didn't match)");
+            console.log("❌ Invalid Webhook Signature.");
             return res.status(401).send('Invalid signature');
         }
 
@@ -133,6 +148,11 @@ app.post('/api/webhook', async (req, res) => {
         console.log(`Event: ${eventName} for ${userEmail}`);
 
         if (eventName === 'order_created' || eventName === 'subscription_created') {
+            if (!supabase) {
+                console.error("❌ Cannot unlock premium: Supabase client not initialized.");
+                return res.status(500).send("Database Error");
+            }
+
             console.log(`🔓 Unlocking Premium for: ${userEmail}`);
             
             const { error } = await supabase
