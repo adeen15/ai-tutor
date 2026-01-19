@@ -460,7 +460,14 @@
                         <p class="text-xl sm:text-2xl md:text-3xl text-gray-800 font-semibold leading-relaxed" x-text="displayText"></p>
                     </div>
                     
-                    <div class="flex justify-end mt-6" x-show="hasAnswered && !isThinking">
+                    <div class="flex flex-wrap justify-end gap-3 mt-6" x-show="hasAnswered && !isThinking">
+                        <button 
+                            @click="startQuiz()"
+                            class="flex items-center gap-2 px-5 py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4 bg-yellow-400 border-yellow-600 text-yellow-900 shadow-md"
+                        >
+                            <span class="text-xl">🏆</span> Challenge Me!
+                        </button>
+
                         <button 
                             @click="speak(displayText)"
                             class="flex items-center gap-3 px-5 sm:px-6 py-2 sm:py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4"
@@ -511,6 +518,48 @@
                         </button>
                     </template>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showQuiz" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
+            <button @click="showQuiz = false" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            
+            <div class="text-center" x-show="quizState === 'loading'">
+                <div class="spinner mx-auto mb-4 border-yellow-400"></div>
+                <h2 class="text-2xl font-kids text-yellow-500">Thinking up a tricky one... 🤔</h2>
+            </div>
+
+            <div x-show="quizState === 'active'">
+                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Pop Quiz!</span>
+                <h2 class="text-2xl font-bold text-gray-800 mt-4 mb-6 leading-tight" x-text="quizQuestion"></h2>
+                
+                <div class="space-y-3">
+                    <template x-for="(option, index) in quizOptions">
+                        <button 
+                            @click="checkAnswer(index)"
+                            class="w-full text-left p-4 rounded-2xl border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold text-gray-700 flex items-center gap-3"
+                        >
+                            <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold" x-text="['A','B','C'][index]"></span>
+                            <span x-text="option"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <div class="text-center" x-show="quizState === 'correct'">
+                <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
+                <h2 class="text-3xl font-kids text-green-500 mb-2">Correct!</h2>
+                <p class="font-bold text-gray-500 mb-6">You earned 50 Coins!</p>
+                <button @click="showQuiz = false" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
+            </div>
+
+            <div class="text-center" x-show="quizState === 'wrong'">
+                <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
+                <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
+                <p class="font-bold text-gray-500 mb-6">That wasn't quite right. Try again?</p>
+                <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
             </div>
         </div>
     </div>
@@ -882,6 +931,14 @@
                 showShop: false,
                 inventory: [],
                 equippedItem: null,
+                
+                // --- NEW QUIZ STATE VARIABLES ---
+                showQuiz: false,
+                quizState: 'loading', // loading, active, correct, wrong
+                quizQuestion: '',
+                quizOptions: [],
+                quizCorrectIndex: 0,
+
                 shopItems: [
                     { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
@@ -973,6 +1030,14 @@
                             this.populateUserData(data);
                             this.isLoggedIn = true;
                             this.playPing();
+                            
+                            // AUTO-OPEN REWARD IF NOT CLAIMED
+                            if (!this.rewardClaimedToday) {
+                                setTimeout(() => {
+                                    this.showRewards = true;
+                                    this.toggleScroll(true);
+                                }, 1000); // 1 sec delay for nice effect
+                            }
                         }
                     } catch (e) {
                         console.error("Sync error:", e);
@@ -984,7 +1049,7 @@
                     this.registeredEmail = data.email;
                     this.savedProfile = { name: data.name, email: data.email };
                     this.masterPin = data.pin;
-                    this.coins = data.coins || 0;
+                    this.coins = Number(data.coins) || 0; // Force Number type
                     this.xp = data.xp || 0;
                     this.isPremium = data.is_premium || false;
                     this.premiumExpiry = data.premium_expiry;
@@ -1005,6 +1070,63 @@
                     
                     this.updateLevel();
                     this.checkPremiumExpiration();
+                },
+
+                // --- NEW QUIZ FUNCTIONS ---
+                async startQuiz() {
+                    this.showQuiz = true;
+                    this.quizState = 'loading';
+                    this.toggleScroll(true);
+
+                    // Generate a quiz based on the last answer
+                    try {
+                        const systemPrompt = `You are an AI Quiz Generator for kids. 
+                        Based on the following text: "${this.displayText}", create ONE simple multiple-choice question.
+                        Return strictly this JSON format: 
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
+                        Make sure the options are short and simple.`;
+
+                        const response = await fetch("/api/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": "Generate quiz" }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        // Parse the JSON from the AI response
+                        let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const quizData = JSON.parse(cleanJson);
+
+                        this.quizQuestion = quizData.question;
+                        this.quizOptions = quizData.options;
+                        this.quizCorrectIndex = quizData.correctIndex;
+                        this.quizState = 'active';
+
+                    } catch (e) {
+                        console.error("Quiz Error", e);
+                        // Fallback quiz if AI fails
+                        this.quizQuestion = "Did you like learning about that?";
+                        this.quizOptions = ["Yes!", "It was okay", "No"];
+                        this.quizCorrectIndex = 0;
+                        this.quizState = 'active';
+                    }
+                },
+
+                checkAnswer(index) {
+                    if (index === this.quizCorrectIndex) {
+                        this.quizState = 'correct';
+                        this.coins += 50;
+                        this.playPing();
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                        this.syncData();
+                    } else {
+                        this.quizState = 'wrong';
+                    }
                 },
 
                 async handleSignup() {
@@ -1044,6 +1166,9 @@
                         this.isLoggedIn = true;
                         this.hasAccount = true;
                         this.playPing();
+                        
+                        // New users get welcome animation
+                        confetti({ particleCount: 150, spread: 70 });
 
                     } catch (err) {
                         if (err.code === '23505') { 
@@ -1425,4 +1550,3 @@
 </body>
 
 </html>
-
