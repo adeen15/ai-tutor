@@ -948,6 +948,26 @@
                         this.isLoading = false;
                     }
 
+                    // --- NEW AUTO-REDIRECT LOGIC ---
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('payment') === 'success') {
+                        // Force login and open Dashboard
+                        this.isLoggedIn = true;
+                        this.hasAccount = true;
+                        this.isPremium = true; 
+                        this.showPremiumModal = false;
+                        
+                        // Open Parent Portal Immediately
+                        this.showParentPortal = true;
+                        this.parentAuthenticated = true;
+                        
+                        // Show celebration
+                        alert("Payment Successful! Welcome to Premium! 🌟");
+                        
+                        // Clean the URL
+                        window.history.replaceState({}, document.title, "/");
+                    }
+
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
@@ -1396,4 +1416,5 @@
         }
     </script>
 </body>
+
 </html>
