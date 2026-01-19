@@ -8,25 +8,34 @@ const path = require('path');
 console.log("-----------------------------------");
 console.log("🔍 Checking Server Configuration...");
 
-if (process.env.SUPABASE_URL) {
-    console.log("✅ SUPABASE_URL is loaded");
+// 1. Check Supabase
+if (process.env.SUPABASE_URL) console.log("✅ SUPABASE_URL: Loaded");
+else console.log("❌ SUPABASE_URL: MISSING");
+
+if (process.env.SUPABASE_ANON_KEY) console.log("✅ SUPABASE_ANON_KEY: Loaded");
+else console.log("❌ SUPABASE_ANON_KEY: MISSING");
+
+// 2. Check Lemon Squeezy Keys
+const lemonKey = process.env.LEMONSQUEEZY_API_KEY;
+if (lemonKey) {
+    console.log(`✅ LEMON KEY: Loaded (Length: ${lemonKey.length} chars)`);
+    // Warning if key looks too short (it should be long)
+    if (lemonKey.length < 20) console.log("⚠️ WARNING: Your Lemon Key looks too short. Did you paste the Store ID?");
 } else {
-    console.log("❌ ERROR: SUPABASE_URL is MISSING! Check your .env file.");
+    console.log("❌ LEMON KEY: MISSING");
 }
 
-if (process.env.SUPABASE_ANON_KEY) {
-    console.log("✅ SUPABASE_ANON_KEY is loaded");
-} else {
-    console.log("❌ ERROR: SUPABASE_ANON_KEY is MISSING! Check your .env file.");
-}
+if (process.env.LEMONSQUEEZY_STORE_ID) console.log("✅ LEMON STORE ID: Loaded");
+else console.log("❌ LEMON STORE ID: MISSING");
+
+if (process.env.LEMONSQUEEZY_VARIANT_ID) console.log("✅ LEMON VARIANT ID: Loaded");
+else console.log("❌ LEMON VARIANT ID: MISSING");
 
 console.log("-----------------------------------");
 // --- DEBUG CHECK ENDS HERE ---
 
 const app = express();
 app.use(cors());
-
-// We need raw body for webhooks if you add them later, but JSON is fine for now
 app.use(express.json());
 
 // Serve static files
@@ -37,7 +46,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '2nd gemini app.html'));
 });
 
-// Endpoint to send Supabase config to frontend safely
 app.get('/api/config', (req, res) => {
     res.json({
         supabaseUrl: process.env.SUPABASE_URL,
@@ -45,7 +53,6 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// Chat Endpoint
 app.post('/api/chat', async (req, res) => {
     try {
         const { messages } = req.body;
@@ -70,11 +77,15 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// --- NEW LEMON SQUEEZY CHECKOUT ENDPOINT ---
 app.post('/api/create-checkout', async (req, res) => {
     try {
         const { userEmail } = req.body;
         console.log("Creating checkout for:", userEmail); 
+
+        // Double check key before sending
+        if (!process.env.LEMONSQUEEZY_API_KEY) {
+            throw new Error("API Key is missing on Server!");
+        }
 
         const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
             method: 'POST',
@@ -102,9 +113,10 @@ app.post('/api/create-checkout', async (req, res) => {
 
         const data = await response.json();
         
-        // Log errors from Lemon Squeezy to help debug
         if (data.errors) {
             console.error("Lemon Squeezy API Error:", JSON.stringify(data.errors, null, 2));
+            // Send the actual error to the frontend so you can see it in the console
+            return res.status(500).json({ error: data.errors[0].detail, fullError: data.errors });
         }
 
         if (data.data && data.data.attributes) {
@@ -115,7 +127,7 @@ app.post('/api/create-checkout', async (req, res) => {
         
     } catch (error) {
         console.error("Server Checkout Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -123,5 +135,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running on port ${PORT}`);
 });
-
 module.exports = app;
