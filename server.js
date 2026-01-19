@@ -70,8 +70,8 @@ app.post('/api/create-checkout', async (req, res) => {
         const { userEmail } = req.body;
         console.log("Creating checkout for:", userEmail); 
 
-        // Define your app URL here
-        const APP_URL = "https://ai-tutor-murex.vercel.app"; 
+        // UPDATED: Now includes the secret signal "?payment=success"
+        const APP_URL = "https://ai-tutor-murex.vercel.app/?payment=success"; 
 
         const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
             method: 'POST',
@@ -88,7 +88,7 @@ app.post('/api/create-checkout', async (req, res) => {
                             email: userEmail,
                             custom: { user_email: userEmail }
                         },
-                        // CORRECTION: product_options goes here (outside checkout_data)
+                        // This puts the redirect link in the correct place
                         product_options: {
                             redirect_url: APP_URL
                         }
@@ -103,7 +103,6 @@ app.post('/api/create-checkout', async (req, res) => {
 
         const data = await response.json();
         
-        // Better error logging
         if (data.errors) {
             console.error("LS Error:", JSON.stringify(data.errors, null, 2));
             return res.status(500).json({ error: data.errors[0].detail });
