@@ -1141,20 +1141,33 @@
                     }
                 },
                 async processPayment() {
-                    this.isPremium = true;
-                    const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
-                    this.premiumExpiry = new Date().getTime() + thirtyDaysInMs;
-                    
-                    this.showCheckout = false;
-                    this.checkoutForm = { name: '', card: '', expiry: '', cvv: '' }; 
-                    
-                    confetti({
-                        particleCount: 200,
-                        spread: 100,
-                        colors: ['#FFD700', '#FFA500', '#FFFFFF']
-                    });
-                    alert("Payment Successful! Premium features unlocked for 30 days.");
-                    await this.syncData(); // SYNC
+                    this.isLoading = true;
+                    try {
+                        console.log("Starting payment for:", this.registeredEmail); // Debug line
+                        
+                        // 1. Ask Server for a Checkout Link
+                        const res = await fetch('/api/create-checkout', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userEmail: this.registeredEmail })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.url) {
+                            // 2. Redirect user to the REAL Lemon Squeezy page
+                            window.location.href = data.url;
+                        } else {
+                            console.error("Server Error:", data);
+                            alert("Could not connect to payment server. Check console.");
+                        }
+                    } catch (e) {
+                        console.error("Fetch Error:", e);
+                        alert("Payment Error. Please try again.");
+                    } finally {
+                        this.isLoading = false;
+                        this.showCheckout = false;
+                    }
                 },
                 async cancelSubscription() {
                     if(confirm("Are you sure you want to cancel? You will lose access to premium characters immediately.")) {
