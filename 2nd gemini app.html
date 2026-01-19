@@ -343,7 +343,9 @@
 
     <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
         <div x-show="!isPremium" class="hidden md:block bg-white px-4 py-2 rounded-xl shadow-lg border-2 border-orange-400">
-            <p class="text-[10px] font-bold text-orange-600 uppercase text-center">Free Questions</p>
+            <p class="text-[10px] font-bold text-orange-600 uppercase text-center">
+                Free Questions <span x-text="'(' + dailyQuestionsUsed + '/' + maxFreeQuestions + ')'"></span>
+            </p>
             <div class="w-20 h-2 bg-gray-100 rounded-full mt-1 overflow-hidden">
                 <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
             </div>
@@ -927,20 +929,27 @@
                     this.isLoading = true;
 
                     try {
-                        // 1. Fetch Config from Server
                         const res = await fetch('/api/config');
                         const config = await res.json();
-                        
-                        // 2. Initialize Supabase
                         this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
 
-                        // 3. Check for existing session in localStorage (just email)
                         const storedEmail = localStorage.getItem('parent_email');
                         if (storedEmail) {
                             this.loginForm.email = storedEmail;
                             this.hasAccount = true;
-                            // Attempt auto-login if they have a "session" (simulated by having email)
-                            // We will require PIN on full reload, but let's check if they exist
+                        }
+
+                        // NEW: If coming from payment success, sync data immediately
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('payment') === 'success') {
+                            if (storedEmail) {
+                                await this.loadUserProfile(storedEmail);
+                            }
+                            this.showPremiumModal = false;
+                            this.showParentPortal = true;
+                            this.parentAuthenticated = true;
+                            alert("Payment Successful! Welcome to Premium! 🌟");
+                            window.history.replaceState({}, document.title, "/");
                         }
                     } catch (e) {
                         console.error("Initialization error:", e);
@@ -948,31 +957,54 @@
                         this.isLoading = false;
                     }
 
-                    // --- NEW AUTO-REDIRECT LOGIC (UPDATED) ---
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get('payment') === 'success') {
-                        // Force login and open Dashboard
-                        this.isLoggedIn = true;
-                        this.hasAccount = true;
-                        this.isPremium = true; 
-                        
-                        // FIX: Set the expiry date to 30 days from now so it shows up immediately
-                        this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000);
-
-                        this.showPremiumModal = false;
-                        
-                        // Open Parent Portal Immediately
-                        this.showParentPortal = true;
-                        this.parentAuthenticated = true;
-                        
-                        // Show celebration
-                        alert("Payment Successful! Welcome to Premium! 🌟");
-                        
-                        // Clean the URL
-                        window.history.replaceState({}, document.title, "/");
-                    }
-
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
+                },
+
+                // REUSABLE DATA LOADER (Fixes 0 Coins Issue)
+                async loadUserProfile(email) {
+                    try {
+                        const { data, error } = await this.supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('email', email)
+                            .single();
+                        
+                        if (data) {
+                            this.populateUserData(data);
+                            this.isLoggedIn = true;
+                            this.playPing();
+                        }
+                    } catch (e) {
+                        console.error("Sync error:", e);
+                    }
+                },
+
+                // HELPER TO FILL VARIABLES
+                populateUserData(data) {
+                    this.registeredEmail = data.email;
+                    this.savedProfile = { name: data.name, email: data.email };
+                    this.masterPin = data.pin;
+                    this.coins = data.coins || 0;
+                    this.xp = data.xp || 0;
+                    this.isPremium = data.is_premium || false;
+                    this.premiumExpiry = data.premium_expiry;
+                    this.inventory = data.inventory || [];
+                    this.equippedItem = data.equipped_item;
+                    this.parentLogs = data.parent_logs || [];
+                    this.learningStats = data.learning_stats || this.learningStats;
+                    
+                    const dailyData = data.daily_usage || {};
+                    const today = new Date().toDateString();
+                    if (dailyData.date !== today) {
+                        this.dailyQuestionsUsed = 0;
+                        this.rewardClaimedToday = false;
+                    } else {
+                        this.dailyQuestionsUsed = dailyData.questions_used || 0;
+                        this.rewardClaimedToday = dailyData.reward_claimed || false;
+                    }
+                    
+                    this.updateLevel();
+                    this.checkPremiumExpiration();
                 },
 
                 async handleSignup() {
@@ -989,7 +1021,6 @@
                     const email = this.loginForm.email.toLowerCase().trim();
 
                     try {
-                        // Create profile in Supabase
                         const { data, error } = await this.supabase.from('profiles').insert([
                             {
                                 email: email,
@@ -1005,16 +1036,17 @@
                         if (error) throw error;
 
                         localStorage.setItem('parent_email', email);
+                        // Manually set initial state for new user
                         this.registeredEmail = email;
                         this.masterPin = this.loginForm.pin;
                         this.savedProfile = { name: this.loginForm.name, email: email };
-                        this.coins = 50; // Set initial welcome coins
+                        this.coins = 50; 
                         this.isLoggedIn = true;
                         this.hasAccount = true;
                         this.playPing();
 
                     } catch (err) {
-                        if (err.code === '23505') { // Unique violation
+                        if (err.code === '23505') { 
                             alert("This email is already registered. Please login.");
                             this.hasAccount = true;
                         } else {
@@ -1030,9 +1062,10 @@
                     const email = this.loginForm.email.toLowerCase().trim();
 
                     try {
+                        // First just get the PIN to verify
                         const { data, error } = await this.supabase
                             .from('profiles')
-                            .select('*')
+                            .select('pin')
                             .eq('email', email)
                             .single();
 
@@ -1049,35 +1082,9 @@
                             return;
                         }
 
-                        // Success - Load Data
-                        this.registeredEmail = email;
-                        this.savedProfile = { name: data.name, email: email };
-                        this.masterPin = data.pin;
-                        this.coins = data.coins || 0;
-                        this.xp = data.xp || 0;
-                        this.isPremium = data.is_premium || false;
-                        this.premiumExpiry = data.premium_expiry;
-                        this.inventory = data.inventory || [];
-                        this.equippedItem = data.equipped_item;
-                        this.parentLogs = data.parent_logs || [];
-                        this.learningStats = data.learning_stats || this.learningStats;
-                        
-                        // Load Daily Data
-                        const dailyData = data.daily_usage || {};
-                        const today = new Date().toDateString();
-                        if (dailyData.date !== today) {
-                            this.dailyQuestionsUsed = 0;
-                            this.rewardClaimedToday = false;
-                        } else {
-                            this.dailyQuestionsUsed = dailyData.questions_used || 0;
-                            this.rewardClaimedToday = dailyData.reward_claimed || false;
-                        }
-
+                        // Verify Success -> Load Full Profile
                         localStorage.setItem('parent_email', email);
-                        this.updateLevel();
-                        this.checkPremiumExpiration();
-                        this.isLoggedIn = true;
-                        this.playPing();
+                        await this.loadUserProfile(email);
 
                     } catch (err) {
                         console.error(err);
@@ -1167,9 +1174,8 @@
                 async processPayment() {
                     this.isLoading = true;
                     try {
-                        console.log("Starting payment for:", this.registeredEmail); // Debug line
+                        console.log("Starting payment for:", this.registeredEmail); 
                         
-                        // 1. Ask Server for a Checkout Link
                         const res = await fetch('/api/create-checkout', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1179,7 +1185,6 @@
                         const data = await res.json();
                         
                         if (data.url) {
-                            // 2. Redirect user to the REAL Lemon Squeezy page
                             window.location.href = data.url;
                         } else {
                             console.error("Server Error:", data);
@@ -1241,7 +1246,6 @@
                     if (this.isChangingPin) {
                         if (this.pinInput.length === 4) {
                             this.masterPin = this.pinInput;
-                            // Update PIN in Supabase
                             await this.supabase.from('profiles').update({ pin: this.pinInput }).eq('email', this.registeredEmail);
                             
                             alert("PIN updated!");
@@ -1271,7 +1275,6 @@
                         char: this.currentChar.name
                     };
                     this.parentLogs.push(entry);
-                    // We sync in finishThinking to reduce DB calls
                 },
                 async clearLogs() {
                     if(confirm("Clear all history and progress?")) {
