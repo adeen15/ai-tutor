@@ -948,13 +948,17 @@
                         this.isLoading = false;
                     }
 
-                    // --- NEW AUTO-REDIRECT LOGIC ---
+                    // --- NEW AUTO-REDIRECT LOGIC (UPDATED) ---
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.get('payment') === 'success') {
                         // Force login and open Dashboard
                         this.isLoggedIn = true;
                         this.hasAccount = true;
                         this.isPremium = true; 
+                        
+                        // FIX: Set the expiry date to 30 days from now so it shows up immediately
+                        this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000);
+
                         this.showPremiumModal = false;
                         
                         // Open Parent Portal Immediately
