@@ -3,21 +3,20 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
-const crypto = require('crypto'); // Needed to verify the secret password
-const { createClient } = require('@supabase/supabase-js'); // Needed to talk to DB
+const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
 
 // --- DEBUG CHECK ---
 console.log("-----------------------------------");
 console.log("🔍 Server Starting...");
 if (process.env.LEMONSQUEEZY_WEBHOOK_SECRET) console.log("✅ WEBHOOK SECRET: Loaded");
-else console.log("❌ WEBHOOK SECRET: MISSING (Needed for auto-unlock)");
+else console.log("❌ WEBHOOK SECRET: MISSING");
 console.log("-----------------------------------");
 
 const app = express();
 app.use(cors());
 
-// MAGIC TRICK: We need the "raw" code to verify the password, but JSON to read it.
-// This line does both.
+// Raw body middleware for Webhook Verification
 app.use(express.json({
     verify: (req, res, buf) => {
         req.rawBody = buf;
@@ -26,15 +25,12 @@ app.use(express.json({
 
 app.use(express.static(__dirname));
 
-// Initialize Supabase (So the server can unlock premium for users)
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
-// 1. HTML File
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '2nd gemini app.html'));
 });
 
-// 2. Frontend Config
 app.get('/api/config', (req, res) => {
     res.json({
         supabaseUrl: process.env.SUPABASE_URL,
@@ -42,7 +38,6 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// 3. Chat AI
 app.post('/api/chat', async (req, res) => {
     try {
         const { messages } = req.body;
@@ -67,11 +62,13 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// 4. Create Checkout (Sending user to Lemon Squeezy)
 app.post('/api/create-checkout', async (req, res) => {
     try {
         const { userEmail } = req.body;
         console.log("Creating checkout for:", userEmail); 
+
+        // Define your app URL here (Make sure this matches your Vercel link!)
+        const APP_URL = "https://ai-tutor-murex.vercel.app"; 
 
         const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
             method: 'POST',
@@ -86,7 +83,11 @@ app.post('/api/create-checkout', async (req, res) => {
                     attributes: {
                         checkout_data: {
                             email: userEmail,
-                            custom: { user_email: userEmail } // Important: We pass the email to get it back later
+                            custom: { user_email: userEmail },
+                            // THIS LINE FIXES THE REDIRECT:
+                            product_options: {
+                                redirect_url: APP_URL
+                            }
                         }
                     },
                     relationships: {
@@ -110,12 +111,10 @@ app.post('/api/create-checkout', async (req, res) => {
     }
 });
 
-// 5. THE NEW PART: Webhook (Listening for "Payment Success")
 app.post('/api/webhook', async (req, res) => {
     try {
         console.log("🔔 Webhook received!");
 
-        // A. Verify the Secret Password (Signature)
         const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
         const hmac = crypto.createHmac('sha256', secret);
         const digest = Buffer.from(hmac.update(req.rawBody).digest('hex'), 'utf8');
@@ -126,7 +125,6 @@ app.post('/api/webhook', async (req, res) => {
             return res.status(401).send('Invalid signature');
         }
 
-        // B. Read the Data
         const eventName = req.body.meta.event_name;
         const data = req.body.data;
         const customData = data.attributes.checkout_data?.custom; 
@@ -134,16 +132,14 @@ app.post('/api/webhook', async (req, res) => {
 
         console.log(`Event: ${eventName} for ${userEmail}`);
 
-        // C. Unlock Premium in Database
         if (eventName === 'order_created' || eventName === 'subscription_created') {
             console.log(`🔓 Unlocking Premium for: ${userEmail}`);
             
-            // Update Supabase
             const { error } = await supabase
                 .from('profiles')
                 .update({ 
                     is_premium: true,
-                    premium_expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).getTime() // +30 Days
+                    premium_expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).getTime()
                 })
                 .eq('email', userEmail);
 
