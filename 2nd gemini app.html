@@ -757,7 +757,7 @@
                                 <p class="text-[10px] text-green-600 font-bold mt-1" x-text="'Expires: ' + new Date(premiumExpiry).toLocaleDateString()"></p>
                             </template>
                         </div>
-                        <button @click="isPremium ? cancelSubscription() : showCheckout = true" class="px-4 py-2 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95" :class="isPremium ? 'bg-red-100 text-red-600' : 'bg-yellow-400 text-yellow-900 premium-glow'">
+                        <button @click="isPremium ? cancelSubscription() : processPayment()" class="px-4 py-2 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95" :class="isPremium ? 'bg-red-100 text-red-600' : 'bg-yellow-400 text-yellow-900 premium-glow'">
                             <span x-text="isPremium ? 'Cancel Subscription' : 'Unlock All ($4.99/mo)'"></span>
                         </button>
                     </div>
