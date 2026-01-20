@@ -147,39 +147,68 @@
                     <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
 
                     <div x-show="!hasAccount" class="space-y-4 text-left">
+                        
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
-                            <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
-                            <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Secret PIN (4 Digits)</label>
-                            <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em] transition-all">
-                            <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Name</label>
+                            <input type="text" x-model="loginForm.parentName" placeholder="Your Name" class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700">
                         </div>
                         
-                        <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email</label>
+                            <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700">
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100 space-y-3">
+                            <p class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">Child Profile Setup</p>
+                            
+                            <div>
+                                <input type="text" x-model="loginForm.childName" placeholder="Child's Name" class="w-full p-3 bg-white border border-blue-200 rounded-xl focus:outline-none font-bold text-slate-700">
+                            </div>
+
+                            <div class="flex gap-2">
+                                <div class="w-1/2">
+                                    <label class="block text-[10px] font-bold text-blue-400 uppercase mb-1">Age Group</label>
+                                    <select x-model="loginForm.ageGroup" class="w-full p-3 bg-white border border-blue-200 rounded-xl focus:outline-none font-bold text-slate-700 text-sm">
+                                        <option value="4-6">4-6 Years</option>
+                                        <option value="7-9">7-9 Years</option>
+                                        <option value="10-12">10-12 Years</option>
+                                    </select>
+                                </div>
+                                <div class="w-1/2">
+                                    <label class="block text-[10px] font-bold text-blue-400 uppercase mb-1">Grade</label>
+                                    <select x-model="loginForm.grade" class="w-full p-3 bg-white border border-blue-200 rounded-xl focus:outline-none font-bold text-slate-700 text-sm">
+                                        <option value="Pre-K">Pre-K</option>
+                                        <option value="Kindergarten">Kindergarten</option>
+                                        <option value="1st Grade">1st Grade</option>
+                                        <option value="2nd Grade">2nd Grade</option>
+                                        <option value="3rd Grade">3rd Grade</option>
+                                        <option value="4th Grade">4th Grade</option>
+                                        <option value="5th Grade">5th Grade</option>
+                                        <option value="6th Grade">6th Grade</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Set 4-Digit PIN</label>
+                            <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em]">
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-slate-50 rounded-2xl border-2 border-slate-100">
                             <label class="flex items-start gap-3 cursor-pointer">
                                 <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
-                                    I confirm I am the parent/guardian and agree to the 
+                                    I agree to the 
                                     <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
                                     <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
-                                    I consent to kid-safe AI processing (COPPA/GDPR).
                                 </span>
                             </label>
                         </div>
 
-                        <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
+                        <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-2 disabled:opacity-50 disabled:grayscale">
                             Start Learning! 🚀
                         </button>
-                        <div class="flex items-center justify-center gap-2 mt-3 opacity-80">
-                             <i class="fas fa-shield-alt text-green-500"></i>
-                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">No data sold. 100% Private.</p>
-                        </div>
                         
                         <p class="text-center mt-2 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true">Already have an account? Login</p>
                     </div>
@@ -737,7 +766,7 @@
                         <div x-show="!isEditingProfile" class="space-y-3">
                             <div><p class="text-xs text-slate-400 font-bold uppercase">Name</p><p class="text-xl font-kids text-slate-800" x-text="childProfile.name"></p></div>
                             <div class="flex gap-6">
-                                <div><p class="text-xs text-slate-400 font-bold uppercase">Age</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.age + ' Years'"></p></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Age</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.ageGroup ? childProfile.ageGroup + ' Years' : childProfile.age + ' Years'"></p></div>
                                 <div><p class="text-xs text-slate-400 font-bold uppercase">Grade</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.grade"></p></div>
                             </div>
                         </div>
@@ -745,8 +774,27 @@
                         <div x-show="isEditingProfile" class="space-y-3 animate__animated animate__fadeIn">
                             <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Name">
                             <div class="flex gap-2">
-                                <input type="number" x-model="childProfile.age" class="w-1/2 p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Age">
-                                <input type="text" x-model="childProfile.grade" class="w-1/2 p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Grade (e.g. 2nd)">
+                                <div class="w-1/2">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Age Group</label>
+                                    <select x-model="childProfile.ageGroup" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm text-slate-700">
+                                        <option value="4-6">4-6 Years</option>
+                                        <option value="7-9">7-9 Years</option>
+                                        <option value="10-12">10-12 Years</option>
+                                    </select>
+                                </div>
+                                <div class="w-1/2">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Grade</label>
+                                    <select x-model="childProfile.grade" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm text-slate-700">
+                                        <option value="Pre-K">Pre-K</option>
+                                        <option value="Kindergarten">Kindergarten</option>
+                                        <option value="1st Grade">1st Grade</option>
+                                        <option value="2nd Grade">2nd Grade</option>
+                                        <option value="3rd Grade">3rd Grade</option>
+                                        <option value="4th Grade">4th Grade</option>
+                                        <option value="5th Grade">5th Grade</option>
+                                        <option value="6th Grade">6th Grade</option>
+                                    </select>
+                                </div>
                             </div>
                             <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
                         </div>
@@ -903,7 +951,7 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
-                loginForm: { name: '', email: '', pin: '' },
+                loginForm: { parentName: '', childName: '', email: '', pin: '', ageGroup: '4-6', grade: 'Kindergarten' },
                 registeredEmail: '',
                 
                 legalAccepted: false,
@@ -944,7 +992,7 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                childProfile: { name: '', age: '', grade: '' },
+                childProfile: { name: '', age: '', ageGroup: '4-6', grade: 'Kindergarten' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
@@ -1187,7 +1235,7 @@
                     this.isEditingProfile = false;
                     await this.syncData();
                     // Update login form name just in case
-                    this.loginForm.name = this.childProfile.name;
+                    this.loginForm.childName = this.childProfile.name;
                 },
 
                 // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
@@ -1309,7 +1357,7 @@
                 },
 
                 async handleSignup() {
-                    if (!this.loginForm.name || !this.loginForm.email || this.loginForm.pin.length !== 4) {
+                    if (!this.loginForm.childName || !this.loginForm.email || this.loginForm.pin.length !== 4) {
                         alert("Please fill in all fields. PIN must be 4 digits.");
                         return;
                     }
@@ -1325,8 +1373,12 @@
                         const { data, error } = await this.supabase.from('profiles').insert([
                             {
                                 email: email,
-                                name: this.loginForm.name,
-                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, // Init child profile
+                                name: this.loginForm.parentName, // Save Parent Name
+                                child_profile: { 
+                                    name: this.loginForm.childName, 
+                                    ageGroup: this.loginForm.ageGroup, 
+                                    grade: this.loginForm.grade 
+                                }, 
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
@@ -1340,8 +1392,13 @@
                         localStorage.setItem('parent_email', email);
                         this.registeredEmail = email;
                         this.masterPin = this.loginForm.pin;
-                        this.savedProfile = { name: this.loginForm.name, email: email };
-                        this.childProfile = { name: this.loginForm.name, age: '', grade: '' };
+                        this.savedProfile = { name: this.loginForm.parentName, email: email };
+                        // Correctly set child profile in local state
+                        this.childProfile = { 
+                            name: this.loginForm.childName, 
+                            ageGroup: this.loginForm.ageGroup, 
+                            grade: this.loginForm.grade 
+                        };
                         this.coins = 50; 
                         this.isLoggedIn = true;
                         this.hasAccount = true;
@@ -1570,7 +1627,7 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
-                    // NEW: Strip 'Professor ' from name to fix truncation
+                    // Fix: Strip 'Professor ' from the name for the log
                     let shortName = this.currentChar.name.replace("Professor ", "");
                     
                     const entry = {
@@ -1653,13 +1710,27 @@
                     this.currentMoodIcon = this.currentChar.mood_think;
 
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children aged 5-8. 
+                        // NEW: Construct Dynamic Prompt based on Age & Grade
+                        let difficultyInstruction = "";
+                        const age = this.childProfile.ageGroup || "4-6";
+                        
+                        if (age === "4-6") {
+                            difficultyInstruction = "Use very simple words, short sentences (max 10 words), and lots of emojis. Explain like I am 5 years old.";
+                        } else if (age === "7-9") {
+                            difficultyInstruction = "Use clear, simple sentences. You can use some interesting facts but keep it easy to read.";
+                        } else {
+                            difficultyInstruction = "You can use slightly more detailed explanations, but keep it fun and engaging for a pre-teen.";
+                        }
+
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher. 
+                        Target Audience: Child aged ${age} in ${this.childProfile.grade}.
                         YOUR SUBJECT: ${this.currentChar.subject}.
                         
-                        CRITICAL RULES:
-                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
-                        2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
-                        3. Never break character.`;
+                        INSTRUCTIONS:
+                        1. ${difficultyInstruction}
+                        2. IF the question is about ${this.currentChar.subject}, answer it briefly.
+                        3. IF the question is NOT about ${this.currentChar.subject}, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
+                        4. Never break character.`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
