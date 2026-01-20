@@ -28,17 +28,13 @@
         body {
             font-family: 'Quicksand', sans-serif;
             min-height: 100vh;
-            /* Use dvh for mobile browsers to account for address bars */
             min-height: 100dvh;
             overflow-x: hidden;
             display: block;   
             transition: background 0.5s ease;
-            /* Prevent pull-to-refresh on mobile */
             overscroll-behavior-y: none;
         }
 
-        /* Only apply no-scroll to body on desktop when login modal is open. 
-           On mobile, the modal itself handles the scrolling. */
         @media (min-width: 640px) {
             .no-scroll-desktop {
                 overflow: hidden !important;
@@ -48,10 +44,7 @@
             }
         }
         
-        html {
-            scroll-behavior: smooth;
-        }
-
+        html { scroll-behavior: smooth; }
         .font-kids { font-family: 'Fredoka One', cursive; }
         
         .chat-bubble {
@@ -62,219 +55,72 @@
             border: 6px solid white;
         }
 
-        /* --- CHARACTER ANIMATIONS --- */
-        .char-float {
-            animation: floating 5s ease-in-out infinite;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
-            z-index: 10; /* Keep character above background effects */
-        }
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-30px) rotate(3deg); }
-        }
+        /* --- ANIMATIONS --- */
+        .char-float { animation: floating 5s ease-in-out infinite; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); z-index: 10; }
+        @keyframes floating { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-30px) rotate(3deg); } }
 
-        .wiggle-speak {
-            animation: wiggle 0.4s ease-in-out infinite;
-        }
-        @keyframes wiggle {
-            0%, 100% { transform: scale(1.1) rotate(0deg); }
-            25% { transform: scale(1.1) rotate(3deg); }
-            75% { transform: scale(1.1) rotate(-3deg); }
-        }
+        .wiggle-speak { animation: wiggle 0.4s ease-in-out infinite; }
+        @keyframes wiggle { 0%, 100% { transform: scale(1.1) rotate(0deg); } 25% { transform: scale(1.1) rotate(3deg); } 75% { transform: scale(1.1) rotate(-3deg); } }
 
-        /* --- NEW AURA / PARTICLE EFFECTS --- */
-        
-        /* 1. Glow Effect */
-        .effect-glow {
-            filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange);
-            animation: pulse-glow 2s infinite;
-        }
-        @keyframes pulse-glow {
-            0%, 100% { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); }
-            50% { filter: drop-shadow(0 0 60px #fff700) drop-shadow(0 0 20px #ff9100); }
-        }
+        .effect-glow { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); animation: pulse-glow 2s infinite; }
+        @keyframes pulse-glow { 0%, 100% { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); } 50% { filter: drop-shadow(0 0 60px #fff700) drop-shadow(0 0 20px #ff9100); } }
 
-        /* 2. Sparkles Animation */
-        .sparkle-particle {
-            position: absolute;
-            animation: twinkle 2s ease-in-out infinite;
-        }
-        @keyframes twinkle {
-            0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
-        }
+        .sparkle-particle { position: absolute; animation: twinkle 2s ease-in-out infinite; }
+        @keyframes twinkle { 0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; } 50% { transform: scale(1.2) rotate(180deg); opacity: 1; } }
 
-        /* 3. Fireflies Animation */
-        .firefly-particle {
-            position: absolute;
-            width: 10px; height: 10px;
-            background: #bef264;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #bef264, 0 0 20px #bef264;
-            animation: fly-around 4s ease-in-out infinite;
-        }
-        @keyframes fly-around {
-            0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
-            33% { transform: translate(30px, -30px) scale(1.2); }
-            66% { transform: translate(-20px, 20px) scale(0.8); }
-            100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
-        }
+        .firefly-particle { position: absolute; width: 10px; height: 10px; background: #bef264; border-radius: 50%; box-shadow: 0 0 10px #bef264, 0 0 20px #bef264; animation: fly-around 4s ease-in-out infinite; }
+        @keyframes fly-around { 0% { transform: translate(0, 0) scale(1); opacity: 0.8; } 33% { transform: translate(30px, -30px) scale(1.2); } 66% { transform: translate(-20px, 20px) scale(0.8); } 100% { transform: translate(0, 0) scale(1); opacity: 0.8; } }
 
-        /* 4. Stars Orbit Animation */
-        .orbit-container {
-            position: absolute;
-            inset: -40px;
-            animation: spin-orbit 8s linear infinite;
-        }
-        .star-item {
-            position: absolute;
-            animation: counter-spin 8s linear infinite; /* Keeps the star upright */
-        }
+        .orbit-container { position: absolute; inset: -40px; animation: spin-orbit 8s linear infinite; }
+        .star-item { position: absolute; animation: counter-spin 8s linear infinite; }
         @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
         @keyframes counter-spin { 100% { transform: rotate(-360deg); } }
 
-        /* 5. Magic Dust (Rising) */
-        .dust-particle {
-            position: absolute;
-            bottom: 0;
-            animation: float-up 3s linear infinite;
-        }
-        @keyframes float-up {
-            0% { transform: translateY(20px) scale(0.5); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translateY(-150px) scale(1.5) rotate(45deg); opacity: 0; }
-        }
+        .dust-particle { position: absolute; bottom: 0; animation: float-up 3s linear infinite; }
+        @keyframes float-up { 0% { transform: translateY(20px) scale(0.5); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-150px) scale(1.5) rotate(45deg); opacity: 0; } }
 
         /* --- UI ELEMENTS --- */
-
-        .btn-grad {
-            transition: 0.5s;
-            background-size: 200% auto;
-        }
+        .btn-grad { transition: 0.5s; background-size: 200% auto; }
         .btn-grad:hover { background-position: right center; }
         
-        .char-btn {
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
+        .char-btn { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; }
         .char-btn:hover { transform: scale(1.2); }
         .char-btn.active { transform: scale(1.3); border-color: white; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
         
         .char-locked { filter: grayscale(100%); opacity: 0.7; }
-        .lock-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
+        .lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
 
-        .mic-active {
-            animation: pulse-red 1.5s infinite;
-            color: #ef4444 !important;
-        }
-        @keyframes pulse-red {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        .mic-active { animation: pulse-red 1.5s infinite; color: #ef4444 !important; }
+        @keyframes pulse-red { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
 
-        .premium-glow {
-            animation: glow-gold 2s infinite;
-        }
-        @keyframes glow-gold {
-            0% { box-shadow: 0 0 5px #ffd700; }
-            50% { box-shadow: 0 0 20px #ffd700, 0 0 10px #ffea00; }
-            100% { box-shadow: 0 0 5px #ffd700; }
-        }
+        .premium-glow { animation: glow-gold 2s infinite; }
+        @keyframes glow-gold { 0% { box-shadow: 0 0 5px #ffd700; } 50% { box-shadow: 0 0 20px #ffd700, 0 0 10px #ffea00; } 100% { box-shadow: 0 0 5px #ffd700; } }
 
-        .gift-bounce {
-            animation: bounce 2s infinite;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
+        .gift-bounce { animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
 
-        .safe-badge {
-            background: #10b981;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 99px;
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center; gap: 4px;
-            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
-            width: fit-content;
-        }
+        .safe-badge { background: #10b981; color: white; padding: 4px 10px; border-radius: 99px; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); width: fit-content; }
 
-        /* Loading Spinner */
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 4px solid #3b82f6;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid #3b82f6; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (max-width: 640px) {
-            .daily-reward-btn {
-                padding: 0.5rem !important;
-                width: 52px;
-                height: 52px;
-            }
-            .daily-reward-btn span.gift-bounce {
-                font-size: 1.25rem !important;
-            }
-            .daily-reward-btn span.text-pink-500 {
-                font-size: 7px !important;
-            }
-            .safe-badge {
-                font-size: 7px;
-                padding: 2px 8px;
-            }
+            .daily-reward-btn { padding: 0.5rem !important; width: 52px; height: 52px; }
+            .daily-reward-btn span.gift-bounce { font-size: 1.25rem !important; }
+            .daily-reward-btn span.text-pink-500 { font-size: 7px !important; }
+            .safe-badge { font-size: 7px; padding: 2px 8px; }
         }
 
-        /* --- NEW: PRINT FIX --- */
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            #printable-art, #printable-art * {
-                visibility: visible;
-            }
-            #printable-art {
-                position: fixed;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                z-index: 9999;
-            }
-            /* Hide modal background elements during print */
-            .fixed, .absolute, .bg-black {
-                background: none !important;
-                box-shadow: none !important;
-            }
+            body * { visibility: hidden; }
+            #printable-art, #printable-art * { visibility: visible; }
+            #printable-art { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
+            .fixed, .absolute, .bg-black { background: none !important; box-shadow: none !important; }
         }
     </style>
 </head>
@@ -882,7 +728,7 @@
 
             <div class="flex-1 overflow-y-auto custom-scroll p-6 sm:p-8">
                 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-id-card text-blue-500 mr-2"></i>Child Profile</h3>
@@ -921,19 +767,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <div class="bg-indigo-600 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
-                        <div class="absolute right-0 top-0 opacity-10 text-9xl -mr-6 -mt-6"><i class="fas fa-clock"></i></div>
-                        <h3 class="font-bold text-indigo-200 text-sm uppercase tracking-widest mb-1">Total Learning Time</h3>
-                        <div class="flex items-baseline gap-2 mt-2">
-                            <span class="text-5xl font-kids" x-text="formatTime(totalMinutesLearned)"></span>
-                            <span class="text-lg font-bold opacity-80" x-text="totalMinutesLearned > 60 ? 'hrs' : 'mins'"></span>
-                        </div>
-                        <div class="mt-4 bg-indigo-800/50 rounded-lg p-2 flex items-center gap-2">
-                            <i class="fas fa-calendar-check text-green-400"></i>
-                            <span class="text-xs font-bold">Last active: <span x-text="lastUsageDate"></span></span>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
@@ -947,9 +780,9 @@
                             <span class="text-purple-600 font-kids text-xl" x-text="progressLevel"></span>
                         </div>
                         <div class="h-4 bg-gray-100 rounded-full w-full overflow-hidden flex">
-                            <div class="h-full transition-all duration-1000 bg-green-400" :style="'width: ' + getProgressWidth(0, 500) + '%'"></div>
-                            <div class="h-full transition-all duration-1000 bg-blue-400" :style="'width: ' + getProgressWidth(500, 1500) + '%'"></div>
-                            <div class="h-full transition-all duration-1000 bg-purple-500" :style="'width: ' + getProgressWidth(1500, 5000) + '%'"></div>
+                            <div class="h-full transition-all duration-1000 bg-green-400" :style="'width: ' + getProgressWidth(0, 1000) + '%'"></div>
+                            <div class="h-full transition-all duration-1000 bg-blue-400" :style="'width: ' + getProgressWidth(1000, 2000) + '%'"></div>
+                            <div class="h-full transition-all duration-1000 bg-purple-500" :style="'width: ' + getProgressWidth(3000, 5000) + '%'"></div>
                         </div>
                         <div class="flex justify-between mt-2 text-[10px] font-bold text-slate-400 uppercase">
                             <span>Beginner</span>
@@ -1269,8 +1102,9 @@
 
                 // --- NEW DASHBOARD HELPERS ---
                 get progressLevel() {
-                    if (this.xp < 500) return 'Beginner';
-                    if (this.xp < 1500) return 'Intermediate';
+                    // UPDATED: More generous thresholds so beginner lasts longer
+                    if (this.xp < 1000) return 'Beginner';
+                    if (this.xp < 3000) return 'Intermediate';
                     return 'Advanced';
                 },
 
@@ -1291,7 +1125,7 @@
                     // Sort subjects by score descending
                     return Object.entries(subjects)
                         .sort(([,a],[,b]) => b - a)
-                        .slice(0, 3)
+                        .slice(0, 5) // UPDATED: Show top 5 instead of 3
                         .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
                 },
 
