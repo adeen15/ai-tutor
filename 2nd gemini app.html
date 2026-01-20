@@ -596,9 +596,10 @@
                 <button @click="window.print()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">
                     <i class="fas fa-print mr-2"></i> Print
                 </button>
-                <a :href="artImage" download="magic-art.png" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
+                
+                <button @click="downloadArt()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
                     <i class="fas fa-download mr-2"></i> Save
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -1144,6 +1145,29 @@
                         this.playPing();
                         confetti({ particleCount: 150, spread: 70 });
                     }, 2000);
+                },
+
+                // --- NEW DOWNLOAD FUNCTION ---
+                // This fetches the image as a Blob and forces a download without navigation.
+                async downloadArt() {
+                    if (!this.artImage) return;
+                    try {
+                        const response = await fetch(this.artImage);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = 'magic-art-' + Date.now() + '.png'; 
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    } catch (e) {
+                        console.error("Download failed:", e);
+                        // Fallback only if the fetch method fails
+                        window.open(this.artImage, '_blank');
+                    }
                 },
 
                 async startQuiz() {
