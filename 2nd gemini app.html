@@ -37,12 +37,15 @@
             overscroll-behavior-y: none;
         }
 
-        .no-scroll {
-            overflow: hidden !important;
-            height: 100vh;
-            height: 100dvh;
-            position: fixed;
-            width: 100%;
+        /* Only apply no-scroll to body on desktop when login modal is open. 
+           On mobile, the modal itself handles the scrolling. */
+        @media (min-width: 640px) {
+            .no-scroll-desktop {
+                overflow: hidden !important;
+                height: 100vh;
+                position: fixed;
+                width: 100%;
+            }
         }
         
         html {
@@ -277,7 +280,7 @@
 </head>
 <body x-data="aiTutor()" 
       :style="'background: ' + currentChar.bg"
-      :class="!isLoggedIn ? 'no-scroll' : ''">
+      :class="!isLoggedIn ? 'no-scroll-desktop' : ''">
 
     <div x-show="isLoading" class="fixed inset-0 z-[200] bg-white/80 flex items-center justify-center backdrop-blur-sm" x-transition>
         <div class="flex flex-col items-center">
@@ -286,9 +289,9 @@
         </div>
     </div>
 
-    <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-gradient-to-br from-blue-400 to-purple-600 overflow-y-auto transition-all duration-700">
-        <div class="min-h-full w-full flex items-center justify-center p-4">
-            <div class="bg-white rounded-[2rem] p-6 sm:p-12 w-full max-w-md shadow-2xl text-center border-8 border-white/20 relative overflow-hidden animate__animated animate__zoomIn my-8">
+    <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-gradient-to-br from-blue-400 to-purple-600 overflow-y-auto sm:overflow-hidden sm:flex sm:items-center sm:justify-center transition-all duration-700">
+        <div class="min-h-full w-full p-0 sm:p-4 flex items-start justify-center sm:items-center">
+            <div class="bg-white w-full min-h-screen sm:min-h-0 sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative overflow-hidden animate__animated animate__zoomIn sm:my-8 sm:border-8 border-white/20">
                 
                 <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
                 <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
