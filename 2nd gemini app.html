@@ -136,12 +136,12 @@
 
     <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-white sm:bg-gradient-to-br sm:from-blue-400 sm:to-purple-600 overflow-y-auto overflow-x-hidden sm:overflow-hidden sm:flex sm:items-center sm:justify-center transition-all duration-700">
         <div class="min-h-full w-full p-0 sm:p-4 block sm:flex sm:items-center sm:justify-center">
-            <div class="bg-white m-0 w-full min-w-full sm:min-w-0 min-h-screen sm:min-h-0 sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative overflow-hidden animate__animated animate__zoomIn sm:my-8 sm:border-8 border-white/20">
+            <div class="bg-white m-0 w-full min-w-full sm:min-w-0 h-full sm:h-auto max-h-[100dvh] sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative overflow-y-auto animate__animated animate__zoomIn sm:my-8 sm:border-8 border-white/20">
                 
                 <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
                 <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
 
-                <div class="relative z-10">
+                <div class="relative z-10 pb-10">
                     <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
                     <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
                     <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
@@ -150,19 +150,19 @@
                         
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Name</label>
-                            <input type="text" x-model="loginForm.parentName" placeholder="Your Name" class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700">
+                            <input type="text" x-model="loginForm.parentName" placeholder="Jane Doe" class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                         </div>
                         
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email</label>
-                            <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700">
+                            <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                         </div>
 
                         <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100 space-y-3">
                             <p class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">Child Profile Setup</p>
                             
                             <div>
-                                <input type="text" x-model="loginForm.childName" placeholder="Child's Name" class="w-full p-3 bg-white border border-blue-200 rounded-xl focus:outline-none font-bold text-slate-700">
+                                <input type="text" x-model="loginForm.childName" placeholder="Child's Name" class="w-full p-3 bg-white border border-blue-200 rounded-xl focus:outline-none font-bold text-slate-700 transition-all text-base">
                             </div>
 
                             <div class="flex gap-2">
@@ -992,7 +992,7 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                childProfile: { name: '', age: '', ageGroup: '4-6', grade: 'Kindergarten' },
+                childProfile: { name: '', age: '', grade: '' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
