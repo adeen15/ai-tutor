@@ -1129,11 +1129,13 @@
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    // USE POLLINATIONS AI (Direct URL, no backend needed)
+                    // USE POLLINATIONS AI (Updated with rate limit fix)
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
-                    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&seed=${randomSeed}`;
+                    
+                    // FIX: Removed private=true (causes strict limits), Added model=flux (better/faster), Added safe=true
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
 
                     // Fake delay to show "Painting..." animation
                     setTimeout(() => {
