@@ -773,35 +773,37 @@
                         <i class="fas fa-rocket text-purple-500"></i> Learning Journey
                     </h3>
                     
-                    <div class="relative flex items-center justify-between w-full mt-4 mb-10 px-4 sm:px-10">
-                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
-                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-green-400 -z-10 transition-all duration-1000" :style="'width: ' + journeyProgress + '%'"></div>
+                    <div class="relative w-full mt-4 mb-8 px-2 sm:px-10">
+                        <div class="absolute left-4 right-4 top-5 h-1.5 bg-gray-100 rounded-full z-0"></div>
+                        <div class="absolute left-4 top-5 h-1.5 bg-green-400 rounded-full z-0 transition-all duration-1000" :style="'width: ' + journeyProgress + '%'"></div>
 
-                        <div class="flex flex-col items-center gap-2 relative bg-white p-2 rounded-full">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 transition-all"
-                                 :class="xp >= 0 ? 'bg-green-500 border-green-200 text-white scale-110 shadow-lg' : 'bg-white border-gray-300 text-gray-300'">
-                                <i class="fas fa-egg text-sm sm:text-lg"></i>
+                        <div class="relative flex justify-between items-start z-10">
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                     :class="xp >= 0 ? 'border-green-400 text-green-500' : 'border-gray-200 text-gray-300'">
+                                    <i class="fas fa-egg text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
                             </div>
-                            <span class="absolute top-14 sm:top-16 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center w-24" 
-                                  :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
-                        </div>
-                        
-                        <div class="flex flex-col items-center gap-2 relative bg-white p-2 rounded-full">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 transition-all"
-                                 :class="xp >= 1000 ? 'bg-blue-500 border-blue-200 text-white scale-110 shadow-lg' : 'bg-white border-gray-300 text-gray-300'">
-                                <i class="fas fa-book-reader text-sm sm:text-lg"></i>
+                            
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                     :class="xp >= 1000 ? 'border-blue-400 text-blue-500' : 'border-gray-200 text-gray-300'">
+                                    <i class="fas fa-book-reader text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
                             </div>
-                            <span class="absolute top-14 sm:top-16 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center w-24" 
-                                  :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
-                        </div>
 
-                        <div class="flex flex-col items-center gap-2 relative bg-white p-2 rounded-full">
-                             <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 transition-all"
-                                 :class="xp >= 3000 ? 'bg-purple-500 border-purple-200 text-white scale-110 shadow-lg' : 'bg-white border-gray-300 text-gray-300'">
-                                <i class="fas fa-graduation-cap text-sm sm:text-lg"></i>
+                            <div class="flex flex-col items-center gap-2">
+                                 <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                     :class="xp >= 3000 ? 'border-purple-400 text-purple-500' : 'border-gray-200 text-gray-300'">
+                                    <i class="fas fa-graduation-cap text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
                             </div>
-                            <span class="absolute top-14 sm:top-16 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center w-24" 
-                                  :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
                         </div>
                     </div>
 
@@ -1126,9 +1128,10 @@
 
                 // --- NEW JOURNEY HELPERS ---
                 get journeyProgress() {
-                    if (this.xp < 1000) return (this.xp / 1000) * 50; 
-                    if (this.xp < 3000) return 50 + ((this.xp - 1000) / 2000) * 50;
-                    return 100;
+                    // Logic to fill bar based on milestones
+                    if (this.xp < 1000) return (this.xp / 1000) * 33; 
+                    if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
+                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
 
                 getTopSubjects() {
@@ -1144,6 +1147,7 @@
                         nature: 'Nature'
                     };
                     
+                    // Return exactly the 5 subjects
                     return sorted.reduce((r, [k, v]) => ({ ...r, [displayNames[k]]: v }), {});
                 },
 
