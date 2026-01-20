@@ -1134,11 +1134,9 @@
                     return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
 
+                // FIX: Ensure exactly 5 specific subjects are shown
                 getTopSubjects() {
-                    const subjects = this.learningStats.subjects;
-                    // Sort subjects by score descending
-                    const sorted = Object.entries(subjects).sort(([,a],[,b]) => b - a);
-                    // Map internal keys to Display Names
+                    const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
                         history: 'History',
                         robots: 'Robots and AI',
@@ -1147,8 +1145,21 @@
                         nature: 'Nature'
                     };
                     
-                    // Return exactly the 5 subjects
-                    return sorted.reduce((r, [k, v]) => ({ ...r, [displayNames[k]]: v }), {});
+                    // Build an array of [DisplayName, Score] ensuring all 5 exist
+                    let statsArray = requiredKeys.map(key => {
+                        // Get score, default to 0 if key is missing in stored data
+                        const score = this.learningStats.subjects[key] || 0;
+                        return [displayNames[key], score];
+                    });
+
+                    // Sort descending by score
+                    statsArray.sort((a, b) => b[1] - a[1]);
+
+                    // Convert back to object for the template loop
+                    return statsArray.reduce((obj, [name, score]) => {
+                        obj[name] = score;
+                        return obj;
+                    }, {});
                 },
 
                 getSubjectColor(subject) {
