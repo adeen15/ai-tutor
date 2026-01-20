@@ -1570,10 +1570,13 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
+                    // Fix: Strip 'Professor ' from the name for the log
+                    let shortName = this.currentChar.name.replace("Professor ", "");
+                    
                     const entry = {
                         query: query,
                         time: new Date().toLocaleString(),
-                        char: this.currentChar.name
+                        char: shortName
                     };
                     this.parentLogs.push(entry);
                 },
