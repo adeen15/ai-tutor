@@ -523,8 +523,9 @@
     </div>
 
     <div x-show="showQuiz" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
-        <div class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
-            <button @click="showQuiz = false" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+        <div @click.away="showQuiz = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
+            
+            <button @click="showQuiz = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
             
             <div class="text-center" x-show="quizState === 'loading'">
                 <div class="spinner mx-auto mb-4 border-yellow-400"></div>
@@ -552,7 +553,7 @@
                 <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
                 <h2 class="text-3xl font-kids text-green-500 mb-2">Correct!</h2>
                 <p class="font-bold text-gray-500 mb-6">You earned 50 Coins!</p>
-                <button @click="showQuiz = false" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
+                <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
             </div>
 
             <div class="text-center" x-show="quizState === 'wrong'">
@@ -999,19 +1000,9 @@
                         // NEW: If coming from payment success, sync data immediately
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') === 'success') {
-                            // 1. Load basic profile first
                             if (storedEmail) {
                                 await this.loadUserProfile(storedEmail);
                             }
-                            
-                            // 2. FORCE PREMIUM ON CLIENT SIDE (Instant Fix)
-                            this.isPremium = true;
-                            this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 Days from now
-
-                            // 3. Save this to DB so it persists (Self-Healing)
-                            await this.syncData();
-
-                            // 4. Update UI
                             this.showPremiumModal = false;
                             this.showParentPortal = true;
                             this.parentAuthenticated = true;
