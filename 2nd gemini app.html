@@ -22,7 +22,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* This prevents the "flash" of hidden elements on refresh */
         [x-cloak] { display: none !important; }
 
         body {
@@ -774,24 +773,39 @@
                         <i class="fas fa-rocket text-purple-500"></i> Learning Journey
                     </h3>
                     
-                    <div class="mb-8">
-                        <div class="flex justify-between items-end mb-2">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Current Level</span>
-                            <span class="text-purple-600 font-kids text-xl" x-text="progressLevel"></span>
+                    <div class="relative flex items-center justify-between w-full mt-4 mb-10 px-4 sm:px-10">
+                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
+                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-green-400 -z-10 transition-all duration-1000" :style="'width: ' + journeyProgress + '%'"></div>
+
+                        <div class="flex flex-col items-center gap-2 relative bg-white p-2 rounded-full">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 transition-all"
+                                 :class="xp >= 0 ? 'bg-green-500 border-green-200 text-white scale-110 shadow-lg' : 'bg-white border-gray-300 text-gray-300'">
+                                <i class="fas fa-egg text-sm sm:text-lg"></i>
+                            </div>
+                            <span class="absolute top-14 sm:top-16 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center w-24" 
+                                  :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
                         </div>
-                        <div class="h-4 bg-gray-100 rounded-full w-full overflow-hidden flex">
-                            <div class="h-full transition-all duration-1000 bg-green-400" :style="'width: ' + getProgressWidth(0, 1000) + '%'"></div>
-                            <div class="h-full transition-all duration-1000 bg-blue-400" :style="'width: ' + getProgressWidth(1000, 2000) + '%'"></div>
-                            <div class="h-full transition-all duration-1000 bg-purple-500" :style="'width: ' + getProgressWidth(3000, 5000) + '%'"></div>
+                        
+                        <div class="flex flex-col items-center gap-2 relative bg-white p-2 rounded-full">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 transition-all"
+                                 :class="xp >= 1000 ? 'bg-blue-500 border-blue-200 text-white scale-110 shadow-lg' : 'bg-white border-gray-300 text-gray-300'">
+                                <i class="fas fa-book-reader text-sm sm:text-lg"></i>
+                            </div>
+                            <span class="absolute top-14 sm:top-16 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center w-24" 
+                                  :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
                         </div>
-                        <div class="flex justify-between mt-2 text-[10px] font-bold text-slate-400 uppercase">
-                            <span>Beginner</span>
-                            <span>Intermediate</span>
-                            <span>Advanced</span>
+
+                        <div class="flex flex-col items-center gap-2 relative bg-white p-2 rounded-full">
+                             <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 transition-all"
+                                 :class="xp >= 3000 ? 'bg-purple-500 border-purple-200 text-white scale-110 shadow-lg' : 'bg-white border-gray-300 text-gray-300'">
+                                <i class="fas fa-graduation-cap text-sm sm:text-lg"></i>
+                            </div>
+                            <span class="absolute top-14 sm:top-16 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center w-24" 
+                                  :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
                         <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 text-center">
                             <div class="text-2xl mb-1">❓</div>
                             <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
@@ -809,8 +823,8 @@
                         </div>
                         <div class="bg-pink-50 p-4 rounded-2xl border border-pink-100 text-center">
                             <div class="text-2xl mb-1">⭐</div>
-                            <div class="text-2xl font-bold text-pink-600" x-text="level"></div>
-                            <div class="text-[10px] text-pink-400 font-bold uppercase">XP Level</div>
+                            <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
+                            <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
                         </div>
                     </div>
                 </div>
@@ -923,9 +937,16 @@
                 isEditingProfile: false,
                 sessionStartTime: null,
 
+                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
-                    subjects: { nature: 0, space: 0, heroes: 0, science: 0, dinosaurs: 0, art: 0, health: 0 }
+                    subjects: { 
+                        history: 0, 
+                        robots: 0, 
+                        space: 0, 
+                        science: 0, 
+                        nature: 0 
+                    }
                 },
                 xp: 0,
                 level: 1,
@@ -1084,7 +1105,10 @@
                     this.inventory = data.inventory || [];
                     this.equippedItem = data.equipped_item;
                     this.parentLogs = data.parent_logs || [];
-                    this.learningStats = data.learning_stats || this.learningStats;
+                    this.learningStats = data.learning_stats || {
+                        wordsLearned: 0,
+                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
+                    };
                     
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
@@ -1100,39 +1124,36 @@
                     this.checkPremiumExpiration();
                 },
 
-                // --- NEW DASHBOARD HELPERS ---
-                get progressLevel() {
-                    // UPDATED: More generous thresholds so beginner lasts longer
-                    if (this.xp < 1000) return 'Beginner';
-                    if (this.xp < 3000) return 'Intermediate';
-                    return 'Advanced';
-                },
-
-                getProgressWidth(min, range) {
-                    // Calculates width for progress bar segments
-                    if (this.xp < min) return 0;
-                    if (this.xp >= min + range) return 100;
-                    return ((this.xp - min) / range) * 100;
-                },
-
-                formatTime(minutes) {
-                    if (minutes < 60) return minutes;
-                    return (minutes / 60).toFixed(1);
+                // --- NEW JOURNEY HELPERS ---
+                get journeyProgress() {
+                    if (this.xp < 1000) return (this.xp / 1000) * 50; 
+                    if (this.xp < 3000) return 50 + ((this.xp - 1000) / 2000) * 50;
+                    return 100;
                 },
 
                 getTopSubjects() {
                     const subjects = this.learningStats.subjects;
                     // Sort subjects by score descending
-                    return Object.entries(subjects)
-                        .sort(([,a],[,b]) => b - a)
-                        .slice(0, 5) // UPDATED: Show top 5 instead of 3
-                        .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+                    const sorted = Object.entries(subjects).sort(([,a],[,b]) => b - a);
+                    // Map internal keys to Display Names
+                    const displayNames = {
+                        history: 'History',
+                        robots: 'Robots and AI',
+                        space: 'Space Exploration',
+                        science: 'Science',
+                        nature: 'Nature'
+                    };
+                    
+                    return sorted.reduce((r, [k, v]) => ({ ...r, [displayNames[k]]: v }), {});
                 },
 
                 getSubjectColor(subject) {
                     const colors = {
-                        nature: 'bg-green-500', space: 'bg-purple-500', heroes: 'bg-red-500',
-                        science: 'bg-blue-500', dinosaurs: 'bg-orange-500', art: 'bg-pink-500', health: 'bg-teal-500'
+                        'History': 'bg-orange-500',
+                        'Robots and AI': 'bg-blue-600',
+                        'Space Exploration': 'bg-purple-600',
+                        'Science': 'bg-pink-500',
+                        'Nature': 'bg-green-500'
                     };
                     return colors[subject] || 'bg-gray-500';
                 },
@@ -1535,7 +1556,7 @@
                     if(confirm("Clear all history and progress?")) {
                         this.parentLogs = [];
                         this.coins = 0;
-                        this.learningStats = { wordsLearned: 0, subjects: { nature: 0, space: 0, heroes: 0, science: 0, dinosaurs: 0, art: 0, health: 0 }};
+                        this.learningStats = { wordsLearned: 0, subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }};
                         this.inventory = [];
                         this.equippedItem = null;
                         await this.syncData(); 
@@ -1547,11 +1568,9 @@
                     const queryLower = query.toLowerCase();
                     if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
                     if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
-                    if (queryLower.match(/batman|spider-man|hero|super|avenger|wonder woman/)) this.learningStats.subjects.heroes += 10;
-                    if (queryLower.match(/volcano|science|math|robot|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
-                    if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight/)) this.learningStats.subjects.dinosaurs += 10;
-                    if (queryLower.match(/music|piano|guitar|song|sing|draw|paint|color|art|artist|dance/)) this.learningStats.subjects.art += 10;
-                    if (queryLower.match(/fruit|veggie|healthy|strong|teeth|sleep|water|exercise|body/)) this.learningStats.subjects.health += 10;
+                    if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
+                    if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
+                    if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
                 },
                 startListening() {
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
