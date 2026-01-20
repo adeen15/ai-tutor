@@ -242,6 +242,30 @@
                 padding: 2px 8px;
             }
         }
+
+        /* --- NEW: PRINT FIX --- */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-art, #printable-art * {
+                visibility: visible;
+            }
+            #printable-art {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                z-index: 9999;
+            }
+            /* Hide modal background elements during print */
+            .fixed, .absolute, .bg-black {
+                background: none !important;
+                box-shadow: none !important;
+            }
+        }
     </style>
 </head>
 <body x-data="aiTutor()" :style="'background: ' + currentChar.bg">
@@ -585,7 +609,7 @@
                     <p class="font-kids text-pink-400 animate-pulse">Painting... 🖌️</p>
                 </div>
                 
-                <img x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
+                <img id="printable-art" x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
                 
                 <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold">
                     Tell me what to draw first!
