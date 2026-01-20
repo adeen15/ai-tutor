@@ -22,6 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
     <style>
+        /* This prevents the "flash" of hidden elements on refresh */
         [x-cloak] { display: none !important; }
 
         body {
@@ -55,7 +56,7 @@
         .char-float {
             animation: floating 5s ease-in-out infinite;
             filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
-            z-index: 10;
+            z-index: 10; /* Keep character above background effects */
         }
         @keyframes floating {
             0%, 100% { transform: translateY(0px) rotate(-2deg); }
@@ -71,7 +72,9 @@
             75% { transform: scale(1.1) rotate(-3deg); }
         }
 
-        /* --- EFFECTS --- */
+        /* --- NEW AURA / PARTICLE EFFECTS --- */
+        
+        /* 1. Glow Effect */
         .effect-glow {
             filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange);
             animation: pulse-glow 2s infinite;
@@ -81,6 +84,7 @@
             50% { filter: drop-shadow(0 0 60px #fff700) drop-shadow(0 0 20px #ff9100); }
         }
 
+        /* 2. Sparkles Animation */
         .sparkle-particle {
             position: absolute;
             animation: twinkle 2s ease-in-out infinite;
@@ -90,6 +94,7 @@
             50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
         }
 
+        /* 3. Fireflies Animation */
         .firefly-particle {
             position: absolute;
             width: 10px; height: 10px;
@@ -105,6 +110,7 @@
             100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
         }
 
+        /* 4. Stars Orbit Animation */
         .orbit-container {
             position: absolute;
             inset: -40px;
@@ -112,11 +118,12 @@
         }
         .star-item {
             position: absolute;
-            animation: counter-spin 8s linear infinite;
+            animation: counter-spin 8s linear infinite; /* Keeps the star upright */
         }
         @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
         @keyframes counter-spin { 100% { transform: rotate(-360deg); } }
 
+        /* 5. Magic Dust (Rising) */
         .dust-particle {
             position: absolute;
             bottom: 0;
@@ -129,6 +136,7 @@
         }
 
         /* --- UI ELEMENTS --- */
+
         .btn-grad {
             transition: 0.5s;
             background-size: 200% auto;
@@ -203,6 +211,7 @@
             width: fit-content;
         }
 
+        /* Loading Spinner */
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -491,6 +500,14 @@
                     >
                     
                     <button 
+                        @click="generateArt()"
+                        class="ml-2 btn-grad text-white rounded-2xl px-3 py-2 sm:px-6 sm:py-4 font-kids text-base sm:text-xl shadow-lg transform transition hover:scale-105 active:scale-90"
+                        style="background: linear-gradient(to right, #ec4899, #8b5cf6)"
+                    >
+                        🎨 Draw
+                    </button>
+
+                    <button 
                         @click="askTutor()"
                         class="btn-grad text-white rounded-2xl px-3 py-2 sm:px-8 sm:py-4 font-kids text-base sm:text-xl shadow-lg transform transition hover:scale-105 active:scale-90 mr-1 sm:mr-0"
                         :style="'background: linear-gradient(to right, ' + currentChar.accent + ', #ff512f)'"
@@ -515,7 +532,6 @@
 
     <div x-show="showQuiz" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
         <div @click.away="showQuiz = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
-            
             <button @click="showQuiz = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
             
             <div class="text-center" x-show="quizState === 'loading'">
@@ -552,6 +568,37 @@
                 <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
                 <p class="font-bold text-gray-500 mb-6">That wasn't quite right. Try again?</p>
                 <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showArtModal" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div @click.away="showArtModal = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__zoomIn text-center border-4 border-pink-200">
+            <button @click="showArtModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            
+            <h2 class="text-4xl font-kids text-pink-500 mb-2">Magic Art Studio 🎨</h2>
+            <p class="text-gray-500 font-bold mb-6">Turning your words into coloring pages...</p>
+
+            <div class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 mb-6 relative overflow-hidden">
+                <div x-show="isDrawing" class="flex flex-col items-center">
+                    <div class="spinner border-pink-400 mb-4"></div>
+                    <p class="font-kids text-pink-400 animate-pulse">Painting... 🖌️</p>
+                </div>
+                
+                <img x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
+                
+                <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold">
+                    Tell me what to draw first!
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4" x-show="artImage && !isDrawing">
+                <button @click="window.print()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">
+                    <i class="fas fa-print mr-2"></i> Print
+                </button>
+                <a :href="artImage" download="magic-art.png" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
+                    <i class="fas fa-download mr-2"></i> Save
+                </a>
             </div>
         </div>
     </div>
@@ -924,12 +971,16 @@
                 inventory: [],
                 equippedItem: null,
                 
-                // --- NEW QUIZ STATE VARIABLES ---
+                // --- NEW QUIZ & ART STATES ---
                 showQuiz: false,
-                quizState: 'loading', // loading, active, correct, wrong
+                quizState: 'loading',
                 quizQuestion: '',
                 quizOptions: [],
                 quizCorrectIndex: 0,
+
+                showArtModal: false,
+                isDrawing: false,
+                artImage: null,
 
                 shopItems: [
                     { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
@@ -988,22 +1039,14 @@
                             this.hasAccount = true;
                         }
 
-                        // NEW: If coming from payment success, sync data immediately
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') === 'success') {
-                            // 1. Load basic profile first
-                            if (storedEmail) {
-                                await this.loadUserProfile(storedEmail);
-                            }
+                            if (storedEmail) await this.loadUserProfile(storedEmail);
                             
-                            // 2. FORCE PREMIUM ON CLIENT SIDE (Instant Fix)
                             this.isPremium = true;
-                            this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 Days from now
-
-                            // 3. Save this to DB so it persists (Self-Healing)
+                            this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); 
                             await this.syncData();
 
-                            // 4. Update UI
                             this.showPremiumModal = false;
                             this.showParentPortal = true;
                             this.parentAuthenticated = true;
@@ -1019,7 +1062,6 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // REUSABLE DATA LOADER (Fixes 0 Coins Issue)
                 async loadUserProfile(email) {
                     try {
                         const { data, error } = await this.supabase
@@ -1032,13 +1074,11 @@
                             this.populateUserData(data);
                             this.isLoggedIn = true;
                             this.playPing();
-                            
-                            // AUTO-OPEN REWARD IF NOT CLAIMED
                             if (!this.rewardClaimedToday) {
                                 setTimeout(() => {
                                     this.showRewards = true;
                                     this.toggleScroll(true);
-                                }, 1000); // 1 sec delay for nice effect
+                                }, 1000);
                             }
                         }
                     } catch (e) {
@@ -1046,16 +1086,13 @@
                     }
                 },
 
-                // HELPER TO FILL VARIABLES
                 populateUserData(data) {
                     this.registeredEmail = data.email;
                     this.savedProfile = { name: data.name, email: data.email };
                     this.masterPin = data.pin;
-                    this.coins = Number(data.coins) || 0; // Force Number type
+                    this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
                     
-                    // --- SAFETY CHECK FOR PREMIUM ---
-                    // Don't overwrite premium if we are in the middle of unlocking it
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.get('payment') !== 'success') {
                         this.isPremium = data.is_premium || false;
@@ -1081,13 +1118,48 @@
                     this.checkPremiumExpiration();
                 },
 
-                // --- NEW QUIZ FUNCTIONS ---
+                // --- MAGIC ART FUNCTION ---
+                async generateArt() {
+                    if (!this.userQuery) {
+                        alert("Tell me what to draw first! (Type in the box)");
+                        return;
+                    }
+                    this.showArtModal = true;
+                    this.isDrawing = true;
+                    this.artImage = null;
+                    this.toggleScroll(true);
+
+                    try {
+                        const res = await fetch('/api/generate-image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                prompt: "Black and white coloring page outline for kids of: " + this.userQuery 
+                            })
+                        });
+                        
+                        if (!res.ok) throw new Error("Art Error");
+                        
+                        const data = await res.json();
+                        this.artImage = data.url; 
+                        this.playPing();
+                        confetti({ particleCount: 150, spread: 70 });
+
+                    } catch (e) {
+                        console.error(e);
+                        alert("Could not draw that right now! Try again later.");
+                        this.showArtModal = false;
+                        this.toggleScroll(false);
+                    } finally {
+                        this.isDrawing = false;
+                    }
+                },
+
                 async startQuiz() {
                     this.showQuiz = true;
                     this.quizState = 'loading';
                     this.toggleScroll(true);
 
-                    // Generate a quiz based on the last answer
                     try {
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
                         Based on the following text: "${this.displayText}", create ONE simple multiple-choice question.
@@ -1107,7 +1179,6 @@
                         });
 
                         const data = await response.json();
-                        // Parse the JSON from the AI response
                         let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
                         const quizData = JSON.parse(cleanJson);
 
@@ -1118,7 +1189,6 @@
 
                     } catch (e) {
                         console.error("Quiz Error", e);
-                        // Fallback quiz if AI fails
                         this.quizQuestion = "Did you like learning about that?";
                         this.quizOptions = ["Yes!", "It was okay", "No"];
                         this.quizCorrectIndex = 0;
@@ -1129,7 +1199,7 @@
                 checkAnswer(index) {
                     if (index === this.quizCorrectIndex) {
                         this.quizState = 'correct';
-                        this.coins += 20; // UPDATED: Changed from 50 to 20
+                        this.coins += 20; 
                         this.playPing();
                         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                         this.syncData();
@@ -1157,7 +1227,7 @@
                                 email: email,
                                 name: this.loginForm.name,
                                 pin: this.loginForm.pin,
-                                coins: 50, // Welcome bonus
+                                coins: 50, 
                                 xp: 0,
                                 learning_stats: this.learningStats,
                                 parent_logs: []
@@ -1167,7 +1237,6 @@
                         if (error) throw error;
 
                         localStorage.setItem('parent_email', email);
-                        // Manually set initial state for new user
                         this.registeredEmail = email;
                         this.masterPin = this.loginForm.pin;
                         this.savedProfile = { name: this.loginForm.name, email: email };
@@ -1176,7 +1245,6 @@
                         this.hasAccount = true;
                         this.playPing();
                         
-                        // New users get welcome animation
                         confetti({ particleCount: 150, spread: 70 });
 
                     } catch (err) {
@@ -1196,7 +1264,6 @@
                     const email = this.loginForm.email.toLowerCase().trim();
 
                     try {
-                        // First just get the PIN to verify
                         const { data, error } = await this.supabase
                             .from('profiles')
                             .select('pin')
@@ -1216,7 +1283,6 @@
                             return;
                         }
 
-                        // Verify Success -> Load Full Profile
                         localStorage.setItem('parent_email', email);
                         await this.loadUserProfile(email);
 
@@ -1229,7 +1295,6 @@
                     }
                 },
 
-                // --- CLOUD SYNC HELPER ---
                 async syncData() {
                     if (!this.registeredEmail) return;
                     
@@ -1274,12 +1339,12 @@
                             colors: ['#00ff00', '#ffffff']
                         });
                         this.playPing();
-                        await this.syncData(); // SYNC
+                        await this.syncData(); 
                     }
                 },
                 async equipItem(itemId) {
                     this.equippedItem = itemId;
-                    await this.syncData(); // SYNC
+                    await this.syncData();
                 },
                 async toggleEquip(itemId) {
                     if (this.equippedItem === itemId) {
@@ -1287,7 +1352,7 @@
                     } else {
                         this.equippedItem = itemId;
                     }
-                    await this.syncData(); // SYNC
+                    await this.syncData();
                 },
                 getEquippedItemData() {
                     return this.shopItems.find(i => i.id === this.equippedItem) || {};
@@ -1301,15 +1366,13 @@
                             this.premiumExpiry = null;
                             alert("Your monthly premium subscription has expired. Please renew to access all characters!");
                             this.setChar(this.characters[0]);
-                            this.syncData(); // SYNC
+                            this.syncData();
                         }
                     }
                 },
                 async processPayment() {
                     this.isLoading = true;
                     try {
-                        console.log("Starting payment for:", this.registeredEmail); 
-                        
                         const res = await fetch('/api/create-checkout', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1321,11 +1384,9 @@
                         if (data.url) {
                             window.location.href = data.url;
                         } else {
-                            console.error("Server Error:", data);
                             alert("Could not connect to payment server. Check console.");
                         }
                     } catch (e) {
-                        console.error("Fetch Error:", e);
                         alert("Payment Error. Please try again.");
                     } finally {
                         this.isLoading = false;
@@ -1337,7 +1398,7 @@
                         this.isPremium = false;
                         this.premiumExpiry = null;
                         this.setChar(this.characters[0]);
-                        await this.syncData(); // SYNC
+                        await this.syncData();
                     }
                 },
                 
@@ -1354,7 +1415,7 @@
                         colors: ['#FFD700', '#FF69B4', '#00BFFF']
                     });
                     this.playPing();
-                    await this.syncData(); // SYNC
+                    await this.syncData(); 
                 },
                 trySetChar(char) {
                     if (char.premium && !this.isPremium) {
@@ -1417,7 +1478,7 @@
                         this.learningStats = { wordsLearned: 0, subjects: { nature: 0, space: 0, heroes: 0, science: 0, dinosaurs: 0, art: 0, health: 0 }};
                         this.inventory = [];
                         this.equippedItem = null;
-                        await this.syncData(); // SYNC
+                        await this.syncData(); 
                     }
                 },
                 updateProgress(query, response) {
@@ -1528,7 +1589,6 @@
                     this.playPing();
                     this.updateProgress(originalQuery, response);
                     
-                    // SAVE ALL PROGRESS TO DB
                     await this.syncData();
                 },
                 playPing() {
