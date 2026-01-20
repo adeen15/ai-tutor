@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI Tutor - Animated Friends</title>
     
     <meta name="mobile-web-app-capable" content="yes">
@@ -28,14 +28,21 @@
         body {
             font-family: 'Quicksand', sans-serif;
             min-height: 100vh;
+            /* Use dvh for mobile browsers to account for address bars */
+            min-height: 100dvh;
             overflow-x: hidden;
             display: block;   
             transition: background 0.5s ease;
+            /* Prevent pull-to-refresh on mobile */
+            overscroll-behavior-y: none;
         }
 
         .no-scroll {
             overflow: hidden !important;
             height: 100vh;
+            height: 100dvh;
+            position: fixed;
+            width: 100%;
         }
         
         html {
@@ -268,7 +275,9 @@
         }
     </style>
 </head>
-<body x-data="aiTutor()" :style="'background: ' + currentChar.bg">
+<body x-data="aiTutor()" 
+      :style="'background: ' + currentChar.bg"
+      :class="!isLoggedIn ? 'no-scroll' : ''">
 
     <div x-show="isLoading" class="fixed inset-0 z-[200] bg-white/80 flex items-center justify-center backdrop-blur-sm" x-transition>
         <div class="flex flex-col items-center">
@@ -277,78 +286,80 @@
         </div>
     </div>
 
-    <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center p-4 transition-all duration-700">
-        <div class="bg-white rounded-[2.5rem] p-8 sm:p-12 w-full max-w-md shadow-2xl text-center border-8 border-white/20 relative overflow-hidden animate__animated animate__zoomIn">
-            
-            <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-            <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
+    <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-gradient-to-br from-blue-400 to-purple-600 overflow-y-auto transition-all duration-700">
+        <div class="min-h-full w-full flex items-center justify-center p-4">
+            <div class="bg-white rounded-[2rem] p-6 sm:p-12 w-full max-w-md shadow-2xl text-center border-8 border-white/20 relative overflow-hidden animate__animated animate__zoomIn my-8">
+                
+                <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+                <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
 
-            <div class="relative z-10">
-                <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
-                <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
-                <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
+                <div class="relative z-10">
+                    <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
+                    <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
+                    <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
 
-                <div x-show="!hasAccount" class="space-y-4 text-left">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
-                        <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
-                        <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Secret PIN (4 Digits)</label>
-                        <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em] transition-all">
-                        <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
-                    </div>
-                    
-                    <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
-                        <label class="flex items-start gap-3 cursor-pointer">
-                            <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
-                                I confirm I am the parent/guardian and agree to the 
-                                <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
-                                <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
-                                I consent to kid-safe AI processing (COPPA/GDPR).
-                            </span>
-                        </label>
-                    </div>
+                    <div x-show="!hasAccount" class="space-y-4 text-left">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
+                            <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
+                            <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Secret PIN (4 Digits)</label>
+                            <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em] transition-all">
+                            <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
+                                    I confirm I am the parent/guardian and agree to the 
+                                    <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
+                                    <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
+                                    I consent to kid-safe AI processing (COPPA/GDPR).
+                                </span>
+                            </label>
+                        </div>
 
-                    <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
-                        Start Learning! 🚀
-                    </button>
-                    <div class="flex items-center justify-center gap-2 mt-3 opacity-80">
-                         <i class="fas fa-shield-alt text-green-500"></i>
-                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">No data sold. 100% Private.</p>
-                    </div>
-                    
-                    <p class="text-center mt-2 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true">Already have an account? Login</p>
-                </div>
-
-                <div x-show="hasAccount" class="space-y-6">
-                    <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
-                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Welcome Back</p>
-                        <input type="email" x-model="loginForm.email" placeholder="Enter parent email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Your 4-Digit PIN</label>
-                        <input type="password" maxlength="4" x-model="loginForm.pin" @keyup.enter="handleLogin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-3xl tracking-[0.5em]">
+                        <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
+                            Start Learning! 🚀
+                        </button>
+                        <div class="flex items-center justify-center gap-2 mt-3 opacity-80">
+                             <i class="fas fa-shield-alt text-green-500"></i>
+                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">No data sold. 100% Private.</p>
+                        </div>
+                        
+                        <p class="text-center mt-2 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true">Already have an account? Login</p>
                     </div>
 
-                    <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                        Unlock App 🔓
-                    </button>
-                    
-                    <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
-                </div>
+                    <div x-show="hasAccount" class="space-y-6">
+                        <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
+                            <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Welcome Back</p>
+                            <input type="email" x-model="loginForm.email" placeholder="Enter parent email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700 text-base">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Your 4-Digit PIN</label>
+                            <input type="password" maxlength="4" x-model="loginForm.pin" @keyup.enter="handleLogin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-3xl tracking-[0.5em]">
+                        </div>
 
-                <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
-                    <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Legal & Privacy</h3>
-                    <div class="flex justify-center gap-6">
-                        <button @click="showLegalDoc = 'privacy'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Privacy Policy</button>
-                        <button @click="showLegalDoc = 'terms'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Terms of Service</button>
+                        <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                            Unlock App 🔓
+                        </button>
+                        
+                        <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
+                    </div>
+
+                    <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
+                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Legal & Privacy</h3>
+                        <div class="flex justify-center gap-6">
+                            <button @click="showLegalDoc = 'privacy'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Privacy Policy</button>
+                            <button @click="showLegalDoc = 'terms'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Terms of Service</button>
+                        </div>
                     </div>
                 </div>
             </div>
