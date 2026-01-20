@@ -501,7 +501,7 @@
                     
                     <button 
                         @click="generateArt()"
-                        class="ml-2 btn-grad text-white rounded-2xl px-3 py-2 sm:px-6 sm:py-4 font-kids text-base sm:text-xl shadow-lg transform transition hover:scale-105 active:scale-90"
+                        class="ml-2 btn-grad text-white rounded-2xl px-4 py-2 sm:px-6 sm:py-2 font-kids text-base sm:text-lg shadow-lg transform transition hover:scale-105 active:scale-90"
                         style="background: linear-gradient(to right, #ec4899, #8b5cf6)"
                     >
                         🎨 Draw
@@ -509,7 +509,7 @@
 
                     <button 
                         @click="askTutor()"
-                        class="btn-grad text-white rounded-2xl px-3 py-2 sm:px-8 sm:py-4 font-kids text-base sm:text-xl shadow-lg transform transition hover:scale-105 active:scale-90 mr-1 sm:mr-0"
+                        class="btn-grad text-white rounded-2xl px-4 py-2 sm:px-6 sm:py-2 font-kids text-base sm:text-lg shadow-lg transform transition hover:scale-105 active:scale-90 mr-1 sm:mr-0"
                         :style="'background: linear-gradient(to right, ' + currentChar.accent + ', #ff512f)'"
                     >
                         ASK! 🚀
@@ -767,7 +767,7 @@
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Weekly Parent Reports</span></div>
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock Stickers & Fun Items</span></div>
                 </div>
-                <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl transform transition hover:scale-105 w-full border-b-4 border-yellow-200">
+                <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
                     Get Premium ($4.99/mo)
                 </button>
             </div>
@@ -1118,7 +1118,7 @@
                     this.checkPremiumExpiration();
                 },
 
-                // --- MAGIC ART FUNCTION ---
+                // --- MAGIC ART FUNCTION (FIXED) ---
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
@@ -1129,30 +1129,19 @@
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    try {
-                        const res = await fetch('/api/generate-image', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                prompt: "Black and white coloring page outline for kids of: " + this.userQuery 
-                            })
-                        });
-                        
-                        if (!res.ok) throw new Error("Art Error");
-                        
-                        const data = await res.json();
-                        this.artImage = data.url; 
+                    // USE POLLINATIONS AI (Direct URL, no backend needed)
+                    const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
+                    const encodedPrompt = encodeURIComponent(prompt);
+                    const randomSeed = Math.floor(Math.random() * 1000);
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&seed=${randomSeed}`;
+
+                    // Fake delay to show "Painting..." animation
+                    setTimeout(() => {
+                        this.artImage = imageUrl;
+                        this.isDrawing = false;
                         this.playPing();
                         confetti({ particleCount: 150, spread: 70 });
-
-                    } catch (e) {
-                        console.error(e);
-                        alert("Could not draw that right now! Try again later.");
-                        this.showArtModal = false;
-                        this.toggleScroll(false);
-                    } finally {
-                        this.isDrawing = false;
-                    }
+                    }, 2000);
                 },
 
                 async startQuiz() {
