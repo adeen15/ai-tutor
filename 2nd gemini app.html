@@ -702,7 +702,7 @@
     </div>
 
     <div x-show="showParentPortal" x-cloak
-         class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900 bg-opacity-95 overflow-y-auto"
+         class="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-6 bg-slate-900 bg-opacity-95 overflow-y-auto"
          x-transition.opacity>
         
         <div x-show="!parentAuthenticated" class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl animate__animated animate__fadeInUp my-auto">
@@ -715,7 +715,7 @@
             </div>
         </div>
 
-        <div x-show="parentAuthenticated" class="bg-slate-50 rounded-[2rem] max-w-5xl w-full flex flex-col shadow-2xl animate__animated animate__zoomIn overflow-hidden max-h-[90vh]">
+        <div x-show="parentAuthenticated" class="bg-slate-50 rounded-none sm:rounded-[2rem] w-full h-full sm:h-auto sm:max-h-[90vh] max-w-none sm:max-w-5xl flex flex-col shadow-2xl animate__animated animate__zoomIn overflow-hidden">
             
             <div class="bg-white p-6 sm:p-8 border-b border-gray-200 flex justify-between items-center">
                 <div>
@@ -1570,7 +1570,7 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
-                    // Fix: Strip 'Professor ' from the name for the log
+                    // NEW: Strip 'Professor ' from name to fix truncation
                     let shortName = this.currentChar.name.replace("Professor ", "");
                     
                     const entry = {
