@@ -22,7 +22,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* This prevents the "flash" of hidden elements on refresh */
         [x-cloak] { display: none !important; }
 
         body {
@@ -56,7 +55,7 @@
         .char-float {
             animation: floating 5s ease-in-out infinite;
             filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
-            z-index: 10; /* Keep character above background effects */
+            z-index: 10;
         }
         @keyframes floating {
             0%, 100% { transform: translateY(0px) rotate(-2deg); }
@@ -72,9 +71,7 @@
             75% { transform: scale(1.1) rotate(-3deg); }
         }
 
-        /* --- NEW AURA / PARTICLE EFFECTS --- */
-        
-        /* 1. Glow Effect */
+        /* --- EFFECTS --- */
         .effect-glow {
             filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange);
             animation: pulse-glow 2s infinite;
@@ -84,7 +81,6 @@
             50% { filter: drop-shadow(0 0 60px #fff700) drop-shadow(0 0 20px #ff9100); }
         }
 
-        /* 2. Sparkles Animation */
         .sparkle-particle {
             position: absolute;
             animation: twinkle 2s ease-in-out infinite;
@@ -94,7 +90,6 @@
             50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
         }
 
-        /* 3. Fireflies Animation */
         .firefly-particle {
             position: absolute;
             width: 10px; height: 10px;
@@ -110,7 +105,6 @@
             100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
         }
 
-        /* 4. Stars Orbit Animation */
         .orbit-container {
             position: absolute;
             inset: -40px;
@@ -118,12 +112,11 @@
         }
         .star-item {
             position: absolute;
-            animation: counter-spin 8s linear infinite; /* Keeps the star upright */
+            animation: counter-spin 8s linear infinite;
         }
         @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
         @keyframes counter-spin { 100% { transform: rotate(-360deg); } }
 
-        /* 5. Magic Dust (Rising) */
         .dust-particle {
             position: absolute;
             bottom: 0;
@@ -136,7 +129,6 @@
         }
 
         /* --- UI ELEMENTS --- */
-
         .btn-grad {
             transition: 0.5s;
             background-size: 200% auto;
@@ -211,7 +203,6 @@
             width: fit-content;
         }
 
-        /* Loading Spinner */
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -552,7 +543,7 @@
             <div class="text-center" x-show="quizState === 'correct'">
                 <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
                 <h2 class="text-3xl font-kids text-green-500 mb-2">Correct!</h2>
-                <p class="font-bold text-gray-500 mb-6">You earned 50 Coins!</p>
+                <p class="font-bold text-gray-500 mb-6">You earned 20 Coins!</p>
                 <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
             </div>
 
@@ -1000,9 +991,19 @@
                         // NEW: If coming from payment success, sync data immediately
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') === 'success') {
+                            // 1. Load basic profile first
                             if (storedEmail) {
                                 await this.loadUserProfile(storedEmail);
                             }
+                            
+                            // 2. FORCE PREMIUM ON CLIENT SIDE (Instant Fix)
+                            this.isPremium = true;
+                            this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 Days from now
+
+                            // 3. Save this to DB so it persists (Self-Healing)
+                            await this.syncData();
+
+                            // 4. Update UI
                             this.showPremiumModal = false;
                             this.showParentPortal = true;
                             this.parentAuthenticated = true;
@@ -1052,8 +1053,15 @@
                     this.masterPin = data.pin;
                     this.coins = Number(data.coins) || 0; // Force Number type
                     this.xp = data.xp || 0;
-                    this.isPremium = data.is_premium || false;
-                    this.premiumExpiry = data.premium_expiry;
+                    
+                    // --- SAFETY CHECK FOR PREMIUM ---
+                    // Don't overwrite premium if we are in the middle of unlocking it
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('payment') !== 'success') {
+                        this.isPremium = data.is_premium || false;
+                        this.premiumExpiry = data.premium_expiry;
+                    }
+                    
                     this.inventory = data.inventory || [];
                     this.equippedItem = data.equipped_item;
                     this.parentLogs = data.parent_logs || [];
@@ -1121,7 +1129,7 @@
                 checkAnswer(index) {
                     if (index === this.quizCorrectIndex) {
                         this.quizState = 'correct';
-                        this.coins += 50;
+                        this.coins += 20; // UPDATED: Changed from 50 to 20
                         this.playPing();
                         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                         this.syncData();
