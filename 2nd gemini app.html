@@ -990,34 +990,40 @@
                     { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
                     { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
                 ],
+                // UPDATED CHARACTERS WITH DRAWING TOPICS
                 characters: [
                     { 
                         name: "Professor Dino", 
                         subject: "History", 
+                        drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
                         suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
                         icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                     },
                     { 
                         name: "Rocket Robot", 
                         subject: "Robots and AI", 
+                        drawingTopics: ["robot", "bot", "computer", "phone", "screen", "wire", "circuit", "drone", "cyborg", "machine", "future", "tech", "ai", "code", "game"],
                         suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
                         icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
                     },
                     { 
                         name: "Starry Alien", 
                         subject: "Space Exploration", 
+                        drawingTopics: ["space", "star", "moon", "sun", "planet", "mars", "earth", "galaxy", "comet", "rocket", "ship", "ufo", "alien", "astronaut", "sky"],
                         suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
                         icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
                     },
                     { 
                         name: "Magic Cat", 
                         subject: "Science", 
+                        drawingTopics: ["science", "lab", "flask", "atom", "magnet", "microscope", "bacteria", "cell", "germ", "ice", "fire", "smoke", "chemical", "potion", "glass"],
                         suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
                         icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
                     },
                     { 
                         name: "Bouncy Bee", 
                         subject: "Nature", 
+                        drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
                         suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
                         icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
                     }
@@ -1119,12 +1125,26 @@
                     this.checkPremiumExpiration();
                 },
 
-                // --- MAGIC ART FUNCTION (FIXED) ---
+                // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
+
+                    // 1. Validation Logic: Check if the request matches the current teacher's subject
+                    const queryLower = this.userQuery.toLowerCase();
+                    const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+
+                    if (!isOnTopic) {
+                        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+                        this.speak(this.displayText);
+                        this.isThinking = false;
+                        this.currentMoodIcon = '🤔';
+                        return; 
+                    }
+
+                    // 2. Proceed with drawing if valid
                     this.showArtModal = true;
                     this.isDrawing = true;
                     this.artImage = null;
