@@ -759,6 +759,13 @@
                         </div>
                         <div class="mt-4">
                             <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? 'All teachers and features unlocked.' : 'Limited to 5 questions per day.'"></p>
+                            
+                            <template x-if="isPremium && premiumExpiry">
+                                <p class="text-xs text-gray-400 font-bold mb-3">
+                                    Renews on: <span class="text-slate-600" x-text="new Date(premiumExpiry).toLocaleDateString()"></span>
+                                </p>
+                            </template>
+
                             <button @click="isPremium ? cancelSubscription() : processPayment()" 
                                 class="w-full py-3 rounded-xl font-bold text-sm transition-all" 
                                 :class="isPremium ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg transform hover:-translate-y-1'">
@@ -862,7 +869,10 @@
                         <div class="flex-1 overflow-y-auto max-h-[200px] custom-scroll pr-2 space-y-3">
                             <template x-for="log in parentLogs.slice().reverse().slice(0, 10)">
                                 <div class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-400">
-                                    <p class="text-[10px] text-gray-400 font-bold mb-0.5" x-text="log.time"></p>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] text-gray-400 font-bold" x-text="log.time"></span>
+                                        <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase truncate max-w-[100px]" x-text="'From: ' + log.char"></span>
+                                    </div>
                                     <p class="text-slate-700 text-sm font-semibold" x-text="log.query"></p>
                                 </div>
                             </template>
