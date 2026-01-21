@@ -1673,6 +1673,11 @@
                     // Inject pathProgress into learning_stats to save it without schema change
                     this.learningStats.path_progress = this.pathProgress;
 
+                    // FIX: Ensure Arrays are plain JS objects to avoid Alpine Proxy issues
+                    const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
+                    const safeInventory = JSON.parse(JSON.stringify(this.inventory));
+                    const safeStats = JSON.parse(JSON.stringify(this.learningStats));
+
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
@@ -1680,10 +1685,10 @@
                         child_profile: this.childProfile,
                         total_minutes: this.totalMinutesLearned,
 
-                        inventory: this.inventory,
+                        inventory: safeInventory,
                         equipped_item: this.equippedItem,
-                        learning_stats: this.learningStats,
-                        parent_logs: this.parentLogs,
+                        learning_stats: safeStats,
+                        parent_logs: safeLogs, // Send clean array
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -1857,15 +1862,12 @@
                     if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
                         this.parentLogs = [];
                         
-                        // Reset subject learning stats but PRESERVE path_progress
-                        // We sync pathProgress into learningStats.path_progress in syncData, 
-                        // but locally we track them separately in this.learningStats and this.pathProgress.
-                        
-                        // We keep the structure but reset scores
+                        // Only clear words learned and subject scores
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                         
-                        // Do NOT reset coins, inventory, xp, level, or pathProgress
+                        // We do NOT clear path_progress here anymore. 
+                        // That is handled by the dedicated button in the Map.
                         
                         await this.syncData(); 
                         alert("Search history cleared.");
