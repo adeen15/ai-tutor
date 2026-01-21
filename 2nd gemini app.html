@@ -112,10 +112,6 @@
         .level-connector { position: absolute; width: 4px; background-color: #e5e7eb; left: 50%; transform: translateX(-50%); z-index: 0; }
         .bounce { animation: bounce 2s infinite; }
 
-        /* --- CERTIFICATE STYLES --- */
-        .cert-border { border: 20px solid #3b82f6; outline: 5px solid #1d4ed8; outline-offset: -15px; }
-        .cert-ribbon { position: absolute; bottom: 40px; right: 40px; width: 100px; height: 100px; }
-
         @media (max-width: 640px) {
             .daily-reward-btn { padding: 0.5rem !important; width: 52px; height: 52px; }
             .daily-reward-btn span.gift-bounce { font-size: 1.25rem !important; }
@@ -125,9 +121,10 @@
 
         @media print {
             body * { visibility: hidden; }
-            #printable-art, #printable-art *, #printable-certificate, #printable-certificate * { visibility: visible; }
-            #printable-art, #printable-certificate { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
-            .fixed, .absolute, .bg-black, .bg-slate-900 { background: none !important; box-shadow: none !important; }
+            #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area * { visibility: visible; }
+            #printable-art { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
+            #worksheet-print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; background: white; color: black; }
+            .fixed, .absolute, .bg-black, .bg-slate-900, .bg-slate-50 { background: none !important; box-shadow: none !important; }
         }
     </style>
 </head>
@@ -139,6 +136,28 @@
         <div class="flex flex-col items-center">
             <div class="spinner mb-4"></div>
             <p class="font-kids text-blue-500">Syncing magic...</p>
+        </div>
+    </div>
+
+    <div id="worksheet-print-area" class="hidden">
+        <div style="border: 4px solid black; padding: 20px;">
+            <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">AI Tutor: Learning Worksheet</h1>
+            <p><strong>Student Name:</strong> <span x-text="childProfile.name"></span> ____________________</p>
+            <p><strong>Date:</strong> ____________________</p>
+            <hr style="margin: 20px 0;">
+            <h2 style="font-size: 24px;">Topic of the Day: <span x-text="currentChar.subject"></span></h2>
+            <div style="margin-top: 30px; height: 300px; border: 1px dashed gray; padding: 10px; text-align: center;">
+                <p style="color: gray;">Draw a picture about <span x-text="currentChar.subject"></span> here!</p>
+            </div>
+            <div style="margin-top: 40px;">
+                <h3 style="font-size: 20px;">Writing Challenge:</h3>
+                <p style="margin-bottom: 20px;">Can you write two fun facts you learned today?</p>
+                <div style="border-bottom: 1px solid black; height: 40px;"></div>
+                <div style="border-bottom: 1px solid black; height: 40px; margin-top: 10px;"></div>
+            </div>
+            <div style="margin-top: 40px; text-align: center;">
+                <p>Great Job! ⭐ You earned 100 bonus coins!</p>
+            </div>
         </div>
     </div>
 
@@ -246,10 +265,6 @@
             <span class="text-xl sm:text-3xl">💰</span>
             <span class="font-kids text-lg sm:text-2xl text-yellow-700" x-text="coins"></span>
         </div>
-
-        <button @click="showTrophies = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500">
-            <span class="text-xl sm:text-3xl">🏆</span>
-        </button>
 
         <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500">
             <span class="text-xl sm:text-3xl">🗺️</span>
@@ -429,82 +444,6 @@
         </div>
     </div>
 
-    <div x-show="showTrophies" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
-        <div @click.away="showTrophies = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__backInUp overflow-y-auto max-h-[90vh]">
-            <button @click="showTrophies = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
-            
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-kids text-yellow-500">My Trophy Case 🏆</h2>
-                <p class="font-bold text-gray-500">Collect badges by learning more things!</p>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                <template x-for="badge in allBadges">
-                    <div class="flex flex-col items-center p-4 rounded-3xl border-2 transition-all"
-                         :class="hasBadge(badge.id) ? 'bg-yellow-50 border-yellow-200 shadow-md' : 'bg-gray-50 border-gray-100 opacity-40 grayscale'">
-                        <div class="text-5xl mb-3" x-text="badge.icon"></div>
-                        <h3 class="font-kids text-sm text-gray-800 mb-1" x-text="badge.name"></h3>
-                        <p class="text-[10px] font-bold text-gray-400 text-center leading-tight" x-text="badge.hint"></p>
-                    </div>
-                </template>
-            </div>
-
-            <div class="mt-8 p-6 bg-blue-50 rounded-2xl border-2 border-blue-100 text-center">
-                 <h4 class="font-kids text-blue-600 mb-2">Weekly Goal 🎯</h4>
-                 <p class="text-sm font-bold text-blue-400 mb-4">Earn 500 XP to become "Star of the Week"!</p>
-                 <div class="h-4 bg-white rounded-full overflow-hidden border border-blue-200">
-                     <div class="h-full bg-blue-500 transition-all duration-1000" :style="'width: ' + Math.min((xp / 500) * 100, 100) + '%'"></div>
-                 </div>
-                 <p class="text-xs font-bold text-blue-500 mt-2" x-text="xp + '/500 XP Earned'"></p>
-            </div>
-        </div>
-    </div>
-
-    <div x-show="showCertificateModal" x-cloak class="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-90 overflow-y-auto" x-transition.opacity>
-        <div class="bg-white rounded-xl shadow-2xl relative w-full max-w-4xl p-4 sm:p-12 overflow-hidden animate__animated animate__zoomIn">
-            <button @click="showCertificateModal = false; toggleScroll(false)" class="absolute top-4 right-4 text-3xl text-gray-400 hover:text-red-500 z-50 print:hidden"><i class="fas fa-times-circle"></i></button>
-            
-            <div id="printable-certificate" class="cert-border p-8 sm:p-16 text-center relative bg-white min-h-[500px] flex flex-col justify-center border-[16px] border-blue-500">
-                <div class="absolute top-10 left-10 text-6xl opacity-10 font-kids">A+</div>
-                <div class="absolute bottom-10 right-10 text-6xl opacity-10 font-kids">100%</div>
-                
-                <h1 class="text-4xl sm:text-6xl font-kids text-blue-600 mb-4 uppercase tracking-widest">Certificate</h1>
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-500 mb-12 uppercase tracking-[0.3em]">Of Excellence</h2>
-                
-                <p class="text-xl sm:text-2xl text-gray-600 font-medium italic mb-2">This is proudly awarded to</p>
-                <div class="border-b-4 border-dashed border-blue-200 mx-auto w-3/4 mb-10">
-                    <h3 class="text-4xl sm:text-6xl font-kids text-slate-800 pb-4" x-text="childProfile.name || 'A Great Learner'"></h3>
-                </div>
-                
-                <p class="text-lg sm:text-xl text-gray-600 max-w-xl mx-auto leading-relaxed font-bold">
-                    For being an amazing <span class="text-blue-500 font-kids" x-text="getTopSubjectName() + ' Genius'"></span>! 
-                    You've asked smart questions and completed your lessons with joy.
-                </p>
-
-                <div class="mt-16 flex justify-between items-end px-10">
-                    <div class="text-left">
-                        <p class="text-sm font-bold text-gray-400 uppercase">Date</p>
-                        <p class="text-xl font-bold text-gray-700" x-text="new Date().toLocaleDateString()"></p>
-                    </div>
-                    <div class="relative">
-                        <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" class="w-32 h-32 opacity-80">
-                        <p class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-blue-800 uppercase transform -rotate-12">Verified<br>Safe AI</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-bold text-gray-400 uppercase">Signed</p>
-                        <p class="text-2xl font-kids text-blue-500">AI Tutor Team</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 flex justify-center gap-4 print:hidden">
-                <button @click="window.print()" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-kids text-2xl shadow-xl hover:scale-105 transition-transform">
-                    <i class="fas fa-print mr-2"></i> Print Certificate
-                </button>
-            </div>
-        </div>
-    </div>
-
     <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[65] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
         <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
             
@@ -534,7 +473,10 @@
                                 <span x-text="path.icon"></span>
                              </div>
                              
-                             <h3 class="text-2xl font-kids text-gray-800 mb-2" x-text="path.name"></h3>
+                             <div class="flex items-center gap-2 mb-2">
+                                <h3 class="text-2xl font-kids text-gray-800" x-text="path.name"></h3>
+                                <i x-show="path.premium && !isPremium" class="fas fa-lock text-slate-400 text-sm"></i>
+                             </div>
                              <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4" x-text="path.grade"></span>
                              
                              <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
@@ -550,6 +492,13 @@
                  <button @click="currentPath = null" class="absolute top-4 left-4 z-20 bg-white px-4 py-2 rounded-xl shadow-md font-bold text-gray-600 hover:text-blue-500">
                     <i class="fas fa-arrow-left mr-2"></i> Back
                  </button>
+
+                 <div x-show="currentPath && currentPath.premium && !isPremium" class="absolute inset-0 z-30 bg-white/90 flex flex-col items-center justify-center text-center p-8 backdrop-blur-sm">
+                     <div class="text-6xl mb-4">👑</div>
+                     <h2 class="text-3xl font-kids text-slate-800 mb-2">Premium Curriculum</h2>
+                     <p class="text-slate-500 font-bold max-w-sm mb-6">Unlock all Adventure Paths, Printable Worksheets, and Priority AI for just $4.99/mo!</p>
+                     <button @click="showPremiumModal = true; showLearningPath = false" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600">Upgrade Now</button>
+                 </div>
 
                  <div class="flex flex-col items-center py-20 px-4 min-h-full">
                     <template x-for="(level, index) in currentPath ? currentPath.levels : []">
@@ -889,10 +838,11 @@
                 <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
                 <p class="text-yellow-900 font-bold text-lg mb-6">Unlock the full power of learning!</p>
                 <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlimited Questions</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlimited Priority AI Questions</span></div>
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock All 5 Subject Teachers</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Weekly Parent Reports</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock Stickers & Fun Items</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Full Curriculum Map Access</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Printable Worksheets & Offline PDFs</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Detailed Parent Learning Reports</span></div>
                 </div>
                 <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
                     Get Premium ($4.99/mo)
@@ -1018,36 +968,47 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
-                    <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
-                        <i class="fas fa-medal text-yellow-500"></i> Proof of Progress
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                             <h4 class="font-bold text-slate-700 mb-4 text-sm uppercase tracking-widest">Achievements Unlocked</h4>
-                             <div class="flex flex-wrap gap-4">
-                                 <template x-for="badge in allBadges">
-                                     <div class="relative group">
-                                         <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl bg-white shadow-sm border-2 transition-all"
-                                              :class="hasBadge(badge.id) ? 'border-yellow-400 grayscale-0' : 'border-gray-100 grayscale opacity-30'"
-                                              :title="badge.name">
-                                              <span x-text="badge.icon"></span>
-                                         </div>
-                                         <div x-show="hasBadge(badge.id)" class="absolute -top-1 -right-1 bg-green-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[8px]">
-                                             <i class="fas fa-check"></i>
-                                         </div>
-                                     </div>
-                                 </template>
-                             </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                        <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                            <div>
+                                <i class="fas fa-lock text-gray-400 mb-2"></i>
+                                <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
+                                <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                            </div>
                         </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                            <i class="fas fa-chart-line text-blue-500"></i> Learning Analysis
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500 font-bold uppercase">Vocabulary Growth</span>
+                                <span class="text-sm font-bold text-blue-600" x-text="'+' + Math.floor(learningStats.wordsLearned / 10) + '%'"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500 font-bold uppercase">Critical Thinking</span>
+                                <span class="text-sm font-bold text-green-600">Improving! 🚀</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500 font-bold uppercase">Screen Time Today</span>
+                                <span class="text-sm font-bold text-slate-700" x-text="totalMinutesLearned + ' mins'"></span>
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex flex-col items-center justify-center text-center">
-                             <div class="text-5xl mb-3">📜</div>
-                             <h4 class="font-kids text-blue-600 text-xl mb-2">Academic Award</h4>
-                             <p class="text-xs font-bold text-blue-400 mb-6">Create a printable certificate for <span x-text="childProfile.name || 'your child'"></span>'s progress.</p>
-                             <button @click="showCertificateModal = true; toggleScroll(true)" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-colors">Generate Certificate</button>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                        <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center text-purple-500 text-xl mb-3">
+                            <i class="fas fa-file-pdf"></i>
                         </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Printable Worksheets</h3>
+                        <p class="text-xs text-gray-400 mb-4 px-4">Generate offline activities based on today's lesson.</p>
+                        
+                        <button @click="isPremium ? generateWorksheet() : showPremiumModal = true" 
+                                class="w-full py-3 rounded-xl font-bold text-xs transition-all border-2 flex items-center justify-center gap-2"
+                                :class="isPremium ? 'border-purple-200 bg-purple-50 text-purple-600 hover:bg-purple-100' : 'border-gray-100 bg-gray-50 text-gray-400 opacity-50'">
+                            <i class="fas" :class="isPremium ? 'fa-magic' : 'fa-lock'"></i>
+                            Generate PDF Worksheet
+                        </button>
                     </div>
                 </div>
 
@@ -1212,6 +1173,7 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
+                // --- NEW: DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1224,6 +1186,7 @@
                 isEditingProfile: false,
                 sessionStartTime: null,
 
+                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1232,8 +1195,7 @@
                         space: 0, 
                         science: 0, 
                         nature: 0 
-                    },
-                    badges: [] // NEW: Store unlocked badge IDs
+                    }
                 },
                 xp: 0,
                 level: 1,
@@ -1242,6 +1204,7 @@
                 inventory: [],
                 equippedItem: null,
                 
+                // --- NEW QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1252,28 +1215,17 @@
                 isDrawing: false,
                 artImage: null,
 
+                // --- NEW: LEARNING PATH STATE ---
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn', 
+                lessonStep: 'learn', // learn, quiz, success
                 currentLessonQuizIndex: 0,
-                pathProgress: {}, 
-
-                // NEW: PROGRESS STATES
-                showTrophies: false,
-                showCertificateModal: false,
-                allBadges: [
-                    { id: 'first_question', name: 'Curious Cat', icon: '🐱', hint: 'Ask your very first question' },
-                    { id: 'quiz_master', name: 'Quiz Wizard', icon: '🧙‍♂️', hint: 'Get 5 quiz questions right' },
-                    { id: 'math_star', name: 'Math Star', icon: '⭐', hint: 'Complete a Math lesson' },
-                    { id: 'explorer', name: 'Space Explorer', icon: '🚀', hint: 'Ask Rocket Robot 3 things' },
-                    { id: 'artist', name: 'Master Artist', icon: '🎨', hint: 'Generate 5 coloring pages' },
-                    { id: 'weekly_hero', name: 'Weekly Hero', icon: '🎖️', hint: 'Earn 500 XP in one week' }
-                ],
+                pathProgress: {}, // Stores completion per subject
 
                 curriculum: [
                     { 
-                        id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', 
+                        id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', premium: false,
                         levels: [
                             { id: 1, title: 'Counting to 100', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] },
                             { id: 2, title: 'Simple Adding', content: 'Adding means putting things together. 2 apples plus 2 apples makes 4!', quiz: [{q: '2 + 2 = ?', options:['3', '4', '5'], correct:1}, {q: '5 + 0 = ?', options:['5', '0', '50'], correct:0}, {q: '1 + 2 = ?', options:['2', '3', '4'], correct:1}] },
@@ -1283,7 +1235,7 @@
                         ]
                     },
                     { 
-                        id: 'english', name: 'English ABCs', grade: 'Basics', icon: '📝', color: 'bg-green-500', 
+                        id: 'english', name: 'English ABCs', grade: 'Basics', icon: '📝', color: 'bg-green-500', premium: true,
                         levels: [
                             { id: 1, title: 'The Vowels', content: 'Vowels are special letters: A, E, I, O, U. Every word needs one!', quiz: [{q: 'Which is a vowel?', options:['B', 'E', 'Z'], correct:1}, {q: 'Is "K" a vowel?', options:['Yes', 'No', 'Maybe'], correct:1}, {q: 'How many vowels?', options:['3', '5', '10'], correct:1}] },
                             { id: 2, title: 'Rhyme Time', content: 'Rhyming words sound the same at the end. Cat, Hat, Bat!', quiz: [{q: 'Rhymes with Dog?', options:['Cat', 'Log', 'Pig'], correct:1}, {q: 'Rhymes with Sun?', options:['Moon', 'Fun', 'Hot'], correct:1}, {q: 'Do Tree and Bee rhyme?', options:['Yes', 'No', 'Maybe'], correct:0}] },
@@ -1291,7 +1243,7 @@
                         ]
                     },
                     { 
-                        id: 'science', name: 'Science Fun', grade: 'Fun Facts', icon: '🔬', color: 'bg-purple-500', 
+                        id: 'science', name: 'Science Fun', grade: 'Fun Facts', icon: '🔬', color: 'bg-purple-500', premium: true,
                         levels: [
                             { id: 1, title: 'Solar System', content: 'We live on Earth! The Sun is a giant hot star in the middle.', quiz: [{q: 'We live on...', options:['Mars', 'Earth', 'Sun'], correct:1}, {q: 'Is the sun hot?', options:['Yes', 'No', 'Cold'], correct:0}, {q: 'The moon is made of cheese?', options:['Yes', 'No', 'Maybe'], correct:1}] },
                             { id: 2, title: 'Dinosaurs', content: 'Dinosaurs lived long ago. The T-Rex was very big and scary!', quiz: [{q: 'T-Rex was...', options:['Small', 'Big', 'Tiny'], correct:1}, {q: 'Are dinos alive today?', options:['Yes', 'No', 'Birds are!'], correct:2}, {q: 'Did they eat pizza?', options:['Yes', 'No', 'Always'], correct:1}] },
@@ -1300,6 +1252,7 @@
                     }
                 ],
 
+                // ... [Rest of shopItems and characters kept the same]
                 shopItems: [
                     { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
@@ -1351,8 +1304,10 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
+                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
+                        // Update total minutes every minute
                         this.totalMinutesLearned++;
                         this.syncData();
                     }, 60000);
@@ -1391,27 +1346,7 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // NEW: BADGE LOGIC
-                hasBadge(id) {
-                    return this.learningStats.badges && this.learningStats.badges.includes(id);
-                },
-                unlockBadge(id) {
-                    if (!this.learningStats.badges) this.learningStats.badges = [];
-                    if (!this.hasBadge(id)) {
-                        this.learningStats.badges.push(id);
-                        this.syncData();
-                        confetti({ particleCount: 150, spread: 70, colors: ['#FFD700', '#FFFFFF'] });
-                        // Voice announcement
-                        const badge = this.allBadges.find(b => b.id === id);
-                        this.displayText = `Wahoo! You just earned the ${badge.name} badge! ${badge.icon}`;
-                        this.speak(this.displayText);
-                    }
-                },
-                getTopSubjectName() {
-                    const stats = this.getTopSubjects();
-                    return Object.keys(stats)[0] || 'Learning';
-                },
-
+                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1419,6 +1354,7 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
+                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1446,6 +1382,7 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
+                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1455,15 +1392,14 @@
                     }
                 },
                 async completeLesson() {
+                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
                     
+                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
-
-                    // BADGE: Math Star
-                    if (pathId === 'math') this.unlockBadge('math_star');
                     
                     this.coins += 50;
                     this.xp += 100;
@@ -1472,6 +1408,7 @@
                     this.closeLesson();
                 },
 
+                // --- NEW: Reset only the map progress ---
                 async resetMapProgress() {
                     if(confirm("Restart your Adventure Map progress? This will reset all paths to 0%.")) {
                         this.pathProgress = {};
@@ -1511,6 +1448,8 @@
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
                     
+                    // NEW: Load Child Profile & Time
+                    // Fallback to name if child_profile not set yet
                     this.childProfile = data.child_profile || { name: data.name, age: '', grade: '' }; 
                     this.totalMinutesLearned = data.total_minutes || 0;
 
@@ -1525,10 +1464,10 @@
                     this.parentLogs = data.parent_logs || [];
                     this.learningStats = data.learning_stats || {
                         wordsLearned: 0,
-                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                        badges: []
+                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
                     };
 
+                    // Load Path Progress from learningStats if available (piggyback)
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
                     const dailyData = data.daily_usage || {};
@@ -1543,17 +1482,17 @@
                     
                     this.updateLevel();
                     this.checkPremiumExpiration();
-
-                    // NEW: Weekly Hero Badge check
-                    if (this.xp >= 500) this.unlockBadge('weekly_hero');
                 },
 
+                // --- NEW JOURNEY HELPERS ---
                 get journeyProgress() {
+                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; 
+                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
 
+                // FIX: Ensure exactly 5 specific subjects are shown
                 getTopSubjects() {
                     const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
@@ -1564,13 +1503,17 @@
                         nature: 'Nature'
                     };
                     
+                    // Build an array of [DisplayName, Score] ensuring all 5 exist
                     let statsArray = requiredKeys.map(key => {
+                        // Get score, default to 0 if key is missing in stored data
                         const score = this.learningStats.subjects[key] || 0;
                         return [displayNames[key], score];
                     });
 
+                    // Sort descending by score
                     statsArray.sort((a, b) => b[1] - a[1]);
 
+                    // Convert back to object for the template loop
                     return statsArray.reduce((obj, [name, score]) => {
                         obj[name] = score;
                         return obj;
@@ -1591,15 +1534,18 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
+                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
+                // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
 
+                    // 1. Validation Logic: Check if the request matches the current teacher's subject
                     const queryLower = this.userQuery.toLowerCase();
                     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
@@ -1611,30 +1557,31 @@
                         return; 
                     }
 
+                    // 2. Proceed with drawing if valid
                     this.showArtModal = true;
                     this.isDrawing = true;
                     this.artImage = null;
                     this.toggleScroll(true);
 
+                    // USE POLLINATIONS AI (Updated with rate limit fix)
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
+                    
+                    // FIX: Removed private=true (causes strict limits), Added model=flux (better/faster), Added safe=true
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
 
+                    // Fake delay to show "Painting..." animation
                     setTimeout(() => {
                         this.artImage = imageUrl;
                         this.isDrawing = false;
                         this.playPing();
                         confetti({ particleCount: 150, spread: 70 });
-
-                        // BADGE: Artist
-                        if (!this.learningStats.art_count) this.learningStats.art_count = 0;
-                        this.learningStats.art_count++;
-                        if (this.learningStats.art_count >= 5) this.unlockBadge('artist');
-                        
                     }, 2000);
                 },
 
+                // --- NEW DOWNLOAD FUNCTION ---
+                // This fetches the image as a Blob and forces a download without navigation.
                 async downloadArt() {
                     if (!this.artImage) return;
                     try {
@@ -1651,6 +1598,7 @@
                         document.body.removeChild(a);
                     } catch (e) {
                         console.error("Download failed:", e);
+                        // Fallback only if the fetch method fails
                         window.open(this.artImage, '_blank');
                     }
                 },
@@ -1702,12 +1650,6 @@
                         this.coins += 20; 
                         this.playPing();
                         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-
-                        // BADGE: Quiz Master
-                        if (!this.learningStats.quiz_correct_count) this.learningStats.quiz_correct_count = 0;
-                        this.learningStats.quiz_correct_count++;
-                        if (this.learningStats.quiz_correct_count >= 5) this.unlockBadge('quiz_master');
-
                         this.syncData();
                     } else {
                         this.quizState = 'wrong';
@@ -1732,7 +1674,7 @@
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, 
+                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, // Init child profile
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
@@ -1806,8 +1748,10 @@
                 async syncData() {
                     if (!this.registeredEmail) return;
                     
+                    // Inject pathProgress into learning_stats to save it without schema change
                     this.learningStats.path_progress = this.pathProgress;
 
+                    // FIX: Ensure Arrays are plain JS objects to avoid Alpine Proxy issues
                     const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                     const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                     const safeStats = JSON.parse(JSON.stringify(this.learningStats));
@@ -1815,12 +1759,14 @@
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
+                        // NEW DATA FIELDS
                         child_profile: this.childProfile,
                         total_minutes: this.totalMinutesLearned,
+
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
                         learning_stats: safeStats,
-                        parent_logs: safeLogs, 
+                        parent_logs: safeLogs, // Send clean array
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -1980,6 +1926,7 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
+                    // NEW: Strip 'Professor ' from name to fix truncation
                     let shortName = this.currentChar.name.replace("Professor ", "");
                     
                     const entry = {
@@ -1991,7 +1938,10 @@
                 },
                 async clearLogs() {
                     if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
+                        // FIX: Use splice to clear in-place, handling Alpine Proxy correctly
                         this.parentLogs.splice(0, this.parentLogs.length);
+                        
+                        // Only clear words learned and subject scores
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                         
@@ -2008,16 +1958,6 @@
                     if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
                     if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
                     if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
-                    
-                    // BADGE: First Question
-                    this.unlockBadge('first_question');
-
-                    // BADGE: Explorer
-                    if (this.currentChar.name === "Rocket Robot") {
-                         if(!this.learningStats.robot_count) this.learningStats.robot_count = 0;
-                         this.learningStats.robot_count++;
-                         if(this.learningStats.robot_count >= 3) this.unlockBadge('explorer');
-                    }
                 },
                 startListening() {
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2138,9 +2078,22 @@
                     msg.onstart = () => { this.isSpeaking = true; };
                     msg.onend = () => { this.isSpeaking = false; };
                     window.speechSynthesis.speak(msg);
+                },
+                // --- NEW PREMIUM FUNCTIONS ---
+                generateWorksheet() {
+                    if(!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+                    this.playPing();
+                    window.print();
+                    // Award bonus for offline learning
+                    this.coins += 100;
+                    this.syncData();
                 }
             }
         }
     </script>
 </body>
+
 </html>
