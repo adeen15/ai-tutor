@@ -489,7 +489,7 @@
                                 <i x-show="!isLevelUnlocked(currentPath.id, level.id)" class="fas fa-lock"></i>
                             </button>
 
-                            <div class="bg-white px-4 py-2 rounded-xl shadow-md mt-3 mb-16 text-center border-2" 
+                            <div class="relative z-10 bg-white px-4 py-2 rounded-xl shadow-md mt-3 mb-16 text-center border-2" 
                                  :class="isLevelUnlocked(currentPath.id, level.id) ? 'border-gray-100' : 'border-transparent opacity-50'">
                                 <h4 class="font-bold text-slate-700 text-sm" x-text="level.title"></h4>
                             </div>
@@ -2007,3 +2007,4 @@
 </body>
 
 </html>
+}
