@@ -1252,6 +1252,7 @@
                     }
                 ],
 
+                // ... [Rest of shopItems and characters kept the same]
                 shopItems: [
                     { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
@@ -1353,6 +1354,7 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
+                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1390,9 +1392,11 @@
                     }
                 },
                 async completeLesson() {
+                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
                     
+                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
@@ -1404,6 +1408,7 @@
                     this.closeLesson();
                 },
 
+                // --- NEW: Reset only the map progress ---
                 async resetMapProgress() {
                     if(confirm("Restart your Adventure Map progress? This will reset all paths to 0%.")) {
                         this.pathProgress = {};
@@ -1443,6 +1448,8 @@
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
                     
+                    // NEW: Load Child Profile & Time
+                    // Fallback to name if child_profile not set yet
                     this.childProfile = data.child_profile || { name: data.name, age: '', grade: '' }; 
                     this.totalMinutesLearned = data.total_minutes || 0;
 
@@ -1460,6 +1467,7 @@
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
                     };
 
+                    // Load Path Progress from learningStats if available (piggyback)
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
                     const dailyData = data.daily_usage || {};
@@ -1476,12 +1484,15 @@
                     this.checkPremiumExpiration();
                 },
 
+                // --- NEW JOURNEY HELPERS ---
                 get journeyProgress() {
+                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; 
+                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
 
+                // FIX: Ensure exactly 5 specific subjects are shown
                 getTopSubjects() {
                     const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
@@ -1492,13 +1503,17 @@
                         nature: 'Nature'
                     };
                     
+                    // Build an array of [DisplayName, Score] ensuring all 5 exist
                     let statsArray = requiredKeys.map(key => {
+                        // Get score, default to 0 if key is missing in stored data
                         const score = this.learningStats.subjects[key] || 0;
                         return [displayNames[key], score];
                     });
 
+                    // Sort descending by score
                     statsArray.sort((a, b) => b[1] - a[1]);
 
+                    // Convert back to object for the template loop
                     return statsArray.reduce((obj, [name, score]) => {
                         obj[name] = score;
                         return obj;
@@ -1519,15 +1534,18 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
+                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
+                // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
 
+                    // 1. Validation Logic: Check if the request matches the current teacher's subject
                     const queryLower = this.userQuery.toLowerCase();
                     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
@@ -1539,17 +1557,21 @@
                         return; 
                     }
 
+                    // 2. Proceed with drawing if valid
                     this.showArtModal = true;
                     this.isDrawing = true;
                     this.artImage = null;
                     this.toggleScroll(true);
 
+                    // USE POLLINATIONS AI (Updated with rate limit fix)
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
                     
+                    // FIX: Removed private=true (causes strict limits), Added model=flux (better/faster), Added safe=true
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
 
+                    // Fake delay to show "Painting..." animation
                     setTimeout(() => {
                         this.artImage = imageUrl;
                         this.isDrawing = false;
@@ -1558,6 +1580,8 @@
                     }, 2000);
                 },
 
+                // --- NEW DOWNLOAD FUNCTION ---
+                // This fetches the image as a Blob and forces a download without navigation.
                 async downloadArt() {
                     if (!this.artImage) return;
                     try {
@@ -1574,6 +1598,7 @@
                         document.body.removeChild(a);
                     } catch (e) {
                         console.error("Download failed:", e);
+                        // Fallback only if the fetch method fails
                         window.open(this.artImage, '_blank');
                     }
                 },
@@ -1649,7 +1674,7 @@
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, 
+                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, // Init child profile
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
@@ -1723,8 +1748,10 @@
                 async syncData() {
                     if (!this.registeredEmail) return;
                     
+                    // Inject pathProgress into learning_stats to save it without schema change
                     this.learningStats.path_progress = this.pathProgress;
 
+                    // FIX: Ensure Arrays are plain JS objects to avoid Alpine Proxy issues
                     const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                     const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                     const safeStats = JSON.parse(JSON.stringify(this.learningStats));
@@ -1732,12 +1759,14 @@
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
+                        // NEW DATA FIELDS
                         child_profile: this.childProfile,
                         total_minutes: this.totalMinutesLearned,
+
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
                         learning_stats: safeStats,
-                        parent_logs: safeLogs, 
+                        parent_logs: safeLogs, // Send clean array
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -1837,15 +1866,10 @@
                 
                 async claimReward() {
                     if (this.rewardClaimedToday) return;
-
-                    // Reward logic: Sunday (index 6) gets 100, all other days get 50
                     let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
-                    
-                    // Update internal state
                     this.coins = Number(this.coins) + rewardAmount;
                     this.rewardClaimedToday = true;
                     
-                    // Trigger UI feedback
                     confetti({
                         particleCount: 150,
                         spread: 70,
@@ -1853,8 +1877,6 @@
                         colors: ['#FFD700', '#FF69B4', '#00BFFF']
                     });
                     this.playPing();
-                    
-                    // Save to database immediately
                     await this.syncData(); 
                 },
                 trySetChar(char) {
@@ -1904,6 +1926,7 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
+                    // NEW: Strip 'Professor ' from name to fix truncation
                     let shortName = this.currentChar.name.replace("Professor ", "");
                     
                     const entry = {
@@ -1915,9 +1938,13 @@
                 },
                 async clearLogs() {
                     if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
+                        // FIX: Use splice to clear in-place, handling Alpine Proxy correctly
                         this.parentLogs.splice(0, this.parentLogs.length);
+                        
+                        // Only clear words learned and subject scores
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
+                        
                         await this.syncData(); 
                         alert("Search history cleared.");
                     }
@@ -2052,6 +2079,7 @@
                     msg.onend = () => { this.isSpeaking = false; };
                     window.speechSynthesis.speak(msg);
                 },
+                // --- NEW PREMIUM FUNCTIONS ---
                 generateWorksheet() {
                     if(!this.isPremium) {
                         this.showPremiumModal = true;
@@ -2059,6 +2087,7 @@
                     }
                     this.playPing();
                     window.print();
+                    // Award bonus for offline learning
                     this.coins += 100;
                     this.syncData();
                 }
@@ -2066,4 +2095,5 @@
         }
     </script>
 </body>
+
 </html>
