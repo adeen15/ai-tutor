@@ -802,7 +802,7 @@
     <div x-show="showRewards" x-cloak
          class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
          x-transition.opacity>
-        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
+        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
             <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600">
                 <i class="fas fa-times-circle"></i>
             </button>
@@ -1303,8 +1303,10 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
+                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
+                        // Update total minutes every minute
                         this.totalMinutesLearned++;
                         this.syncData();
                     }, 60000);
@@ -1343,6 +1345,7 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
+                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1377,6 +1380,7 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
+                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1420,6 +1424,12 @@
                             this.populateUserData(data);
                             this.isLoggedIn = true;
                             this.playPing();
+                            if (!this.rewardClaimedToday) {
+                                setTimeout(() => {
+                                    this.showRewards = true;
+                                    this.toggleScroll(true);
+                                }, 1000);
+                            }
                         }
                     } catch (e) {
                         console.error("Sync error:", e);
@@ -1454,8 +1464,6 @@
                     
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
-                    
-                    // Logic to check if reward was already claimed today
                     if (dailyData.date !== today) {
                         this.dailyQuestionsUsed = 0;
                         this.rewardClaimedToday = false;
@@ -1466,20 +1474,12 @@
                     
                     this.updateLevel();
                     this.checkPremiumExpiration();
-
-                    // If not claimed today, show the popup
-                    if (!this.rewardClaimedToday) {
-                        setTimeout(() => {
-                            this.showRewards = true;
-                            this.toggleScroll(true);
-                        }, 1000);
-                    }
                 },
 
                 get journeyProgress() {
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34;
+                    return 66 + ((this.xp - 3000) / 2000) * 34; 
                 },
 
                 getTopSubjects() {
@@ -1587,7 +1587,8 @@
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
                         Based on the following text: "${this.displayText}", create ONE simple multiple-choice question.
                         Return strictly this JSON format: 
-                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}`;
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
+                        Make sure the options are short and simple.`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
@@ -1648,7 +1649,7 @@
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                child_profile: { name: this.loginForm.name, age: '', grade: '' },
+                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, 
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
@@ -1720,8 +1721,7 @@
                 },
 
                 async syncData() {
-                    // FIX: Safety Lock to prevent overwriting with defaults while loading
-                    if (!this.registeredEmail || !this.isLoggedIn) return;
+                    if (!this.registeredEmail) return;
                     
                     this.learningStats.path_progress = this.pathProgress;
 
@@ -1730,14 +1730,14 @@
                     const safeStats = JSON.parse(JSON.stringify(this.learningStats));
 
                     const updateData = {
-                        coins: Number(this.coins), // Ensure it's a number
+                        coins: this.coins,
                         xp: this.xp,
                         child_profile: this.childProfile,
                         total_minutes: this.totalMinutesLearned,
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
                         learning_stats: safeStats,
-                        parent_logs: safeLogs,
+                        parent_logs: safeLogs, 
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -1797,7 +1797,7 @@
                         if (now > this.premiumExpiry) {
                             this.isPremium = false;
                             this.premiumExpiry = null;
-                            alert("Your monthly premium subscription has expired.");
+                            alert("Your monthly premium subscription has expired. Please renew to access all characters!");
                             this.setChar(this.characters[0]);
                             this.syncData();
                         }
@@ -1817,17 +1817,17 @@
                         if (data.url) {
                             window.location.href = data.url;
                         } else {
-                            alert("Payment error.");
+                            alert("Could not connect to payment server. Check console.");
                         }
                     } catch (e) {
-                        alert("Payment Error.");
+                        alert("Payment Error. Please try again.");
                     } finally {
                         this.isLoading = false;
                         this.showCheckout = false;
                     }
                 },
                 async cancelSubscription() {
-                    if(confirm("Cancel subscription?")) {
+                    if(confirm("Are you sure you want to cancel? You will lose access to premium characters immediately.")) {
                         this.isPremium = false;
                         this.premiumExpiry = null;
                         this.setChar(this.characters[0]);
@@ -1836,13 +1836,16 @@
                 },
                 
                 async claimReward() {
-                    // FIX: Added explicit guard and forced re-sync to prevent duplicates
                     if (this.rewardClaimedToday) return;
-                    
+
+                    // Reward logic: Sunday (index 6) gets 100, all other days get 50
                     let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
+                    
+                    // Update internal state
                     this.coins = Number(this.coins) + rewardAmount;
                     this.rewardClaimedToday = true;
                     
+                    // Trigger UI feedback
                     confetti({
                         particleCount: 150,
                         spread: 70,
@@ -1850,6 +1853,8 @@
                         colors: ['#FFD700', '#FF69B4', '#00BFFF']
                     });
                     this.playPing();
+                    
+                    // Save to database immediately
                     await this.syncData(); 
                 },
                 trySetChar(char) {
@@ -1900,6 +1905,7 @@
                 },
                 logActivity(query) {
                     let shortName = this.currentChar.name.replace("Professor ", "");
+                    
                     const entry = {
                         query: query,
                         time: new Date().toLocaleString(),
@@ -1908,11 +1914,12 @@
                     this.parentLogs.push(entry);
                 },
                 async clearLogs() {
-                    if(confirm("Clear history?")) {
+                    if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
                         this.parentLogs.splice(0, this.parentLogs.length);
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                         await this.syncData(); 
+                        alert("Search history cleared.");
                     }
                 },
                 updateProgress(query, response) {
@@ -1939,7 +1946,7 @@
                 setChar(char) {
                     this.currentChar = char;
                     this.currentMoodIcon = char.icon;
-                    this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}!`;
+                    this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
                     this.suggestions = char.suggestions;
                     this.hasAnswered = false;
                     window.speechSynthesis.cancel();
@@ -1962,7 +1969,7 @@
                         return;
                     }
                     if (!this.isQuerySafe(this.userQuery)) {
-                        this.displayText = "Oops! Let's talk about something fun like space or dinosaurs instead! 🌈✨";
+                        this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
                         this.userQuery = '';
                         this.currentMoodIcon = '🤔';
                         return;
@@ -1978,7 +1985,13 @@
                     this.currentMoodIcon = this.currentChar.mood_think;
 
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. Subject: ${this.currentChar.subject}.`;
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children aged 5-8. 
+                        YOUR SUBJECT: ${this.currentChar.subject}.
+                        
+                        CRITICAL RULES:
+                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
+                        2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
+                        3. Never break character.`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
@@ -2000,7 +2013,8 @@
 
                         this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
                     } catch (error) {
-                        this.finishThinking("Oh no! My brain is fuzzy. ask again? 🔌", savedQuery);
+                        console.error("API Error:", error);
+                        this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
                     }
                 },
                 async finishThinking(response, originalQuery) {
