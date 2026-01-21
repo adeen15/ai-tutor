@@ -1139,17 +1139,15 @@
                             this.populateUserData(data);
                             this.isLoggedIn = true;
                             
-                            // Check for missing age/grade to trigger setup
-                            if (!this.childProfile.age || !this.childProfile.grade) {
-                                this.showChildSetup = true;
-                            } else {
-                                this.playPing();
-                                if (!this.rewardClaimedToday) {
-                                    setTimeout(() => {
-                                        this.showRewards = true;
-                                        this.toggleScroll(true);
-                                    }, 1000);
-                                }
+                            // UPDATED LOGIC: We no longer force the setup modal here.
+                            // It will ONLY appear if showChildSetup was triggered by Signup.
+                            
+                            this.playPing();
+                            if (!this.rewardClaimedToday) {
+                                setTimeout(() => {
+                                    this.showRewards = true;
+                                    this.toggleScroll(true);
+                                }, 1000);
                             }
                         }
                     } catch (e) {
@@ -1428,7 +1426,7 @@
                         this.isLoggedIn = true;
                         this.hasAccount = true;
                         
-                        // TRIGGER SETUP MODAL
+                        // TRIGGER SETUP MODAL (Only happens on signup now)
                         this.showChildSetup = true;
 
                     } catch (err) {
