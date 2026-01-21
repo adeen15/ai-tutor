@@ -430,9 +430,14 @@
                     <p class="text-gray-500 font-bold" x-show="!currentPath">Choose your journey!</p>
                     <p class="text-gray-500 font-bold" x-show="currentPath" x-text="currentPath ? currentPath.name : ''"></p>
                 </div>
-                <button @click="showLearningPath = false; currentPath = null; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
+                <div class="flex gap-2">
+                    <button @click="resetMapProgress()" class="bg-red-100 p-3 rounded-full hover:bg-red-200 text-red-500 transition-colors" title="Reset Progress">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button @click="showLearningPath = false; currentPath = null; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
             </div>
 
             <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
@@ -1325,6 +1330,15 @@
                     this.closeLesson();
                 },
 
+                // --- NEW: Reset only the map progress ---
+                async resetMapProgress() {
+                    if(confirm("Restart your Adventure Map progress? This will reset all paths to 0%.")) {
+                        this.pathProgress = {};
+                        await this.syncData();
+                        alert("Map progress has been reset!");
+                    }
+                },
+
                 async loadUserProfile(email) {
                     try {
                         const { data, error } = await this.supabase
@@ -1840,13 +1854,21 @@
                     this.parentLogs.push(entry);
                 },
                 async clearLogs() {
-                    if(confirm("Clear all history and progress?")) {
+                    if(confirm("Clear all history and progress (Including Map)?")) {
                         this.parentLogs = [];
                         this.coins = 0;
-                        this.learningStats = { wordsLearned: 0, subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }};
+                        this.xp = 0; // Reset XP
+                        this.level = 1; // Reset Level
+                        this.learningStats = { 
+                            wordsLearned: 0, 
+                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                            path_progress: {} // Ensure nested key is clear
+                        };
+                        this.pathProgress = {}; // Reset local map progress
                         this.inventory = [];
                         this.equippedItem = null;
                         await this.syncData(); 
+                        alert("History and map progress cleared.");
                     }
                 },
                 updateProgress(query, response) {
