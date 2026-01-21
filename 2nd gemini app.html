@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Tutor - Class & Family Edition</title>
+    <title>AI Tutor - Animated Friends</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -117,22 +117,15 @@
 
         @media print {
             body * { visibility: hidden; }
-            
-            /* Logic for printing art only */
-            #printable-art-container, #printable-art-container * { visibility: visible; }
-            #printable-art-container { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
-            
-            /* Logic for printing worksheets */
-            #printable-worksheet, #printable-worksheet * { visibility: visible; }
-            #printable-worksheet { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 9999; background: white; padding: 20px; display: block !important; }
-
+            #printable-art, #printable-art * { visibility: visible; }
+            #printable-art { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
             .fixed, .absolute, .bg-black { background: none !important; box-shadow: none !important; }
         }
     </style>
 </head>
 <body x-data="aiTutor()" 
       :style="'background: ' + currentChar.bg"
-      :class="!isLoggedIn ? 'no-scroll-desktop' : ''">
+      :class="(!isLoggedIn || showChildSetup) ? 'no-scroll-desktop' : ''">
 
     <div x-show="isLoading" class="fixed inset-0 z-[200] bg-white/80 flex items-center justify-center backdrop-blur-sm" x-transition>
         <div class="flex flex-col items-center">
@@ -151,43 +144,37 @@
                 <div class="relative z-10">
                     <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
                     <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
-                    <p class="text-slate-500 font-bold mb-8">Setup & Login</p>
+                    <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
 
                     <div x-show="!hasAccount" class="space-y-4 text-left">
-                        
-                        <div class="flex p-1 bg-slate-100 rounded-xl mb-4">
-                            <button @click="signupType = 'parent'" :class="signupType === 'parent' ? 'bg-white shadow-md text-blue-600' : 'text-slate-400'" class="flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wide transition-all">Parent</button>
-                            <button @click="signupType = 'teacher'" :class="signupType === 'teacher' ? 'bg-white shadow-md text-purple-600' : 'text-slate-400'" class="flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wide transition-all">Teacher</button>
-                        </div>
-
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2" x-text="signupType === 'teacher' ? 'Teacher Full Name' : 'Parent Full Name'"></label>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
                             <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
-                            <input type="email" x-model="loginForm.email" placeholder="email@example.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                            <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Secret PIN (4 Digits)</label>
                             <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em] transition-all">
-                            <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Settings later.</p>
+                            <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
                         </div>
                         
                         <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                             <label class="flex items-start gap-3 cursor-pointer">
                                 <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
-                                    I confirm I am an adult and agree to the 
+                                    I confirm I am the parent/guardian and agree to the 
                                     <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
                                     <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
-                                    I consent to kid-safe AI processing.
+                                    I consent to kid-safe AI processing (COPPA/GDPR).
                                 </span>
                             </label>
                         </div>
 
                         <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
-                            <span x-text="signupType === 'teacher' ? 'Create Classroom 🏫' : 'Start Learning! 🚀'"></span>
+                            Start Learning! 🚀
                         </button>
                         <div class="flex items-center justify-center gap-2 mt-3 opacity-80">
                              <i class="fas fa-shield-alt text-green-500"></i>
@@ -200,7 +187,7 @@
                     <div x-show="hasAccount" class="space-y-6">
                         <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
                             <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Welcome Back</p>
-                            <input type="email" x-model="loginForm.email" placeholder="Enter email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700 text-base">
+                            <input type="email" x-model="loginForm.email" placeholder="Enter parent email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700 text-base">
                         </div>
                         
                         <div>
@@ -227,29 +214,65 @@
         </div>
     </div>
     
+    <div x-show="isLoggedIn && showChildSetup" class="fixed inset-0 z-[150] bg-gradient-to-br from-green-400 to-teal-600 overflow-y-auto flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-10 shadow-2xl relative animate__animated animate__fadeInUp">
+             <div class="text-center mb-6">
+                <div class="text-5xl mb-2">🧒</div>
+                <h2 class="text-3xl font-kids text-slate-800">Who is playing?</h2>
+                <p class="text-gray-500 font-bold">Customize the learning level!</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">How old is the child?</label>
+                    <div class="grid grid-cols-5 gap-2">
+                        <template x-for="age in [4,5,6,7,8,9,10,11,12]">
+                            <button 
+                                @click="childProfile.age = age" 
+                                class="p-3 rounded-xl border-2 font-kids text-xl transition-all"
+                                :class="childProfile.age == age ? 'bg-green-500 text-white border-green-600 scale-105 shadow-md' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                                x-text="age">
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Which Grade?</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <template x-for="grade in ['Pre-K', 'Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade', '6th Grade']">
+                            <button 
+                                @click="childProfile.grade = grade" 
+                                class="p-3 rounded-xl border-2 font-bold text-sm transition-all"
+                                :class="childProfile.grade === grade ? 'bg-blue-500 text-white border-blue-600 shadow-md' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'"
+                                x-text="grade">
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <div x-show="!childProfile.name">
+                    <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Child's Name (Optional)</label>
+                    <input type="text" x-model="childProfile.name" placeholder="Enter name" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700">
+                </div>
+            </div>
+
+            <button 
+                @click="completeSetup"
+                :disabled="!childProfile.age || !childProfile.grade"
+                class="w-full mt-8 py-4 bg-gradient-to-r from-orange-400 to-pink-500 text-white rounded-2xl font-kids text-2xl shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
+            >
+                Let's Go! 🚀
+            </button>
+        </div>
+    </div>
+
     <div class="absolute top-4 left-4 z-40 flex flex-col gap-3">
         <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
             <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
             <span class="text-[10px] font-bold text-pink-500 uppercase">Daily Gift</span>
         </button>
-        
-        <div x-show="isTeacherMode && roster.length > 0" class="relative group" x-cloak>
-            <button class="bg-white p-2 rounded-xl shadow-lg border-2 border-purple-400 flex items-center gap-2 font-bold text-sm text-purple-700">
-                <i class="fas fa-users"></i>
-                <span x-text="childProfile.name || 'Select Student'"></span>
-                <i class="fas fa-chevron-down text-xs"></i>
-            </button>
-            <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border-2 border-purple-100 overflow-hidden hidden group-hover:block max-h-48 overflow-y-auto">
-                <template x-for="student in roster">
-                    <button @click="switchStudent(student.id)" class="w-full text-left px-4 py-2 hover:bg-purple-50 text-xs font-bold text-gray-700 border-b border-gray-50 flex justify-between items-center">
-                        <span x-text="student.name"></span>
-                        <span x-show="student.id === currentStudentId" class="text-green-500"><i class="fas fa-check"></i></span>
-                    </button>
-                </template>
-            </div>
-        </div>
-        
-        <div class="safe-badge animate__animated animate__fadeInLeft" x-show="!isTeacherMode">
+        <div class="safe-badge animate__animated animate__fadeInLeft">
             <i class="fas fa-shield-alt"></i> Kid-Safe AI
         </div>
     </div>
@@ -273,8 +296,8 @@
             <span class="text-xl sm:text-3xl">🪄</span>
         </button>
 
-        <button @click="openParentPortal()" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4" :class="isTeacherMode ? 'border-purple-400' : 'border-gray-400'">
-            <span class="text-xl sm:text-2xl" x-text="isTeacherMode ? '🏫' : '🔒'"></span>
+        <button @click="openParentPortal()" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-gray-400">
+            <span class="text-xl sm:text-2xl">🔒</span>
         </button>
     </div>
 
@@ -446,28 +469,36 @@
     <div x-show="showQuiz" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
         <div @click.away="showQuiz = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
             <button @click="showQuiz = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            
             <div class="text-center" x-show="quizState === 'loading'">
                 <div class="spinner mx-auto mb-4 border-yellow-400"></div>
                 <h2 class="text-2xl font-kids text-yellow-500">Thinking up a tricky one... 🤔</h2>
             </div>
+
             <div x-show="quizState === 'active'">
                 <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Pop Quiz!</span>
                 <h2 class="text-2xl font-bold text-gray-800 mt-4 mb-6 leading-tight" x-text="quizQuestion"></h2>
+                
                 <div class="space-y-3">
                     <template x-for="(option, index) in quizOptions">
-                        <button @click="checkAnswer(index)" class="w-full text-left p-4 rounded-2xl border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold text-gray-700 flex items-center gap-3">
+                        <button 
+                            @click="checkAnswer(index)"
+                            class="w-full text-left p-4 rounded-2xl border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold text-gray-700 flex items-center gap-3"
+                        >
                             <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold" x-text="['A','B','C'][index]"></span>
                             <span x-text="option"></span>
                         </button>
                     </template>
                 </div>
             </div>
+
             <div class="text-center" x-show="quizState === 'correct'">
                 <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
                 <h2 class="text-3xl font-kids text-green-500 mb-2">Correct!</h2>
                 <p class="font-bold text-gray-500 mb-6">You earned 20 Coins!</p>
                 <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
             </div>
+
             <div class="text-center" x-show="quizState === 'wrong'">
                 <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
                 <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
@@ -480,27 +511,255 @@
     <div x-show="showArtModal" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
         <div @click.away="showArtModal = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__zoomIn text-center border-4 border-pink-200">
             <button @click="showArtModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            
             <h2 class="text-4xl font-kids text-pink-500 mb-2">Magic Art Studio 🎨</h2>
             <p class="text-gray-500 font-bold mb-6">Turning your words into coloring pages...</p>
-            <div id="printable-art-container" class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 mb-6 relative overflow-hidden">
+
+            <div class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 mb-6 relative overflow-hidden">
                 <div x-show="isDrawing" class="flex flex-col items-center">
                     <div class="spinner border-pink-400 mb-4"></div>
                     <p class="font-kids text-pink-400 animate-pulse">Painting... 🖌️</p>
                 </div>
-                <img x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
-                <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold">Tell me what to draw first!</div>
+                
+                <img id="printable-art" x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
+                
+                <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold">
+                    Tell me what to draw first!
+                </div>
             </div>
+
             <div class="flex justify-center gap-4" x-show="artImage && !isDrawing">
-                <button @click="window.print()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform"><i class="fas fa-print mr-2"></i> Print</button>
-                <button @click="downloadArt()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center"><i class="fas fa-download mr-2"></i> Save</button>
+                <button @click="window.print()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">
+                    <i class="fas fa-print mr-2"></i> Print
+                </button>
+                
+                <button @click="downloadArt()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
+                    <i class="fas fa-download mr-2"></i> Save
+                </button>
             </div>
         </div>
     </div>
 
-    <div x-show="showParentPortal" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-6 bg-slate-900 bg-opacity-95 overflow-y-auto" x-transition.opacity>
+    <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
+            <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
+            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
+                
+                <template x-if="showLegalDoc === 'privacy'">
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                            <p class="font-bold text-green-700 flex items-center gap-2"><i class="fas fa-shield-alt"></i> STRICT NO DATA SALE POLICY</p>
+                            <p class="text-xs text-green-800 mt-1">We do NOT sell, trade, or rent your child's personal identification information to others. Ever.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">1. Information We Collect (Strictly Necessary Only)</h3>
+                            <ul class="list-disc ml-4 text-xs space-y-1 mt-1">
+                                <li><strong>Parent Email:</strong> Used solely for account recovery and login.</li>
+                                <li><strong>PIN Code:</strong> Encrypted locally and used for parental controls.</li>
+                                <li><strong>Progress Data:</strong> Coins, inventory, and learning stats (synced securely).</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">2. What We Do NOT Collect</h3>
+                            <p>We do NOT store voice recordings. Voice inputs are processed instantly and discarded. We do not collect GPS location or physical addresses.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">3. AI & COPPA Compliance</h3>
+                            <p>Our AI interactions are filtered for safety. No personally identifiable information (PII) is sent to AI models for training purposes. We use stateless inference APIs.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">4. Your Rights</h3>
+                            <p>You can delete your account and all associated data instantly via the "Reset Account" button in the login screen.</p>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="showLegalDoc === 'terms'">
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800">1. Acceptance of Terms</h3>
+                            <p>By accessing AI Tutor, you agree to be bound by these Terms of Service. This app is intended for educational use by children under parental supervision.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">2. Parental Responsibility</h3>
+                            <p>You represent that you are the parent or legal guardian of the child using this app. You are responsible for maintaining the confidentiality of your PIN.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">3. Subscriptions & Payments</h3>
+                            <p>Premium features are offered on a monthly basis. You may cancel at any time via the Parent Portal. (Note: This is a demo application; payments are simulated).</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">4. Limitation of Liability</h3>
+                            <p>The app is provided "as is". While we strive for educational accuracy, AI responses may occasionally vary. We are not liable for incidental damages.</p>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showShop" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto">
+            <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            
+            <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600">Magic Auras</h2>
+            <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8">Add magic effects to your teacher!</p>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
+                <template x-for="item in shopItems">
+                    <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-105"
+                         :class="equippedItem === item.id ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200' : 'bg-gray-50 border-gray-100'">
+                        
+                        <div class="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white rounded-full shadow-inner text-3xl sm:text-5xl">
+                            <span x-text="item.icon"></span>
+                            <div x-show="inventory.includes(item.id)" class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-xs border-2 border-white">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center w-full">
+                            <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
+                            <div x-show="!inventory.includes(item.id)" class="text-yellow-600 font-bold text-xs sm:text-sm bg-yellow-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block">
+                                <span x-text="item.price"></span> 💰
+                            </div>
+                        </div>
+
+                        <button 
+                            @click="inventory.includes(item.id) ? toggleEquip(item.id) : buyItem(item)"
+                            class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
+                            :class="inventory.includes(item.id) 
+                                ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') 
+                                : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
+                            :disabled="!inventory.includes(item.id) && coins < item.price"
+                        >
+                            <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? 'Active ✨' : 'Activate') : 'Buy Now'"></span>
+                        </button>
+                    </div>
+                </template>
+            </div>
+            
+            <div class="mt-6 sm:mt-8 flex justify-center">
+                <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
+                    <span class="text-xl sm:text-2xl">💰</span>
+                    <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="'You have ' + coins + ' coins'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showRewards" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
+            <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <h2 class="text-4xl font-kids text-pink-500 mb-2">Daily Rewards!</h2>
+            <p class="font-bold text-gray-500 mb-6">Come back every day for free coins!</p>
+            <div class="grid grid-cols-4 gap-3 mb-8">
+                <template x-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
+                    <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
+                         :class="todayIndex === index ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50 opacity-60'">
+                        <span class="text-[10px] font-bold uppercase" x-text="day"></span>
+                        <span class="text-xl" x-text="index === 6 ? '🎁' : '💰'"></span>
+                        <span class="text-xs font-bold text-gray-600" x-text="index === 6 ? '100' : '50'"></span>
+                    </div>
+                </template>
+            </div>
+            <button @click="claimReward()" :disabled="rewardClaimedToday"
+                class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
+                :class="rewardClaimedToday ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'">
+                <span x-text="rewardClaimedToday ? 'See You Tomorrow!' : (todayIndex === 6 ? 'Claim 100 Coins! ✨' : 'Claim 50 Coins! ✨')"></span>
+            </button>
+        </div>
+    </div>
+
+    <div x-show="showPremiumModal" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-yellow-100">
+            <button @click="showPremiumModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-yellow-800 hover:text-white">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <div class="text-center">
+                <div class="text-6xl mb-4">👑</div>
+                <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
+                <p class="text-yellow-900 font-bold text-lg mb-6">Unlock the full power of learning!</p>
+                <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlimited Questions</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock All 5 Subject Teachers</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Weekly Parent Reports</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock Stickers & Fun Items</span></div>
+                </div>
+                <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
+                    Get Premium ($4.99/mo)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showCheckout" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-6 bg-slate-900 bg-opacity-95 overflow-y-auto" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] max-w-md w-full p-8 shadow-2xl text-center my-auto">
+            <h2 class="text-3xl font-kids text-slate-800 mb-2">Secure Checkout</h2>
+            <p class="text-gray-500 mb-6">Unlock <span class="font-bold text-slate-800">1 Month Premium</span> for $4.99</p>
+            
+            <div class="text-left space-y-4 mb-8">
+                <div>
+                    <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Cardholder Name</label>
+                    <input type="text" x-model="checkoutForm.name" placeholder="John Doe" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Card Number</label>
+                    <div class="relative">
+                        <input type="text" x-model="checkoutForm.card" placeholder="0000 0000 0000 0000" maxlength="19" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
+                        <i class="fas fa-credit-card absolute right-4 top-5 text-slate-300"></i>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Expiry Date</label>
+                        <input type="text" x-model="checkoutForm.expiry" placeholder="MM/YY" maxlength="5" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">CVV</label>
+                        <input type="password" x-model="checkoutForm.cvv" placeholder="***" maxlength="3" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button 
+                    @click="processPayment" 
+                    :disabled="!checkoutForm.name || !checkoutForm.card || !checkoutForm.expiry || !checkoutForm.cvv"
+                    class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:grayscale"
+                >
+                    <i class="fas fa-lock mr-2"></i> Complete Payment
+                </button>
+                <button @click="showCheckout = false" class="w-full py-4 text-black font-bold hover:text-slate-600">Cancel</button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-6 italic">Simulation: Do not enter real sensitive information.</p>
+        </div>
+    </div>
+
+    <div x-show="showParentPortal" x-cloak
+         class="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-6 bg-slate-900 bg-opacity-95 overflow-y-auto"
+         x-transition.opacity>
         
         <div x-show="!parentAuthenticated" class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl animate__animated animate__fadeInUp my-auto">
-            <h2 class="text-2xl font-kids text-gray-700 mb-2" x-text="isTeacherMode ? 'Teacher Access' : 'Parents Only'"></h2>
+            <h2 class="text-2xl font-kids text-gray-700 mb-2">Parents Only</h2>
             <p class="text-sm text-gray-500 mb-6" x-text="isChangingPin ? 'Enter NEW 4-digit PIN' : 'Enter PIN to see Dashboard'"></p>
             <input type="password" maxlength="4" x-model="pinInput" @keyup.enter="verifyPin" class="w-full text-center text-4xl tracking-[1em] font-bold border-b-4 border-gray-200 outline-none mb-8 focus:border-blue-500">
             <div class="flex gap-2">
@@ -513,97 +772,15 @@
             
             <div class="bg-white p-6 sm:p-8 border-b border-gray-200 flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-kids text-slate-800" x-text="isTeacherMode ? 'Teacher Dashboard 🏫' : 'Parent Dashboard'"></h2>
-                    <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Overview for <span x-text="isTeacherMode ? 'Classroom' : (childProfile.name || 'Your Child')"></span></p>
+                    <h2 class="text-2xl sm:text-3xl font-kids text-slate-800">Parent Dashboard</h2>
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Overview for <span x-text="childProfile.name || 'Your Child'"></span></p>
                 </div>
                 <button @click="closeParentPortal" class="text-gray-400 hover:text-red-500 transition-colors text-2xl"><i class="fas fa-times-circle"></i></button>
             </div>
 
-            <div x-show="isTeacherMode" class="flex-1 overflow-y-auto custom-scroll p-6 sm:p-8">
-                <div class="flex gap-4 mb-6 overflow-x-auto pb-2">
-                    <button @click="teacherTab = 'roster'" :class="teacherTab === 'roster' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600'" class="px-6 py-2 rounded-xl font-bold shadow-sm whitespace-nowrap">👩‍🎓 Class Roster</button>
-                    <button @click="teacherTab = 'stats'" :class="teacherTab === 'stats' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600'" class="px-6 py-2 rounded-xl font-bold shadow-sm whitespace-nowrap">📊 Class Stats</button>
-                    <button @click="teacherTab = 'worksheets'" :class="teacherTab === 'worksheets' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600'" class="px-6 py-2 rounded-xl font-bold shadow-sm whitespace-nowrap">🖨️ Worksheets</button>
-                </div>
-
-                <div x-show="teacherTab === 'roster'" class="animate__animated animate__fadeIn">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
-                        <h3 class="font-bold text-slate-800 mb-4">Add Student</h3>
-                        <div class="flex gap-2">
-                            <input type="text" x-model="newStudentName" @keyup.enter="addStudent" placeholder="Student Name" class="flex-1 p-3 bg-slate-50 border rounded-xl font-bold">
-                            <button @click="addStudent" class="px-6 py-3 bg-green-500 text-white rounded-xl font-bold shadow-lg">Add</button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <template x-for="(student, index) in roster">
-                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center font-bold text-lg" x-text="student.name[0]"></div>
-                                    <div>
-                                        <p class="font-bold text-slate-700" x-text="student.name"></p>
-                                        <p class="text-xs text-gray-400 font-bold" x-text="student.xp + ' XP'"></p>
-                                    </div>
-                                </div>
-                                <button @click="removeStudent(index)" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </template>
-                        <div x-show="roster.length === 0" class="col-span-3 text-center py-8 text-gray-400">No students yet. Add one above!</div>
-                    </div>
-                </div>
-
-                <div x-show="teacherTab === 'stats'" class="animate__animated animate__fadeIn">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="text-xs text-slate-400 font-bold uppercase border-b border-gray-100">
-                                    <th class="pb-3 pl-2">Student</th>
-                                    <th class="pb-3">Level</th>
-                                    <th class="pb-3">Coins</th>
-                                    <th class="pb-3">XP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="student in roster">
-                                    <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50">
-                                        <td class="py-3 pl-2 font-bold text-slate-700" x-text="student.name"></td>
-                                        <td class="py-3">
-                                            <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-bold" x-text="'Lvl ' + (Math.floor(student.xp / 100) + 1)"></span>
-                                        </td>
-                                        <td class="py-3 font-bold text-yellow-600" x-text="student.coins + ' 💰'"></td>
-                                        <td class="py-3 font-bold text-slate-500" x-text="student.xp"></td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                        <div x-show="roster.length === 0" class="text-center py-8 text-gray-400">No students to show stats for.</div>
-                    </div>
-                </div>
-
-                <div x-show="teacherTab === 'worksheets'" class="animate__animated animate__fadeIn">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center">
-                        <h3 class="text-2xl font-kids text-slate-800 mb-2">Create Lesson Worksheet</h3>
-                        <p class="text-gray-500 mb-6">Select a topic to auto-generate a printable activity page.</p>
-                        
-                        <div class="flex flex-wrap justify-center gap-3 mb-6">
-                            <template x-for="char in characters">
-                                <button @click="worksheetTopic = char.subject" 
-                                    class="px-4 py-2 rounded-xl border-2 font-bold transition-all"
-                                    :class="worksheetTopic === char.subject ? 'bg-purple-50 border-purple-500 text-purple-700' : 'bg-gray-50 border-gray-200 text-gray-500'">
-                                    <span x-text="char.icon + ' ' + char.subject"></span>
-                                </button>
-                            </template>
-                        </div>
-
-                        <button @click="generateWorksheet" 
-                            class="bg-blue-500 text-white px-8 py-3 rounded-xl font-kids text-lg shadow-lg hover:bg-blue-600 transition-transform hover:-translate-y-1">
-                            <i class="fas fa-wand-magic-sparkles mr-2"></i> Generate & Print
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div x-show="!isTeacherMode" class="flex-1 overflow-y-auto custom-scroll p-6 sm:p-8">
-                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="flex-1 overflow-y-auto custom-scroll p-6 sm:p-8">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-id-card text-blue-500 mr-2"></i>Child Profile</h3>
@@ -635,11 +812,13 @@
                         </div>
                         <div class="mt-4">
                             <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? 'All teachers and features unlocked.' : 'Limited to 5 questions per day.'"></p>
+                            
                             <template x-if="isPremium && premiumExpiry">
                                 <p class="text-xs text-gray-400 font-bold mb-3">
                                     Renews on: <span class="text-slate-600" x-text="new Date(premiumExpiry).toLocaleDateString()"></span>
                                 </p>
                             </template>
+
                             <button @click="isPremium ? cancelSubscription() : processPayment()" 
                                 class="w-full py-3 rounded-xl font-bold text-sm transition-all" 
                                 :class="isPremium ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg transform hover:-translate-y-1'">
@@ -648,11 +827,12 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
                     <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
                         <i class="fas fa-rocket text-purple-500"></i> Learning Journey
                     </h3>
+                    
                     <div class="relative w-full mt-4 mb-8 px-2 sm:px-10">
                         <div class="absolute left-4 right-4 top-5 h-1.5 bg-gray-100 rounded-full z-0"></div>
                         <div class="absolute left-4 top-5 h-1.5 bg-green-400 rounded-full z-0 transition-all duration-1000" :style="'width: ' + journeyProgress + '%'"></div>
@@ -663,7 +843,8 @@
                                      :class="xp >= 0 ? 'border-green-400 text-green-500' : 'border-gray-200 text-gray-300'">
                                     <i class="fas fa-egg text-lg"></i>
                                 </div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
                             </div>
                             
                             <div class="flex flex-col items-center gap-2">
@@ -671,7 +852,8 @@
                                      :class="xp >= 1000 ? 'border-blue-400 text-blue-500' : 'border-gray-200 text-gray-300'">
                                     <i class="fas fa-book-reader text-lg"></i>
                                 </div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
                             </div>
 
                             <div class="flex flex-col items-center gap-2">
@@ -679,7 +861,8 @@
                                      :class="xp >= 3000 ? 'border-purple-400 text-purple-500' : 'border-gray-200 text-gray-300'">
                                     <i class="fas fa-graduation-cap text-lg"></i>
                                 </div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
                             </div>
                         </div>
                     </div>
@@ -752,154 +935,19 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="p-6 border-t bg-slate-50 flex justify-between">
-                <button @click="startPinChange" class="text-blue-500 font-bold text-xs hover:underline">Change PIN</button>
-                <button @click="closeParentPortal" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold text-sm">Exit</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="printable-worksheet" class="hidden bg-white p-10 font-sans text-slate-800">
-        <div class="border-4 border-slate-800 p-8 h-full rounded-[3rem] relative">
-            <h1 class="text-4xl font-kids text-center mb-2" x-text="worksheetTopic + ' Worksheet'"></h1>
-            <p class="text-center text-slate-500 font-bold mb-8">Name: __________________________   Date: ______________</p>
-            
-            <div class="mb-8 text-center border-2 border-dashed border-gray-300 rounded-xl p-4 min-h-[300px] flex flex-col items-center justify-center">
-                 <p class="text-slate-400 font-bold uppercase mb-2 text-xs">Coloring Activity</p>
-                 <img :src="worksheetImage" class="max-h-[300px] max-w-full object-contain filter grayscale contrast-125 brightness-110">
-            </div>
-
-            <div class="mb-8">
-                <h3 class="font-kids text-xl mb-4">Vocabulary Words</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <template x-for="word in worksheetVocab">
-                        <div class="border border-slate-300 p-4 rounded-xl flex justify-between items-end h-20">
-                            <span x-text="word" class="font-bold text-lg"></span>
-                            <div class="h-px w-20 bg-slate-300"></div>
-                        </div>
-                    </template>
+                <div class="mt-8 pt-6 border-t flex flex-wrap justify-between items-center gap-4">
+                    <button @click="startPinChange" class="text-blue-500 font-bold text-xs hover:underline uppercase tracking-widest">Change Parent PIN</button>
+                    <button @click="closeParentPortal" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-kids text-sm hover:bg-slate-700 transition-colors">Exit Dashboard</button>
                 </div>
             </div>
-
-            <div>
-                <h3 class="font-kids text-xl mb-4">Quick Quiz</h3>
-                <template x-for="(q, i) in worksheetQuiz">
-                    <div class="mb-4">
-                        <p class="font-bold text-sm mb-2" x-text="(i+1) + '. ' + q.question"></p>
-                        <div class="flex gap-4">
-                            <span class="w-4 h-4 border border-slate-400 rounded-full inline-block"></span> <span x-text="q.a" class="text-sm"></span>
-                            <span class="w-4 h-4 border border-slate-400 rounded-full inline-block"></span> <span x-text="q.b" class="text-sm"></span>
-                        </div>
-                    </div>
-                </template>
-            </div>
-            
-            <div class="absolute bottom-4 right-8 text-xs text-slate-400 font-bold">Generated by AI Tutor</div>
-        </div>
-    </div>
-
-    <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
-        <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
-            <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
-            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
-                <template x-if="showLegalDoc === 'privacy'">
-                    <div class="space-y-4">
-                        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
-                            <p class="font-bold text-green-700 flex items-center gap-2"><i class="fas fa-shield-alt"></i> STRICT NO DATA SALE POLICY</p>
-                            <p class="text-xs text-green-800 mt-1">We do NOT sell, trade, or rent your child's personal identification information to others. Ever.</p>
-                        </div>
-                        <div><h3 class="font-bold text-slate-800">1. Information We Collect</h3><p>Email, PIN, and learning stats only.</p></div>
-                    </div>
-                </template>
-                <template x-if="showLegalDoc === 'terms'">
-                    <div class="space-y-4">
-                        <div><h3 class="font-bold text-slate-800">1. Acceptance</h3><p>By using this app, you agree to these terms.</p></div>
-                    </div>
-                </template>
-            </div>
-        </div>
-    </div>
-    
-    <div x-show="showShop" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70" x-transition.opacity>
-        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto">
-            <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600">Magic Auras</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
-                <template x-for="item in shopItems">
-                    <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-105"
-                         :class="equippedItem === item.id ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200' : 'bg-gray-50 border-gray-100'">
-                        <div class="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white rounded-full shadow-inner text-3xl sm:text-5xl">
-                            <span x-text="item.icon"></span>
-                            <div x-show="inventory.includes(item.id)" class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-xs border-2 border-white"><i class="fas fa-check"></i></div>
-                        </div>
-                        <div class="text-center w-full">
-                            <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
-                            <div x-show="!inventory.includes(item.id)" class="text-yellow-600 font-bold text-xs sm:text-sm bg-yellow-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block"><span x-text="item.price"></span> 💰</div>
-                        </div>
-                        <button @click="inventory.includes(item.id) ? toggleEquip(item.id) : buyItem(item)" class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95" :class="inventory.includes(item.id) ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"><span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? 'Active ✨' : 'Activate') : 'Buy Now'"></span></button>
-                    </div>
-                </template>
-            </div>
-            <div class="mt-6 sm:mt-8 flex justify-center">
-                <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300"><span class="text-xl sm:text-2xl">💰</span><span class="font-bold text-sm sm:text-base text-yellow-800" x-text="'You have ' + coins + ' coins'"></span></div>
-            </div>
-        </div>
-    </div>
-
-    <div x-show="showRewards" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70" x-transition.opacity>
-        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
-            <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-4xl font-kids text-pink-500 mb-2">Daily Rewards!</h2>
-            <div class="grid grid-cols-4 gap-3 mb-8">
-                <template x-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
-                    <div class="p-3 rounded-2xl border-2 flex flex-col items-center" :class="todayIndex === index ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50 opacity-60'">
-                        <span class="text-[10px] font-bold uppercase" x-text="day"></span>
-                        <span class="text-xl" x-text="index === 6 ? '🎁' : '💰'"></span>
-                    </div>
-                </template>
-            </div>
-            <button @click="claimReward()" :disabled="rewardClaimedToday" class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl mt-6" :class="rewardClaimedToday ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400'"><span x-text="rewardClaimedToday ? 'See You Tomorrow!' : 'Claim 50 Coins! ✨'"></span></button>
-        </div>
-    </div>
-
-    <div x-show="showPremiumModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70" x-transition.opacity>
-        <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-yellow-100">
-            <button @click="showPremiumModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-yellow-800 hover:text-white"><i class="fas fa-times-circle"></i></button>
-            <div class="text-center">
-                <div class="text-6xl mb-4">👑</div>
-                <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
-                <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlimited Questions</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock All Teachers</span></div>
-                </div>
-                <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">Get Premium ($4.99/mo)</button>
-            </div>
-        </div>
-    </div>
-    
-    <div x-show="showCheckout" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-6 bg-slate-900 bg-opacity-95 overflow-y-auto" x-transition.opacity>
-        <div class="bg-white rounded-[2rem] max-w-md w-full p-8 shadow-2xl text-center my-auto">
-            <h2 class="text-3xl font-kids text-slate-800 mb-2">Secure Checkout</h2>
-            <div class="text-left space-y-4 mb-8">
-                <div><label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Card Number</label><input type="text" placeholder="0000 0000 0000 0000" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl"></div>
-                <div class="flex gap-4">
-                    <div class="flex-1"><label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Expiry</label><input type="text" placeholder="MM/YY" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl"></div>
-                    <div class="flex-1"><label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">CVV</label><input type="password" placeholder="***" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl"></div>
-                </div>
-            </div>
-            <div class="space-y-3 mt-6">
-                <button @click="processPayment" class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-colors">Complete Payment</button>
-                <button @click="showCheckout = false" class="w-full py-4 text-black font-bold hover:text-slate-600">Cancel</button>
-            </div>
-            <p class="text-[10px] text-slate-400 mt-6 italic">Simulation: Do not enter real sensitive information.</p>
         </div>
     </div>
 
     <script>
-        if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js");
+        }
 
         function aiTutor() {
             return {
@@ -907,472 +955,257 @@
                 isLoading: false,
                 isLoggedIn: false,
                 hasAccount: false,
-                signupType: 'parent', // 'parent' or 'teacher'
+                savedProfile: null,
                 loginForm: { name: '', email: '', pin: '' },
-                
-                // User State
-                isTeacherMode: false,
                 registeredEmail: '',
-                masterPin: '1234',
                 
-                // Current Active Student (or Child in Family Mode)
-                currentStudentId: 'default',
-                roster: [], // For Teachers: Array of student objects
-                childProfile: { name: '', age: '', grade: '' }, // Also serves as active student profile
-                
-                // Economy (Per Student logic handled in switchStudent)
-                coins: 0, 
-                xp: 0,
-                level: 1,
-                inventory: [],
-                equippedItem: null,
+                legalAccepted: false,
+                showLegalDoc: null,
 
-                // App State
                 userQuery: '',
-                displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know?",
+                displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                 isThinking: false,
                 isSpeaking: false,
                 isListening: false,
                 hasAnswered: false,
                 currentMoodIcon: '🦖',
                 suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                
-                // Teacher / Parent Portal
-                showParentPortal: false,
-                parentAuthenticated: false,
-                pinInput: '',
-                isChangingPin: false,
-                teacherTab: 'roster',
-                newStudentName: '',
-                legalAccepted: false,
-                showLegalDoc: null,
-                isEditingProfile: false,
-                
-                // Worksheet Generator State
-                worksheetTopic: 'History',
-                worksheetImage: '',
-                worksheetVocab: ['History', 'Ancient', 'Learn', 'Time'],
-                worksheetQuiz: [{question: "What is history?", a: "The future", b: "The past"}],
-
-                // Premium / Shop
                 isPremium: false,
                 premiumExpiry: null,
-                showShop: false,
+                showCheckout: false,
+                checkoutForm: { name: '', card: '', expiry: '', cvv: '' },
+                maxFreeQuestions: 5,
+                dailyQuestionsUsed: 0,
+                lastUsageDate: new Date().toDateString(),
+                
+                coins: 0, 
+                
                 showRewards: false,
                 rewardClaimedToday: false,
-                dailyQuestionsUsed: 0,
-                maxFreeQuestions: 5,
-                todayIndex: (new Date().getDay() + 6) % 7,
+                todayIndex: (new Date().getDay() + 6) % 7, 
                 showPremiumModal: false,
-                showCheckout: false,
+                safetySettings: {
+                    blockedWords: localStorage.getItem('blocked_words') || 'war, killing, blood, gun, scary',
+                    forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
+                },
                 
-                // Stats
+                // --- NEW: DASHBOARD STATE ---
+                showParentPortal: false,
+                parentAuthenticated: false,
+                isChangingPin: false,
+                pinInput: '',
+                masterPin: '1234', 
                 parentLogs: [],
-                learningStats: { wordsLearned: 0, subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 } },
                 
-                // Quiz & Art
+                childProfile: { name: '', age: '', grade: '' },
+                showChildSetup: false, // NEW CONTROL FLAG FOR SETUP MODAL
+                
+                totalMinutesLearned: 0,
+                isEditingProfile: false,
+                sessionStartTime: null,
+
+                // UPDATED: Stats specific to the 5 characters
+                learningStats: {
+                    wordsLearned: 0,
+                    subjects: { 
+                        history: 0, 
+                        robots: 0, 
+                        space: 0, 
+                        science: 0, 
+                        nature: 0 
+                    }
+                },
+                xp: 0,
+                level: 1,
+
+                showShop: false,
+                inventory: [],
+                equippedItem: null,
+                
+                // --- NEW QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
                 quizOptions: [],
                 quizCorrectIndex: 0,
+
                 showArtModal: false,
                 isDrawing: false,
                 artImage: null,
-                
-                // Shop Data
+
                 shopItems: [
-                    { id: 'sparkles', name: 'Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
+                    { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
                     { id: 'fireflies', name: 'Fireflies', icon: '🐝', price: 350, effectType: 'fireflies' },
                     { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
                     { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
                 ],
+                // UPDATED CHARACTERS WITH DRAWING TOPICS
                 characters: [
-                    { name: "Professor Dino", subject: "History", drawingTopics: ["dino", "rex", "pyramid", "history"], suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕"], icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false },
-                    { name: "Rocket Robot", subject: "Robots and AI", drawingTopics: ["robot", "ai", "tech"], suggestions: ["How do robots think? 🤖", "What is code? 💻"], icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot Teacher", intro_phrase: "Beep boop! ", premium: true },
-                    { name: "Starry Alien", subject: "Space Exploration", drawingTopics: ["space", "star", "planet"], suggestions: ["How hot is the sun? ☀️", "Black holes? 🕳️"], icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings! ", premium: true },
-                    { name: "Magic Cat", subject: "Science", drawingTopics: ["science", "lab", "atom"], suggestions: ["Why does ice melt? 🧊", "Gravity? 🍎"], icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true },
-                    { name: "Bouncy Bee", subject: "Nature", drawingTopics: ["nature", "bee", "flower"], suggestions: ["How do flowers grow? 🌻", "Why is sky blue? ☁️"], icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true }
+                    { 
+                        name: "Professor Dino", 
+                        subject: "History", 
+                        drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
+                        suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
+                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
+                    },
+                    { 
+                        name: "Rocket Robot", 
+                        subject: "Robots and AI", 
+                        drawingTopics: ["robot", "bot", "computer", "phone", "screen", "wire", "circuit", "drone", "cyborg", "machine", "future", "tech", "ai", "code", "game"],
+                        suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
+                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
+                    },
+                    { 
+                        name: "Starry Alien", 
+                        subject: "Space Exploration", 
+                        drawingTopics: ["space", "star", "moon", "sun", "planet", "mars", "earth", "galaxy", "comet", "rocket", "ship", "ufo", "alien", "astronaut", "sky"],
+                        suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
+                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
+                    },
+                    { 
+                        name: "Magic Cat", 
+                        subject: "Science", 
+                        drawingTopics: ["science", "lab", "flask", "atom", "magnet", "microscope", "bacteria", "cell", "germ", "ice", "fire", "smoke", "chemical", "potion", "glass"],
+                        suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
+                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
+                    },
+                    { 
+                        name: "Bouncy Bee", 
+                        subject: "Nature", 
+                        drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
+                        suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
+                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
+                    }
                 ],
                 currentChar: null,
-                safetySettings: { blockedWords: 'war,kill,blood', forbiddenTopics: ['violence'] },
-
+                
                 async init() {
                     this.currentChar = this.characters[0];
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
-                    
+
+                    // Start Session Timer
+                    this.sessionStartTime = Date.now();
+                    setInterval(() => {
+                        // Update total minutes every minute
+                        this.totalMinutesLearned++;
+                        this.syncData();
+                    }, 60000);
+
                     try {
+                        const res = await fetch('/api/config');
+                        const config = await res.json();
+                        this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
+
                         const storedEmail = localStorage.getItem('parent_email');
                         if (storedEmail) {
                             this.loginForm.email = storedEmail;
-                            this.loadUserProfile(storedEmail);
+                            this.hasAccount = true;
                         }
-                    } catch(e) { console.error(e); } 
-                    finally { this.isLoading = false; }
+
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('payment') === 'success') {
+                            if (storedEmail) await this.loadUserProfile(storedEmail);
+                            
+                            this.isPremium = true;
+                            this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); 
+                            await this.syncData();
+
+                            this.showPremiumModal = false;
+                            this.showParentPortal = true;
+                            this.parentAuthenticated = true;
+                            alert("Payment Successful! Welcome to Premium! 🌟");
+                            window.history.replaceState({}, document.title, "/");
+                        }
+                    } catch (e) {
+                        console.error("Initialization error:", e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+
+                    this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // --- AUTH & DATA MANAGEMENT ---
-                async handleSignup() {
-                    if (!this.loginForm.name || !this.loginForm.email || this.loginForm.pin.length !== 4) return alert("Please fill all fields!");
-                    if (!this.legalAccepted) return alert("Please accept terms.");
+                async loadUserProfile(email) {
+                    try {
+                        const { data, error } = await this.supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('email', email)
+                            .single();
+                        
+                        if (data) {
+                            this.populateUserData(data);
+                            this.isLoggedIn = true;
+                            
+                            // Check for missing age/grade to trigger setup
+                            if (!this.childProfile.age || !this.childProfile.grade) {
+                                this.showChildSetup = true;
+                            } else {
+                                this.playPing();
+                                if (!this.rewardClaimedToday) {
+                                    setTimeout(() => {
+                                        this.showRewards = true;
+                                        this.toggleScroll(true);
+                                    }, 1000);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Sync error:", e);
+                    }
+                },
 
-                    const profileData = {
-                        email: this.loginForm.email.toLowerCase(),
-                        name: this.loginForm.name,
-                        pin: this.loginForm.pin,
-                        type: this.signupType, // 'parent' or 'teacher'
-                        child_profile: { name: this.loginForm.name, age: '', grade: '' },
-                        roster: [], 
-                        coins: 50,
-                        xp: 0,
-                        inventory: [],
-                        is_premium: false,
-                        learning_stats: this.learningStats,
-                        parent_logs: []
+                populateUserData(data) {
+                    this.registeredEmail = data.email;
+                    this.savedProfile = { name: data.name, email: data.email };
+                    this.masterPin = data.pin;
+                    this.coins = Number(data.coins) || 0; 
+                    this.xp = data.xp || 0;
+                    
+                    // NEW: Load Child Profile & Time
+                    // Fallback to name if child_profile not set yet
+                    this.childProfile = data.child_profile || { name: data.name, age: '', grade: '' }; 
+                    this.totalMinutesLearned = data.total_minutes || 0;
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('payment') !== 'success') {
+                        this.isPremium = data.is_premium || false;
+                        this.premiumExpiry = data.premium_expiry;
+                    }
+                    
+                    this.inventory = data.inventory || [];
+                    this.equippedItem = data.equipped_item;
+                    this.parentLogs = data.parent_logs || [];
+                    this.learningStats = data.learning_stats || {
+                        wordsLearned: 0,
+                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
                     };
                     
-                    localStorage.setItem('user_' + profileData.email, JSON.stringify(profileData));
-                    localStorage.setItem('parent_email', profileData.email);
-                    
-                    this.loadUserProfile(profileData.email);
-                },
-
-                handleLogin() {
-                    const email = this.loginForm.email.toLowerCase();
-                    const dataStr = localStorage.getItem('user_' + email);
-                    
-                    if (!dataStr) return alert("Account not found.");
-                    const data = JSON.parse(dataStr);
-                    
-                    if (data.pin !== this.loginForm.pin) return alert("Wrong PIN.");
-                    
-                    localStorage.setItem('parent_email', email);
-                    this.loadUserProfile(email);
-                    this.loginForm.pin = '';
-                },
-
-                loadUserProfile(email) {
-                    const data = JSON.parse(localStorage.getItem('user_' + email));
-                    if (!data) return;
-
-                    this.registeredEmail = email;
-                    this.isLoggedIn = true;
-                    this.hasAccount = true;
-                    this.masterPin = data.pin;
-                    this.isTeacherMode = (data.type === 'teacher');
-                    
-                    this.roster = data.roster || [];
-                    this.isPremium = data.is_premium;
-                    this.learningStats = data.learning_stats || this.learningStats;
-                    this.parentLogs = data.parent_logs || [];
-
-                    // If teacher, current student is selected from roster or default
-                    if (this.isTeacherMode && this.roster.length > 0) {
-                        this.switchStudent(this.roster[0].id);
+                    const dailyData = data.daily_usage || {};
+                    const today = new Date().toDateString();
+                    if (dailyData.date !== today) {
+                        this.dailyQuestionsUsed = 0;
+                        this.rewardClaimedToday = false;
                     } else {
-                        // Default / Parent Mode
-                        this.childProfile = data.child_profile;
-                        this.coins = data.coins;
-                        this.xp = data.xp;
-                        this.inventory = data.inventory || [];
-                        this.equippedItem = data.equipped_item;
+                        this.dailyQuestionsUsed = dailyData.questions_used || 0;
+                        this.rewardClaimedToday = dailyData.reward_claimed || false;
                     }
                     
                     this.updateLevel();
-                    this.playPing();
+                    this.checkPremiumExpiration();
                 },
 
-                syncData() {
-                    if (!this.registeredEmail) return;
-                    
-                    let data = JSON.parse(localStorage.getItem('user_' + this.registeredEmail));
-                    
-                    if (this.isTeacherMode && this.currentStudentId !== 'default') {
-                        // Update specific student in roster
-                        const studentIndex = this.roster.findIndex(s => s.id === this.currentStudentId);
-                        if (studentIndex !== -1) {
-                            this.roster[studentIndex].coins = this.coins;
-                            this.roster[studentIndex].xp = this.xp;
-                            this.roster[studentIndex].inventory = this.inventory;
-                            this.roster[studentIndex].equipped_item = this.equippedItem;
-                        }
-                        data.roster = this.roster;
-                    } else {
-                        // Update default profile
-                        data.coins = this.coins;
-                        data.xp = this.xp;
-                        data.inventory = this.inventory;
-                        data.equipped_item = this.equippedItem;
-                        data.child_profile = this.childProfile;
-                    }
-
-                    data.is_premium = this.isPremium;
-                    data.learning_stats = this.learningStats;
-                    data.parent_logs = this.parentLogs;
-                    
-                    localStorage.setItem('user_' + this.registeredEmail, JSON.stringify(data));
-                },
-
-                // --- TEACHER SPECIFIC FUNCTIONS ---
-                addStudent() {
-                    if (!this.newStudentName) return;
-                    const newStudent = {
-                        id: 'stu_' + Date.now(),
-                        name: this.newStudentName,
-                        coins: 0,
-                        xp: 0,
-                        inventory: [],
-                        equipped_item: null
-                    };
-                    this.roster.push(newStudent);
-                    this.newStudentName = '';
-                    this.syncData();
-                    if (this.roster.length === 1) this.switchStudent(newStudent.id);
-                },
-
-                removeStudent(index) {
-                    if(confirm("Remove this student?")) {
-                        this.roster.splice(index, 1);
-                        this.syncData();
-                        if(this.roster.length > 0) this.switchStudent(this.roster[0].id);
-                    }
-                },
-
-                switchStudent(studentId) {
-                    this.syncData();
-                    
-                    const student = this.roster.find(s => s.id === studentId);
-                    if (student) {
-                        this.currentStudentId = student.id;
-                        this.childProfile = { name: student.name }; // Update UI name
-                        this.coins = student.coins;
-                        this.xp = student.xp;
-                        this.inventory = student.inventory || [];
-                        this.equippedItem = student.equipped_item;
-                        this.updateLevel();
-                        this.playPing();
-                    }
-                },
-
-                async generateWorksheet() {
-                    this.isLoading = true;
-                    try {
-                        // 1. Image Generation (Using same logic as Art Studio)
-                        const prompt = `coloring page, simple black and white outline, ${this.worksheetTopic}, for kids`;
-                        const encodedPrompt = encodeURIComponent(prompt);
-                        this.worksheetImage = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=768&seed=${Math.floor(Math.random()*1000)}&safe=true`;
-                        
-                        // 2. Mock AI Content Generation
-                        if(this.worksheetTopic === 'History') {
-                            this.worksheetVocab = ["Ancient", "Pyramid", "Pharaoh", "Empire"];
-                            this.worksheetQuiz = [{question: "Pyramids are in...", a: "Egypt", b: "Mars"}, {question: "Kings were called...", a: "Presidents", b: "Pharaohs"}];
-                        } else if (this.worksheetTopic.includes('Space')) {
-                            this.worksheetVocab = ["Galaxy", "Orbit", "Gravity", "Comet"];
-                            this.worksheetQuiz = [{question: "The sun is a...", a: "Planet", b: "Star"}, {question: "Humans live on...", a: "Earth", b: "Moon"}];
-                        } else {
-                            this.worksheetVocab = ["Learn", "Explore", "Study", "Fun"];
-                            this.worksheetQuiz = [{question: "Learning is...", a: "Fun", b: "Boring"}, {question: "We use our...", a: "Brain", b: "Elbow"}];
-                        }
-
-                        setTimeout(() => {
-                            this.isLoading = false;
-                            window.print(); // Trigger browser print dialog
-                        }, 2000);
-
-                    } catch(e) {
-                        this.isLoading = false;
-                        alert("Could not generate worksheet.");
-                    }
-                },
-
-                // --- CORE INTERACTION ---
-                toggleScroll(disable) {
-                    document.body.classList.toggle('no-scroll', disable);
-                },
-                
-                openParentPortal() {
-                    this.showParentPortal = true;
-                    this.parentAuthenticated = false;
-                    this.pinInput = '';
-                    this.toggleScroll(true);
-                },
-                
-                closeParentPortal() {
-                    this.showParentPortal = false;
-                    this.toggleScroll(false);
-                },
-                
-                verifyPin() {
-                    if (this.isChangingPin) {
-                        if (this.pinInput.length === 4) {
-                            this.masterPin = this.pinInput;
-                            let data = JSON.parse(localStorage.getItem('user_' + this.registeredEmail));
-                            data.pin = this.masterPin;
-                            localStorage.setItem('user_' + this.registeredEmail, JSON.stringify(data));
-                            alert("PIN updated!");
-                            this.isChangingPin = false;
-                            this.parentAuthenticated = true;
-                            this.pinInput = '';
-                        }
-                    } else if (this.pinInput === this.masterPin) {
-                        this.parentAuthenticated = true;
-                    } else {
-                        this.pinInput = '';
-                        alert("Incorrect PIN");
-                    }
-                },
-
-                startPinChange() {
-                    this.parentAuthenticated = false;
-                    this.isChangingPin = true;
-                    this.pinInput = '';
-                },
-
-                // --- EXISTING GAME LOGIC ---
-                trySetChar(char) {
-                    if (char.premium && !this.isPremium) return this.showPremiumModal = true;
-                    this.currentChar = char;
-                    this.currentMoodIcon = char.icon;
-                    this.displayText = `Hello ${this.childProfile.name}! I'm ${char.name}.`;
-                    this.suggestions = char.suggestions;
-                    this.hasAnswered = false;
-                },
-
-                async askTutor() {
-                    if (!this.userQuery.trim()) return;
-                    if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
-                         this.showPremiumModal = true;
-                         return;
-                    }
-                    
-                    const q = this.userQuery;
-                    this.userQuery = '';
-                    this.isThinking = true;
-                    this.displayText = "Thinking... 🧠";
-                    
-                    // Simple Stats Tracking
-                    this.parentLogs.push({ query: q, time: new Date().toLocaleString(), char: this.currentChar.name });
-                    if(q.toLowerCase().includes('history')) this.learningStats.subjects.history += 10;
-                    
-                    try {
-                        setTimeout(() => {
-                            this.displayText = `That's a great question about ${q}! As ${this.currentChar.name}, I'd say... [AI Answer]. Did you know...`;
-                            this.isThinking = false;
-                            this.hasAnswered = true;
-                            this.xp += 10;
-                            if(!this.isPremium) this.dailyQuestionsUsed++;
-                            this.updateLevel();
-                            this.playPing();
-                            this.syncData();
-                        }, 1500);
-                    } catch(e) { this.isThinking = false; }
-                },
-
-                generateArt() {
-                    if(!this.userQuery) return alert("Type something to draw!");
-                    this.showArtModal = true;
-                    this.isDrawing = true;
-                    this.artImage = null;
-                    const prompt = encodeURIComponent(this.userQuery + ", simple coloring page");
-                    setTimeout(() => {
-                        this.artImage = `https://image.pollinations.ai/prompt/${prompt}?nologo=true&model=flux&width=512&height=512&seed=${Math.floor(Math.random()*1000)}&safe=true`;
-                        this.isDrawing = false;
-                    }, 2000);
-                },
-                
-                downloadArt() {
-                    if(this.artImage) {
-                        const a = document.createElement('a');
-                        a.href = this.artImage;
-                        a.download = 'art.jpg';
-                        a.target = '_blank';
-                        a.click();
-                    }
-                },
-
-                startQuiz() {
-                    this.showQuiz = true;
-                    this.quizState = 'active';
-                    this.quizQuestion = "Mock Quiz Question?";
-                    this.quizOptions = ["Answer A", "Answer B", "Answer C"];
-                    this.quizCorrectIndex = 0;
-                },
-
-                checkAnswer(index) {
-                    if(index === this.quizCorrectIndex) {
-                        this.quizState = 'correct';
-                        this.coins += 20;
-                        this.xp += 20;
-                        this.syncData();
-                    } else {
-                        this.quizState = 'wrong';
-                    }
-                },
-
-                claimReward() {
-                    this.coins += 50;
-                    this.rewardClaimedToday = true;
-                    this.syncData();
-                    confetti();
-                },
-                
-                buyItem(item) {
-                    if(this.coins >= item.price) {
-                        this.coins -= item.price;
-                        this.inventory.push(item.id);
-                        this.syncData();
-                    }
-                },
-                
-                toggleEquip(id) {
-                    this.equippedItem = (this.equippedItem === id) ? null : id;
-                    this.syncData();
-                },
-                
-                getEquippedItemData() {
-                    return this.shopItems.find(i => i.id === this.equippedItem) || {};
-                },
-
-                startListening() {
-                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    if(!SR) return alert("Not supported");
-                    const r = new SR();
-                    r.onstart = () => this.isListening = true;
-                    r.onend = () => this.isListening = false;
-                    r.onresult = (e) => { this.userQuery = e.results[0][0].transcript; this.askTutor(); };
-                    r.start();
-                },
-                
-                speak(text) {
-                    const u = new SpeechSynthesisUtterance(text);
-                    u.pitch = this.currentChar.pitch;
-                    u.rate = this.currentChar.rate;
-                    u.onstart = () => this.isSpeaking = true;
-                    u.onend = () => this.isSpeaking = false;
-                    window.speechSynthesis.speak(u);
-                },
-
-                playPing() {
-                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    const osc = ctx.createOscillator();
-                    osc.connect(ctx.destination);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.1);
-                },
-
-                saveChildProfile() {
-                    this.isEditingProfile = false;
-                    this.syncData();
-                },
-
+                // --- NEW JOURNEY HELPERS ---
                 get journeyProgress() {
+                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34;
+                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
-                
+
+                // FIX: Ensure exactly 5 specific subjects are shown
                 getTopSubjects() {
                     const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
@@ -1382,11 +1215,18 @@
                         science: 'Science',
                         nature: 'Nature'
                     };
+                    
+                    // Build an array of [DisplayName, Score] ensuring all 5 exist
                     let statsArray = requiredKeys.map(key => {
+                        // Get score, default to 0 if key is missing in stored data
                         const score = this.learningStats.subjects[key] || 0;
                         return [displayNames[key], score];
                     });
+
+                    // Sort descending by score
                     statsArray.sort((a, b) => b[1] - a[1]);
+
+                    // Convert back to object for the template loop
                     return statsArray.reduce((obj, [name, score]) => {
                         obj[name] = score;
                         return obj;
@@ -1403,31 +1243,573 @@
                     };
                     return colors[subject] || 'bg-gray-500';
                 },
+
+                // NEW: FINALIZE SETUP
+                async completeSetup() {
+                    if (!this.childProfile.age || !this.childProfile.grade) return;
+                    this.isLoading = true;
+                    this.showChildSetup = false;
+                    this.toggleScroll(false);
+                    await this.syncData();
+                    this.isLoading = false;
+                    this.playPing();
+                    confetti({ particleCount: 150, spread: 70 });
+                    
+                    // Show rewards after setup
+                    if (!this.rewardClaimedToday) {
+                        setTimeout(() => {
+                            this.showRewards = true;
+                            this.toggleScroll(true);
+                        }, 1000);
+                    }
+                },
+
+                async saveChildProfile() {
+                    this.isEditingProfile = false;
+                    await this.syncData();
+                    // Update login form name just in case
+                    this.loginForm.name = this.childProfile.name;
+                },
+
+                // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
+                async generateArt() {
+                    if (!this.userQuery) {
+                        alert("Tell me what to draw first! (Type in the box)");
+                        return;
+                    }
+
+                    // 1. Validation Logic: Check if the request matches the current teacher's subject
+                    const queryLower = this.userQuery.toLowerCase();
+                    const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+
+                    if (!isOnTopic) {
+                        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+                        this.speak(this.displayText);
+                        this.isThinking = false;
+                        this.currentMoodIcon = '🤔';
+                        return; 
+                    }
+
+                    // 2. Proceed with drawing if valid
+                    this.showArtModal = true;
+                    this.isDrawing = true;
+                    this.artImage = null;
+                    this.toggleScroll(true);
+
+                    // USE POLLINATIONS AI (Updated with rate limit fix)
+                    const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
+                    const encodedPrompt = encodeURIComponent(prompt);
+                    const randomSeed = Math.floor(Math.random() * 1000);
+                    
+                    // FIX: Removed private=true (causes strict limits), Added model=flux (better/faster), Added safe=true
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
+
+                    // Fake delay to show "Painting..." animation
+                    setTimeout(() => {
+                        this.artImage = imageUrl;
+                        this.isDrawing = false;
+                        this.playPing();
+                        confetti({ particleCount: 150, spread: 70 });
+                    }, 2000);
+                },
+
+                // --- NEW DOWNLOAD FUNCTION ---
+                // This fetches the image as a Blob and forces a download without navigation.
+                async downloadArt() {
+                    if (!this.artImage) return;
+                    try {
+                        const response = await fetch(this.artImage);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = 'magic-art-' + Date.now() + '.png'; 
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    } catch (e) {
+                        console.error("Download failed:", e);
+                        // Fallback only if the fetch method fails
+                        window.open(this.artImage, '_blank');
+                    }
+                },
+
+                async startQuiz() {
+                    this.showQuiz = true;
+                    this.quizState = 'loading';
+                    this.toggleScroll(true);
+
+                    try {
+                        const systemPrompt = `You are an AI Quiz Generator for kids. 
+                        Target Age: ${this.childProfile.age || '6'} years old.
+                        Based on the following text: "${this.displayText}", create ONE simple multiple-choice question suitable for a ${this.childProfile.grade || '1st Grade'} student.
+                        Return strictly this JSON format: 
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
+                        Make sure the options are short and simple.`;
+
+                        const response = await fetch("/api/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": "Generate quiz" }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const quizData = JSON.parse(cleanJson);
+
+                        this.quizQuestion = quizData.question;
+                        this.quizOptions = quizData.options;
+                        this.quizCorrectIndex = quizData.correctIndex;
+                        this.quizState = 'active';
+
+                    } catch (e) {
+                        console.error("Quiz Error", e);
+                        this.quizQuestion = "Did you like learning about that?";
+                        this.quizOptions = ["Yes!", "It was okay", "No"];
+                        this.quizCorrectIndex = 0;
+                        this.quizState = 'active';
+                    }
+                },
+
+                checkAnswer(index) {
+                    if (index === this.quizCorrectIndex) {
+                        this.quizState = 'correct';
+                        this.coins += 20; 
+                        this.playPing();
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                        this.syncData();
+                    } else {
+                        this.quizState = 'wrong';
+                    }
+                },
+
+                async handleSignup() {
+                    if (!this.loginForm.name || !this.loginForm.email || this.loginForm.pin.length !== 4) {
+                        alert("Please fill in all fields. PIN must be 4 digits.");
+                        return;
+                    }
+                    if(!this.legalAccepted) {
+                        alert("Please agree to the Privacy Policy and Terms.");
+                        return;
+                    }
+
+                    this.isLoading = true;
+                    const email = this.loginForm.email.toLowerCase().trim();
+
+                    try {
+                        const { data, error } = await this.supabase.from('profiles').insert([
+                            {
+                                email: email,
+                                name: this.loginForm.name,
+                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, // Init child profile
+                                pin: this.loginForm.pin,
+                                coins: 50, 
+                                xp: 0,
+                                learning_stats: this.learningStats,
+                                parent_logs: []
+                            }
+                        ]);
+
+                        if (error) throw error;
+
+                        localStorage.setItem('parent_email', email);
+                        this.registeredEmail = email;
+                        this.masterPin = this.loginForm.pin;
+                        this.savedProfile = { name: this.loginForm.name, email: email };
+                        this.childProfile = { name: this.loginForm.name, age: '', grade: '' };
+                        this.coins = 50; 
+                        this.isLoggedIn = true;
+                        this.hasAccount = true;
+                        
+                        // TRIGGER SETUP MODAL
+                        this.showChildSetup = true;
+
+                    } catch (err) {
+                        if (err.code === '23505') { 
+                            alert("This email is already registered. Please login.");
+                            this.hasAccount = true;
+                        } else {
+                            alert("Error creating account: " + err.message);
+                        }
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                async handleLogin() {
+                    this.isLoading = true;
+                    const email = this.loginForm.email.toLowerCase().trim();
+
+                    try {
+                        const { data, error } = await this.supabase
+                            .from('profiles')
+                            .select('pin')
+                            .eq('email', email)
+                            .single();
+
+                        if (error || !data) {
+                            alert("Account not found. Please check email or create an account.");
+                            this.isLoading = false;
+                            return;
+                        }
+
+                        if (data.pin !== this.loginForm.pin) {
+                            alert("Incorrect PIN.");
+                            this.loginForm.pin = '';
+                            this.isLoading = false;
+                            return;
+                        }
+
+                        localStorage.setItem('parent_email', email);
+                        await this.loadUserProfile(email);
+
+                    } catch (err) {
+                        console.error(err);
+                        alert("Login failed. Check connection.");
+                    } finally {
+                        this.isLoading = false;
+                        this.loginForm.pin = '';
+                    }
+                },
+
+                async syncData() {
+                    if (!this.registeredEmail) return;
+                    
+                    const updateData = {
+                        coins: this.coins,
+                        xp: this.xp,
+                        // NEW DATA FIELDS
+                        child_profile: this.childProfile,
+                        total_minutes: this.totalMinutesLearned,
+
+                        inventory: this.inventory,
+                        equipped_item: this.equippedItem,
+                        learning_stats: this.learningStats,
+                        parent_logs: this.parentLogs,
+                        is_premium: this.isPremium,
+                        premium_expiry: this.premiumExpiry,
+                        daily_usage: {
+                            date: new Date().toDateString(),
+                            questions_used: this.dailyQuestionsUsed,
+                            reward_claimed: this.rewardClaimedToday
+                        }
+                    };
+
+                    await this.supabase
+                        .from('profiles')
+                        .update(updateData)
+                        .eq('email', this.registeredEmail);
+                },
+
+                toggleScroll(disable) {
+                    if (disable) {
+                        document.body.classList.add('no-scroll');
+                    } else {
+                        document.body.classList.remove('no-scroll');
+                    }
+                },
+
+                async buyItem(item) {
+                    if (this.coins >= item.price) {
+                        this.coins -= item.price;
+                        this.inventory.push(item.id);
+                        this.equipItem(item.id);
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            colors: ['#00ff00', '#ffffff']
+                        });
+                        this.playPing();
+                        await this.syncData(); 
+                    }
+                },
+                async equipItem(itemId) {
+                    this.equippedItem = itemId;
+                    await this.syncData();
+                },
+                async toggleEquip(itemId) {
+                    if (this.equippedItem === itemId) {
+                        this.equippedItem = null;
+                    } else {
+                        this.equippedItem = itemId;
+                    }
+                    await this.syncData();
+                },
+                getEquippedItemData() {
+                    return this.shopItems.find(i => i.id === this.equippedItem) || {};
+                },
                 
+                checkPremiumExpiration() {
+                    if (this.isPremium && this.premiumExpiry) {
+                        const now = new Date().getTime();
+                        if (now > this.premiumExpiry) {
+                            this.isPremium = false;
+                            this.premiumExpiry = null;
+                            alert("Your monthly premium subscription has expired. Please renew to access all characters!");
+                            this.setChar(this.characters[0]);
+                            this.syncData();
+                        }
+                    }
+                },
+                async processPayment() {
+                    this.isLoading = true;
+                    try {
+                        const res = await fetch('/api/create-checkout', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userEmail: this.registeredEmail })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.url) {
+                            window.location.href = data.url;
+                        } else {
+                            alert("Could not connect to payment server. Check console.");
+                        }
+                    } catch (e) {
+                        alert("Payment Error. Please try again.");
+                    } finally {
+                        this.isLoading = false;
+                        this.showCheckout = false;
+                    }
+                },
+                async cancelSubscription() {
+                    if(confirm("Are you sure you want to cancel? You will lose access to premium characters immediately.")) {
+                        this.isPremium = false;
+                        this.premiumExpiry = null;
+                        this.setChar(this.characters[0]);
+                        await this.syncData();
+                    }
+                },
+                
+                async claimReward() {
+                    if (this.rewardClaimedToday) return;
+                    let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
+                    this.coins = Number(this.coins) + rewardAmount;
+                    this.rewardClaimedToday = true;
+                    
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FF69B4', '#00BFFF']
+                    });
+                    this.playPing();
+                    await this.syncData(); 
+                },
+                trySetChar(char) {
+                    if (char.premium && !this.isPremium) {
+                        this.showPremiumModal = true;
+                        this.toggleScroll(true);
+                    } else {
+                        this.setChar(char);
+                    }
+                },
+                openParentPortal() {
+                    this.showParentPortal = true;
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = false;
+                    this.pinInput = '';
+                    this.toggleScroll(true);
+                },
+                startPinChange() {
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = true;
+                    this.pinInput = '';
+                },
+                async verifyPin() {
+                    if (this.isChangingPin) {
+                        if (this.pinInput.length === 4) {
+                            this.masterPin = this.pinInput;
+                            await this.supabase.from('profiles').update({ pin: this.pinInput }).eq('email', this.registeredEmail);
+                            
+                            alert("PIN updated!");
+                            this.isChangingPin = false;
+                            this.parentAuthenticated = true;
+                            this.pinInput = '';
+                        }
+                    } else {
+                        if(this.pinInput === this.masterPin) {
+                            this.parentAuthenticated = true;
+                        } else {
+                            this.pinInput = '';
+                        }
+                    }
+                },
+                closeParentPortal() {
+                    this.showParentPortal = false;
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = false;
+                    this.pinInput = '';
+                    this.toggleScroll(false);
+                },
+                logActivity(query) {
+                    // NEW: Strip 'Professor ' from name to fix truncation
+                    let shortName = this.currentChar.name.replace("Professor ", "");
+                    
+                    const entry = {
+                        query: query,
+                        time: new Date().toLocaleString(),
+                        char: shortName
+                    };
+                    this.parentLogs.push(entry);
+                },
+                async clearLogs() {
+                    if(confirm("Clear all history and progress?")) {
+                        this.parentLogs = [];
+                        this.coins = 0;
+                        this.learningStats = { wordsLearned: 0, subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }};
+                        this.inventory = [];
+                        this.equippedItem = null;
+                        await this.syncData(); 
+                    }
+                },
+                updateProgress(query, response) {
+                    const words = response.split(' ').length;
+                    this.learningStats.wordsLearned += words;
+                    const queryLower = query.toLowerCase();
+                    if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
+                    if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
+                    if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
+                    if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
+                    if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
+                },
+                startListening() {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRecognition) return;
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'en-US';
+                    recognition.onstart = () => { this.isListening = true; window.speechSynthesis.cancel(); this.isSpeaking = false; };
+                    recognition.onresult = (event) => { this.userQuery = event.results[0][0].transcript; this.isListening = false; this.askTutor(); };
+                    recognition.onerror = () => { this.isListening = false; };
+                    recognition.onend = () => { this.isListening = false; };
+                    recognition.start();
+                },
+                setChar(char) {
+                    this.currentChar = char;
+                    this.currentMoodIcon = char.icon;
+                    this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
+                    this.suggestions = char.suggestions;
+                    this.hasAnswered = false;
+                    window.speechSynthesis.cancel();
+                    this.isSpeaking = false;
+                },
                 updateLevel() {
                     this.level = Math.floor(this.xp / 100) + 1;
                 },
-                
-                processPayment() {
-                    this.showPremiumModal = false;
-                    this.showCheckout = true;
+                isQuerySafe(query) {
+                    const lowerQuery = query.toLowerCase();
+                    const blocked = this.safetySettings.blockedWords.split(',').map(w => w.trim().toLowerCase());
+                    const combinedFilters = [...blocked, ...this.safetySettings.forbiddenTopics];
+                    return !combinedFilters.some(word => word !== "" && lowerQuery.includes(word));
                 },
-                
-                cancelSubscription() {
-                    if(confirm("Cancel premium?")) {
-                        this.isPremium = false;
-                        this.syncData();
+                async askTutor() {
+                    if (!this.userQuery.trim()) return;
+                    if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
+                        this.showPremiumModal = true;
+                        this.toggleScroll(true);
+                        return;
+                    }
+                    if (!this.isQuerySafe(this.userQuery)) {
+                        this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
+                        this.userQuery = '';
+                        this.currentMoodIcon = '🤔';
+                        return;
+                    }
+
+                    const savedQuery = this.userQuery;
+                    this.logActivity(this.userQuery);
+                    window.speechSynthesis.cancel();
+                    this.isSpeaking = false;
+                    this.isThinking = true;
+                    this.hasAnswered = false;
+                    this.displayText = "Thinking... 🧠✨";
+                    this.currentMoodIcon = this.currentChar.mood_think;
+
+                    try {
+                        // DYNAMIC PROMPT UPDATE
+                        const ageContext = this.childProfile.age ? `aged ${this.childProfile.age}` : 'aged 6';
+                        const gradeContext = this.childProfile.grade ? `in ${this.childProfile.grade}` : 'in 1st Grade';
+
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for a child ${ageContext} ${gradeContext}. 
+                        YOUR SUBJECT: ${this.currentChar.subject}.
+                        
+                        CRITICAL RULES:
+                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
+                        2. Adjust your vocabulary and complexity to suit a ${ageContext} child.
+                        3. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
+                        4. Never break character.`;
+
+                        const response = await fetch("/api/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": savedQuery }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        const aiMessage = data.choices[0].message.content;
+                        
+                        if (!this.isPremium) {
+                            this.dailyQuestionsUsed++;
+                        }
+
+                        this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
+                    } catch (error) {
+                        console.error("API Error:", error);
+                        this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
                     }
                 },
-                
-                clearLogs() {
-                    if(confirm("Clear history?")) {
-                        this.parentLogs = [];
-                        this.syncData();
-                    }
+                async finishThinking(response, originalQuery) {
+                    this.displayText = response;
+                    this.isThinking = false;
+                    this.hasAnswered = true;
+                    this.userQuery = '';
+                    this.currentMoodIcon = this.currentChar.mood_happy;
+                    this.xp += 20;
+                    this.updateLevel();
+                    this.playPing();
+                    this.updateProgress(originalQuery, response);
+                    
+                    await this.syncData();
+                },
+                playPing() {
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = context.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, context.currentTime);
+                    osc.connect(context.destination);
+                    osc.start();
+                    osc.stop(context.currentTime + 0.1);
+                },
+                speak(text) {
+                    if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
+                    const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                    const msg = new SpeechSynthesisUtterance(cleanText);
+                    const voices = window.speechSynthesis.getVoices();
+                    let baseVoice = voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.name.includes('Samantha')) || voices[0];
+                    msg.voice = baseVoice;
+                    msg.pitch = this.currentChar.pitch; 
+                    msg.rate = this.currentChar.rate;
+                    msg.onstart = () => { this.isSpeaking = true; };
+                    msg.onend = () => { this.isSpeaking = false; };
+                    window.speechSynthesis.speak(msg);
                 }
             }
         }
     </script>
 </body>
+
 </html>
