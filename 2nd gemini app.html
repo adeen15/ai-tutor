@@ -1429,6 +1429,8 @@
                             this.populateUserData(data);
                             this.isLoggedIn = true;
                             this.playPing();
+                            
+                            // CHECK REWARD STATUS BEFORE SHOWING
                             if (!this.rewardClaimedToday) {
                                 setTimeout(() => {
                                     this.showRewards = true;
@@ -1472,6 +1474,8 @@
                     
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
+                    
+                    // REWARD LOGIC: Check if current date matches stored reward date
                     if (dailyData.date !== today) {
                         this.dailyQuestionsUsed = 0;
                         this.rewardClaimedToday = false;
@@ -1864,8 +1868,10 @@
                     }
                 },
                 
+                // REWARD CLAIM FIX: Sunday (index 6) gets 100, others 50. Persistent storage after claim.
                 async claimReward() {
                     if (this.rewardClaimedToday) return;
+                    
                     let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
                     this.coins = Number(this.coins) + rewardAmount;
                     this.rewardClaimedToday = true;
@@ -1876,8 +1882,11 @@
                         origin: { y: 0.6 },
                         colors: ['#FFD700', '#FF69B4', '#00BFFF']
                     });
+                    
                     this.playPing();
-                    await this.syncData(); 
+                    await this.syncData(); // PERSIST TO DATABASE IMMEDIATELY
+                    this.showRewards = false;
+                    this.toggleScroll(false);
                 },
                 trySetChar(char) {
                     if (char.premium && !this.isPremium) {
