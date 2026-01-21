@@ -597,7 +597,7 @@
                         </div>
                     </div>
 
-                    <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
+                    <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-blue-600 transition-transform transform hover:scale-105">
                         Continue Journey 🚀
                     </button>
                 </div>
@@ -1429,11 +1429,7 @@
                             this.populateUserData(data);
                             this.isLoggedIn = true;
                             this.playPing();
-                            
-                            // CHECK REWARD STATUS STRICTLY AGAINST TODAY'S DATE
-                            const today = new Date().toDateString();
-                            const dailyData = data.daily_usage || {};
-                            if (dailyData.date !== today || !dailyData.reward_claimed) {
+                            if (!this.rewardClaimedToday) {
                                 setTimeout(() => {
                                     this.showRewards = true;
                                     this.toggleScroll(true);
@@ -1476,8 +1472,6 @@
                     
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
-                    
-                    // REWARD LOGIC: Strict daily usage data locking
                     if (dailyData.date !== today) {
                         this.dailyQuestionsUsed = 0;
                         this.rewardClaimedToday = false;
@@ -1752,7 +1746,8 @@
                 },
 
                 async syncData() {
-                    if (!this.registeredEmail) return;
+                    // CRITICAL FIX: Ensure we only save if user is logged in and data is loaded
+                    if (!this.registeredEmail || !this.isLoggedIn) return;
                     
                     // Inject pathProgress into learning_stats to save it without schema change
                     this.learningStats.path_progress = this.pathProgress;
@@ -1763,7 +1758,7 @@
                     const safeStats = JSON.parse(JSON.stringify(this.learningStats));
 
                     const updateData = {
-                        coins: this.coins,
+                        coins: Number(this.coins),
                         xp: this.xp,
                         // NEW DATA FIELDS
                         child_profile: this.childProfile,
@@ -1870,16 +1865,13 @@
                     }
                 },
                 
-                // REWARD CLAIM FIX: Added strict date locking and cloud persistence
                 async claimReward() {
+                    // FIX: Ensure we only claim if not already claimed today
                     if (this.rewardClaimedToday) return;
                     
-                    const today = new Date().toDateString();
                     let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
-                    
                     this.coins = Number(this.coins) + rewardAmount;
                     this.rewardClaimedToday = true;
-                    this.lastUsageDate = today; // Lock it locally
                     
                     confetti({
                         particleCount: 150,
@@ -1887,11 +1879,8 @@
                         origin: { y: 0.6 },
                         colors: ['#FFD700', '#FF69B4', '#00BFFF']
                     });
-                    
                     this.playPing();
-                    await this.syncData(); // WAIT FOR PERSISTENCE TO FINISH
-                    this.showRewards = false;
-                    this.toggleScroll(false);
+                    await this.syncData(); 
                 },
                 trySetChar(char) {
                     if (char.premium && !this.isPremium) {
