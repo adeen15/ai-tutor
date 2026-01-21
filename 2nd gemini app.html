@@ -108,6 +108,10 @@
         .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid #3b82f6; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* PROGRESS BAR STYLES */
+        .level-progress-bg { background: rgba(0,0,0,0.05); border-radius: 99px; height: 10px; width: 100%; overflow: hidden; }
+        .level-progress-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; background: #10b981; }
+
         @media (max-width: 640px) {
             .daily-reward-btn { padding: 0.5rem !important; width: 52px; height: 52px; }
             .daily-reward-btn span.gift-bounce { font-size: 1.25rem !important; }
@@ -222,6 +226,18 @@
         <div class="safe-badge animate__animated animate__fadeInLeft">
             <i class="fas fa-shield-alt"></i> Kid-Safe AI
         </div>
+        <div x-show="activeLesson" class="bg-white p-2 rounded-xl shadow-lg border-b-4 border-blue-400 animate__animated animate__fadeInLeft" @click="showLearningMap = true">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🎒</span>
+                <div class="text-left">
+                    <p class="text-[8px] font-bold text-gray-400 uppercase">Current Lesson</p>
+                    <p class="text-xs font-kids text-blue-600" x-text="activeLesson ? activeLesson.name : ''"></p>
+                </div>
+            </div>
+            <div class="w-full bg-gray-100 h-1.5 rounded-full mt-1">
+                <div class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" :style="'width: ' + (activeLesson ? activeLesson.progress : 0) + '%'"></div>
+            </div>
+        </div>
     </div>
 
     <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
@@ -238,6 +254,10 @@
             <span class="text-xl sm:text-3xl">💰</span>
             <span class="font-kids text-lg sm:text-2xl text-yellow-700" x-text="coins"></span>
         </div>
+
+        <button @click="showLearningMap = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-400">
+            <span class="text-xl sm:text-3xl">🗺️</span>
+        </button>
 
         <button @click="showShop = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400">
             <span class="text-xl sm:text-3xl">🪄</span>
@@ -348,7 +368,7 @@
                             @click="startQuiz()"
                             class="flex items-center gap-2 px-5 py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4 bg-yellow-400 border-yellow-600 text-yellow-900 shadow-md"
                         >
-                            <span class="text-xl">🏆</span> Challenge Me!
+                            <span class="text-xl">🏆</span> <span x-text="activeLesson ? 'Quiz (Progress +)' : 'Challenge Me!'"></span>
                         </button>
 
                         <button 
@@ -413,6 +433,63 @@
         </div>
     </div>
 
+    <div x-show="showLearningMap" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-80"
+         x-transition.opacity>
+        <div @click.away="showLearningMap = false; toggleScroll(false)" class="bg-gradient-to-b from-blue-50 to-white rounded-[2rem] sm:rounded-[3rem] max-w-4xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-8 border-white max-h-[90vh] overflow-hidden flex flex-col">
+            <button @click="showLearningMap = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <h2 class="text-3xl sm:text-4xl font-kids text-blue-600 mb-2">Adventure Map 🗺️</h2>
+                <p class="text-gray-500 font-bold">Pick a path and start learning!</p>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scroll pr-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <template x-for="(subject, key) in curriculum">
+                        <div class="bg-white rounded-3xl p-4 shadow-lg border-2 border-gray-100 flex flex-col">
+                            <div class="p-4 rounded-2xl mb-4 text-center" :class="subject.bg">
+                                <h3 class="font-kids text-xl" :class="subject.color" x-text="subject.label"></h3>
+                            </div>
+                            
+                            <div class="space-y-4 flex-1">
+                                <template x-for="(level, index) in subject.levels">
+                                    <div class="relative">
+                                        <div x-show="index < subject.levels.length - 1" class="absolute left-6 top-10 bottom-[-20px] w-1 bg-gray-100 -z-10"></div>
+                                        
+                                        <div @click="!level.locked ? startLesson(key, index) : null" 
+                                             class="flex items-center gap-3 p-3 rounded-2xl border-2 transition-all cursor-pointer hover:scale-105"
+                                             :class="level.locked ? 'bg-gray-50 border-gray-100 opacity-70 cursor-not-allowed' : (level.completed ? 'bg-green-50 border-green-200' : 'bg-white border-blue-100 shadow-md')">
+                                            
+                                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shrink-0"
+                                                 :class="level.locked ? 'bg-gray-200 text-gray-400' : (level.completed ? 'bg-green-500 text-white' : 'bg-blue-500 text-white')">
+                                                <i x-show="level.locked" class="fas fa-lock text-sm"></i>
+                                                <i x-show="level.completed" class="fas fa-check text-sm"></i>
+                                                <span x-show="!level.locked && !level.completed" x-text="index + 1"></span>
+                                            </div>
+                                            
+                                            <div class="w-full">
+                                                <div class="flex justify-between items-center mb-1">
+                                                    <span class="font-bold text-sm text-gray-700" x-text="level.name"></span>
+                                                    <span x-show="level.completed" class="text-[10px] font-bold text-green-600 bg-green-100 px-2 rounded-full">DONE</span>
+                                                </div>
+                                                <div class="level-progress-bg">
+                                                    <div class="level-progress-fill" :style="'width: ' + level.progress + '%'"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div x-show="showQuiz" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
         <div @click.away="showQuiz = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
             <button @click="showQuiz = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
@@ -442,7 +519,7 @@
             <div class="text-center" x-show="quizState === 'correct'">
                 <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
                 <h2 class="text-3xl font-kids text-green-500 mb-2">Correct!</h2>
-                <p class="font-bold text-gray-500 mb-6">You earned 20 Coins!</p>
+                <p class="font-bold text-gray-500 mb-6" x-text="activeLesson ? 'Lesson Progress Up! 🚀' : 'You earned 20 Coins!'"></p>
                 <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
             </div>
 
@@ -936,7 +1013,46 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
-                // --- NEW: DASHBOARD STATE ---
+                // --- NEW: LEARNING PATH STATES ---
+                showLearningMap: false,
+                activeLesson: null, // { subjectKey: 'math', levelIndex: 0, name: 'Addition', progress: 50 }
+                curriculum: {
+                    math: { 
+                        label: "Math Magic", 
+                        color: "text-blue-500", 
+                        bg: "bg-blue-100", 
+                        levels: [
+                            { name: 'Counting 1-10', progress: 0, completed: false, locked: false },
+                            { name: 'Addition +', progress: 0, completed: false, locked: true },
+                            { name: 'Subtraction -', progress: 0, completed: false, locked: true },
+                            { name: 'Multiplication x', progress: 0, completed: false, locked: true }
+                        ]
+                    },
+                    english: { 
+                        label: "Word Wizard", 
+                        color: "text-pink-500", 
+                        bg: "bg-pink-100", 
+                        levels: [
+                            { name: 'The Alphabet', progress: 0, completed: false, locked: false },
+                            { name: 'Phonics Sounds', progress: 0, completed: false, locked: true },
+                            { name: 'Simple Words', progress: 0, completed: false, locked: true },
+                            { name: 'Reading Time', progress: 0, completed: false, locked: true }
+                        ]
+                    },
+                    science: { 
+                        label: "Science Explorer", 
+                        color: "text-green-500", 
+                        bg: "bg-green-100", 
+                        levels: [
+                            { name: 'Animals', progress: 0, completed: false, locked: false },
+                            { name: 'Plants & Trees', progress: 0, completed: false, locked: true },
+                            { name: 'Weather Watch', progress: 0, completed: false, locked: true },
+                            { name: 'Space Trip', progress: 0, completed: false, locked: true }
+                        ]
+                    }
+                },
+
+                // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -949,7 +1065,7 @@
                 isEditingProfile: false,
                 sessionStartTime: null,
 
-                // UPDATED: Stats specific to the 5 characters
+                // Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -967,7 +1083,7 @@
                 inventory: [],
                 equippedItem: null,
                 
-                // --- NEW QUIZ & ART STATES ---
+                // --- QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -985,7 +1101,6 @@
                     { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
                     { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
                 ],
-                // UPDATED CHARACTERS WITH DRAWING TOPICS
                 characters: [
                     { 
                         name: "Professor Dino", 
@@ -1033,7 +1148,6 @@
                     // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
-                        // Update total minutes every minute
                         this.totalMinutesLearned++;
                         this.syncData();
                     }, 60000);
@@ -1103,8 +1217,6 @@
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
                     
-                    // NEW: Load Child Profile & Time
-                    // Fallback to name if child_profile not set yet
                     this.childProfile = data.child_profile || { name: data.name, age: '', grade: '' }; 
                     this.totalMinutesLearned = data.total_minutes || 0;
 
@@ -1121,6 +1233,11 @@
                         wordsLearned: 0,
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
                     };
+
+                    // Load Curriculum if exists
+                    if (data.curriculum) {
+                        this.curriculum = data.curriculum;
+                    }
                     
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
@@ -1136,15 +1253,70 @@
                     this.checkPremiumExpiration();
                 },
 
-                // --- NEW JOURNEY HELPERS ---
-                get journeyProgress() {
-                    // Logic to fill bar based on milestones
-                    if (this.xp < 1000) return (this.xp / 1000) * 33; 
-                    if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
+                // --- LEARNING MAP LOGIC ---
+                startLesson(subjectKey, levelIndex) {
+                    const level = this.curriculum[subjectKey].levels[levelIndex];
+                    if (level.locked) return;
+
+                    this.showLearningMap = false;
+                    this.toggleScroll(false);
+                    
+                    // Set active lesson
+                    this.activeLesson = {
+                        subjectKey: subjectKey,
+                        levelIndex: levelIndex,
+                        name: level.name,
+                        progress: level.progress
+                    };
+
+                    // Trigger character speech
+                    this.displayText = `Okay! Let's learn about ${level.name}! Ask me a question about it!`;
+                    this.speak(this.displayText);
                 },
 
-                // FIX: Ensure exactly 5 specific subjects are shown
+                updateLessonProgress() {
+                    if (!this.activeLesson) return;
+
+                    const subj = this.activeLesson.subjectKey;
+                    const idx = this.activeLesson.levelIndex;
+                    
+                    // Increment progress (approx 34% per correct answer -> 3 answers to finish)
+                    let newProgress = this.curriculum[subj].levels[idx].progress + 34;
+                    if (newProgress >= 100) {
+                        newProgress = 100;
+                        this.curriculum[subj].levels[idx].completed = true;
+                        
+                        // Unlock next level
+                        if (idx + 1 < this.curriculum[subj].levels.length) {
+                            this.curriculum[subj].levels[idx + 1].locked = false;
+                        }
+                        
+                        // Celebrate
+                        confetti({ particleCount: 200, spread: 90, colors: ['#FFD700', '#10B981'] });
+                        this.displayText = `Wow! You finished ${this.activeLesson.name}! Great job! 🎉`;
+                        this.speak(this.displayText);
+                        
+                        // Reset active lesson after delay
+                        setTimeout(() => { this.activeLesson = null; }, 3000);
+                    }
+
+                    this.curriculum[subj].levels[idx].progress = newProgress;
+                    
+                    // Sync activeLesson display
+                    if (this.activeLesson) {
+                        this.activeLesson.progress = newProgress;
+                    }
+                    
+                    this.syncData();
+                },
+                // ---------------------------
+
+                get journeyProgress() {
+                    if (this.xp < 1000) return (this.xp / 1000) * 33; 
+                    if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
+                    return 66 + ((this.xp - 3000) / 2000) * 34; 
+                },
+
                 getTopSubjects() {
                     const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
@@ -1155,17 +1327,13 @@
                         nature: 'Nature'
                     };
                     
-                    // Build an array of [DisplayName, Score] ensuring all 5 exist
                     let statsArray = requiredKeys.map(key => {
-                        // Get score, default to 0 if key is missing in stored data
                         const score = this.learningStats.subjects[key] || 0;
                         return [displayNames[key], score];
                     });
 
-                    // Sort descending by score
                     statsArray.sort((a, b) => b[1] - a[1]);
 
-                    // Convert back to object for the template loop
                     return statsArray.reduce((obj, [name, score]) => {
                         obj[name] = score;
                         return obj;
@@ -1186,18 +1354,15 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
-                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
-                // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
 
-                    // 1. Validation Logic: Check if the request matches the current teacher's subject
                     const queryLower = this.userQuery.toLowerCase();
                     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
@@ -1209,21 +1374,17 @@
                         return; 
                     }
 
-                    // 2. Proceed with drawing if valid
                     this.showArtModal = true;
                     this.isDrawing = true;
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    // USE POLLINATIONS AI (Updated with rate limit fix)
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
                     
-                    // FIX: Removed private=true (causes strict limits), Added model=flux (better/faster), Added safe=true
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
 
-                    // Fake delay to show "Painting..." animation
                     setTimeout(() => {
                         this.artImage = imageUrl;
                         this.isDrawing = false;
@@ -1232,8 +1393,6 @@
                     }, 2000);
                 },
 
-                // --- NEW DOWNLOAD FUNCTION ---
-                // This fetches the image as a Blob and forces a download without navigation.
                 async downloadArt() {
                     if (!this.artImage) return;
                     try {
@@ -1250,7 +1409,6 @@
                         document.body.removeChild(a);
                     } catch (e) {
                         console.error("Download failed:", e);
-                        // Fallback only if the fetch method fails
                         window.open(this.artImage, '_blank');
                     }
                 },
@@ -1300,6 +1458,12 @@
                     if (index === this.quizCorrectIndex) {
                         this.quizState = 'correct';
                         this.coins += 20; 
+                        
+                        // NEW: Update Lesson Progress if active
+                        if (this.activeLesson) {
+                            this.updateLessonProgress();
+                        }
+
                         this.playPing();
                         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                         this.syncData();
@@ -1326,12 +1490,13 @@
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, // Init child profile
+                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, 
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
                                 learning_stats: this.learningStats,
-                                parent_logs: []
+                                parent_logs: [],
+                                curriculum: this.curriculum // Initialize Curriculum in DB
                             }
                         ]);
 
@@ -1403,16 +1568,15 @@
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
-                        // NEW DATA FIELDS
                         child_profile: this.childProfile,
                         total_minutes: this.totalMinutesLearned,
-
                         inventory: this.inventory,
                         equipped_item: this.equippedItem,
                         learning_stats: this.learningStats,
                         parent_logs: this.parentLogs,
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
+                        curriculum: this.curriculum, // Save Curriculum State
                         daily_usage: {
                             date: new Date().toDateString(),
                             questions_used: this.dailyQuestionsUsed,
@@ -1570,9 +1734,7 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
-                    // NEW: Strip 'Professor ' from name to fix truncation
                     let shortName = this.currentChar.name.replace("Professor ", "");
-                    
                     const entry = {
                         query: query,
                         time: new Date().toLocaleString(),
@@ -1724,5 +1886,4 @@
         }
     </script>
 </body>
-
 </html>
