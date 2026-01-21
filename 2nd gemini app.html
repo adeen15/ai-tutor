@@ -126,6 +126,10 @@
             #worksheet-print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; background: white; color: black; }
             .fixed, .absolute, .bg-black, .bg-slate-900, .bg-slate-50 { background: none !important; box-shadow: none !important; }
         }
+
+        /* Age Selector Styles */
+        .age-option { transition: all 0.3s ease; border: 2px solid transparent; }
+        .age-option.selected { border-color: #3b82f6; background-color: #eff6ff; transform: scale(1.05); }
     </style>
 </head>
 <body x-data="aiTutor()" 
@@ -175,17 +179,27 @@
 
                     <div x-show="!hasAccount" class="space-y-4 text-left">
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
-                            <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Child's Name</label>
+                            <input type="text" x-model="loginForm.name" placeholder="First Name" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                         </div>
+                        
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-2">Child's Age (Learning Level)</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button @click="loginForm.ageRange = '4-5'" :class="loginForm.ageRange === '4-5' ? 'bg-blue-500 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200'" class="p-3 rounded-xl border-2 font-bold transition-all text-sm">4-5</button>
+                                <button @click="loginForm.ageRange = '6-7'" :class="loginForm.ageRange === '6-7' ? 'bg-blue-500 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200'" class="p-3 rounded-xl border-2 font-bold transition-all text-sm">6-7</button>
+                                <button @click="loginForm.ageRange = '8-9'" :class="loginForm.ageRange === '8-9' ? 'bg-blue-500 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200'" class="p-3 rounded-xl border-2 font-bold transition-all text-sm">8-9</button>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-2 ml-2">We'll adjust vocabulary and quiz difficulty to match!</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Email Address</label>
                             <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Secret PIN (4 Digits)</label>
                             <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em] transition-all">
-                            <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
                         </div>
                         
                         <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
@@ -195,18 +209,13 @@
                                     I confirm I am the parent/guardian and agree to the 
                                     <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
                                     <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
-                                    I consent to kid-safe AI processing (COPPA/GDPR).
                                 </span>
                             </label>
                         </div>
 
-                        <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
+                        <button @click="handleSignup" :disabled="!legalAccepted || !loginForm.ageRange" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
                             Start Learning! 🚀
                         </button>
-                        <div class="flex items-center justify-center gap-2 mt-3 opacity-80">
-                             <i class="fas fa-shield-alt text-green-500"></i>
-                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">No data sold. 100% Private.</p>
-                        </div>
                         
                         <p class="text-center mt-2 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true">Already have an account? Login</p>
                     </div>
@@ -249,6 +258,7 @@
         <div class="safe-badge animate__animated animate__fadeInLeft">
             <i class="fas fa-shield-alt"></i> Kid-Safe AI
         </div>
+        <div class="bg-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-md animate__animated animate__fadeInLeft" x-text="'Level: ' + loginForm.ageRange"></div>
     </div>
 
     <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
@@ -930,7 +940,7 @@
                         <div x-show="!isEditingProfile" class="space-y-3">
                             <div><p class="text-xs text-slate-400 font-bold uppercase">Name</p><p class="text-xl font-kids text-slate-800" x-text="childProfile.name"></p></div>
                             <div class="flex gap-6">
-                                <div><p class="text-xs text-slate-400 font-bold uppercase">Age</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.age + ' Years'"></p></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Age Range</p><p class="text-lg font-bold text-slate-700" x-text="loginForm.ageRange || 'Not Set'"></p></div>
                                 <div><p class="text-xs text-slate-400 font-bold uppercase">Grade</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.grade"></p></div>
                             </div>
                         </div>
@@ -938,7 +948,11 @@
                         <div x-show="isEditingProfile" class="space-y-3 animate__animated animate__fadeIn">
                             <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Name">
                             <div class="flex gap-2">
-                                <input type="number" x-model="childProfile.age" class="w-1/2 p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Age">
+                                <select x-model="loginForm.ageRange" class="w-1/2 p-2 border rounded-xl bg-slate-50 font-bold text-sm">
+                                    <option value="4-5">Age 4-5</option>
+                                    <option value="6-7">Age 6-7</option>
+                                    <option value="8-9">Age 8-9</option>
+                                </select>
                                 <input type="text" x-model="childProfile.grade" class="w-1/2 p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Grade (e.g. 2nd)">
                             </div>
                             <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
@@ -986,8 +1000,8 @@
                                 <span class="text-sm font-bold text-blue-600" x-text="'+' + Math.floor(learningStats.wordsLearned / 10) + '%'"></span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-500 font-bold uppercase">Critical Thinking</span>
-                                <span class="text-sm font-bold text-green-600">Improving! 🚀</span>
+                                <span class="text-xs text-gray-500 font-bold uppercase">Difficulty Level</span>
+                                <span class="text-sm font-bold text-green-600" x-text="loginForm.ageRange === '4-5' ? 'Beginner' : (loginForm.ageRange === '6-7' ? 'Explorer' : 'Scholar')"></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-xs text-gray-500 font-bold uppercase">Screen Time Today</span>
@@ -1140,7 +1154,7 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
-                loginForm: { name: '', email: '', pin: '' },
+                loginForm: { name: '', email: '', pin: '', ageRange: '' },
                 registeredEmail: '',
                 
                 legalAccepted: false,
@@ -1173,7 +1187,6 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
-                // --- NEW: DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1186,7 +1199,6 @@
                 isEditingProfile: false,
                 sessionStartTime: null,
 
-                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1204,7 +1216,6 @@
                 inventory: [],
                 equippedItem: null,
                 
-                // --- NEW QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1215,7 +1226,6 @@
                 isDrawing: false,
                 artImage: null,
 
-                // --- NEW: LEARNING PATH STATE ---
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
@@ -1252,7 +1262,6 @@
                     }
                 ],
 
-                // ... [Rest of shopItems and characters kept the same]
                 shopItems: [
                     { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
@@ -1304,10 +1313,8 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
-                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
-                        // Update total minutes every minute
                         this.totalMinutesLearned++;
                         this.syncData();
                     }, 60000);
@@ -1346,7 +1353,6 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1354,7 +1360,6 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
-                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1382,7 +1387,6 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
-                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1392,15 +1396,11 @@
                     }
                 },
                 async completeLesson() {
-                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
-                    
-                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
-                    
                     this.coins += 50;
                     this.xp += 100;
                     this.updateLevel();
@@ -1408,7 +1408,6 @@
                     this.closeLesson();
                 },
 
-                // --- NEW: Reset only the map progress ---
                 async resetMapProgress() {
                     if(confirm("Restart your Adventure Map progress? This will reset all paths to 0%.")) {
                         this.pathProgress = {};
@@ -1448,9 +1447,8 @@
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
                     
-                    // NEW: Load Child Profile & Time
-                    // Fallback to name if child_profile not set yet
                     this.childProfile = data.child_profile || { name: data.name, age: '', grade: '' }; 
+                    this.loginForm.ageRange = data.age_range || '4-5'; // Persist age range
                     this.totalMinutesLearned = data.total_minutes || 0;
 
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1467,7 +1465,6 @@
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
                     };
 
-                    // Load Path Progress from learningStats if available (piggyback)
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
                     const dailyData = data.daily_usage || {};
@@ -1484,15 +1481,12 @@
                     this.checkPremiumExpiration();
                 },
 
-                // --- NEW JOURNEY HELPERS ---
                 get journeyProgress() {
-                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
+                    return 66 + ((this.xp - 3000) / 2000) * 34; 
                 },
 
-                // FIX: Ensure exactly 5 specific subjects are shown
                 getTopSubjects() {
                     const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
@@ -1503,17 +1497,13 @@
                         nature: 'Nature'
                     };
                     
-                    // Build an array of [DisplayName, Score] ensuring all 5 exist
                     let statsArray = requiredKeys.map(key => {
-                        // Get score, default to 0 if key is missing in stored data
                         const score = this.learningStats.subjects[key] || 0;
                         return [displayNames[key], score];
                     });
 
-                    // Sort descending by score
                     statsArray.sort((a, b) => b[1] - a[1]);
 
-                    // Convert back to object for the template loop
                     return statsArray.reduce((obj, [name, score]) => {
                         obj[name] = score;
                         return obj;
@@ -1534,18 +1524,15 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
-                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
-                // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
 
-                    // 1. Validation Logic: Check if the request matches the current teacher's subject
                     const queryLower = this.userQuery.toLowerCase();
                     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
@@ -1557,21 +1544,17 @@
                         return; 
                     }
 
-                    // 2. Proceed with drawing if valid
                     this.showArtModal = true;
                     this.isDrawing = true;
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    // USE POLLINATIONS AI (Updated with rate limit fix)
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
                     
-                    // FIX: Removed private=true (causes strict limits), Added model=flux (better/faster), Added safe=true
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
 
-                    // Fake delay to show "Painting..." animation
                     setTimeout(() => {
                         this.artImage = imageUrl;
                         this.isDrawing = false;
@@ -1580,8 +1563,6 @@
                     }, 2000);
                 },
 
-                // --- NEW DOWNLOAD FUNCTION ---
-                // This fetches the image as a Blob and forces a download without navigation.
                 async downloadArt() {
                     if (!this.artImage) return;
                     try {
@@ -1598,7 +1579,6 @@
                         document.body.removeChild(a);
                     } catch (e) {
                         console.error("Download failed:", e);
-                        // Fallback only if the fetch method fails
                         window.open(this.artImage, '_blank');
                     }
                 },
@@ -1609,7 +1589,13 @@
                     this.toggleScroll(true);
 
                     try {
-                        const systemPrompt = `You are an AI Quiz Generator for kids. 
+                        // AUTO-ADJUST QUIZ LEVEL based on ageRange
+                        const ageRange = this.loginForm.ageRange || '6-7';
+                        let difficultyNote = "";
+                        if(ageRange === '4-5') difficultyNote = "Use very simple 3-4 word sentences. Focus on basic shapes and colors.";
+                        if(ageRange === '8-9') difficultyNote = "Use full sentences and more complex facts. Focus on logic and details.";
+
+                        const systemPrompt = `You are an AI Quiz Generator for kids aged ${ageRange}. ${difficultyNote}
                         Based on the following text: "${this.displayText}", create ONE simple multiple-choice question.
                         Return strictly this JSON format: 
                         {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
@@ -1657,8 +1643,8 @@
                 },
 
                 async handleSignup() {
-                    if (!this.loginForm.name || !this.loginForm.email || this.loginForm.pin.length !== 4) {
-                        alert("Please fill in all fields. PIN must be 4 digits.");
+                    if (!this.loginForm.name || !this.loginForm.email || this.loginForm.pin.length !== 4 || !this.loginForm.ageRange) {
+                        alert("Please fill in all fields including the age range. PIN must be 4 digits.");
                         return;
                     }
                     if(!this.legalAccepted) {
@@ -1674,7 +1660,8 @@
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, // Init child profile
+                                child_profile: { name: this.loginForm.name, age: '', grade: '' },
+                                age_range: this.loginForm.ageRange, // SAVE AGE RANGE
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
@@ -1747,11 +1734,8 @@
 
                 async syncData() {
                     if (!this.registeredEmail) return;
-                    
-                    // Inject pathProgress into learning_stats to save it without schema change
                     this.learningStats.path_progress = this.pathProgress;
 
-                    // FIX: Ensure Arrays are plain JS objects to avoid Alpine Proxy issues
                     const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                     const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                     const safeStats = JSON.parse(JSON.stringify(this.learningStats));
@@ -1759,14 +1743,13 @@
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
-                        // NEW DATA FIELDS
                         child_profile: this.childProfile,
+                        age_range: this.loginForm.ageRange, // Sync age range
                         total_minutes: this.totalMinutesLearned,
-
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
                         learning_stats: safeStats,
-                        parent_logs: safeLogs, // Send clean array
+                        parent_logs: safeLogs,
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -1926,7 +1909,6 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
-                    // NEW: Strip 'Professor ' from name to fix truncation
                     let shortName = this.currentChar.name.replace("Professor ", "");
                     
                     const entry = {
@@ -1938,10 +1920,7 @@
                 },
                 async clearLogs() {
                     if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
-                        // FIX: Use splice to clear in-place, handling Alpine Proxy correctly
                         this.parentLogs.splice(0, this.parentLogs.length);
-                        
-                        // Only clear words learned and subject scores
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                         
@@ -2012,7 +1991,13 @@
                     this.currentMoodIcon = this.currentChar.mood_think;
 
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children aged 5-8. 
+                        // AUTO-ADJUST VOCABULARY AND DIFFICULTY based on ageRange
+                        const ageRange = this.loginForm.ageRange || '6-7';
+                        let difficultyNote = "";
+                        if(ageRange === '4-5') difficultyNote = "Use very simple 3-4 word sentences. Avoid long words. Explain like child is a toddler.";
+                        if(ageRange === '8-9') difficultyNote = "Use more advanced vocabulary. Give detailed, slightly longer explanations. Explain like child is in elementary school.";
+
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children aged ${ageRange}. ${difficultyNote}
                         YOUR SUBJECT: ${this.currentChar.subject}.
                         
                         CRITICAL RULES:
@@ -2079,7 +2064,6 @@
                     msg.onend = () => { this.isSpeaking = false; };
                     window.speechSynthesis.speak(msg);
                 },
-                // --- NEW PREMIUM FUNCTIONS ---
                 generateWorksheet() {
                     if(!this.isPremium) {
                         this.showPremiumModal = true;
@@ -2087,7 +2071,6 @@
                     }
                     this.playPing();
                     window.print();
-                    // Award bonus for offline learning
                     this.coins += 100;
                     this.syncData();
                 }
@@ -2095,5 +2078,4 @@
         }
     </script>
 </body>
-
 </html>
