@@ -1854,21 +1854,21 @@
                     this.parentLogs.push(entry);
                 },
                 async clearLogs() {
-                    if(confirm("Clear all history and progress (Including Map)?")) {
+                    if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
                         this.parentLogs = [];
-                        this.coins = 0;
-                        this.xp = 0; // Reset XP
-                        this.level = 1; // Reset Level
-                        this.learningStats = { 
-                            wordsLearned: 0, 
-                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                            path_progress: {} // Ensure nested key is clear
-                        };
-                        this.pathProgress = {}; // Reset local map progress
-                        this.inventory = [];
-                        this.equippedItem = null;
+                        
+                        // Reset subject learning stats but PRESERVE path_progress
+                        // We sync pathProgress into learningStats.path_progress in syncData, 
+                        // but locally we track them separately in this.learningStats and this.pathProgress.
+                        
+                        // We keep the structure but reset scores
+                        this.learningStats.wordsLearned = 0;
+                        this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
+                        
+                        // Do NOT reset coins, inventory, xp, level, or pathProgress
+                        
                         await this.syncData(); 
-                        alert("History and map progress cleared.");
+                        alert("Search history cleared.");
                     }
                 },
                 updateProgress(query, response) {
@@ -2007,4 +2007,3 @@
 </body>
 
 </html>
-}
