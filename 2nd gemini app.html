@@ -597,7 +597,7 @@
                         </div>
                     </div>
 
-                    <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-blue-600 transition-transform transform hover:scale-105">
+                    <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
                         Continue Journey 🚀
                     </button>
                 </div>
@@ -1430,8 +1430,10 @@
                             this.isLoggedIn = true;
                             this.playPing();
                             
-                            // CHECK REWARD STATUS BEFORE SHOWING
-                            if (!this.rewardClaimedToday) {
+                            // CHECK REWARD STATUS STRICTLY AGAINST TODAY'S DATE
+                            const today = new Date().toDateString();
+                            const dailyData = data.daily_usage || {};
+                            if (dailyData.date !== today || !dailyData.reward_claimed) {
                                 setTimeout(() => {
                                     this.showRewards = true;
                                     this.toggleScroll(true);
@@ -1475,7 +1477,7 @@
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
                     
-                    // REWARD LOGIC: Check if current date matches stored reward date
+                    // REWARD LOGIC: Strict daily usage data locking
                     if (dailyData.date !== today) {
                         this.dailyQuestionsUsed = 0;
                         this.rewardClaimedToday = false;
@@ -1868,13 +1870,16 @@
                     }
                 },
                 
-                // REWARD CLAIM FIX: Sunday (index 6) gets 100, others 50. Persistent storage after claim.
+                // REWARD CLAIM FIX: Added strict date locking and cloud persistence
                 async claimReward() {
                     if (this.rewardClaimedToday) return;
                     
+                    const today = new Date().toDateString();
                     let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
+                    
                     this.coins = Number(this.coins) + rewardAmount;
                     this.rewardClaimedToday = true;
+                    this.lastUsageDate = today; // Lock it locally
                     
                     confetti({
                         particleCount: 150,
@@ -1884,7 +1889,7 @@
                     });
                     
                     this.playPing();
-                    await this.syncData(); // PERSIST TO DATABASE IMMEDIATELY
+                    await this.syncData(); // WAIT FOR PERSISTENCE TO FINISH
                     this.showRewards = false;
                     this.toggleScroll(false);
                 },
