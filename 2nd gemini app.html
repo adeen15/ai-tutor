@@ -1174,6 +1174,7 @@
                     }
                 ],
 
+                // ... [Rest of shopItems and characters kept the same]
                 shopItems: [
                     { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
@@ -1181,7 +1182,6 @@
                     { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
                     { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
                 ],
-                // UPDATED CHARACTERS WITH DRAWING TOPICS
                 characters: [
                     { 
                         name: "Professor Dino", 
@@ -1860,14 +1860,12 @@
                 },
                 async clearLogs() {
                     if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
-                        this.parentLogs = [];
+                        // FIX: Use splice to clear in-place, handling Alpine Proxy correctly
+                        this.parentLogs.splice(0, this.parentLogs.length);
                         
                         // Only clear words learned and subject scores
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
-                        
-                        // We do NOT clear path_progress here anymore. 
-                        // That is handled by the dedicated button in the Map.
                         
                         await this.syncData(); 
                         alert("Search history cleared.");
