@@ -97,15 +97,6 @@
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
 
-        /* Hide scrollbar for Adventure Map */
-        .custom-scroll {
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
-        }
-        .custom-scroll::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
-        }
-
         .premium-glow { animation: glow-gold 2s infinite; }
         @keyframes glow-gold { 0% { box-shadow: 0 0 5px #ffd700; } 50% { box-shadow: 0 0 20px #ffd700, 0 0 10px #ffea00; } 100% { box-shadow: 0 0 5px #ffd700; } }
 
@@ -250,7 +241,7 @@
                             <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
                         </div>
                         
-                        <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100">
+                        <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                             <label class="flex items-start gap-3 cursor-pointer">
                                 <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
@@ -572,7 +563,7 @@
                 </div>
             </div>
 
-            <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50 custom-scroll">
+            <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
                 <div x-show="isPremium" class="mb-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 text-white shadow-xl animate__animated animate__fadeIn">
                     <div class="flex items-center gap-4">
                         <div class="text-4xl bg-white/20 p-3 rounded-2xl">🎯</div>
@@ -653,28 +644,6 @@
                             </div>
                         </div>
                     </template>
-
-                    <div class="mt-4 flex flex-col items-center gap-4 animate__animated animate__fadeInUp">
-                        <div class="h-12 w-1 bg-gray-200 rounded-full mb-2"></div>
-                        <button 
-                            @click="generateInfiniteContent()"
-                            :disabled="isGeneratingContent"
-                            class="group relative bg-white px-8 py-4 rounded-3xl shadow-xl hover:shadow-2xl transition-all border-4 border-dashed border-purple-300 hover:border-purple-500 overflow-hidden"
-                        >
-                            <div x-show="isGeneratingContent" class="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
-                                <div class="spinner border-purple-500 w-6 h-6"></div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span class="text-3xl group-hover:rotate-12 transition-transform">✨</span>
-                                <div class="text-left">
-                                    <p class="font-kids text-purple-600 text-lg leading-none">Magic Expansion</p>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Generate Level <span x-text="currentPath ? currentPath.levels.length + 1 : ''"></span></p>
-                                </div>
-                            </div>
-                        </button>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Powered by AI Magic</p>
-                    </div>
-
                  </div>
             </div>
         </div>
@@ -831,7 +800,7 @@
         <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
             <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
             <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
-            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4 custom-scroll">
+            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
                 
                 <template x-if="showLegalDoc === 'privacy'">
                     <div class="space-y-4">
@@ -897,7 +866,7 @@
     <div x-show="showShop" x-cloak
          class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70"
          x-transition.opacity>
-        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto custom-scroll">
+        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto">
             <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
                 <i class="fas fa-times-circle"></i>
             </button>
@@ -1253,9 +1222,6 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
-                    </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-slate-800 text-lg mb-4">Top Subjects</h3>
@@ -1321,6 +1287,7 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
+                // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
                 
@@ -1330,7 +1297,6 @@
                 userQuery: '',
                 displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                 isThinking: false,
-                isGeneratingContent: false,
                 isSpeaking: false,
                 isListening: false,
                 hasAnswered: false,
@@ -1355,6 +1321,7 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
+                // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1362,12 +1329,14 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
+                // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
 
+                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1377,6 +1346,7 @@
                         science: 0, 
                         nature: 0 
                     },
+                    // We will store child_profile here to avoid DB errors
                     child_profile: null 
                 },
                 xp: 0,
@@ -1386,6 +1356,7 @@
                 inventory: [],
                 equippedItem: null,
                 
+                // --- QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1396,12 +1367,13 @@
                 isDrawing: false,
                 artImage: null,
 
+                // --- LEARNING PATH STATE ---
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn', 
+                lessonStep: 'learn', // learn, quiz, success
                 currentLessonQuizIndex: 0,
-                pathProgress: {}, 
+                pathProgress: {}, // Stores completion per subject
                 selectedCertificatePath: null,
 
                 curriculum: [
@@ -1484,6 +1456,7 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
+                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
                         this.totalMinutesLearned++;
@@ -1524,6 +1497,7 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
+                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1531,6 +1505,7 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
+                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1558,6 +1533,7 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
+                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1567,9 +1543,11 @@
                     }
                 },
                 async completeLesson() {
+                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
                     
+                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
@@ -1579,67 +1557,6 @@
                     this.updateLevel();
                     await this.syncData();
                     this.closeLesson();
-                },
-
-                async generateInfiniteContent() {
-                    if (!this.currentPath) return;
-                    if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
-                        this.showPremiumModal = true;
-                        return;
-                    }
-
-                    this.isGeneratingContent = true;
-                    const path = this.currentPath;
-                    const nextId = path.levels.length + 1;
-                    const ageRange = this.childProfile.ageRange || '6-7';
-
-                    try {
-                        const systemPrompt = `You are an expert children's educator and curriculum designer. 
-                        Create a new, engaging lesson level for the "${path.name}" learning path.
-                        Target Age Group: ${ageRange} years old.
-                        This will be Level ${nextId}.
-                        
-                        Return the content strictly in JSON format with this structure:
-                        {
-                            "id": ${nextId},
-                            "title": "A fun title",
-                            "content": "2-3 sentences of educational content explaining a specific sub-topic.",
-                            "quiz": [
-                                {"q": "Question 1", "options": ["Option A", "Option B", "Option C"], "correct": 0},
-                                {"q": "Question 2", "options": ["Option A", "Option B", "Option C"], "correct": 1},
-                                {"q": "Question 3", "options": ["Option A", "Option B", "Option C"], "correct": 2}
-                            ]
-                        }
-                        Ensure the vocabulary and complexity are perfect for a ${ageRange} year old. Return only the JSON.`;
-
-                        const response = await fetch("/api/chat", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                "messages": [
-                                    { "role": "system", "content": systemPrompt },
-                                    { "role": "user", "content": "Generate the next lesson level." }
-                                ]
-                            })
-                        });
-
-                        const data = await response.json();
-                        let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-                        const newLevel = JSON.parse(cleanJson);
-
-                        path.levels.push(newLevel);
-                        
-                        this.playPing();
-                        confetti({ particleCount: 100, spread: 70 });
-                        
-                        await this.syncData();
-                        
-                    } catch (e) {
-                        console.error("Infinite Content Error:", e);
-                        alert("The magic wand flickered! Try generating again in a moment.");
-                    } finally {
-                        this.isGeneratingContent = false;
-                    }
                 },
 
                 printCertificate(path) {
@@ -1712,15 +1629,6 @@
 
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
-                    if (data.learning_stats?.custom_curriculum) {
-                        data.learning_stats.custom_curriculum.forEach(savedPath => {
-                            const path = this.curriculum.find(p => p.id === savedPath.id);
-                            if (path && savedPath.levels.length > path.levels.length) {
-                                path.levels = savedPath.levels;
-                            }
-                        });
-                    }
-                    
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
                     if (dailyData.date !== today) {
@@ -1736,9 +1644,10 @@
                 },
 
                 get journeyProgress() {
+                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; 
+                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
 
                 getTopSubjects() {
@@ -1778,6 +1687,7 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
+                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
@@ -1793,11 +1703,12 @@
                         return;
                     }
                     alert("Generating Progress Report... Your PDF will download shortly.");
+                    // Simulate PDF generation
                 },
 
                 async generateArt() {
-                    if (!this.userQuery.trim()) {
-                        alert("Tell me what to draw first!");
+                    if (!this.userQuery) {
+                        alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
 
@@ -1817,6 +1728,7 @@
                     this.artImage = null;
                     this.toggleScroll(true);
 
+                    // USE POLLINATIONS AI
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
@@ -1851,6 +1763,7 @@
                     }
                 },
 
+                // Helper for Age Logic
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
                     const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
@@ -1875,8 +1788,10 @@
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
                         TARGET AGE: ${ageRange}.
                         Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
+                        Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
                         Return strictly this JSON format: 
-                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}`;
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
+                        Make sure the options are short and simple.`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
@@ -1899,6 +1814,7 @@
                         this.quizState = 'active';
 
                     } catch (e) {
+                        console.error("Quiz Error", e);
                         this.quizQuestion = "Did you like learning about that?";
                         this.quizOptions = ["Yes!", "It was okay", "No"];
                         this.quizCorrectIndex = 0;
@@ -2026,21 +1942,20 @@
                     
                     this.learningStats.path_progress = this.pathProgress;
                     this.learningStats.child_profile = this.childProfile;
-                    
-                    this.learningStats.custom_curriculum = this.curriculum.map(p => ({
-                        id: p.id,
-                        levels: p.levels
-                    }));
+
+                    const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
+                    const safeInventory = JSON.parse(JSON.stringify(this.inventory));
+                    const safeStats = JSON.parse(JSON.stringify(this.learningStats));
 
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
                         total_minutes: this.totalMinutesLearned,
                         email_summary_enabled: this.emailSummaryEnabled,
-                        inventory: this.inventory,
+                        inventory: safeInventory,
                         equipped_item: this.equippedItem,
-                        learning_stats: this.learningStats,
-                        parent_logs: this.parentLogs, 
+                        learning_stats: safeStats,
+                        parent_logs: safeLogs, 
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -2100,7 +2015,7 @@
                         if (now > this.premiumExpiry) {
                             this.isPremium = false;
                             this.premiumExpiry = null;
-                            alert("Your subscription has expired. Renew to access all features!");
+                            alert("Your monthly premium subscription has expired. Please renew to access all features!");
                             this.setChar(this.characters[0]);
                             this.syncData();
                         }
@@ -2120,7 +2035,7 @@
                         if (data.url) {
                             window.location.href = data.url;
                         } else {
-                            alert("Could not connect to payment server.");
+                            alert("Could not connect to payment server. Check console.");
                         }
                     } catch (e) {
                         alert("Payment Error. Please try again.");
@@ -2130,7 +2045,7 @@
                     }
                 },
                 async cancelSubscription() {
-                    if(confirm("Are you sure you want to cancel?")) {
+                    if(confirm("Are you sure you want to cancel? You will lose access to premium features immediately.")) {
                         this.isPremium = false;
                         this.premiumExpiry = null;
                         this.setChar(this.characters[0]);
@@ -2147,7 +2062,8 @@
                     confetti({
                         particleCount: 150,
                         spread: 70,
-                        origin: { y: 0.6 }
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FF69B4', '#00BFFF']
                     });
                     this.playPing();
                     await this.syncData(); 
@@ -2177,6 +2093,7 @@
                         if (this.pinInput.length === 4) {
                             this.masterPin = this.pinInput;
                             await this.supabase.from('profiles').update({ pin: this.pinInput }).eq('email', this.registeredEmail);
+                            
                             alert("PIN updated!");
                             this.isChangingPin = false;
                             this.parentAuthenticated = true;
@@ -2207,22 +2124,25 @@
                     this.parentLogs.push(entry);
                 },
                 async clearLogs() {
-                    if(confirm("Clear search history?")) {
+                    if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
                         this.parentLogs.splice(0, this.parentLogs.length);
+                        
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
+                        
                         await this.syncData(); 
+                        alert("Search history cleared.");
                     }
                 },
                 updateProgress(query, response) {
                     const words = response.split(' ').length;
                     this.learningStats.wordsLearned += words;
                     const queryLower = query.toLowerCase();
-                    if (queryLower.match(/bee|ocean|rainbow|flower|animal|nature|tree/)) this.learningStats.subjects.nature += 10;
-                    if (queryLower.match(/sun|space|star|moon|planet|rocket/)) this.learningStats.subjects.space += 10;
-                    if (queryLower.match(/robot|code|computer|ai/)) this.learningStats.subjects.robots += 10;
-                    if (queryLower.match(/volcano|science|math|experiment/)) this.learningStats.subjects.science += 10;
-                    if (queryLower.match(/dino|fossil|history|egypt/)) this.learningStats.subjects.history += 10;
+                    if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
+                    if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
+                    if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
+                    if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
+                    if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
                 },
                 startListening() {
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2261,7 +2181,7 @@
                         return;
                     }
                     if (!this.isQuerySafe(this.userQuery)) {
-                        this.displayText = "Oops! Let's talk about something fun like dinosaurs instead! 🌈✨";
+                        this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
                         this.userQuery = '';
                         this.currentMoodIcon = '🤔';
                         return;
@@ -2276,8 +2196,18 @@
                     this.displayText = "Thinking... 🧠✨";
                     this.currentMoodIcon = this.currentChar.mood_think;
 
+                    const ageLogicInstruction = this.getAgeLogic();
+
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. ${this.getAgeLogic()} YOUR SUBJECT: ${this.currentChar.subject}.`;
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
+                        ${ageLogicInstruction}
+                        YOUR SUBJECT: ${this.currentChar.subject}.
+                        
+                        CRITICAL RULES:
+                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
+                        2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
+                        3. Never break character.`;
+
                         const response = await fetch("/api/chat", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -2298,7 +2228,8 @@
 
                         this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
                     } catch (error) {
-                        this.finishThinking("Oh no! My brain is fuzzy. Ask again? 🔌", savedQuery);
+                        console.error("API Error:", error);
+                        this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
                     }
                 },
                 async finishThinking(response, originalQuery) {
@@ -2311,6 +2242,7 @@
                     this.updateLevel();
                     this.playPing();
                     this.updateProgress(originalQuery, response);
+                    
                     await this.syncData();
                 },
                 playPing() {
@@ -2326,6 +2258,9 @@
                     if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
                     const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                     const msg = new SpeechSynthesisUtterance(cleanText);
+                    const voices = window.speechSynthesis.getVoices();
+                    let baseVoice = voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.name.includes('Samantha')) || voices[0];
+                    msg.voice = baseVoice;
                     msg.pitch = this.currentChar.pitch; 
                     msg.rate = this.currentChar.rate;
                     msg.onstart = () => { this.isSpeaking = true; };
