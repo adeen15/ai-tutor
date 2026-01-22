@@ -1174,7 +1174,7 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
-                // NEW: Initialize with default ageRange 6-7
+                // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
                 
@@ -1208,7 +1208,7 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
-                // --- NEW: DASHBOARD STATE ---
+                // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1216,7 +1216,7 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                // NEW: Add ageRange to default child profile structure
+                // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
@@ -1231,7 +1231,9 @@
                         space: 0, 
                         science: 0, 
                         nature: 0 
-                    }
+                    },
+                    // We will store child_profile here to avoid DB errors
+                    child_profile: null 
                 },
                 xp: 0,
                 level: 1,
@@ -1240,7 +1242,7 @@
                 inventory: [],
                 equippedItem: null,
                 
-                // --- NEW QUIZ & ART STATES ---
+                // --- QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1251,7 +1253,7 @@
                 isDrawing: false,
                 artImage: null,
 
-                // --- NEW: LEARNING PATH STATE ---
+                // --- LEARNING PATH STATE ---
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
@@ -1288,7 +1290,6 @@
                     }
                 ],
 
-                // ... [Rest of shopItems and characters kept the same]
                 shopItems: [
                     { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
@@ -1343,7 +1344,6 @@
                     // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
-                        // Update total minutes every minute
                         this.totalMinutesLearned++;
                         this.syncData();
                     }, 60000);
@@ -1444,7 +1444,6 @@
                     this.closeLesson();
                 },
 
-                // --- NEW: Reset only the map progress ---
                 async resetMapProgress() {
                     if(confirm("Restart your Adventure Map progress? This will reset all paths to 0%.")) {
                         this.pathProgress = {};
@@ -1484,10 +1483,12 @@
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
                     
-                    // NEW: Load Child Profile & Time
-                    // Fallback to name if child_profile not set yet
-                    // NEW: Added ageRange here
-                    this.childProfile = data.child_profile || { name: data.name, age: '', grade: '', ageRange: '6-7' }; 
+                    // FIXED: Load Child Profile from learning_stats if available, else standard fallback
+                    // This avoids the 'child_profile' column missing error
+                    this.childProfile = (data.learning_stats && data.learning_stats.child_profile) 
+                        ? data.learning_stats.child_profile 
+                        : { name: data.name, age: '', grade: '', ageRange: '6-7' }; 
+
                     this.totalMinutesLearned = data.total_minutes || 0;
 
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1501,10 +1502,11 @@
                     this.parentLogs = data.parent_logs || [];
                     this.learningStats = data.learning_stats || {
                         wordsLearned: 0,
-                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
+                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                        child_profile: this.childProfile
                     };
 
-                    // Load Path Progress from learningStats if available (piggyback)
+                    // Load Path Progress from learningStats
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
                     const dailyData = data.daily_usage || {};
@@ -1521,7 +1523,6 @@
                     this.checkPremiumExpiration();
                 },
 
-                // --- NEW JOURNEY HELPERS ---
                 get journeyProgress() {
                     // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
@@ -1529,7 +1530,6 @@
                     return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
 
-                // FIX: Ensure exactly 5 specific subjects are shown
                 getTopSubjects() {
                     const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
@@ -1540,17 +1540,13 @@
                         nature: 'Nature'
                     };
                     
-                    // Build an array of [DisplayName, Score] ensuring all 5 exist
                     let statsArray = requiredKeys.map(key => {
-                        // Get score, default to 0 if key is missing in stored data
                         const score = this.learningStats.subjects[key] || 0;
                         return [displayNames[key], score];
                     });
 
-                    // Sort descending by score
                     statsArray.sort((a, b) => b[1] - a[1]);
 
-                    // Convert back to object for the template loop
                     return statsArray.reduce((obj, [name, score]) => {
                         obj[name] = score;
                         return obj;
@@ -1575,14 +1571,12 @@
                     this.loginForm.name = this.childProfile.name;
                 },
 
-                // --- MAGIC ART FUNCTION (FIXED with TOPIC CHECK) ---
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
 
-                    // 1. Validation Logic: Check if the request matches the current teacher's subject
                     const queryLower = this.userQuery.toLowerCase();
                     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
@@ -1594,21 +1588,18 @@
                         return; 
                     }
 
-                    // 2. Proceed with drawing if valid
                     this.showArtModal = true;
                     this.isDrawing = true;
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    // USE POLLINATIONS AI (Updated with rate limit fix)
+                    // USE POLLINATIONS AI
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
                     
-                    // FIX: Removed private=true (causes strict limits), Added model=flux (better/faster), Added safe=true
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
 
-                    // Fake delay to show "Painting..." animation
                     setTimeout(() => {
                         this.artImage = imageUrl;
                         this.isDrawing = false;
@@ -1617,8 +1608,6 @@
                     }, 2000);
                 },
 
-                // --- NEW DOWNLOAD FUNCTION ---
-                // This fetches the image as a Blob and forces a download without navigation.
                 async downloadArt() {
                     if (!this.artImage) return;
                     try {
@@ -1635,12 +1624,11 @@
                         document.body.removeChild(a);
                     } catch (e) {
                         console.error("Download failed:", e);
-                        // Fallback only if the fetch method fails
                         window.open(this.artImage, '_blank');
                     }
                 },
 
-                // NEW: Helper for Age Logic
+                // Helper for Age Logic
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
                     if (range === '4-5') {
@@ -1657,7 +1645,6 @@
                     this.quizState = 'loading';
                     this.toggleScroll(true);
 
-                    // NEW: Pass age range to quiz generator
                     const ageRange = this.childProfile.ageRange || '6-7';
 
                     try {
@@ -1723,22 +1710,30 @@
                     this.isLoading = true;
                     const email = this.loginForm.email.toLowerCase().trim();
 
+                    // FIXED: Prepare stats with nested child_profile
+                    const initialChildProfile = { 
+                        name: this.loginForm.name, 
+                        age: '', 
+                        grade: '',
+                        ageRange: this.loginForm.ageRange 
+                    };
+
+                    const initialStats = {
+                        ...this.learningStats,
+                        child_profile: initialChildProfile
+                    };
+
                     try {
                         const { data, error } = await this.supabase.from('profiles').insert([
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                // NEW: Save selected ageRange to profile
-                                child_profile: { 
-                                    name: this.loginForm.name, 
-                                    age: '', 
-                                    grade: '',
-                                    ageRange: this.loginForm.ageRange 
-                                }, 
+                                // REMOVED 'child_profile' root column to fix DB error
+                                // Storing it inside learning_stats instead which is JSONB
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
-                                learning_stats: this.learningStats,
+                                learning_stats: initialStats,
                                 parent_logs: []
                             }
                         ]);
@@ -1749,13 +1744,10 @@
                         this.registeredEmail = email;
                         this.masterPin = this.loginForm.pin;
                         this.savedProfile = { name: this.loginForm.name, email: email };
-                        // NEW: Update local state
-                        this.childProfile = { 
-                            name: this.loginForm.name, 
-                            age: '', 
-                            grade: '',
-                            ageRange: this.loginForm.ageRange 
-                        };
+                        
+                        this.childProfile = initialChildProfile;
+                        this.learningStats = initialStats;
+
                         this.coins = 50; 
                         this.isLoggedIn = true;
                         this.hasAccount = true;
@@ -1814,10 +1806,11 @@
                 async syncData() {
                     if (!this.registeredEmail) return;
                     
-                    // Inject pathProgress into learning_stats to save it without schema change
                     this.learningStats.path_progress = this.pathProgress;
 
-                    // FIX: Ensure Arrays are plain JS objects to avoid Alpine Proxy issues
+                    // FIXED: Always ensure child_profile is synced into learning_stats
+                    this.learningStats.child_profile = this.childProfile;
+
                     const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                     const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                     const safeStats = JSON.parse(JSON.stringify(this.learningStats));
@@ -1825,14 +1818,13 @@
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
-                        // NEW DATA FIELDS
-                        child_profile: this.childProfile,
+                        // REMOVED 'child_profile' root key from update
                         total_minutes: this.totalMinutesLearned,
 
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
                         learning_stats: safeStats,
-                        parent_logs: safeLogs, // Send clean array
+                        parent_logs: safeLogs, 
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -1992,9 +1984,7 @@
                     this.toggleScroll(false);
                 },
                 logActivity(query) {
-                    // NEW: Strip 'Professor ' from name to fix truncation
                     let shortName = this.currentChar.name.replace("Professor ", "");
-                    
                     const entry = {
                         query: query,
                         time: new Date().toLocaleString(),
@@ -2004,10 +1994,8 @@
                 },
                 async clearLogs() {
                     if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
-                        // FIX: Use splice to clear in-place, handling Alpine Proxy correctly
                         this.parentLogs.splice(0, this.parentLogs.length);
                         
-                        // Only clear words learned and subject scores
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                         
@@ -2077,7 +2065,6 @@
                     this.displayText = "Thinking... 🧠✨";
                     this.currentMoodIcon = this.currentChar.mood_think;
 
-                    // NEW: Helper logic call
                     const ageLogicInstruction = this.getAgeLogic();
 
                     try {
@@ -2149,7 +2136,7 @@
                     msg.onend = () => { this.isSpeaking = false; };
                     window.speechSynthesis.speak(msg);
                 },
-                // --- NEW PREMIUM FUNCTIONS ---
+                // --- PREMIUM FUNCTIONS ---
                 generateWorksheet() {
                     if(!this.isPremium) {
                         this.showPremiumModal = true;
@@ -2157,7 +2144,6 @@
                     }
                     this.playPing();
                     window.print();
-                    // Award bonus for offline learning
                     this.coins += 100;
                     this.syncData();
                 }
