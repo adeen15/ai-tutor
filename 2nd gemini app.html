@@ -241,7 +241,7 @@
                             <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
                         </div>
                         
-                        <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                        <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100">
                             <label class="flex items-start gap-3 cursor-pointer">
                                 <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
@@ -644,6 +644,28 @@
                             </div>
                         </div>
                     </template>
+
+                    <div class="mt-4 flex flex-col items-center gap-4 animate__animated animate__fadeInUp">
+                        <div class="h-12 w-1 bg-gray-200 rounded-full mb-2"></div>
+                        <button 
+                            @click="generateInfiniteContent()"
+                            :disabled="isGeneratingContent"
+                            class="group relative bg-white px-8 py-4 rounded-3xl shadow-xl hover:shadow-2xl transition-all border-4 border-dashed border-purple-300 hover:border-purple-500 overflow-hidden"
+                        >
+                            <div x-show="isGeneratingContent" class="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+                                <div class="spinner border-purple-500 w-6 h-6"></div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl group-hover:rotate-12 transition-transform">✨</span>
+                                <div class="text-left">
+                                    <p class="font-kids text-purple-600 text-lg leading-none">Magic Expansion</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Generate Level <span x-text="currentPath ? currentPath.levels.length + 1 : ''"></span></p>
+                                </div>
+                            </div>
+                        </button>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Powered by AI Magic</p>
+                    </div>
+
                  </div>
             </div>
         </div>
@@ -1297,6 +1319,7 @@
                 userQuery: '',
                 displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                 isThinking: false,
+                isGeneratingContent: false,
                 isSpeaking: false,
                 isListening: false,
                 hasAnswered: false,
@@ -1559,6 +1582,70 @@
                     this.closeLesson();
                 },
 
+                // --- INFINITE CONTENT GENERATOR ---
+                async generateInfiniteContent() {
+                    if (!this.currentPath) return;
+                    if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+
+                    this.isGeneratingContent = true;
+                    const path = this.currentPath;
+                    const nextId = path.levels.length + 1;
+                    const ageRange = this.childProfile.ageRange || '6-7';
+
+                    try {
+                        const systemPrompt = `You are an expert children's educator and curriculum designer. 
+                        Create a new, engaging lesson level for the "${path.name}" learning path.
+                        Target Age Group: ${ageRange} years old.
+                        This will be Level ${nextId}.
+                        
+                        Return the content strictly in JSON format with this structure:
+                        {
+                            "id": ${nextId},
+                            "title": "A fun title",
+                            "content": "2-3 sentences of educational content explaining a specific sub-topic.",
+                            "quiz": [
+                                {"q": "Question 1", "options": ["Option A", "Option B", "Option C"], "correct": 0},
+                                {"q": "Question 2", "options": ["Option A", "Option B", "Option C"], "correct": 1},
+                                {"q": "Question 3", "options": ["Option A", "Option B", "Option C"], "correct": 2}
+                            ]
+                        }
+                        Ensure the vocabulary and complexity are perfect for a ${ageRange} year old. Return only the JSON.`;
+
+                        const response = await fetch("/api/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": "Generate the next lesson level." }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const newLevel = JSON.parse(cleanJson);
+
+                        // Push to the local curriculum reference
+                        path.levels.push(newLevel);
+                        
+                        this.playPing();
+                        confetti({ particleCount: 100, spread: 70 });
+                        
+                        // Sync to Supabase so it's saved forever
+                        await this.syncData();
+                        
+                    } catch (e) {
+                        console.error("Infinite Content Error:", e);
+                        alert("The magic wand flickered! Try generating again in a moment.");
+                    } finally {
+                        this.isGeneratingContent = false;
+                    }
+                },
+
                 printCertificate(path) {
                     this.selectedCertificatePath = path;
                     setTimeout(() => {
@@ -1628,6 +1715,17 @@
                     };
 
                     this.pathProgress = data.learning_stats?.path_progress || {};
+                    
+                    // NEW: Restore custom generated curriculum levels
+                    if (data.learning_stats?.custom_curriculum) {
+                        data.learning_stats.custom_curriculum.forEach(savedPath => {
+                            const path = this.curriculum.find(p => p.id === savedPath.id);
+                            // Only update if saved levels are longer than hardcoded ones
+                            if (path && savedPath.levels.length > path.levels.length) {
+                                path.levels = savedPath.levels;
+                            }
+                        });
+                    }
                     
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
@@ -1942,6 +2040,12 @@
                     
                     this.learningStats.path_progress = this.pathProgress;
                     this.learningStats.child_profile = this.childProfile;
+                    
+                    // Save custom generated curriculum levels
+                    this.learningStats.custom_curriculum = this.curriculum.map(p => ({
+                        id: p.id,
+                        levels: p.levels
+                    }));
 
                     const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                     const safeInventory = JSON.parse(JSON.stringify(this.inventory));
