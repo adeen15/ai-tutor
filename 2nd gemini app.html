@@ -262,7 +262,24 @@
                              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">No data sold. 100% Private.</p>
                         </div>
 
-                        <div class="mt-6 grid grid-cols-2 gap-2 text-left animate__animated animate__fadeInUp delay-500">
+                        <div class="mt-6 p-4 bg-blue-50/50 rounded-2xl border-2 border-dashed border-blue-200 animate__animated animate__fadeInUp delay-500">
+                            <h4 class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <i class="fas fa-bullseye"></i> 30-Day Learning Outcomes
+                            </h4>
+                            <ul class="space-y-1">
+                                <li class="text-[11px] font-bold text-slate-600 flex items-center gap-2">
+                                    <span class="text-green-500">✓</span> Count till 100
+                                </li>
+                                <li class="text-[11px] font-bold text-slate-600 flex items-center gap-2">
+                                    <span class="text-green-500">✓</span> Understand plants & animals
+                                </li>
+                                <li class="text-[11px] font-bold text-slate-600 flex items-center gap-2">
+                                    <span class="text-green-500">✓</span> Read basic English sentences
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-2 gap-2 text-left animate__animated animate__fadeInUp delay-700">
                             <div class="bg-blue-50 p-2 rounded-lg border border-blue-100 flex items-center gap-2">
                                 <i class="fas fa-check-circle text-blue-500 text-xs"></i>
                                 <span class="text-[10px] font-bold text-slate-600 leading-tight">Curriculum Aligned</span>
@@ -527,6 +544,473 @@
         </div>
     </div>
 
+    <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[65] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
+        <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
+            
+            <div class="p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
+                <div>
+                    <h2 class="text-3xl font-kids text-slate-800">Adventure Map 🗺️</h2>
+                    <p class="text-gray-500 font-bold" x-show="!currentPath">Choose your journey!</p>
+                    <p class="text-gray-500 font-bold" x-show="currentPath" x-text="currentPath ? currentPath.name : ''"></p>
+                </div>
+                <div class="flex gap-2">
+                    <button @click="resetMapProgress()" class="bg-red-100 p-3 rounded-full hover:bg-red-200 text-red-500 transition-colors" title="Reset Progress">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button @click="showLearningPath = false; currentPath = null; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                <div x-show="isPremium" class="mb-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 text-white shadow-xl animate__animated animate__fadeIn">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl bg-white/20 p-3 rounded-2xl">🎯</div>
+                        <div>
+                            <h3 class="font-kids text-2xl">Personalized Mission</h3>
+                            <p class="font-bold opacity-90" x-text="'Goal: Complete ' + (childProfile.ageRange === '4-5' ? '10 simple counts' : '5 Science lessons') + ' this week!'"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                    <template x-for="path in curriculum">
+                        <button @click="currentPath = path" class="bg-white rounded-[2rem] p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 border-b-8 border-gray-200 group flex flex-col items-center text-center relative overflow-hidden">
+                             <div class="absolute top-0 left-0 w-full h-2 group-hover:h-full transition-all duration-500 opacity-10" :class="path.color"></div>
+                             
+                             <div class="w-24 h-24 rounded-full bg-gray-50 flex items-center justify-center text-5xl mb-6 shadow-inner group-hover:scale-110 transition-transform">
+                                <span x-text="path.icon"></span>
+                             </div>
+                             
+                             <div class="flex items-center gap-2 mb-2">
+                                <h3 class="text-2xl font-kids text-gray-800" x-text="path.name"></h3>
+                                <i x-show="path.premium && !isPremium" class="fas fa-lock text-slate-400 text-sm"></i>
+                             </div>
+                             <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4" x-text="path.grade"></span>
+                             
+                             <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-1000" :class="path.color" :style="'width: ' + getPathProgress(path.id) + '%'"></div>
+                             </div>
+                             <p class="text-xs text-gray-400 font-bold mt-2" x-text="Math.round(getPathProgress(path.id)) + '% Complete'"></p>
+
+                             <template x-if="isPremium && getPathProgress(path.id) === 100">
+                                <button @click.stop="printCertificate(path)" class="mt-4 bg-amber-400 text-amber-900 px-4 py-2 rounded-xl text-xs font-kids shadow-lg hover:scale-105 transition-transform">
+                                    🎓 Claim Certificate
+                                </button>
+                             </template>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="currentPath" class="flex-1 overflow-y-auto relative bg-slate-50 custom-scroll">
+                 <button @click="currentPath = null" class="absolute top-4 left-4 z-20 bg-white px-4 py-2 rounded-xl shadow-md font-bold text-gray-600 hover:text-blue-500">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                 </button>
+
+                 <div x-show="currentPath && currentPath.premium && !isPremium" class="absolute inset-0 z-30 bg-white/90 flex flex-col items-center justify-center text-center p-8 backdrop-blur-sm">
+                     <div class="text-6xl mb-4">👑</div>
+                     <h2 class="text-3xl font-kids text-slate-800 mb-2">Premium Curriculum</h2>
+                     <p class="text-slate-500 font-bold max-w-sm mb-6">Unlock all Adventure Paths, Personalized Plans, and Certificates for just $4.99/mo!</p>
+                     <button @click="showPremiumModal = true; showLearningPath = false" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600">Upgrade Now</button>
+                 </div>
+
+                 <div class="flex flex-col items-center py-20 px-4 min-h-full">
+                    <template x-for="(level, index) in currentPath ? currentPath.levels : []">
+                        <div class="relative flex flex-col items-center w-full max-w-md z-10">
+                            
+                            <div x-show="index < currentPath.levels.length - 1" 
+                                 class="level-connector h-24 top-16 w-3"
+                                 :class="isLevelUnlocked(currentPath.id, index + 2) ? currentPath.color : 'bg-gray-200'">
+                            </div>
+
+                            <button 
+                                @click="isLevelUnlocked(currentPath.id, level.id) ? openLesson(level) : null"
+                                class="w-20 h-20 rounded-full flex items-center justify-center border-4 shadow-xl relative transition-transform hover:scale-110 z-10 bg-white"
+                                :class="[
+                                    isLevelUnlocked(currentPath.id, level.id) ? ('border-white ' + currentPath.color + ' text-white') : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed',
+                                    isLevelComplete(currentPath.id, level.id) ? 'ring-4 ring-green-400 ring-offset-2' : ''
+                                ]"
+                            >
+                                <span x-show="isLevelComplete(currentPath.id, level.id)" class="text-3xl">🏆</span>
+                                <span x-show="!isLevelComplete(currentPath.id, level.id) && isLevelUnlocked(currentPath.id, level.id)" class="text-2xl font-bold" x-text="level.id"></span>
+                                <i x-show="!isLevelUnlocked(currentPath.id, level.id)" class="fas fa-lock"></i>
+                            </button>
+
+                            <div class="relative z-10 bg-white px-4 py-2 rounded-xl shadow-md mt-3 mb-16 text-center border-2" 
+                                 :class="isLevelUnlocked(currentPath.id, level.id) ? 'border-gray-100' : 'border-transparent opacity-50'">
+                                <h4 class="font-bold text-slate-700 text-sm" x-text="level.title"></h4>
+                            </div>
+                        </div>
+                    </template>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="activeLesson" x-cloak class="fixed inset-0 z-[70] bg-black bg-opacity-90 flex items-center justify-center p-4" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0 relative animate__animated animate__zoomIn">
+            
+            <div class="bg-slate-100 p-6 flex justify-between items-center sticky top-0 z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl text-white shadow-sm" :class="currentPath ? currentPath.color : 'bg-gray-500'">
+                        <span x-text="activeLesson ? activeLesson.id : ''"></span>
+                    </div>
+                    <h3 class="font-bold text-xl text-slate-800" x-text="activeLesson ? activeLesson.title : ''"></h3>
+                </div>
+                <button @click="closeLesson()" class="text-gray-400 hover:text-red-500 text-2xl"><i class="fas fa-times-circle"></i></button>
+            </div>
+
+            <div class="p-8">
+                <div x-show="lessonStep === 'learn'" class="text-center">
+                    <div class="text-6xl mb-6 bounce">👨‍🏫</div>
+                    <p class="text-xl sm:text-2xl text-slate-700 font-medium leading-relaxed mb-8" x-text="activeLesson ? activeLesson.content : ''"></p>
+                    
+                    <button @click="speak(activeLesson.content)" class="mb-8 text-blue-500 font-bold hover:underline"><i class="fas fa-volume-up mr-2"></i> Read to me</button>
+
+                    <button @click="lessonStep = 'quiz'" class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
+                        Start Quiz! 📝
+                    </button>
+                </div>
+
+                <div x-show="lessonStep === 'quiz'" class="text-left">
+                    <div class="mb-4 flex justify-between items-center">
+                         <span class="text-xs font-bold uppercase text-gray-400">Question <span x-text="currentLessonQuizIndex + 1"></span>/3</span>
+                         <div class="flex gap-1">
+                            <template x-for="i in 3">
+                                <div class="w-2 h-2 rounded-full transition-colors" :class="i <= currentLessonQuizIndex ? 'bg-blue-500' : 'bg-gray-200'"></div>
+                            </template>
+                         </div>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6" x-text="getCurrentLessonQuestion().q"></h3>
+
+                    <div class="space-y-3">
+                        <template x-for="(opt, idx) in getCurrentLessonQuestion().options">
+                            <button 
+                                @click="checkLessonAnswer(idx)"
+                                class="w-full p-4 rounded-xl border-2 border-gray-100 hover:bg-blue-50 hover:border-blue-300 text-left font-bold text-gray-700 transition-all flex items-center gap-3"
+                            >
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500" x-text="['A','B','C'][idx]"></span>
+                                <span x-text="opt"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <div x-show="lessonStep === 'success'" class="text-center py-8">
+                    <div class="text-8xl mb-4 animate__animated animate__tada">🎉</div>
+                    <h2 class="text-4xl font-kids text-green-500 mb-2">Lesson Complete!</h2>
+                    <p class="text-gray-500 font-bold mb-8">You are getting smarter!</p>
+                    
+                    <div class="flex justify-center gap-4 mb-8">
+                        <div class="bg-yellow-50 px-6 py-3 rounded-2xl border border-yellow-200">
+                            <span class="text-2xl">💰</span> <span class="font-bold text-yellow-700">+50 Coins</span>
+                        </div>
+                        <div class="bg-purple-50 px-6 py-3 rounded-2xl border border-purple-200">
+                            <span class="text-2xl">⭐</span> <span class="font-bold text-purple-700">+100 XP</span>
+                        </div>
+                    </div>
+
+                    <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-blue-600 transition-transform transform hover:scale-105">
+                        Continue Journey 🚀
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showQuiz" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div @click.away="showQuiz = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
+            <button @click="showQuiz = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            
+            <div class="text-center" x-show="quizState === 'loading'">
+                <div class="spinner mx-auto mb-4 border-yellow-400"></div>
+                <h2 class="text-2xl font-kids text-yellow-500">Thinking up a tricky one... 🤔</h2>
+                <p class="text-xs text-slate-400 font-bold mt-2" x-text="'Adjusting difficulty for ' + (childProfile.ageRange || '6-7') + ' year olds...'"></p>
+            </div>
+
+            <div x-show="quizState === 'active'">
+                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Pop Quiz!</span>
+                <h2 class="text-2xl font-bold text-gray-800 mt-4 mb-6 leading-tight" x-text="quizQuestion"></h2>
+                
+                <div class="space-y-3">
+                    <template x-for="(option, index) in quizOptions">
+                        <button 
+                            @click="checkAnswer(index)"
+                            class="w-full text-left p-4 rounded-2xl border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold text-gray-700 flex items-center gap-3"
+                        >
+                            <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold" x-text="['A','B','C'][index]"></span>
+                            <span x-text="option"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <div class="text-center" x-show="quizState === 'correct'">
+                <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
+                <h2 class="text-3xl font-kids text-green-500 mb-2">Correct!</h2>
+                <p class="font-bold text-gray-500 mb-6">You earned 20 Coins!</p>
+                <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
+            </div>
+
+            <div class="text-center" x-show="quizState === 'wrong'">
+                <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
+                <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
+                <p class="font-bold text-gray-500 mb-6">That wasn't quite right. Try again?</p>
+                <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showArtModal" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div @click.away="showArtModal = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__zoomIn text-center border-4 border-pink-200">
+            <button @click="showArtModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            
+            <h2 class="text-4xl font-kids text-pink-500 mb-2">Magic Art Studio 🎨</h2>
+            <p class="text-gray-500 font-bold mb-6">Turning your words into coloring pages...</p>
+
+            <div class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 mb-6 relative overflow-hidden">
+                <div x-show="isDrawing" class="flex flex-col items-center">
+                    <div class="spinner border-pink-400 mb-4"></div>
+                    <p class="font-kids text-pink-400 animate-pulse">Painting... 🖌️</p>
+                </div>
+                
+                <img id="printable-art" x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
+                
+                <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold">
+                    Tell me what to draw first!
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4" x-show="artImage && !isDrawing">
+                <button @click="window.print()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">
+                    <i class="fas fa-print mr-2"></i> Print
+                </button>
+                
+                <button @click="downloadArt()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
+                    <i class="fas fa-download mr-2"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
+            <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
+            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
+                
+                <template x-if="showLegalDoc === 'privacy'">
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                            <p class="font-bold text-green-700 flex items-center gap-2"><i class="fas fa-shield-alt"></i> STRICT NO DATA SALE POLICY</p>
+                            <p class="text-xs text-green-800 mt-1">We do NOT sell, trade, or rent your child's personal identification information to others. Ever.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">1. Information We Collect (Strictly Necessary Only)</h3>
+                            <ul class="list-disc ml-4 text-xs space-y-1 mt-1">
+                                <li><strong>Parent Email:</strong> Used solely for account recovery and login.</li>
+                                <li><strong>PIN Code:</strong> Encrypted locally and used for parental controls.</li>
+                                <li><strong>Progress Data:</strong> Coins, inventory, and learning stats (synced securely).</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">2. What We Do NOT Collect</h3>
+                            <p>We do NOT store voice recordings. Voice inputs are processed instantly and discarded. We do not collect GPS location or physical addresses.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">3. AI & COPPA Compliance</h3>
+                            <p>Our AI interactions are filtered for safety. No personally identifiable information (PII) is sent to AI models for training purposes. We use stateless inference APIs.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">4. Your Rights</h3>
+                            <p>You can delete your account and all associated data instantly via the "Reset Account" button in the login screen.</p>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="showLegalDoc === 'terms'">
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800">1. Acceptance of Terms</h3>
+                            <p>By accessing AI Tutor, you agree to be bound by these Terms of Service. This app is intended for educational use by children under parental supervision.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">2. Parental Responsibility</h3>
+                            <p>You represent that you are the parent or legal guardian of the child using this app. You are responsible for maintaining the confidentiality of your PIN.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">3. Subscriptions & Payments</h3>
+                            <p>Premium features are offered on a monthly basis. You may cancel at any time via the Parent Portal. (Note: This is a demo application; payments are simulated).</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-800">4. Limitation of Liability</h3>
+                            <p>The app is provided "as is". While we strive for educational accuracy, AI responses may occasionally vary. We are not liable for incidental damages.</p>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showShop" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto">
+            <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            
+            <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600">Magic Auras</h2>
+            <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8">Add magic effects to your teacher!</p>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
+                <template x-for="item in shopItems">
+                    <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-105"
+                         :class="equippedItem === item.id ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200' : 'bg-gray-50 border-gray-100'">
+                        
+                        <div class="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white rounded-full shadow-inner text-3xl sm:text-5xl">
+                            <span x-text="item.icon"></span>
+                            <div x-show="inventory.includes(item.id)" class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-xs border-2 border-white">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center w-full">
+                            <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
+                            <div x-show="!inventory.includes(item.id)" class="text-yellow-600 font-bold text-xs sm:text-sm bg-yellow-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block">
+                                <span x-text="item.price"></span> 💰
+                            </div>
+                        </div>
+
+                        <button 
+                            @click="inventory.includes(item.id) ? toggleEquip(item.id) : buyItem(item)"
+                            class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
+                            :class="inventory.includes(item.id) 
+                                ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') 
+                                : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
+                            :disabled="!inventory.includes(item.id) && coins < item.price"
+                        >
+                            <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? 'Active ✨' : 'Activate') : 'Buy Now'"></span>
+                        </button>
+                    </div>
+                </template>
+            </div>
+            
+            <div class="mt-6 sm:mt-8 flex justify-center">
+                <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
+                    <span class="text-xl sm:text-2xl">💰</span>
+                    <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="'You have ' + coins + ' coins'"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showRewards" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
+            <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <h2 class="text-4xl font-kids text-pink-500 mb-2">Daily Rewards!</h2>
+            <p class="font-bold text-gray-500 mb-6">Come back every day for free coins!</p>
+            <div class="grid grid-cols-4 gap-3 mb-8">
+                <template x-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
+                    <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
+                         :class="todayIndex === index ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50 opacity-60'">
+                        <span class="text-[10px] font-bold uppercase" x-text="day"></span>
+                        <span class="text-xl" x-text="index === 6 ? '🎁' : '💰'"></span>
+                        <span class="text-xs font-bold text-gray-600" x-text="index === 6 ? '100' : '50'"></span>
+                    </div>
+                </template>
+            </div>
+            <button @click="claimReward()" :disabled="rewardClaimedToday"
+                class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
+                :class="rewardClaimedToday ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'">
+                <span x-text="rewardClaimedToday ? 'See You Tomorrow!' : (todayIndex === 6 ? 'Claim 100 Coins! ✨' : 'Claim 50 Coins! ✨')"></span>
+            </button>
+        </div>
+    </div>
+
+    <div x-show="showPremiumModal" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
+         x-transition.opacity>
+        <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-yellow-100">
+            <button @click="showPremiumModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-yellow-800 hover:text-white">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <div class="text-center">
+                <div class="text-6xl mb-4">👑</div>
+                <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
+                <p class="text-yellow-900 font-bold text-lg mb-6">Unlock the full power of learning!</p>
+                <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Personalized Weekly Learning Plans</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Monthly Progress Reports (PDF)</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Priority AI Explanations</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Official Path Certificates</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Parent Email Summaries</span></div>
+                </div>
+                <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
+                    Get Premium ($4.99/mo)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showCheckout" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-6 bg-slate-900 bg-opacity-95 overflow-y-auto" x-transition.opacity>
+        <div class="bg-white rounded-[2rem] max-w-md w-full p-8 shadow-2xl text-center my-auto">
+            <h2 class="text-3xl font-kids text-slate-800 mb-2">Secure Checkout</h2>
+            <p class="text-gray-500 mb-6">Unlock <span class="font-bold text-slate-800">1 Month Premium</span> for $4.99</p>
+            
+            <div class="text-left space-y-4 mb-8">
+                <div>
+                    <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Cardholder Name</label>
+                    <input type="text" x-model="checkoutForm.name" placeholder="John Doe" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Card Number</label>
+                    <div class="relative">
+                        <input type="text" x-model="checkoutForm.card" placeholder="0000 0000 0000 0000" maxlength="19" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
+                        <i class="fas fa-credit-card absolute right-4 top-5 text-slate-300"></i>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Expiry Date</label>
+                        <input type="text" x-model="checkoutForm.expiry" placeholder="MM/YY" maxlength="5" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">CVV</label>
+                        <input type="password" x-model="checkoutForm.cvv" placeholder="***" maxlength="3" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button 
+                    @click="processPayment" 
+                    :disabled="!checkoutForm.name || !checkoutForm.card || !checkoutForm.expiry || !checkoutForm.cvv"
+                    class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:grayscale"
+                >
+                    <i class="fas fa-lock mr-2"></i> Complete Payment
+                </button>
+                <button @click="showCheckout = false" class="w-full py-4 text-black font-bold hover:text-slate-600">Cancel</button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-6 italic">Simulation: Do not enter real sensitive information.</p>
+        </div>
+    </div>
+
     <div x-show="showParentPortal" x-cloak
          class="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-6 bg-slate-900 bg-opacity-95 overflow-y-auto"
          x-transition.opacity>
@@ -553,7 +1037,7 @@
 
             <div class="flex-1 overflow-y-auto custom-scroll p-6 sm:p-8">
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-id-card text-blue-500 mr-2"></i>Child Profile</h3>
@@ -570,6 +1054,7 @@
 
                         <div x-show="isEditingProfile" class="space-y-3 animate__animated animate__fadeIn">
                             <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Name">
+                            
                             <div>
                                 <label class="text-xs text-slate-400 font-bold uppercase">Adjust Age Group</label>
                                 <select x-model="childProfile.ageRange" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
@@ -578,118 +1063,206 @@
                                     <option value="8-9">8-9 Years (Advanced)</option>
                                 </select>
                             </div>
+                            
                             <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
                         </div>
                     </div>
 
+                    <div class="bg-blue-50 p-6 rounded-3xl shadow-sm border border-blue-100 flex flex-col justify-center">
+                        <h3 class="font-bold text-blue-800 text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="fas fa-flag-checkered"></i> 30-Day Outcomes
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm">1</div>
+                                <p class="text-xs font-bold text-blue-700">Count till 100</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm">2</div>
+                                <p class="text-xs font-bold text-blue-700">Understand plants & animals</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm">3</div>
+                                <p class="text-xs font-bold text-blue-700">Read basic English sentences</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails
+                            <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails Active
                         </h3>
                         <div class="space-y-4">
                              <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-check"></i></div>
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-book"></i></div>
                                 <div>
-                                    <p class="text-xs font-bold text-slate-700 uppercase">Safety Active</p>
-                                    <p class="text-[10px] text-slate-500 leading-tight">Content filtered for violence, politics, and mature themes.</p>
+                                    <p class="text-xs font-bold text-slate-700 uppercase">Curriculum Aligned</p>
+                                    <p class="text-[10px] text-slate-500 leading-tight">AI answers are restricted to age-appropriate educational topics only.</p>
                                 </div>
                              </div>
-                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
+                             <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
                                 <div>
-                                    <p class="text-xs font-bold text-slate-700">📅 Weekly Summary Email</p>
-                                    <p class="text-[9px] text-gray-400">Receive a PDF report every Sunday.</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button @click="emailSummaryEnabled = !emailSummaryEnabled; syncData()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
-                                        <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
-                                    </button>
+                                    <p class="text-xs font-bold text-slate-700 uppercase">Email Summary Status</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
+                                            <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
+                                        </button>
+                                        <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Emails ON' : 'Weekly Emails OFF'"></span>
+                                    </div>
                                 </div>
                              </div>
-                             <button @click="alert('✉️ Sent a sample Weekly Summary to ' + registeredEmail + '!')" class="w-full text-[10px] font-bold text-blue-500 uppercase hover:underline text-right">Send Test Email Now</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                    
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-3xl border border-blue-200">
-                        <h3 class="font-bold text-blue-900 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-tachometer-alt"></i> Daily Snapshot
-                        </h3>
-                        <div class="flex justify-between items-center mb-6">
-                            <div>
-                                <p class="text-3xl font-kids text-blue-600" x-text="dailyMinutes + 'm'"></p>
-                                <p class="text-[10px] font-bold text-blue-400 uppercase">⏱ Active Today</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-3xl font-kids text-blue-600" x-text="Math.round(getTotalCurriculumProgress()) + '%'"></p>
-                                <p class="text-[10px] font-bold text-blue-400 uppercase">📊 Total Progress</p>
-                            </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                         <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i>Membership</h3>
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" :class="isPremium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'" x-text="isPremium ? 'Premium' : 'Free'"></span>
                         </div>
-                        <div class="w-full bg-white rounded-full h-2 mb-2">
-                            <div class="bg-blue-500 h-2 rounded-full transition-all duration-1000" :style="'width: ' + getTotalCurriculumProgress() + '%'"></div>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? 'All teachers and features unlocked.' : 'Limited to 5 questions per day.'"></p>
+                            
+                            <template x-if="isPremium && premiumExpiry">
+                                <p class="text-xs text-gray-400 font-bold mb-3">
+                                    Renews on: <span class="text-slate-600" x-text="new Date(premiumExpiry).toLocaleDateString()"></span>
+                                </p>
+                            </template>
+
+                            <button @click="isPremium ? cancelSubscription() : processPayment()" 
+                                class="w-full py-3 rounded-xl font-bold text-sm transition-all" 
+                                :class="isPremium ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg transform hover:-translate-y-1'">
+                                <span x-text="isPremium ? 'Cancel Subscription' : 'Upgrade Now ($4.99/mo)'"></span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                        <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                            <div>
+                                <i class="fas fa-lock text-gray-400 mb-2"></i>
+                                <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
+                                <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                            </div>
+                        </div>
                         <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-brain text-purple-500"></i> AI Insights
+                            <i class="fas fa-chart-line text-blue-500"></i> Monthly Report
                         </h3>
                         <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xl">💪</div>
-                                <div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Top Strength</p>
-                                    <p class="font-bold text-slate-700" x-text="getStrengths() || 'Keep playing to find out!'"></p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xl">🧠</div>
-                                <div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Focus Area</p>
-                                    <p class="font-bold text-slate-700" x-text="getWeaknesses() || 'Needs more data'"></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-book-open text-pink-500"></i> Topics Today
-                        </h3>
-                        <div class="flex flex-wrap gap-2">
-                             <template x-for="topic in getDailyTopics()">
-                                <span class="bg-pink-50 text-pink-600 px-3 py-1 rounded-full text-xs font-bold border border-pink-100" x-text="topic"></span>
-                             </template>
-                             <span x-show="getDailyTopics().length === 0" class="text-xs text-gray-400 italic">No topics explored yet today.</span>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-gray-100">
-                             <p class="text-[10px] text-gray-400 font-bold uppercase mb-2">Total Questions Asked</p>
-                             <div class="flex items-center gap-2">
-                                 <span class="text-2xl font-bold text-slate-700">❓</span>
-                                 <span class="text-xl font-bold text-slate-700" x-text="parentLogs.length"></span>
-                             </div>
+                            <p class="text-[10px] text-gray-500">A detailed analysis of subjects learned, questions asked, and vocabulary milestones.</p>
+                            <button @click="downloadMonthlyReport()" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-file-download mr-2"></i> Download Report (PDF)
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-64">
-                    <div class="flex justify-between items-center mb-4">
-                         <h3 class="font-bold text-slate-800 text-lg"><i class="fas fa-history text-gray-400 mr-2"></i>Recent Activity Log</h3>
-                         <button @click="clearLogs" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase">Clear History</button>
-                    </div>
-                    <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3">
-                        <template x-for="log in parentLogs.slice().reverse().slice(0, 15)">
-                            <div class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-400 flex justify-between items-center">
-                                <div>
-                                    <p class="text-slate-700 text-sm font-semibold" x-text="'❓ ' + log.query"></p>
-                                    <p class="text-[10px] text-gray-400 font-bold mt-1" x-text="log.time"></p>
+                <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
+                    <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
+                        <i class="fas fa-rocket text-purple-500"></i> Learning Journey
+                    </h3>
+                    
+                    <div class="relative w-full mt-4 mb-8 px-2 sm:px-10">
+                        <div class="absolute left-4 right-4 top-5 h-1.5 bg-gray-100 rounded-full z-0"></div>
+                        <div class="absolute left-4 top-5 h-1.5 bg-green-400 rounded-full z-0 transition-all duration-1000" :style="'width: ' + journeyProgress + '%'"></div>
+
+                        <div class="relative flex justify-between items-start z-10">
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                     :class="xp >= 0 ? 'border-green-400 text-green-500' : 'border-gray-200 text-gray-300'">
+                                    <i class="fas fa-egg text-lg"></i>
                                 </div>
-                                <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase whitespace-nowrap ml-2" x-text="log.char"></span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
                             </div>
-                        </template>
-                         <div x-show="parentLogs.length === 0" class="text-center text-gray-400 text-sm py-8">
-                            No questions asked yet.
+                            
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                     :class="xp >= 1000 ? 'border-blue-400 text-blue-500' : 'border-gray-200 text-gray-300'">
+                                    <i class="fas fa-book-reader text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
+                            </div>
+
+                            <div class="flex flex-col items-center gap-2">
+                                 <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                     :class="xp >= 3000 ? 'border-purple-400 text-purple-500' : 'border-gray-200 text-gray-300'">
+                                    <i class="fas fa-graduation-cap text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                      :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                        <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 text-center">
+                            <div class="text-2xl mb-1">❓</div>
+                            <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
+                            <div class="text-[10px] text-orange-400 font-bold uppercase">Questions Asked</div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-center">
+                            <div class="text-2xl mb-1">📖</div>
+                            <div class="text-2xl font-bold text-blue-600" x-text="learningStats.wordsLearned"></div>
+                            <div class="text-[10px] text-blue-400 font-bold uppercase">Words Read</div>
+                        </div>
+                         <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100 text-center">
+                            <div class="text-2xl mb-1">💰</div>
+                            <div class="text-2xl font-bold text-yellow-600" x-text="coins"></div>
+                            <div class="text-[10px] text-yellow-400 font-bold uppercase">Coins Earned</div>
+                        </div>
+                        <div class="bg-pink-50 p-4 rounded-2xl border border-pink-100 text-center">
+                            <div class="text-2xl mb-1">⭐</div>
+                            <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
+                            <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-slate-800 text-lg mb-4">Top Subjects</h3>
+                        <div class="space-y-4">
+                            <template x-for="(score, subject) in getTopSubjects()">
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold text-gray-500 mb-1 uppercase">
+                                        <span x-text="subject"></span>
+                                        <span x-text="score + ' pts'"></span>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full transition-all duration-1000" 
+                                             :class="getSubjectColor(subject)" 
+                                             :style="'width: ' + Math.min((score / 50) * 100, 100) + '%'"></div>
+                                    </div>
+                                </div>
+                            </template>
+                             <div x-show="Object.values(learningStats.subjects).reduce((a, b) => a + b, 0) === 0" class="text-center text-gray-400 text-sm py-4">
+                                No data yet. Start asking questions!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                             <h3 class="font-bold text-slate-800 text-lg">Recent Questions</h3>
+                             <button @click="clearLogs" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase">Clear History</button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto max-h-[200px] custom-scroll pr-2 space-y-3">
+                            <template x-for="log in parentLogs.slice().reverse().slice(0, 10)">
+                                <div class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-400">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] text-gray-400 font-bold" x-text="log.time"></span>
+                                        <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase whitespace-nowrap ml-2" x-text="'FROM: ' + log.char"></span>
+                                    </div>
+                                    <p class="text-slate-700 text-sm font-semibold" x-text="log.query"></p>
+                                </div>
+                            </template>
+                             <div x-show="parentLogs.length === 0" class="text-center text-gray-400 text-sm py-8">
+                                No activity recorded yet.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -759,7 +1332,6 @@
                 // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
-                dailyMinutes: 0, // NEW: Tracks daily usage
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
@@ -888,7 +1460,6 @@
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
                         this.totalMinutesLearned++;
-                        this.dailyMinutes++; // Increment daily tracker
                         this.syncData();
                     }, 60000);
 
@@ -926,64 +1497,7 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // --- NEW METHODS FOR DASHBOARD ANALYTICS ---
-                getTotalCurriculumProgress() {
-                    let totalPaths = this.curriculum.length;
-                    let totalPercent = 0;
-                    this.curriculum.forEach(p => {
-                        totalPercent += this.getPathProgress(p.id);
-                    });
-                    return totalPercent / totalPaths;
-                },
-
-                getStrengths() {
-                    let entries = Object.entries(this.learningStats.subjects);
-                    let sorted = entries.sort((a,b) => b[1] - a[1]);
-                    // Return the subject name with highest score if > 0
-                    if (sorted.length > 0 && sorted[0][1] > 0) {
-                        return this.capitalize(sorted[0][0]);
-                    }
-                    return null;
-                },
-
-                getWeaknesses() {
-                    // Logic: Get subjects with lowest score but > 0 (needs improvement) OR zero if others are high
-                    let entries = Object.entries(this.learningStats.subjects);
-                    let sorted = entries.sort((a,b) => a[1] - b[1]); // Sort Ascending
-                    if (sorted.length > 0) {
-                        return this.capitalize(sorted[0][0]);
-                    }
-                    return null;
-                },
-                
-                capitalize(str) {
-                    return str.charAt(0).toUpperCase() + str.slice(1);
-                },
-
-                getDailyTopics() {
-                    // Filter parentLogs for today's date
-                    let today = new Date().toDateString();
-                    let todaysLogs = this.parentLogs.filter(log => {
-                        let logDate = new Date(log.time).toDateString(); // Assuming log.time is date string
-                        // Simple check if string contains today's date parts or just trust local session
-                        return log.time.includes(new Date().toLocaleDateString()); 
-                    });
-
-                    // Extract unique subjects (using char names as proxy for topics)
-                    let subjects = [...new Set(todaysLogs.map(log => this.getSubjectFromChar(log.char)))];
-                    return subjects;
-                },
-
-                getSubjectFromChar(charName) {
-                    if (charName.includes("Dino")) return "History";
-                    if (charName.includes("Robot")) return "Robotics";
-                    if (charName.includes("Alien")) return "Space";
-                    if (charName.includes("Cat")) return "Science";
-                    if (charName.includes("Bee")) return "Nature";
-                    return "General";
-                },
-
-                // --- LEARNING PATH METHODS ---
+                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1120,11 +1634,9 @@
                     if (dailyData.date !== today) {
                         this.dailyQuestionsUsed = 0;
                         this.rewardClaimedToday = false;
-                        this.dailyMinutes = 0; // Reset daily minutes on new day load
                     } else {
                         this.dailyQuestionsUsed = dailyData.questions_used || 0;
                         this.rewardClaimedToday = dailyData.reward_claimed || false;
-                        this.dailyMinutes = dailyData.daily_minutes || 0;
                     }
                     
                     this.updateLevel();
@@ -1449,8 +1961,7 @@
                         daily_usage: {
                             date: new Date().toDateString(),
                             questions_used: this.dailyQuestionsUsed,
-                            reward_claimed: this.rewardClaimedToday,
-                            daily_minutes: this.dailyMinutes // Sync daily minutes
+                            reward_claimed: this.rewardClaimedToday
                         }
                     };
 
