@@ -97,6 +97,15 @@
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
 
+        /* Hide scrollbar for Adventure Map */
+        .custom-scroll {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+        .custom-scroll::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
         .premium-glow { animation: glow-gold 2s infinite; }
         @keyframes glow-gold { 0% { box-shadow: 0 0 5px #ffd700; } 50% { box-shadow: 0 0 20px #ffd700, 0 0 10px #ffea00; } 100% { box-shadow: 0 0 5px #ffd700; } }
 
@@ -563,7 +572,7 @@
                 </div>
             </div>
 
-            <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
+            <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50 custom-scroll">
                 <div x-show="isPremium" class="mb-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 text-white shadow-xl animate__animated animate__fadeIn">
                     <div class="flex items-center gap-4">
                         <div class="text-4xl bg-white/20 p-3 rounded-2xl">🎯</div>
@@ -822,7 +831,7 @@
         <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
             <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
             <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
-            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
+            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4 custom-scroll">
                 
                 <template x-if="showLegalDoc === 'privacy'">
                     <div class="space-y-4">
@@ -888,7 +897,7 @@
     <div x-show="showShop" x-cloak
          class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70"
          x-transition.opacity>
-        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto">
+        <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto custom-scroll">
             <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
                 <i class="fas fa-times-circle"></i>
             </button>
@@ -1244,6 +1253,9 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                    </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-slate-800 text-lg mb-4">Top Subjects</h3>
@@ -1309,7 +1321,6 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
-                // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
                 
@@ -1344,7 +1355,6 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
-                // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1352,14 +1362,12 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
 
-                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1369,7 +1377,6 @@
                         science: 0, 
                         nature: 0 
                     },
-                    // We will store child_profile here to avoid DB errors
                     child_profile: null 
                 },
                 xp: 0,
@@ -1379,7 +1386,6 @@
                 inventory: [],
                 equippedItem: null,
                 
-                // --- QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1390,13 +1396,12 @@
                 isDrawing: false,
                 artImage: null,
 
-                // --- LEARNING PATH STATE ---
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn', // learn, quiz, success
+                lessonStep: 'learn', 
                 currentLessonQuizIndex: 0,
-                pathProgress: {}, // Stores completion per subject
+                pathProgress: {}, 
                 selectedCertificatePath: null,
 
                 curriculum: [
@@ -1479,7 +1484,6 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
-                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
                         this.totalMinutesLearned++;
@@ -1520,7 +1524,6 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1528,7 +1531,6 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
-                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1556,7 +1558,6 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
-                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1566,11 +1567,9 @@
                     }
                 },
                 async completeLesson() {
-                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
                     
-                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
@@ -1582,7 +1581,6 @@
                     this.closeLesson();
                 },
 
-                // --- INFINITE CONTENT GENERATOR ---
                 async generateInfiniteContent() {
                     if (!this.currentPath) return;
                     if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
@@ -1629,13 +1627,11 @@
                         let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
                         const newLevel = JSON.parse(cleanJson);
 
-                        // Push to the local curriculum reference
                         path.levels.push(newLevel);
                         
                         this.playPing();
                         confetti({ particleCount: 100, spread: 70 });
                         
-                        // Sync to Supabase so it's saved forever
                         await this.syncData();
                         
                     } catch (e) {
@@ -1716,11 +1712,9 @@
 
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
-                    // NEW: Restore custom generated curriculum levels
                     if (data.learning_stats?.custom_curriculum) {
                         data.learning_stats.custom_curriculum.forEach(savedPath => {
                             const path = this.curriculum.find(p => p.id === savedPath.id);
-                            // Only update if saved levels are longer than hardcoded ones
                             if (path && savedPath.levels.length > path.levels.length) {
                                 path.levels = savedPath.levels;
                             }
@@ -1742,10 +1736,9 @@
                 },
 
                 get journeyProgress() {
-                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
+                    return 66 + ((this.xp - 3000) / 2000) * 34; 
                 },
 
                 getTopSubjects() {
@@ -1785,7 +1778,6 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
-                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
@@ -1801,12 +1793,11 @@
                         return;
                     }
                     alert("Generating Progress Report... Your PDF will download shortly.");
-                    // Simulate PDF generation
                 },
 
                 async generateArt() {
-                    if (!this.userQuery) {
-                        alert("Tell me what to draw first! (Type in the box)");
+                    if (!this.userQuery.trim()) {
+                        alert("Tell me what to draw first!");
                         return;
                     }
 
@@ -1826,7 +1817,6 @@
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    // USE POLLINATIONS AI
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
@@ -1861,7 +1851,6 @@
                     }
                 },
 
-                // Helper for Age Logic
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
                     const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
@@ -1886,10 +1875,8 @@
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
                         TARGET AGE: ${ageRange}.
                         Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
-                        Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
                         Return strictly this JSON format: 
-                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
-                        Make sure the options are short and simple.`;
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
@@ -1912,7 +1899,6 @@
                         this.quizState = 'active';
 
                     } catch (e) {
-                        console.error("Quiz Error", e);
                         this.quizQuestion = "Did you like learning about that?";
                         this.quizOptions = ["Yes!", "It was okay", "No"];
                         this.quizCorrectIndex = 0;
@@ -2041,25 +2027,20 @@
                     this.learningStats.path_progress = this.pathProgress;
                     this.learningStats.child_profile = this.childProfile;
                     
-                    // Save custom generated curriculum levels
                     this.learningStats.custom_curriculum = this.curriculum.map(p => ({
                         id: p.id,
                         levels: p.levels
                     }));
-
-                    const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
-                    const safeInventory = JSON.parse(JSON.stringify(this.inventory));
-                    const safeStats = JSON.parse(JSON.stringify(this.learningStats));
 
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
                         total_minutes: this.totalMinutesLearned,
                         email_summary_enabled: this.emailSummaryEnabled,
-                        inventory: safeInventory,
+                        inventory: this.inventory,
                         equipped_item: this.equippedItem,
-                        learning_stats: safeStats,
-                        parent_logs: safeLogs, 
+                        learning_stats: this.learningStats,
+                        parent_logs: this.parentLogs, 
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
                         daily_usage: {
@@ -2119,7 +2100,7 @@
                         if (now > this.premiumExpiry) {
                             this.isPremium = false;
                             this.premiumExpiry = null;
-                            alert("Your monthly premium subscription has expired. Please renew to access all features!");
+                            alert("Your subscription has expired. Renew to access all features!");
                             this.setChar(this.characters[0]);
                             this.syncData();
                         }
@@ -2139,7 +2120,7 @@
                         if (data.url) {
                             window.location.href = data.url;
                         } else {
-                            alert("Could not connect to payment server. Check console.");
+                            alert("Could not connect to payment server.");
                         }
                     } catch (e) {
                         alert("Payment Error. Please try again.");
@@ -2149,7 +2130,7 @@
                     }
                 },
                 async cancelSubscription() {
-                    if(confirm("Are you sure you want to cancel? You will lose access to premium features immediately.")) {
+                    if(confirm("Are you sure you want to cancel?")) {
                         this.isPremium = false;
                         this.premiumExpiry = null;
                         this.setChar(this.characters[0]);
@@ -2166,8 +2147,7 @@
                     confetti({
                         particleCount: 150,
                         spread: 70,
-                        origin: { y: 0.6 },
-                        colors: ['#FFD700', '#FF69B4', '#00BFFF']
+                        origin: { y: 0.6 }
                     });
                     this.playPing();
                     await this.syncData(); 
@@ -2197,7 +2177,6 @@
                         if (this.pinInput.length === 4) {
                             this.masterPin = this.pinInput;
                             await this.supabase.from('profiles').update({ pin: this.pinInput }).eq('email', this.registeredEmail);
-                            
                             alert("PIN updated!");
                             this.isChangingPin = false;
                             this.parentAuthenticated = true;
@@ -2228,25 +2207,22 @@
                     this.parentLogs.push(entry);
                 },
                 async clearLogs() {
-                    if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
+                    if(confirm("Clear search history?")) {
                         this.parentLogs.splice(0, this.parentLogs.length);
-                        
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
-                        
                         await this.syncData(); 
-                        alert("Search history cleared.");
                     }
                 },
                 updateProgress(query, response) {
                     const words = response.split(' ').length;
                     this.learningStats.wordsLearned += words;
                     const queryLower = query.toLowerCase();
-                    if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
-                    if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
-                    if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
-                    if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
-                    if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
+                    if (queryLower.match(/bee|ocean|rainbow|flower|animal|nature|tree/)) this.learningStats.subjects.nature += 10;
+                    if (queryLower.match(/sun|space|star|moon|planet|rocket/)) this.learningStats.subjects.space += 10;
+                    if (queryLower.match(/robot|code|computer|ai/)) this.learningStats.subjects.robots += 10;
+                    if (queryLower.match(/volcano|science|math|experiment/)) this.learningStats.subjects.science += 10;
+                    if (queryLower.match(/dino|fossil|history|egypt/)) this.learningStats.subjects.history += 10;
                 },
                 startListening() {
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2285,7 +2261,7 @@
                         return;
                     }
                     if (!this.isQuerySafe(this.userQuery)) {
-                        this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
+                        this.displayText = "Oops! Let's talk about something fun like dinosaurs instead! 🌈✨";
                         this.userQuery = '';
                         this.currentMoodIcon = '🤔';
                         return;
@@ -2300,18 +2276,8 @@
                     this.displayText = "Thinking... 🧠✨";
                     this.currentMoodIcon = this.currentChar.mood_think;
 
-                    const ageLogicInstruction = this.getAgeLogic();
-
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
-                        ${ageLogicInstruction}
-                        YOUR SUBJECT: ${this.currentChar.subject}.
-                        
-                        CRITICAL RULES:
-                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
-                        2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
-                        3. Never break character.`;
-
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. ${this.getAgeLogic()} YOUR SUBJECT: ${this.currentChar.subject}.`;
                         const response = await fetch("/api/chat", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -2332,8 +2298,7 @@
 
                         this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
                     } catch (error) {
-                        console.error("API Error:", error);
-                        this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
+                        this.finishThinking("Oh no! My brain is fuzzy. Ask again? 🔌", savedQuery);
                     }
                 },
                 async finishThinking(response, originalQuery) {
@@ -2346,7 +2311,6 @@
                     this.updateLevel();
                     this.playPing();
                     this.updateProgress(originalQuery, response);
-                    
                     await this.syncData();
                 },
                 playPing() {
@@ -2362,9 +2326,6 @@
                     if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
                     const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                     const msg = new SpeechSynthesisUtterance(cleanText);
-                    const voices = window.speechSynthesis.getVoices();
-                    let baseVoice = voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.name.includes('Samantha')) || voices[0];
-                    msg.voice = baseVoice;
                     msg.pitch = this.currentChar.pitch; 
                     msg.rate = this.currentChar.rate;
                     msg.onstart = () => { this.isSpeaking = true; };
