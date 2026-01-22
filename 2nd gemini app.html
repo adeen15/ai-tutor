@@ -578,13 +578,6 @@
                     <div class="text-6xl mb-6 bounce">👨‍🏫</div>
                     <p class="text-xl sm:text-2xl text-slate-700 font-medium leading-relaxed mb-8" x-text="activeLesson ? activeLesson.content : ''"></p>
                     
-                    <div class="bg-blue-50 p-4 rounded-xl mb-8 text-left border-l-4 border-blue-400">
-                        <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">Today's Goal</p>
-                        <p class="text-sm font-bold text-slate-700 mb-3" x-text="activeLesson.goal"></p>
-                        <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">Skills Learned</p>
-                        <p class="text-sm font-bold text-slate-700" x-text="activeLesson.skills"></p>
-                    </div>
-
                     <button @click="speak(activeLesson.content)" class="mb-8 text-blue-500 font-bold hover:underline"><i class="fas fa-volume-up mr-2"></i> Read to me</button>
 
                     <button @click="lessonStep = 'quiz'" class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
@@ -617,35 +610,43 @@
                     </div>
                 </div>
 
-                <div x-show="lessonStep === 'success'" class="text-center py-8">
-                    <div class="text-8xl mb-4 animate__animated animate__tada">🎉</div>
-                    <h2 class="text-4xl font-kids text-green-500 mb-2">Lesson Complete!</h2>
-                    <p class="text-gray-500 font-bold mb-8">You are getting smarter!</p>
+                <div x-show="lessonStep === 'success'" class="text-center py-4">
+                    <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
+                    <h2 class="text-3xl font-kids text-green-500 mb-1">Lesson Complete!</h2>
                     
-                    <div class="bg-green-50 p-6 rounded-2xl border-2 border-green-100 mb-8 text-left">
-                        <h4 class="font-bold text-green-700 mb-3 underline uppercase tracking-widest text-xs">What your child achieved:</h4>
-                        <ul class="space-y-3">
-                            <li class="flex items-center gap-3 text-sm font-bold text-slate-700">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <span>Completed <span x-text="activeLesson.title"></span> (Level <span x-text="activeLesson.id"></span>)</span>
-                            </li>
-                            <li class="flex items-center gap-3 text-sm font-bold text-slate-700">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <span>Mastered 3/3 questions correctly</span>
-                            </li>
-                            <li class="flex items-center gap-3 text-sm font-bold text-slate-700">
-                                <i class="fas fa-star text-yellow-500 animate-pulse"></i>
-                                <span>Improved confidence in <span x-text="currentPath.name"></span>!</span>
-                            </li>
-                        </ul>
+                    <div class="bg-slate-50 p-6 rounded-[2rem] border-2 border-slate-100 my-6 text-left space-y-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Today's Goal</p>
+                            <p class="text-lg font-bold text-slate-700" x-text="activeLesson ? activeLesson.goal : ''"></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Skills Learned</p>
+                            <div class="flex items-center gap-2 text-slate-700 font-bold">
+                                <span class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs"><i class="fas fa-check"></i></span>
+                                <span x-text="activeLesson ? activeLesson.skill : ''"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">What your child achieved</p>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100">
+                                    <span class="text-sm font-bold text-slate-600">Quiz Performance</span>
+                                    <span class="text-sm font-bold text-blue-600" x-text="'✅ ' + lessonScore + '/3 Correct'"></span>
+                                </div>
+                                <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100">
+                                    <span class="text-sm font-bold text-slate-600">Personal Growth</span>
+                                    <span class="text-sm font-bold text-purple-600">⭐ Improved Confidence</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex justify-center gap-4 mb-8">
-                        <div class="bg-yellow-50 px-6 py-3 rounded-2xl border border-yellow-200">
-                            <span class="text-2xl">💰</span> <span class="font-bold text-yellow-700">+50 Coins</span>
+                        <div class="bg-yellow-50 px-4 py-2 rounded-xl border border-yellow-200">
+                            <span class="text-lg">💰</span> <span class="font-bold text-yellow-700 text-sm">+50</span>
                         </div>
-                        <div class="bg-purple-50 px-6 py-3 rounded-2xl border border-purple-200">
-                            <span class="text-2xl">⭐</span> <span class="font-bold text-purple-700">+100 XP</span>
+                        <div class="bg-purple-50 px-4 py-2 rounded-xl border border-purple-200">
+                            <span class="text-lg">⭐</span> <span class="font-bold text-purple-700 text-sm">+100 XP</span>
                         </div>
                     </div>
 
@@ -1134,7 +1135,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-slate-800 text-lg mb-4">Top Subjects</h3>
                         <div class="space-y-4">
@@ -1232,6 +1233,7 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
+                // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1262,6 +1264,7 @@
                 inventory: [],
                 equippedItem: null,
                 
+                // --- QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1272,38 +1275,32 @@
                 isDrawing: false,
                 artImage: null,
 
+                // --- LEARNING PATH STATE ---
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn', 
+                lessonStep: 'learn', // learn, quiz, success
                 currentLessonQuizIndex: 0,
-                pathProgress: {}, 
+                lessonScore: 0,
+                pathProgress: {}, // Stores completion per subject
 
                 curriculum: [
                     { 
                         id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', premium: false,
                         levels: [
-                            { id: 1, title: 'Counting to 100', goal: 'Learn to recognize and order numbers up to 100.', skills: 'Number recognition, Sequencing, Verbal counting.', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] },
-                            { id: 2, title: 'Simple Adding', goal: 'Understand the concept of joining two groups of objects.', skills: 'Basic addition, Summing totals, Mental math.', content: 'Adding means putting things together. 2 apples plus 2 apples makes 4!', quiz: [{q: '2 + 2 = ?', options:['3', '4', '5'], correct:1}, {q: '5 + 0 = ?', options:['5', '0', '50'], correct:0}, {q: '1 + 2 = ?', options:['2', '3', '4'], correct:1}] },
-                            { id: 3, title: 'Shape Hunter', goal: 'Identify common 2D shapes in the world around us.', skills: 'Shape identification, Geometry basics, Observational skills.', content: 'Shapes are everywhere! A ball is a circle. A box is a square.', quiz: [{q: 'A ball is a...', options:['Square', 'Circle', 'Triangle'], correct:1}, {q: 'A box has how many sides?', options:['2', '3', '4'], correct:2}, {q: 'Is a pizza round?', options:['Yes', 'No', 'Maybe'], correct:0}] },
-                            { id: 4, title: 'Subtraction', goal: 'Learn the logic of taking items away from a group.', skills: 'Basic subtraction, Difference calculation, Logic.', content: 'Subtraction is taking away. If you have 3 cookies and eat 1, you have 2 left!', quiz: [{q: '3 - 1 = ?', options:['2', '1', '4'], correct:0}, {q: '5 - 5 = ?', options:['5', '1', '0'], correct:2}, {q: '10 - 1 = ?', options:['8', '9', '11'], correct:1}] },
-                            { id: 5, title: 'Money Math', goal: 'Recognize currency and understand simple purchasing.', skills: 'Value identification, Currency basics, Practical math.', content: 'We use coins to buy things. A penny is 1 cent.', quiz: [{q: 'A penny is...', options:['1 cent', '5 cents', '10 cents'], correct:0}, {q: '2 pennies = ?', options:['2 cents', '5 cents', '100 cents'], correct:0}, {q: 'Is money for eating?', options:['Yes', 'No', 'Sometimes'], correct:1}] }
+                            { id: 1, title: 'Counting to 100', goal: 'Count to 100 with ease!', skill: 'Basic Number Fluency', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] },
+                            { id: 2, title: 'Simple Adding', goal: 'Combine numbers to solve problems!', skill: 'Addition Basics', content: 'Adding means putting things together. 2 apples plus 2 apples makes 4!', quiz: [{q: '2 + 2 = ?', options:['3', '4', '5'], correct:1}, {q: '5 + 0 = ?', options:['5', '0', '50'], correct:0}, {q: '1 + 2 = ?', options:['2', '3', '4'], correct:1}] },
+                            { id: 3, title: 'Shape Hunter', goal: 'Identify 2D shapes in the world!', skill: 'Geometry Awareness', content: 'Shapes are everywhere! A ball is a circle. A box is a square.', quiz: [{q: 'A ball is a...', options:['Square', 'Circle', 'Triangle'], correct:1}, {q: 'A box has how many sides?', options:['2', '3', '4'], correct:2}, {q: 'Is a pizza round?', options:['Yes', 'No', 'Maybe'], correct:0}] },
+                            { id: 4, title: 'Subtraction', goal: 'Master taking away numbers!', skill: 'Subtraction Logic', content: 'Subtraction is taking away. If you have 3 cookies and eat 1, you have 2 left!', quiz: [{q: '3 - 1 = ?', options:['2', '1', '4'], correct:0}, {q: '5 - 5 = ?', options:['5', '1', '0'], correct:2}, {q: '10 - 1 = ?', options:['8', '9', '11'], correct:1}] },
+                            { id: 5, title: 'Money Math', goal: 'Understand the value of coins!', skill: 'Financial Literacy', content: 'We use coins to buy things. A penny is 1 cent.', quiz: [{q: 'A penny is...', options:['1 cent', '5 cents', '10 cents'], correct:0}, {q: '2 pennies = ?', options:['2 cents', '5 cents', '100 cents'], correct:0}, {q: 'Is money for eating?', options:['Yes', 'No', 'Sometimes'], correct:1}] }
                         ]
                     },
                     { 
                         id: 'english', name: 'English ABCs', grade: 'Basics', icon: '📝', color: 'bg-green-500', premium: true,
                         levels: [
-                            { id: 1, title: 'The Vowels', goal: 'Differentiate between vowels and consonants.', skills: 'Phonics, Letter identification, Early reading.', content: 'Vowels are special letters: A, E, I, O, U. Every word needs one!', quiz: [{q: 'Which is a vowel?', options:['B', 'E', 'Z'], correct:1}, {q: 'Is "K" a vowel?', options:['Yes', 'No', 'Maybe'], correct:1}, {q: 'How many vowels?', options:['3', '5', '10'], correct:1}] },
-                            { id: 2, title: 'Rhyme Time', goal: 'Understand ending sounds and rhyming patterns.', skills: 'Auditory processing, Rhyming, Vocabulary.', content: 'Rhyming words sound the same at the end. Cat, Hat, Bat!', quiz: [{q: 'Rhymes with Dog?', options:['Cat', 'Log', 'Pig'], correct:1}, {q: 'Rhymes with Sun?', options:['Moon', 'Fun', 'Hot'], correct:1}, {q: 'Do Tree and Bee rhyme?', options:['Yes', 'No', 'Maybe'], correct:0}] },
-                            { id: 3, title: 'Naming Nouns', goal: 'Learn the category of words that represent people, places, and things.', skills: 'Grammar basics, Word categorization, Language structure.', content: 'A Noun is a person, place, or thing. Like "Mom", "Park", or "Car".', quiz: [{q: 'Which is a noun?', options:['Run', 'Blue', 'Cat'], correct:2}, {q: 'Is "Jump" a noun?', options:['Yes', 'No', 'Maybe'], correct:1}, {q: 'School is a...', options:['Person', 'Place', 'Thing'], correct:1}] }
-                        ]
-                    },
-                    { 
-                        id: 'science', name: 'Science Fun', grade: 'Fun Facts', icon: '🔬', color: 'bg-purple-500', premium: true,
-                        levels: [
-                            { id: 1, title: 'Solar System', goal: 'Explore the relationship between Earth and the Sun.', skills: 'Space science, Planetary basics, Critical thinking.', content: 'We live on Earth! The Sun is a giant hot star in the middle.', quiz: [{q: 'We live on...', options:['Mars', 'Earth', 'Sun'], correct:1}, {q: 'Is the sun hot?', options:['Yes', 'No', 'Cold'], correct:0}, {q: 'The moon is made of cheese?', options:['Yes', 'No', 'Maybe'], correct:1}] },
-                            { id: 2, title: 'Dinosaurs', goal: 'Understand ancient life and species characteristics.', skills: 'Paleontology, Historical reasoning, Scientific observation.', content: 'Dinosaurs lived long ago. The T-Rex was very big and scary!', quiz: [{q: 'T-Rex was...', options:['Small', 'Big', 'Tiny'], correct:1}, {q: 'Are dinos alive today?', options:['Yes', 'No', 'Birds are!'], correct:2}, {q: 'Did they eat pizza?', options:['Yes', 'No', 'Always'], correct:1}] },
-                            { id: 3, title: 'Water Cycle', goal: 'Explain how water moves through our environment.', skills: 'Environmental science, Process mapping, Natural logic.', content: 'Rain comes from clouds. Sun dries it up. Then it rains again!', quiz: [{q: 'Rain comes from...', options:['Ground', 'Clouds', 'Trees'], correct:1}, {q: 'Sun makes water...', options:['Freeze', 'Dry up', 'Green'], correct:1}, {q: 'Is snow water?', options:['Yes', 'No', 'Maybe'], correct:0}] }
+                            { id: 1, title: 'The Vowels', goal: 'Recognize the 5 magic vowels!', skill: 'Phonics Foundations', content: 'Vowels are special letters: A, E, I, O, U. Every word needs one!', quiz: [{q: 'Which is a vowel?', options:['B', 'E', 'Z'], correct:1}, {q: 'Is "K" a vowel?', options:['Yes', 'No', 'Maybe'], correct:1}, {q: 'How many vowels?', options:['3', '5', '10'], correct:1}] },
+                            { id: 2, title: 'Rhyme Time', goal: 'Discover patterns in sounds!', skill: 'Auditory Rhyming', content: 'Rhyming words sound the same at the end. Cat, Hat, Bat!', quiz: [{q: 'Rhymes with Dog?', options:['Cat', 'Log', 'Pig'], correct:1}, {q: 'Rhymes with Sun?', options:['Moon', 'Fun', 'Hot'], correct:1}, {q: 'Do Tree and Bee rhyme?', options:['Yes', 'No', 'Maybe'], correct:0}] },
+                            { id: 3, title: 'Naming Nouns', goal: 'Identify people, places, and things!', skill: 'Grammar Basics', content: 'A Noun is a person, place, or thing. Like "Mom", "Park", or "Car".', quiz: [{q: 'Which is a noun?', options:['Run', 'Blue', 'Cat'], correct:2}, {q: 'Is "Jump" a noun?', options:['Yes', 'No', 'Maybe'], correct:1}, {q: 'School is a...', options:['Place', 'Person', 'Thing'], correct:0}] }
                         ]
                     }
                 ],
@@ -1416,6 +1413,7 @@
                     this.activeLesson = level;
                     this.lessonStep = 'learn';
                     this.currentLessonQuizIndex = 0;
+                    this.lessonScore = 0;
                     this.toggleScroll(true);
                 },
                 closeLesson() {
@@ -1429,24 +1427,28 @@
                 checkLessonAnswer(index) {
                     const currentQ = this.getCurrentLessonQuestion();
                     if(index === currentQ.correct) {
+                        this.lessonScore++;
                         this.playPing();
-                        if(this.currentLessonQuizIndex < 2) {
-                            this.currentLessonQuizIndex++;
-                        } else {
-                            this.lessonStep = 'success';
-                            this.playPing();
-                            confetti({ particleCount: 200, spread: 100 });
-                        }
                     } else {
-                        alert("Oops! Try again!");
+                        alert("Oops! Not quite, but let's keep going!");
+                    }
+
+                    if(this.currentLessonQuizIndex < 2) {
+                        this.currentLessonQuizIndex++;
+                    } else {
+                        this.lessonStep = 'success';
+                        this.playPing();
+                        confetti({ particleCount: 200, spread: 100 });
                     }
                 },
                 async completeLesson() {
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
+                    
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
+                    
                     this.coins += 50;
                     this.xp += 100;
                     this.updateLevel();
@@ -1536,7 +1538,7 @@
                 get journeyProgress() {
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; 
+                    return 66 + ((this.xp - 3000) / 2000) * 34;
                 },
 
                 getTopSubjects() {
@@ -1849,7 +1851,7 @@
 
                 async buyItem(item) {
                     if (this.coins >= item.price) {
-                        this.coins = Number(this.coins) - item.price;
+                        this.coins -= item.price;
                         this.inventory.push(item.id);
                         this.equipItem(item.id);
                         confetti({
@@ -2068,7 +2070,6 @@
                         const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
                         ${ageLogicInstruction}
                         YOUR SUBJECT: ${this.currentChar.subject}.
-                        
                         CRITICAL RULES:
                         1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
                         2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
@@ -2139,7 +2140,7 @@
                     }
                     this.playPing();
                     window.print();
-                    this.coins = Number(this.coins) + 100;
+                    this.coins += 100;
                     this.syncData();
                 }
             }
