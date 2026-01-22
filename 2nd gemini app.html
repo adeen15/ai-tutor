@@ -178,6 +178,33 @@
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
                             <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                         </div>
+
+                        <div class="animate__animated animate__fadeIn">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-2">Child's Age (Auto-Adjusts Difficulty)</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button @click="loginForm.ageRange = '4-5'" 
+                                        :class="loginForm.ageRange === '4-5' ? 'bg-blue-500 text-white border-blue-600 shadow-md ring-2 ring-blue-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
+                                        class="p-2 sm:p-3 rounded-2xl border-2 font-bold transition-all text-xs sm:text-sm flex flex-col items-center justify-center">
+                                    <span class="text-lg">🐣</span>
+                                    <span>4-5</span>
+                                </button>
+                                <button @click="loginForm.ageRange = '6-7'" 
+                                        :class="loginForm.ageRange === '6-7' ? 'bg-blue-500 text-white border-blue-600 shadow-md ring-2 ring-blue-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
+                                        class="p-2 sm:p-3 rounded-2xl border-2 font-bold transition-all text-xs sm:text-sm flex flex-col items-center justify-center">
+                                    <span class="text-lg">🎒</span>
+                                    <span>6-7</span>
+                                </button>
+                                <button @click="loginForm.ageRange = '8-9'" 
+                                        :class="loginForm.ageRange === '8-9' ? 'bg-blue-500 text-white border-blue-600 shadow-md ring-2 ring-blue-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
+                                        class="p-2 sm:p-3 rounded-2xl border-2 font-bold transition-all text-xs sm:text-sm flex flex-col items-center justify-center">
+                                    <span class="text-lg">🚀</span>
+                                    <span>8-9</span>
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-center mt-2 text-slate-400 font-bold" x-show="loginForm.ageRange === '4-5'">Simple words. Slow pacing. Lots of emojis.</p>
+                            <p class="text-[10px] text-center mt-2 text-slate-400 font-bold" x-show="loginForm.ageRange === '6-7'">Standard vocabulary. Fun facts. Balanced quizzes.</p>
+                            <p class="text-[10px] text-center mt-2 text-slate-400 font-bold" x-show="loginForm.ageRange === '8-9'">Advanced topics. Critical thinking. Harder quizzes.</p>
+                        </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
                             <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
@@ -612,6 +639,7 @@
             <div class="text-center" x-show="quizState === 'loading'">
                 <div class="spinner mx-auto mb-4 border-yellow-400"></div>
                 <h2 class="text-2xl font-kids text-yellow-500">Thinking up a tricky one... 🤔</h2>
+                <p class="text-xs text-slate-400 font-bold mt-2" x-text="'Adjusting difficulty for ' + (childProfile.ageRange || '6-7') + ' year olds...'"></p>
             </div>
 
             <div x-show="quizState === 'active'">
@@ -930,17 +958,23 @@
                         <div x-show="!isEditingProfile" class="space-y-3">
                             <div><p class="text-xs text-slate-400 font-bold uppercase">Name</p><p class="text-xl font-kids text-slate-800" x-text="childProfile.name"></p></div>
                             <div class="flex gap-6">
-                                <div><p class="text-xs text-slate-400 font-bold uppercase">Age</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.age + ' Years'"></p></div>
-                                <div><p class="text-xs text-slate-400 font-bold uppercase">Grade</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.grade"></p></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Age Group</p><p class="text-lg font-bold text-slate-700" x-text="(childProfile.ageRange || '6-7') + ' Years'"></p></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Difficulty</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.ageRange === '4-5' ? 'Easy' : (childProfile.ageRange === '8-9' ? 'Advanced' : 'Standard')"></p></div>
                             </div>
                         </div>
 
                         <div x-show="isEditingProfile" class="space-y-3 animate__animated animate__fadeIn">
                             <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Name">
-                            <div class="flex gap-2">
-                                <input type="number" x-model="childProfile.age" class="w-1/2 p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Age">
-                                <input type="text" x-model="childProfile.grade" class="w-1/2 p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Grade (e.g. 2nd)">
+                            
+                            <div>
+                                <label class="text-xs text-slate-400 font-bold uppercase">Adjust Age Group</label>
+                                <select x-model="childProfile.ageRange" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
+                                    <option value="4-5">4-5 Years (Beginner)</option>
+                                    <option value="6-7">6-7 Years (Standard)</option>
+                                    <option value="8-9">8-9 Years (Advanced)</option>
+                                </select>
                             </div>
+                            
                             <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
                         </div>
                     </div>
@@ -1140,7 +1174,8 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
-                loginForm: { name: '', email: '', pin: '' },
+                // NEW: Initialize with default ageRange 6-7
+                loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
                 
                 legalAccepted: false,
@@ -1181,7 +1216,8 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                childProfile: { name: '', age: '', grade: '' },
+                // NEW: Add ageRange to default child profile structure
+                childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
@@ -1450,7 +1486,8 @@
                     
                     // NEW: Load Child Profile & Time
                     // Fallback to name if child_profile not set yet
-                    this.childProfile = data.child_profile || { name: data.name, age: '', grade: '' }; 
+                    // NEW: Added ageRange here
+                    this.childProfile = data.child_profile || { name: data.name, age: '', grade: '', ageRange: '6-7' }; 
                     this.totalMinutesLearned = data.total_minutes || 0;
 
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1603,14 +1640,31 @@
                     }
                 },
 
+                // NEW: Helper for Age Logic
+                getAgeLogic() {
+                    const range = this.childProfile.ageRange || '6-7';
+                    if (range === '4-5') {
+                        return "TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character. Avoid complex concepts.";
+                    }
+                    if (range === '8-9') {
+                        return "TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher, cool and smart.";
+                    }
+                    return "TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly and helpful.";
+                },
+
                 async startQuiz() {
                     this.showQuiz = true;
                     this.quizState = 'loading';
                     this.toggleScroll(true);
 
+                    // NEW: Pass age range to quiz generator
+                    const ageRange = this.childProfile.ageRange || '6-7';
+
                     try {
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
-                        Based on the following text: "${this.displayText}", create ONE simple multiple-choice question.
+                        TARGET AGE: ${ageRange}.
+                        Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
+                        Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
                         Return strictly this JSON format: 
                         {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
                         Make sure the options are short and simple.`;
@@ -1674,7 +1728,13 @@
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                child_profile: { name: this.loginForm.name, age: '', grade: '' }, // Init child profile
+                                // NEW: Save selected ageRange to profile
+                                child_profile: { 
+                                    name: this.loginForm.name, 
+                                    age: '', 
+                                    grade: '',
+                                    ageRange: this.loginForm.ageRange 
+                                }, 
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
@@ -1689,7 +1749,13 @@
                         this.registeredEmail = email;
                         this.masterPin = this.loginForm.pin;
                         this.savedProfile = { name: this.loginForm.name, email: email };
-                        this.childProfile = { name: this.loginForm.name, age: '', grade: '' };
+                        // NEW: Update local state
+                        this.childProfile = { 
+                            name: this.loginForm.name, 
+                            age: '', 
+                            grade: '',
+                            ageRange: this.loginForm.ageRange 
+                        };
                         this.coins = 50; 
                         this.isLoggedIn = true;
                         this.hasAccount = true;
@@ -2011,8 +2077,12 @@
                     this.displayText = "Thinking... 🧠✨";
                     this.currentMoodIcon = this.currentChar.mood_think;
 
+                    // NEW: Helper logic call
+                    const ageLogicInstruction = this.getAgeLogic();
+
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children aged 5-8. 
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
+                        ${ageLogicInstruction}
                         YOUR SUBJECT: ${this.currentChar.subject}.
                         
                         CRITICAL RULES:
@@ -2095,5 +2165,4 @@
         }
     </script>
 </body>
-
 </html>
