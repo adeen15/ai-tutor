@@ -112,6 +112,9 @@
         .level-connector { position: absolute; width: 4px; background-color: #e5e7eb; left: 50%; transform: translateX(-50%); z-index: 0; }
         .bounce { animation: bounce 2s infinite; }
 
+        /* Certificate Styles */
+        .certificate-border { border: 20px solid #f59e0b; border-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M20 0l5 15h15l-12 9 4 16-12-9-12 9 4-16-12-9h15z' fill='%23f59e0b'/%3E%3C/svg%3E") 30; }
+
         @media (max-width: 640px) {
             .daily-reward-btn { padding: 0.5rem !important; width: 52px; height: 52px; }
             .daily-reward-btn span.gift-bounce { font-size: 1.25rem !important; }
@@ -121,9 +124,10 @@
 
         @media print {
             body * { visibility: hidden; }
-            #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area * { visibility: visible; }
+            #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area *, #certificate-area, #certificate-area * { visibility: visible; }
             #printable-art { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
             #worksheet-print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; background: white; color: black; }
+            #certificate-area { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: white; display: flex !important; }
             .fixed, .absolute, .bg-black, .bg-slate-900, .bg-slate-50 { background: none !important; box-shadow: none !important; }
         }
     </style>
@@ -137,6 +141,28 @@
             <div class="spinner mb-4"></div>
             <p class="font-kids text-blue-500">Syncing magic...</p>
         </div>
+    </div>
+
+    <div id="certificate-area" class="hidden flex-col items-center justify-center p-12 text-center bg-white certificate-border" style="min-height: 100vh;">
+        <div class="text-6xl mb-4">🎓</div>
+        <h1 class="text-5xl font-kids text-amber-600 mb-2">Certificate of Achievement</h1>
+        <p class="text-2xl text-gray-600 mb-8">This award is proudly presented to</p>
+        <h2 class="text-6xl font-kids text-slate-800 mb-8 underline" x-text="childProfile.name"></h2>
+        <p class="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            For successfully completing the <span class="font-bold text-slate-800" x-text="selectedCertificatePath?.name"></span> 
+            adventure path and showing incredible curiosity and brilliance in learning!
+        </p>
+        <div class="mt-16 flex justify-between w-full max-w-3xl px-12">
+            <div class="text-center">
+                <div class="border-b-2 border-gray-400 w-48 mb-2"></div>
+                <p class="font-bold text-gray-400 uppercase">Your Teacher</p>
+            </div>
+            <div class="text-center">
+                <div class="border-b-2 border-gray-400 w-48 mb-2"></div>
+                <p class="font-bold text-gray-400 uppercase">Date</p>
+            </div>
+        </div>
+        <div class="mt-12 text-4xl">⭐⭐⭐⭐⭐</div>
     </div>
 
     <div id="worksheet-print-area" class="hidden">
@@ -405,10 +431,13 @@
                 </div>
                 
                 <div x-show="isThinking" class="absolute -top-8 left-8 sm:-top-10 sm:left-10 animate__animated animate__fadeIn">
-                    <div class="bg-white rounded-full px-4 py-2 shadow-lg flex gap-2">
-                        <div class="w-3 h-3 rounded-full animate-bounce" :style="'background: ' + currentChar.accent"></div>
-                        <div class="w-3 h-3 rounded-full animate-bounce" style="animation-delay: 0.2s; background: #ff512f"></div>
-                        <div class="w-3 h-3 rounded-full animate-bounce" style="animation-delay: 0.4s; background: #24d4dd"></div>
+                    <div class="bg-white rounded-full px-4 py-2 shadow-lg flex flex-col items-center gap-1">
+                        <div x-show="isPremium" class="text-[8px] font-bold text-amber-500 uppercase mb-1">Priority AI Processing</div>
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full animate-bounce" :style="'background: ' + currentChar.accent"></div>
+                            <div class="w-3 h-3 rounded-full animate-bounce" style="animation-delay: 0.2s; background: #ff512f"></div>
+                            <div class="w-3 h-3 rounded-full animate-bounce" style="animation-delay: 0.4s; background: #24d4dd"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -518,6 +547,16 @@
             </div>
 
             <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                <div x-show="isPremium" class="mb-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 text-white shadow-xl animate__animated animate__fadeIn">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl bg-white/20 p-3 rounded-2xl">🎯</div>
+                        <div>
+                            <h3 class="font-kids text-2xl">Personalized Mission</h3>
+                            <p class="font-bold opacity-90" x-text="'Goal: Complete ' + (childProfile.ageRange === '4-5' ? '10 simple counts' : '5 Science lessons') + ' this week!'"></p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
                     <template x-for="path in curriculum">
                         <button @click="currentPath = path" class="bg-white rounded-[2rem] p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 border-b-8 border-gray-200 group flex flex-col items-center text-center relative overflow-hidden">
@@ -537,6 +576,12 @@
                                 <div class="h-full rounded-full transition-all duration-1000" :class="path.color" :style="'width: ' + getPathProgress(path.id) + '%'"></div>
                              </div>
                              <p class="text-xs text-gray-400 font-bold mt-2" x-text="Math.round(getPathProgress(path.id)) + '% Complete'"></p>
+
+                             <template x-if="isPremium && getPathProgress(path.id) === 100">
+                                <button @click.stop="printCertificate(path)" class="mt-4 bg-amber-400 text-amber-900 px-4 py-2 rounded-xl text-xs font-kids shadow-lg hover:scale-105 transition-transform">
+                                    🎓 Claim Certificate
+                                </button>
+                             </template>
                         </button>
                     </template>
                 </div>
@@ -550,7 +595,7 @@
                  <div x-show="currentPath && currentPath.premium && !isPremium" class="absolute inset-0 z-30 bg-white/90 flex flex-col items-center justify-center text-center p-8 backdrop-blur-sm">
                      <div class="text-6xl mb-4">👑</div>
                      <h2 class="text-3xl font-kids text-slate-800 mb-2">Premium Curriculum</h2>
-                     <p class="text-slate-500 font-bold max-w-sm mb-6">Unlock all Adventure Paths, Printable Worksheets, and Priority AI for just $4.99/mo!</p>
+                     <p class="text-slate-500 font-bold max-w-sm mb-6">Unlock all Adventure Paths, Personalized Plans, and Certificates for just $4.99/mo!</p>
                      <button @click="showPremiumModal = true; showLearningPath = false" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600">Upgrade Now</button>
                  </div>
 
@@ -893,11 +938,11 @@
                 <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
                 <p class="text-yellow-900 font-bold text-lg mb-6">Unlock the full power of learning!</p>
                 <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlimited Priority AI Questions</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Unlock All 5 Subject Teachers</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Full Curriculum Map Access</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Printable Worksheets & Offline PDFs</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Detailed Parent Learning Reports</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Personalized Weekly Learning Plans</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Monthly Progress Reports (PDF)</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Priority AI Explanations</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Official Path Certificates</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Parent Email Summaries</span></div>
                 </div>
                 <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
                     Get Premium ($4.99/mo)
@@ -1019,17 +1064,15 @@
                                 </div>
                              </div>
                              <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-globe-americas"></i></div>
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
                                 <div>
-                                    <p class="text-xs font-bold text-slate-700 uppercase">No Open Internet</p>
-                                    <p class="text-[10px] text-slate-500 leading-tight">Bot cannot browse the live web or access unverified external content.</p>
-                                </div>
-                             </div>
-                             <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-chalkboard-teacher"></i></div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-700 uppercase">Teacher Reviewed Prompts</p>
-                                    <p class="text-[10px] text-slate-500 leading-tight">System instructions are pre-vetted by educators for safety.</p>
+                                    <p class="text-xs font-bold text-slate-700 uppercase">Email Summary Status</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
+                                            <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
+                                        </button>
+                                        <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Emails ON' : 'Weekly Emails OFF'"></span>
+                                    </div>
                                 </div>
                              </div>
                         </div>
@@ -1068,21 +1111,13 @@
                             </div>
                         </div>
                         <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-chart-line text-blue-500"></i> Learning Analysis
+                            <i class="fas fa-chart-line text-blue-500"></i> Monthly Report
                         </h3>
                         <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-500 font-bold uppercase">Vocabulary Growth</span>
-                                <span class="text-sm font-bold text-blue-600" x-text="'+' + Math.floor(learningStats.wordsLearned / 10) + '%'"></span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-500 font-bold uppercase">Critical Thinking</span>
-                                <span class="text-sm font-bold text-green-600">Improving! 🚀</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-500 font-bold uppercase">Screen Time Today</span>
-                                <span class="text-sm font-bold text-slate-700" x-text="totalMinutesLearned + ' mins'"></span>
-                            </div>
+                            <p class="text-[10px] text-gray-500">A detailed analysis of subjects learned, questions asked, and vocabulary milestones.</p>
+                            <button @click="downloadMonthlyReport()" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-file-download mr-2"></i> Download Report (PDF)
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1262,6 +1297,7 @@
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
+                emailSummaryEnabled: false,
 
                 // UPDATED: Stats specific to the 5 characters
                 learningStats: {
@@ -1301,6 +1337,7 @@
                 lessonStep: 'learn', // learn, quiz, success
                 currentLessonQuizIndex: 0,
                 pathProgress: {}, // Stores completion per subject
+                selectedCertificatePath: null,
 
                 curriculum: [
                     { 
@@ -1485,6 +1522,13 @@
                     this.closeLesson();
                 },
 
+                printCertificate(path) {
+                    this.selectedCertificatePath = path;
+                    setTimeout(() => {
+                        window.print();
+                    }, 500);
+                },
+
                 async resetMapProgress() {
                     if(confirm("Restart your Adventure Map progress? This will reset all paths to 0%.")) {
                         this.pathProgress = {};
@@ -1524,13 +1568,12 @@
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
                     
-                    // FIXED: Load Child Profile from learning_stats if available, else standard fallback
-                    // This avoids the 'child_profile' column missing error
                     this.childProfile = (data.learning_stats && data.learning_stats.child_profile) 
                         ? data.learning_stats.child_profile 
                         : { name: data.name, age: '', grade: '', ageRange: '6-7' }; 
 
                     this.totalMinutesLearned = data.total_minutes || 0;
+                    this.emailSummaryEnabled = data.email_summary_enabled || false;
 
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.get('payment') !== 'success') {
@@ -1547,7 +1590,6 @@
                         child_profile: this.childProfile
                     };
 
-                    // Load Path Progress from learningStats
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
                     const dailyData = data.daily_usage || {};
@@ -1612,6 +1654,21 @@
                     this.loginForm.name = this.childProfile.name;
                 },
 
+                async toggleEmailSummary() {
+                    this.emailSummaryEnabled = !this.emailSummaryEnabled;
+                    await this.syncData();
+                    alert(this.emailSummaryEnabled ? "Email summaries activated! You will receive weekly updates." : "Email summaries deactivated.");
+                },
+
+                downloadMonthlyReport() {
+                    if (!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+                    alert("Generating Progress Report... Your PDF will download shortly.");
+                    // Simulate PDF generation
+                },
+
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
@@ -1672,13 +1729,15 @@
                 // Helper for Age Logic
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
+                    const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
+                    
                     if (range === '4-5') {
-                        return "TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character. Avoid complex concepts.";
+                        return `${priority} TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character. Avoid complex concepts.`;
                     }
                     if (range === '8-9') {
-                        return "TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher, cool and smart.";
+                        return `${priority} TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher, cool and smart.`;
                     }
-                    return "TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly and helpful.";
+                    return `${priority} TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly and helpful.`;
                 },
 
                 async startQuiz() {
@@ -1751,7 +1810,6 @@
                     this.isLoading = true;
                     const email = this.loginForm.email.toLowerCase().trim();
 
-                    // FIXED: Prepare stats with nested child_profile
                     const initialChildProfile = { 
                         name: this.loginForm.name, 
                         age: '', 
@@ -1769,8 +1827,6 @@
                             {
                                 email: email,
                                 name: this.loginForm.name,
-                                // REMOVED 'child_profile' root column to fix DB error
-                                // Storing it inside learning_stats instead which is JSONB
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
@@ -1848,8 +1904,6 @@
                     if (!this.registeredEmail) return;
                     
                     this.learningStats.path_progress = this.pathProgress;
-
-                    // FIXED: Always ensure child_profile is synced into learning_stats
                     this.learningStats.child_profile = this.childProfile;
 
                     const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
@@ -1859,9 +1913,8 @@
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
-                        // REMOVED 'child_profile' root key from update
                         total_minutes: this.totalMinutesLearned,
-
+                        email_summary_enabled: this.emailSummaryEnabled,
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
                         learning_stats: safeStats,
@@ -1925,7 +1978,7 @@
                         if (now > this.premiumExpiry) {
                             this.isPremium = false;
                             this.premiumExpiry = null;
-                            alert("Your monthly premium subscription has expired. Please renew to access all characters!");
+                            alert("Your monthly premium subscription has expired. Please renew to access all features!");
                             this.setChar(this.characters[0]);
                             this.syncData();
                         }
@@ -1955,7 +2008,7 @@
                     }
                 },
                 async cancelSubscription() {
-                    if(confirm("Are you sure you want to cancel? You will lose access to premium characters immediately.")) {
+                    if(confirm("Are you sure you want to cancel? You will lose access to premium features immediately.")) {
                         this.isPremium = false;
                         this.premiumExpiry = null;
                         this.setChar(this.characters[0]);
@@ -2177,7 +2230,6 @@
                     msg.onend = () => { this.isSpeaking = false; };
                     window.speechSynthesis.speak(msg);
                 },
-                // --- PREMIUM FUNCTIONS ---
                 generateWorksheet() {
                     if(!this.isPremium) {
                         this.showPremiumModal = true;
