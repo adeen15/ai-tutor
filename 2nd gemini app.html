@@ -36,8 +36,10 @@
 
         @media (min-width: 640px) {
             .no-scroll-desktop {
-                overflow-y: auto !important; /* Allow scrolling on desktop login */
+                overflow: hidden !important;
                 height: 100vh;
+                position: fixed;
+                width: 100%;
             }
         }
         
@@ -106,9 +108,11 @@
         .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid #3b82f6; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* --- NEW STYLES FOR LEARNING MAP --- */
         .level-connector { position: absolute; width: 4px; background-color: #e5e7eb; left: 50%; transform: translateX(-50%); z-index: 0; }
         .bounce { animation: bounce 2s infinite; }
 
+        /* Certificate Styles */
         .certificate-border { border: 20px solid #f59e0b; border-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M20 0l5 15h15l-12 9 4 16-12-9-12 9 4-16-12-9h15z' fill='%23f59e0b'/%3E%3C/svg%3E") 30; }
 
         @media (max-width: 640px) {
@@ -183,9 +187,9 @@
         </div>
     </div>
 
-    <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-white sm:bg-gradient-to-br sm:from-blue-400 sm:to-purple-600 overflow-y-auto transition-all duration-700">
-        <div class="min-h-full w-full py-0 sm:py-12 flex items-center justify-center">
-            <div class="bg-white w-full sm:max-w-md h-auto sm:rounded-[2rem] p-6 sm:p-12 shadow-2xl text-center relative overflow-visible animate__animated animate__zoomIn sm:border-8 border-white/20 mx-0 sm:mx-auto">
+    <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-white sm:bg-gradient-to-br sm:from-blue-400 sm:to-purple-600 overflow-y-auto overflow-x-hidden transition-all duration-700">
+        <div class="min-h-full w-full p-0 sm:p-8 flex items-center justify-center">
+            <div class="bg-white m-0 w-full min-w-full sm:min-w-0 h-auto sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative animate__animated animate__zoomIn sm:border-8 border-white/20 my-0 sm:my-8 pb-12">
                 
                 <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
                 <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
@@ -223,6 +227,9 @@
                                     <span>8-9</span>
                                 </button>
                             </div>
+                            <p class="text-[10px] text-center mt-2 text-slate-400 font-bold" x-show="loginForm.ageRange === '4-5'">Simple words. Slow pacing. Lots of emojis.</p>
+                            <p class="text-[10px] text-center mt-2 text-slate-400 font-bold" x-show="loginForm.ageRange === '6-7'">Standard vocabulary. Fun facts. Balanced quizzes.</p>
+                            <p class="text-[10px] text-center mt-2 text-slate-400 font-bold" x-show="loginForm.ageRange === '8-9'">Advanced topics. Critical thinking. Harder quizzes.</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
@@ -231,6 +238,7 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Secret PIN (4 Digits)</label>
                             <input type="tel" maxlength="4" x-model="loginForm.pin" placeholder="****" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 text-center text-2xl tracking-[0.5em] transition-all">
+                            <p class="text-[10px] text-slate-400 mt-1 ml-2">Use this PIN to access Parent Dashboard later.</p>
                         </div>
                         
                         <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
@@ -240,6 +248,7 @@
                                     I confirm I am the parent/guardian and agree to the 
                                     <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
                                     <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
+                                    I consent to kid-safe AI processing (COPPA/GDPR).
                                 </span>
                             </label>
                         </div>
@@ -265,8 +274,12 @@
                                 </li>
                             </ul>
                         </div>
+                        <div class="flex items-center justify-center gap-2 mt-3 opacity-80">
+                             <i class="fas fa-shield-alt text-green-500"></i>
+                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">No data sold. 100% Private.</p>
+                        </div>
 
-                        <div class="mt-6 grid grid-cols-2 gap-2 text-left animate__animated animate__fadeInUp delay-700 pb-4">
+                        <div class="mt-6 grid grid-cols-2 gap-2 text-left animate__animated animate__fadeInUp delay-700">
                             <div class="bg-blue-50 p-2 rounded-lg border border-blue-100 flex items-center gap-2">
                                 <i class="fas fa-check-circle text-blue-500 text-xs"></i>
                                 <span class="text-[10px] font-bold text-slate-600 leading-tight">Curriculum Aligned</span>
@@ -275,9 +288,17 @@
                                  <i class="fas fa-lock text-blue-500 text-xs"></i>
                                 <span class="text-[10px] font-bold text-slate-600 leading-tight">No Open Internet</span>
                             </div>
+                            <div class="bg-blue-50 p-2 rounded-lg border border-blue-100 flex items-center gap-2">
+                                 <i class="fas fa-user-shield text-blue-500 text-xs"></i>
+                                <span class="text-[10px] font-bold text-slate-600 leading-tight">Teacher Reviewed</span>
+                            </div>
+                            <div class="bg-green-100 p-2 rounded-lg border border-green-200 flex items-center gap-2">
+                                 <i class="fas fa-shield-alt text-green-600 text-xs"></i>
+                                <span class="text-[10px] font-bold text-green-700 leading-tight">Safe Mode ON</span>
+                            </div>
                         </div>
                         
-                        <p class="text-center mt-4 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500 pb-8" @click="hasAccount = true">Already have an account? Login</p>
+                        <p class="text-center mt-4 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true">Already have an account? Login</p>
                     </div>
 
                     <div x-show="hasAccount" class="space-y-6">
@@ -298,7 +319,7 @@
                         <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
                     </div>
 
-                    <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center mb-4">
+                    <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
                         <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Legal & Privacy</h3>
                         <div class="flex justify-center gap-6">
                             <button @click="showLegalDoc = 'privacy'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Privacy Policy</button>
@@ -1067,7 +1088,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
                             <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails Active
@@ -1267,6 +1287,7 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
+                // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
                 
@@ -1300,6 +1321,7 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
+                // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1307,12 +1329,14 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
+                // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
 
+                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1322,6 +1346,7 @@
                         science: 0, 
                         nature: 0 
                     },
+                    // We will store child_profile here to avoid DB errors
                     child_profile: null 
                 },
                 xp: 0,
@@ -1331,6 +1356,7 @@
                 inventory: [],
                 equippedItem: null,
                 
+                // --- QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1341,12 +1367,13 @@
                 isDrawing: false,
                 artImage: null,
 
+                // --- LEARNING PATH STATE ---
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn',
+                lessonStep: 'learn', // learn, quiz, success
                 currentLessonQuizIndex: 0,
-                pathProgress: {},
+                pathProgress: {}, // Stores completion per subject
                 selectedCertificatePath: null,
 
                 curriculum: [
@@ -1428,26 +1455,33 @@
                     this.currentChar = this.characters[0];
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
+
+                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
                         this.totalMinutesLearned++;
                         this.syncData();
                     }, 60000);
+
                     try {
                         const res = await fetch('/api/config');
                         const config = await res.json();
                         this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
+
                         const storedEmail = localStorage.getItem('parent_email');
                         if (storedEmail) {
                             this.loginForm.email = storedEmail;
                             this.hasAccount = true;
                         }
+
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') === 'success') {
                             if (storedEmail) await this.loadUserProfile(storedEmail);
+                            
                             this.isPremium = true;
                             this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); 
                             await this.syncData();
+
                             this.showPremiumModal = false;
                             this.showParentPortal = true;
                             this.parentAuthenticated = true;
@@ -1459,9 +1493,11 @@
                     } finally {
                         this.isLoading = false;
                     }
+
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
+                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1469,6 +1505,7 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
+                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1496,6 +1533,7 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
+                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1505,11 +1543,15 @@
                     }
                 },
                 async completeLesson() {
+                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
+                    
+                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
+                    
                     this.coins += 50;
                     this.xp += 100;
                     this.updateLevel();
@@ -1539,6 +1581,7 @@
                             .select('*')
                             .eq('email', email)
                             .single();
+                        
                         if (data) {
                             this.populateUserData(data);
                             this.isLoggedIn = true;
@@ -1561,16 +1604,20 @@
                     this.masterPin = data.pin;
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
+                    
                     this.childProfile = (data.learning_stats && data.learning_stats.child_profile) 
                         ? data.learning_stats.child_profile 
                         : { name: data.name, age: '', grade: '', ageRange: '6-7' }; 
+
                     this.totalMinutesLearned = data.total_minutes || 0;
                     this.emailSummaryEnabled = data.email_summary_enabled || false;
+
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.get('payment') !== 'success') {
                         this.isPremium = data.is_premium || false;
                         this.premiumExpiry = data.premium_expiry;
                     }
+                    
                     this.inventory = data.inventory || [];
                     this.equippedItem = data.equipped_item;
                     this.parentLogs = data.parent_logs || [];
@@ -1579,7 +1626,9 @@
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                         child_profile: this.childProfile
                     };
+
                     this.pathProgress = data.learning_stats?.path_progress || {};
+                    
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
                     if (dailyData.date !== today) {
@@ -1589,26 +1638,35 @@
                         this.dailyQuestionsUsed = dailyData.questions_used || 0;
                         this.rewardClaimedToday = dailyData.reward_claimed || false;
                     }
+                    
                     this.updateLevel();
                     this.checkPremiumExpiration();
                 },
 
                 get journeyProgress() {
+                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34;
+                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
                 },
 
                 getTopSubjects() {
                     const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                     const displayNames = {
-                        history: 'History', robots: 'Robots and AI', space: 'Space Exploration', science: 'Science', nature: 'Nature'
+                        history: 'History',
+                        robots: 'Robots and AI',
+                        space: 'Space Exploration',
+                        science: 'Science',
+                        nature: 'Nature'
                     };
+                    
                     let statsArray = requiredKeys.map(key => {
                         const score = this.learningStats.subjects[key] || 0;
                         return [displayNames[key], score];
                     });
+
                     statsArray.sort((a, b) => b[1] - a[1]);
+
                     return statsArray.reduce((obj, [name, score]) => {
                         obj[name] = score;
                         return obj;
@@ -1617,7 +1675,11 @@
 
                 getSubjectColor(subject) {
                     const colors = {
-                        'History': 'bg-orange-500', 'Robots and AI': 'bg-blue-600', 'Space Exploration': 'bg-purple-600', 'Science': 'bg-pink-500', 'Nature': 'bg-green-500'
+                        'History': 'bg-orange-500',
+                        'Robots and AI': 'bg-blue-600',
+                        'Space Exploration': 'bg-purple-600',
+                        'Science': 'bg-pink-500',
+                        'Nature': 'bg-green-500'
                     };
                     return colors[subject] || 'bg-gray-500';
                 },
@@ -1625,13 +1687,14 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
+                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
                 async toggleEmailSummary() {
                     this.emailSummaryEnabled = !this.emailSummaryEnabled;
                     await this.syncData();
-                    alert(this.emailSummaryEnabled ? "Email summaries activated!" : "Email summaries deactivated.");
+                    alert(this.emailSummaryEnabled ? "Email summaries activated! You will receive weekly updates." : "Email summaries deactivated.");
                 },
 
                 downloadMonthlyReport() {
@@ -1640,15 +1703,18 @@
                         return;
                     }
                     alert("Generating Progress Report... Your PDF will download shortly.");
+                    // Simulate PDF generation
                 },
 
                 async generateArt() {
                     if (!this.userQuery) {
-                        alert("Tell me what to draw first!");
+                        alert("Tell me what to draw first! (Type in the box)");
                         return;
                     }
+
                     const queryLower = this.userQuery.toLowerCase();
                     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+
                     if (!isOnTopic) {
                         this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
                         this.speak(this.displayText);
@@ -1656,14 +1722,19 @@
                         this.currentMoodIcon = '🤔';
                         return; 
                     }
+
                     this.showArtModal = true;
                     this.isDrawing = true;
                     this.artImage = null;
                     this.toggleScroll(true);
+
+                    // USE POLLINATIONS AI
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
+                    
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
+
                     setTimeout(() => {
                         this.artImage = imageUrl;
                         this.isDrawing = false;
@@ -1687,37 +1758,63 @@
                         window.URL.revokeObjectURL(url);
                         document.body.removeChild(a);
                     } catch (e) {
+                        console.error("Download failed:", e);
                         window.open(this.artImage, '_blank');
                     }
                 },
 
+                // Helper for Age Logic
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
-                    const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts." : "";
-                    if (range === '4-5') return `${priority} TARGET AUDIENCE: Age 4-5. Extremely simple words. Tone: Playful.`;
-                    if (range === '8-9') return `${priority} TARGET AUDIENCE: Age 8-9. Moderate vocabulary. Explain deeper concepts.`;
-                    return `${priority} TARGET AUDIENCE: Age 6-7. Simple vocabulary. Clear sentences. Friendly.`;
+                    const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
+                    
+                    if (range === '4-5') {
+                        return `${priority} TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character. Avoid complex concepts.`;
+                    }
+                    if (range === '8-9') {
+                        return `${priority} TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher, cool and smart.`;
+                    }
+                    return `${priority} TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly and helpful.`;
                 },
 
                 async startQuiz() {
                     this.showQuiz = true;
                     this.quizState = 'loading';
                     this.toggleScroll(true);
+
                     const ageRange = this.childProfile.ageRange || '6-7';
+
                     try {
-                        const systemPrompt = `You are an AI Quiz Generator for kids. TARGET AGE: ${ageRange}. Based on the text: "${this.displayText}", create ONE question. Return JSON format: {"question": "Q?", "options": ["A", "B", "C"], "correctIndex": 0}`;
+                        const systemPrompt = `You are an AI Quiz Generator for kids. 
+                        TARGET AGE: ${ageRange}.
+                        Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
+                        Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
+                        Return strictly this JSON format: 
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
+                        Make sure the options are short and simple.`;
+
                         const response = await fetch("/api/chat", {
-                            method: "POST", headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ "messages": [{ "role": "system", "content": systemPrompt }, { "role": "user", "content": "Generate quiz" }] })
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": "Generate quiz" }
+                                ]
+                            })
                         });
+
                         const data = await response.json();
                         let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
                         const quizData = JSON.parse(cleanJson);
+
                         this.quizQuestion = quizData.question;
                         this.quizOptions = quizData.options;
                         this.quizCorrectIndex = quizData.correctIndex;
                         this.quizState = 'active';
+
                     } catch (e) {
+                        console.error("Quiz Error", e);
                         this.quizQuestion = "Did you like learning about that?";
                         this.quizOptions = ["Yes!", "It was okay", "No"];
                         this.quizCorrectIndex = 0;
@@ -1746,32 +1843,58 @@
                         alert("Please agree to the Privacy Policy and Terms.");
                         return;
                     }
+
                     this.isLoading = true;
                     const email = this.loginForm.email.toLowerCase().trim();
-                    const initialChildProfile = { name: this.loginForm.name, age: '', grade: '', ageRange: this.loginForm.ageRange };
-                    const initialStats = { ...this.learningStats, child_profile: initialChildProfile };
+
+                    const initialChildProfile = { 
+                        name: this.loginForm.name, 
+                        age: '', 
+                        grade: '',
+                        ageRange: this.loginForm.ageRange 
+                    };
+
+                    const initialStats = {
+                        ...this.learningStats,
+                        child_profile: initialChildProfile
+                    };
+
                     try {
-                        const { error } = await this.supabase.from('profiles').insert([
-                            { email: email, name: this.loginForm.name, pin: this.loginForm.pin, coins: 50, xp: 0, learning_stats: initialStats, parent_logs: [] }
+                        const { data, error } = await this.supabase.from('profiles').insert([
+                            {
+                                email: email,
+                                name: this.loginForm.name,
+                                pin: this.loginForm.pin,
+                                coins: 50, 
+                                xp: 0,
+                                learning_stats: initialStats,
+                                parent_logs: []
+                            }
                         ]);
+
                         if (error) throw error;
+
                         localStorage.setItem('parent_email', email);
                         this.registeredEmail = email;
                         this.masterPin = this.loginForm.pin;
                         this.savedProfile = { name: this.loginForm.name, email: email };
+                        
                         this.childProfile = initialChildProfile;
                         this.learningStats = initialStats;
+
                         this.coins = 50; 
                         this.isLoggedIn = true;
                         this.hasAccount = true;
                         this.playPing();
+                        
                         confetti({ particleCount: 150, spread: 70 });
+
                     } catch (err) {
                         if (err.code === '23505') { 
                             alert("This email is already registered. Please login.");
                             this.hasAccount = true;
                         } else {
-                            alert("Error: " + err.message);
+                            alert("Error creating account: " + err.message);
                         }
                     } finally {
                         this.isLoading = false;
@@ -1781,44 +1904,79 @@
                 async handleLogin() {
                     this.isLoading = true;
                     const email = this.loginForm.email.toLowerCase().trim();
+
                     try {
-                        const { data, error } = await this.supabase.from('profiles').select('pin').eq('email', email).single();
+                        const { data, error } = await this.supabase
+                            .from('profiles')
+                            .select('pin')
+                            .eq('email', email)
+                            .single();
+
                         if (error || !data) {
-                            alert("Account not found.");
+                            alert("Account not found. Please check email or create an account.");
                             this.isLoading = false;
                             return;
                         }
+
                         if (data.pin !== this.loginForm.pin) {
                             alert("Incorrect PIN.");
+                            this.loginForm.pin = '';
                             this.isLoading = false;
                             return;
                         }
+
                         localStorage.setItem('parent_email', email);
                         await this.loadUserProfile(email);
+
                     } catch (err) {
-                        alert("Login failed.");
+                        console.error(err);
+                        alert("Login failed. Check connection.");
                     } finally {
                         this.isLoading = false;
+                        this.loginForm.pin = '';
                     }
                 },
 
                 async syncData() {
                     if (!this.registeredEmail) return;
+                    
                     this.learningStats.path_progress = this.pathProgress;
                     this.learningStats.child_profile = this.childProfile;
+
+                    const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
+                    const safeInventory = JSON.parse(JSON.stringify(this.inventory));
+                    const safeStats = JSON.parse(JSON.stringify(this.learningStats));
+
                     const updateData = {
-                        coins: this.coins, xp: this.xp, total_minutes: this.totalMinutesLearned, email_summary_enabled: this.emailSummaryEnabled,
-                        inventory: JSON.parse(JSON.stringify(this.inventory)), equipped_item: this.equippedItem,
-                        learning_stats: JSON.parse(JSON.stringify(this.learningStats)), parent_logs: JSON.parse(JSON.stringify(this.parentLogs)), 
-                        is_premium: this.isPremium, premium_expiry: this.premiumExpiry,
-                        daily_usage: { date: new Date().toDateString(), questions_used: this.dailyQuestionsUsed, reward_claimed: this.rewardClaimedToday }
+                        coins: this.coins,
+                        xp: this.xp,
+                        total_minutes: this.totalMinutesLearned,
+                        email_summary_enabled: this.emailSummaryEnabled,
+                        inventory: safeInventory,
+                        equipped_item: this.equippedItem,
+                        learning_stats: safeStats,
+                        parent_logs: safeLogs, 
+                        is_premium: this.isPremium,
+                        premium_expiry: this.premiumExpiry,
+                        daily_usage: {
+                            date: new Date().toDateString(),
+                            questions_used: this.dailyQuestionsUsed,
+                            reward_claimed: this.rewardClaimedToday
+                        }
                     };
-                    await this.supabase.from('profiles').update(updateData).eq('email', this.registeredEmail);
+
+                    await this.supabase
+                        .from('profiles')
+                        .update(updateData)
+                        .eq('email', this.registeredEmail);
                 },
 
                 toggleScroll(disable) {
-                    if (disable) document.body.classList.add('no-scroll');
-                    else document.body.classList.remove('no-scroll');
+                    if (disable) {
+                        document.body.classList.add('no-scroll');
+                    } else {
+                        document.body.classList.remove('no-scroll');
+                    }
                 },
 
                 async buyItem(item) {
@@ -1826,7 +1984,11 @@
                         this.coins -= item.price;
                         this.inventory.push(item.id);
                         this.equipItem(item.id);
-                        confetti({ particleCount: 100, spread: 70, colors: ['#00ff00', '#ffffff'] });
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            colors: ['#00ff00', '#ffffff']
+                        });
                         this.playPing();
                         await this.syncData(); 
                     }
@@ -1836,140 +1998,291 @@
                     await this.syncData();
                 },
                 async toggleEquip(itemId) {
-                    this.equippedItem = (this.equippedItem === itemId) ? null : itemId;
+                    if (this.equippedItem === itemId) {
+                        this.equippedItem = null;
+                    } else {
+                        this.equippedItem = itemId;
+                    }
                     await this.syncData();
                 },
                 getEquippedItemData() {
                     return this.shopItems.find(i => i.id === this.equippedItem) || {};
                 },
+                
                 checkPremiumExpiration() {
-                    if (this.isPremium && this.premiumExpiry && new Date().getTime() > this.premiumExpiry) {
-                        this.isPremium = false; this.premiumExpiry = null;
-                        alert("Subscription expired."); this.setChar(this.characters[0]); this.syncData();
+                    if (this.isPremium && this.premiumExpiry) {
+                        const now = new Date().getTime();
+                        if (now > this.premiumExpiry) {
+                            this.isPremium = false;
+                            this.premiumExpiry = null;
+                            alert("Your monthly premium subscription has expired. Please renew to access all features!");
+                            this.setChar(this.characters[0]);
+                            this.syncData();
+                        }
                     }
                 },
                 async processPayment() {
                     this.isLoading = true;
                     try {
                         const res = await fetch('/api/create-checkout', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ userEmail: this.registeredEmail })
                         });
+                        
                         const data = await res.json();
-                        if (data.url) window.location.href = data.url;
-                        else alert("Payment connection error.");
+                        
+                        if (data.url) {
+                            window.location.href = data.url;
+                        } else {
+                            alert("Could not connect to payment server. Check console.");
+                        }
                     } catch (e) {
-                        alert("Payment Error.");
+                        alert("Payment Error. Please try again.");
                     } finally {
                         this.isLoading = false;
+                        this.showCheckout = false;
                     }
                 },
                 async cancelSubscription() {
-                    if(confirm("Cancel premium?")) {
-                        this.isPremium = false; this.premiumExpiry = null; this.setChar(this.characters[0]); await this.syncData();
+                    if(confirm("Are you sure you want to cancel? You will lose access to premium features immediately.")) {
+                        this.isPremium = false;
+                        this.premiumExpiry = null;
+                        this.setChar(this.characters[0]);
+                        await this.syncData();
                     }
                 },
+                
                 async claimReward() {
                     if (this.rewardClaimedToday) return;
-                    this.coins = Number(this.coins) + (this.todayIndex === 6 ? 100 : 50);
+                    let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
+                    this.coins = Number(this.coins) + rewardAmount;
                     this.rewardClaimedToday = true;
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    this.playPing(); await this.syncData(); 
+                    
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#FFD700', '#FF69B4', '#00BFFF']
+                    });
+                    this.playPing();
+                    await this.syncData(); 
                 },
                 trySetChar(char) {
                     if (char.premium && !this.isPremium) {
-                        this.showPremiumModal = true; this.toggleScroll(true);
-                    } else this.setChar(char);
+                        this.showPremiumModal = true;
+                        this.toggleScroll(true);
+                    } else {
+                        this.setChar(char);
+                    }
                 },
                 openParentPortal() {
-                    this.showParentPortal = true; this.parentAuthenticated = false; this.isChangingPin = false; this.pinInput = ''; this.toggleScroll(true);
+                    this.showParentPortal = true;
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = false;
+                    this.pinInput = '';
+                    this.toggleScroll(true);
                 },
                 startPinChange() {
-                    this.parentAuthenticated = false; this.isChangingPin = true; this.pinInput = '';
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = true;
+                    this.pinInput = '';
                 },
                 async verifyPin() {
-                    if (this.isChangingPin && this.pinInput.length === 4) {
-                        this.masterPin = this.pinInput;
-                        await this.supabase.from('profiles').update({ pin: this.pinInput }).eq('email', this.registeredEmail);
-                        alert("PIN updated!"); this.isChangingPin = false; this.parentAuthenticated = true; this.pinInput = '';
-                    } else if(this.pinInput === this.masterPin) this.parentAuthenticated = true;
-                    else this.pinInput = '';
+                    if (this.isChangingPin) {
+                        if (this.pinInput.length === 4) {
+                            this.masterPin = this.pinInput;
+                            await this.supabase.from('profiles').update({ pin: this.pinInput }).eq('email', this.registeredEmail);
+                            
+                            alert("PIN updated!");
+                            this.isChangingPin = false;
+                            this.parentAuthenticated = true;
+                            this.pinInput = '';
+                        }
+                    } else {
+                        if(this.pinInput === this.masterPin) {
+                            this.parentAuthenticated = true;
+                        } else {
+                            this.pinInput = '';
+                        }
+                    }
                 },
                 closeParentPortal() {
-                    this.showParentPortal = false; this.parentAuthenticated = false; this.isChangingPin = false; this.pinInput = ''; this.toggleScroll(false);
+                    this.showParentPortal = false;
+                    this.parentAuthenticated = false;
+                    this.isChangingPin = false;
+                    this.pinInput = '';
+                    this.toggleScroll(false);
                 },
                 logActivity(query) {
-                    this.parentLogs.push({ query: query, time: new Date().toLocaleString(), char: this.currentChar.name.replace("Professor ", "") });
+                    let shortName = this.currentChar.name.replace("Professor ", "");
+                    const entry = {
+                        query: query,
+                        time: new Date().toLocaleString(),
+                        char: shortName
+                    };
+                    this.parentLogs.push(entry);
                 },
                 async clearLogs() {
-                    if(confirm("Clear history?")) {
+                    if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
                         this.parentLogs.splice(0, this.parentLogs.length);
+                        
                         this.learningStats.wordsLearned = 0;
                         this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
-                        await this.syncData(); alert("Cleared.");
+                        
+                        await this.syncData(); 
+                        alert("Search history cleared.");
                     }
                 },
                 updateProgress(query, response) {
-                    this.learningStats.wordsLearned += response.split(' ').length;
-                    const q = query.toLowerCase();
-                    if (q.match(/bee|nature|tree/)) this.learningStats.subjects.nature += 10;
-                    if (q.match(/sun|space|star/)) this.learningStats.subjects.space += 10;
-                    if (q.match(/robot|tech/)) this.learningStats.subjects.robots += 10;
-                    if (q.match(/science|experiment/)) this.learningStats.subjects.science += 10;
-                    if (q.match(/dino|history/)) this.learningStats.subjects.history += 10;
+                    const words = response.split(' ').length;
+                    this.learningStats.wordsLearned += words;
+                    const queryLower = query.toLowerCase();
+                    if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
+                    if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
+                    if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
+                    if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
+                    if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
                 },
                 startListening() {
-                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    if (!SR) return;
-                    const r = new SR(); r.onstart = () => { this.isListening = true; window.speechSynthesis.cancel(); this.isSpeaking = false; };
-                    r.onresult = (e) => { this.userQuery = e.results[0][0].transcript; this.isListening = false; this.askTutor(); };
-                    r.onerror = () => { this.isListening = false; }; r.onend = () => { this.isListening = false; }; r.start();
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRecognition) return;
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'en-US';
+                    recognition.onstart = () => { this.isListening = true; window.speechSynthesis.cancel(); this.isSpeaking = false; };
+                    recognition.onresult = (event) => { this.userQuery = event.results[0][0].transcript; this.isListening = false; this.askTutor(); };
+                    recognition.onerror = () => { this.isListening = false; };
+                    recognition.onend = () => { this.isListening = false; };
+                    recognition.start();
                 },
                 setChar(char) {
-                    this.currentChar = char; this.currentMoodIcon = char.icon; this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}!`;
-                    this.suggestions = char.suggestions; this.hasAnswered = false; window.speechSynthesis.cancel(); this.isSpeaking = false;
+                    this.currentChar = char;
+                    this.currentMoodIcon = char.icon;
+                    this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
+                    this.suggestions = char.suggestions;
+                    this.hasAnswered = false;
+                    window.speechSynthesis.cancel();
+                    this.isSpeaking = false;
                 },
-                updateLevel() { this.level = Math.floor(this.xp / 100) + 1; },
-                isQuerySafe(q) {
+                updateLevel() {
+                    this.level = Math.floor(this.xp / 100) + 1;
+                },
+                isQuerySafe(query) {
+                    const lowerQuery = query.toLowerCase();
                     const blocked = this.safetySettings.blockedWords.split(',').map(w => w.trim().toLowerCase());
-                    const combined = [...blocked, ...this.safetySettings.forbiddenTopics];
-                    return !combined.some(word => word !== "" && q.toLowerCase().includes(word));
+                    const combinedFilters = [...blocked, ...this.safetySettings.forbiddenTopics];
+                    return !combinedFilters.some(word => word !== "" && lowerQuery.includes(word));
                 },
                 async askTutor() {
                     if (!this.userQuery.trim()) return;
-                    if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) { this.showPremiumModal = true; this.toggleScroll(true); return; }
-                    if (!this.isQuerySafe(this.userQuery)) { this.displayText = "Let's talk about something fun! 🌈✨"; this.userQuery = ''; this.currentMoodIcon = '🤔'; return; }
-                    const savedQuery = this.userQuery; this.logActivity(savedQuery); window.speechSynthesis.cancel(); this.isSpeaking = false;
-                    this.isThinking = true; this.hasAnswered = false; this.displayText = "Thinking... 🧠✨"; this.currentMoodIcon = this.currentChar.mood_think;
+                    if (!this.isPremium) {
+                         const today = new Date().toDateString();
+                         if (this.lastUsageDate !== today) {
+                             this.dailyQuestionsUsed = 0;
+                             this.lastUsageDate = today;
+                         }
+                         if (this.dailyQuestionsUsed >= this.maxFreeQuestions) {
+                            this.showPremiumModal = true;
+                            this.toggleScroll(true);
+                            return;
+                         }
+                    }
+                    if (!this.isQuerySafe(this.userQuery)) {
+                        this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
+                        this.userQuery = '';
+                        this.currentMoodIcon = '🤔';
+                        return;
+                    }
+
+                    const savedQuery = this.userQuery;
+                    this.logActivity(this.userQuery);
+                    window.speechSynthesis.cancel();
+                    this.isSpeaking = false;
+                    this.isThinking = true;
+                    this.hasAnswered = false;
+                    this.displayText = "Thinking... 🧠✨";
+                    this.currentMoodIcon = this.currentChar.mood_think;
+
+                    const ageLogicInstruction = this.getAgeLogic();
+
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}. ${this.getAgeLogic()}. SUBJECT: ${this.currentChar.subject}. RULES: Answer in 2 sentences max. If off-topic, redirect gently.`;
+                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
+                        ${ageLogicInstruction}
+                        YOUR SUBJECT: ${this.currentChar.subject}.
+                        
+                        CRITICAL RULES:
+                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
+                        2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
+                        3. Never break character.`;
+
                         const response = await fetch("/api/chat", {
-                            method: "POST", headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ "messages": [{ "role": "system", "content": systemPrompt }, { "role": "user", "content": savedQuery }] })
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": savedQuery }
+                                ]
+                            })
                         });
-                        const data = await response.json(); if (!this.isPremium) this.dailyQuestionsUsed++;
-                        this.finishThinking(this.currentChar.intro_phrase + data.choices[0].message.content, savedQuery);
-                    } catch (error) { this.finishThinking("Brain fuzzy. Ask again? 🔌", savedQuery); }
+
+                        const data = await response.json();
+                        const aiMessage = data.choices[0].message.content;
+                        
+                        if (!this.isPremium) {
+                            this.dailyQuestionsUsed++;
+                        }
+
+                        this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
+                    } catch (error) {
+                        console.error("API Error:", error);
+                        this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
+                    }
                 },
-                async finishThinking(resp, orig) {
-                    this.displayText = resp; this.isThinking = false; this.hasAnswered = true; this.userQuery = '';
-                    this.currentMoodIcon = this.currentChar.mood_happy; this.xp += 20; this.updateLevel(); this.playPing(); this.updateProgress(orig, resp);
+                async finishThinking(response, originalQuery) {
+                    this.displayText = response;
+                    this.isThinking = false;
+                    this.hasAnswered = true;
+                    this.userQuery = '';
+                    this.currentMoodIcon = this.currentChar.mood_happy;
+                    this.xp += 20;
+                    this.updateLevel();
+                    this.playPing();
+                    this.updateProgress(originalQuery, response);
+                    
                     await this.syncData();
                 },
                 playPing() {
-                    const c = new (window.AudioContext || window.webkitAudioContext)();
-                    const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(440, c.currentTime); o.connect(c.destination); o.start(); o.stop(c.currentTime + 0.1);
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = context.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, context.currentTime);
+                    osc.connect(context.destination);
+                    osc.start();
+                    osc.stop(context.currentTime + 0.1);
                 },
                 speak(text) {
                     if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
-                    const msg = new SpeechSynthesisUtterance(text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, ''));
-                    const v = window.speechSynthesis.getVoices(); msg.voice = v.find(v => v.name.includes('Google US English')) || v[0];
-                    msg.pitch = this.currentChar.pitch; msg.rate = this.currentChar.rate; msg.onstart = () => { this.isSpeaking = true; };
-                    msg.onend = () => { this.isSpeaking = false; }; window.speechSynthesis.speak(msg);
+                    const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                    const msg = new SpeechSynthesisUtterance(cleanText);
+                    const voices = window.speechSynthesis.getVoices();
+                    let baseVoice = voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.name.includes('Samantha')) || voices[0];
+                    msg.voice = baseVoice;
+                    msg.pitch = this.currentChar.pitch; 
+                    msg.rate = this.currentChar.rate;
+                    msg.onstart = () => { this.isSpeaking = true; };
+                    msg.onend = () => { this.isSpeaking = false; };
+                    window.speechSynthesis.speak(msg);
                 },
                 generateWorksheet() {
-                    if(!this.isPremium) { this.showPremiumModal = true; return; }
-                    this.playPing(); window.print(); this.coins += 100; this.syncData();
+                    if(!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+                    this.playPing();
+                    window.print();
+                    this.coins += 100;
+                    this.syncData();
                 }
             }
         }
