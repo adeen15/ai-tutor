@@ -15,6 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -90,7 +91,7 @@
         .lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
 
         .mic-active { animation: pulse-red 1.5s infinite; color: #ef4444 !important; }
-        @keyframes pulse-red { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes pulse-red { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2) opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
@@ -574,7 +575,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 pb-12">
                     <template x-for="path in curriculum">
                         <button @click="currentPath = path" class="bg-white rounded-[2rem] p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 border-b-8 border-gray-200 group flex flex-col items-center text-center relative overflow-hidden">
                              <div class="absolute top-0 left-0 w-full h-2 group-hover:h-full transition-all duration-500 opacity-10" :class="path.color"></div>
@@ -601,6 +602,21 @@
                              </template>
                         </button>
                     </template>
+
+                    <button @click="generateNewPath()" 
+                            class="bg-white rounded-[2rem] p-8 border-4 border-dashed border-purple-200 hover:border-purple-400 group transition-all flex flex-col items-center text-center relative overflow-hidden"
+                            :disabled="isGeneratingPath">
+                        <div x-show="isGeneratingPath" class="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center">
+                            <div class="spinner border-purple-500 mb-4"></div>
+                            <p class="font-kids text-purple-600 animate-pulse text-sm">Magic in progress...</p>
+                        </div>
+                        <div class="w-24 h-24 rounded-full bg-purple-50 flex items-center justify-center text-5xl mb-6 group-hover:rotate-12 transition-transform">
+                           ✨
+                        </div>
+                        <h3 class="text-2xl font-kids text-purple-600 mb-2">Magic Wand</h3>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Generate New Quest</p>
+                        <div class="mt-6 text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-full font-bold">Powered by AI 🪄</div>
+                    </button>
                 </div>
             </div>
 
@@ -1375,6 +1391,7 @@
                 currentLessonQuizIndex: 0,
                 pathProgress: {}, // Stores completion per subject
                 selectedCertificatePath: null,
+                isGeneratingPath: false,
 
                 curriculum: [
                     { 
@@ -1400,7 +1417,7 @@
                         levels: [
                             { id: 1, title: 'Solar System', content: 'We live on Earth! The Sun is a giant hot star in the middle.', quiz: [{q: 'We live on...', options:['Mars', 'Earth', 'Sun'], correct:1}, {q: 'Is the sun hot?', options:['Yes', 'No', 'Cold'], correct:0}, {q: 'The moon is made of cheese?', options:['Yes', 'No', 'Maybe'], correct:1}] },
                             { id: 2, title: 'Dinosaurs', content: 'Dinosaurs lived long ago. The T-Rex was very big and scary!', quiz: [{q: 'T-Rex was...', options:['Small', 'Big', 'Tiny'], correct:1}, {q: 'Are dinos alive today?', options:['Yes', 'No', 'Birds are!'], correct:2}, {q: 'Did they eat pizza?', options:['Yes', 'No', 'Always'], correct:1}] },
-                            { id: 3, title: 'Water Cycle', content: 'Rain comes from clouds. Sun dries it up. Then it rains again!', quiz: [{q: 'Rain comes from...', options:['Ground', 'Clouds', 'Trees'], correct:1}, {q: 'Sun makes water...', options:['Freeze', 'Dry up', 'Green'], correct:1}, {q: 'Is snow water?', options:['Yes', 'No', 'Maybe'], correct:0}] }
+                            { id: 3, title: 'Water Cycle', content: 'Water comes from clouds. Sun dries it up. Then it rains again!', quiz: [{q: 'Rain comes from...', options:['Ground', 'Clouds', 'Trees'], correct:1}, {q: 'Sun makes water...', options:['Freeze', 'Dry up', 'Green'], correct:1}, {q: 'Is snow water?', options:['Yes', 'No', 'Maybe'], correct:0}] }
                         ]
                     }
                 ],
@@ -1497,7 +1514,164 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // --- NEW METHODS FOR LEARNING PATH ---
+                // --- INFINITE CONTENT GENERATOR ---
+                async generateNewPath() {
+                    if (this.isGeneratingPath) return;
+                    
+                    // Only for Premium
+                    if (!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+
+                    this.isGeneratingPath = true;
+                    const ageRange = this.childProfile.ageRange || '6-7';
+                    const currentTopics = this.curriculum.map(p => p.name).join(", ");
+
+                    try {
+                        const systemPrompt = `You are a curriculum designer for kids. Create a NEW 3-level learning path for a ${ageRange} year old.
+                        The topic must be educational (Science, Math, History, or Arts) and NOT already in this list: ${currentTopics}.
+                        
+                        Return ONLY JSON in this format:
+                        {
+                            "id": "unique_string_id",
+                            "name": "Fun Path Name",
+                            "grade": "Level Description",
+                            "icon": "Emoji",
+                            "color": "bg-[color]-500",
+                            "premium": true,
+                            "levels": [
+                                {
+                                    "id": 1,
+                                    "title": "Level 1 Title",
+                                    "content": "A short teaching paragraph (max 4 sentences) for a ${ageRange} year old.",
+                                    "quiz": [
+                                        {"q": "Q1?", "options": ["A", "B", "C"], "correct": 0},
+                                        {"q": "Q2?", "options": ["A", "B", "C"], "correct": 1},
+                                        {"q": "Q3?", "options": ["A", "B", "C"], "correct": 2}
+                                    ]
+                                }
+                            ]
+                        }
+                        Create exactly 3 levels. Ensure content is simple and engaging.`;
+
+                        const response = await fetch("/api/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": "Generate a new learning adventure path." }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const newPath = JSON.parse(cleanJson);
+                        
+                        // Prevent ID collision
+                        newPath.id = 'gen_' + Date.now();
+                        
+                        this.curriculum.push(newPath);
+                        this.playPing();
+                        confetti({
+                            particleCount: 150,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ['#A855F7', '#EC4899', '#3B82F6']
+                        });
+                        
+                        await this.syncData();
+                    } catch (e) {
+                        console.error("Generator Error:", e);
+                        alert("The magic wand is recharging! Try again in a minute.");
+                    } finally {
+                        this.isGeneratingPath = false;
+                    }
+                },
+
+                // --- PDF Methods using jsPDF ---
+                printCertificate(path) {
+                    this.selectedCertificatePath = path;
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({
+                        orientation: "landscape",
+                        unit: "mm",
+                        format: "a4"
+                    });
+
+                    // Background color & border
+                    doc.setFillColor(255, 255, 255);
+                    doc.rect(0, 0, 297, 210, 'F');
+                    doc.setDrawColor(245, 158, 11); // Amber-600
+                    doc.setLineWidth(5);
+                    doc.rect(10, 10, 277, 190);
+
+                    // Content
+                    doc.setTextColor(245, 158, 11);
+                    doc.setFontSize(40);
+                    doc.text("Certificate of Achievement", 148, 40, { align: "center" });
+
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFontSize(20);
+                    doc.text("This award is proudly presented to", 148, 60, { align: "center" });
+
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFontSize(50);
+                    doc.text(this.childProfile.name, 148, 90, { align: "center" });
+
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFontSize(16);
+                    const description = `For successfully completing the ${path.name} adventure path and showing incredible curiosity and brilliance in learning!`;
+                    const splitDescription = doc.splitTextToSize(description, 200);
+                    doc.text(splitDescription, 148, 110, { align: "center" });
+
+                    doc.text("Date: " + new Date().toLocaleDateString(), 148, 150, { align: "center" });
+                    doc.text("Teacher: AI Tutor " + path.icon, 148, 160, { align: "center" });
+
+                    doc.save(`Certificate_${this.childProfile.name}_${path.id}.pdf`);
+                },
+
+                downloadMonthlyReport() {
+                    if (!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+                    
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    doc.setFontSize(22);
+                    doc.text("Monthly Learning Report", 20, 20);
+                    
+                    doc.setFontSize(14);
+                    doc.text(`Student: ${this.childProfile.name}`, 20, 35);
+                    doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 42);
+                    
+                    doc.setLineWidth(0.5);
+                    doc.line(20, 48, 190, 48);
+
+                    doc.setFontSize(16);
+                    doc.text("Stats Overview", 20, 60);
+                    doc.setFontSize(12);
+                    doc.text(`- Questions Asked: ${this.parentLogs.length}`, 30, 70);
+                    doc.text(`- Words Read: ${this.learningStats.wordsLearned}`, 30, 77);
+                    doc.text(`- Coins Earned: ${this.coins}`, 30, 84);
+                    doc.text(`- Total Experience (XP): ${this.xp}`, 30, 91);
+
+                    doc.setFontSize(16);
+                    doc.text("Subject Mastery", 20, 110);
+                    let y = 120;
+                    Object.entries(this.getTopSubjects()).forEach(([subject, score]) => {
+                        doc.setFontSize(12);
+                        doc.text(`${subject}: ${score} pts`, 30, y);
+                        y += 7;
+                    });
+
+                    doc.save(`Report_${this.childProfile.name}.pdf`);
+                },
+
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1505,7 +1679,6 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
-                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1557,13 +1730,6 @@
                     this.updateLevel();
                     await this.syncData();
                     this.closeLesson();
-                },
-
-                printCertificate(path) {
-                    this.selectedCertificatePath = path;
-                    setTimeout(() => {
-                        window.print();
-                    }, 500);
                 },
 
                 async resetMapProgress() {
@@ -1644,10 +1810,9 @@
                 },
 
                 get journeyProgress() {
-                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
+                    return 66 + ((this.xp - 3000) / 2000) * 34; 
                 },
 
                 getTopSubjects() {
@@ -1687,7 +1852,6 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
-                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
@@ -1695,15 +1859,6 @@
                     this.emailSummaryEnabled = !this.emailSummaryEnabled;
                     await this.syncData();
                     alert(this.emailSummaryEnabled ? "Email summaries activated! You will receive weekly updates." : "Email summaries deactivated.");
-                },
-
-                downloadMonthlyReport() {
-                    if (!this.isPremium) {
-                        this.showPremiumModal = true;
-                        return;
-                    }
-                    alert("Generating Progress Report... Your PDF will download shortly.");
-                    // Simulate PDF generation
                 },
 
                 async generateArt() {
@@ -1728,7 +1883,6 @@
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    // USE POLLINATIONS AI
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
@@ -1763,7 +1917,6 @@
                     }
                 },
 
-                // Helper for Age Logic
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
                     const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
