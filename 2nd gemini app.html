@@ -334,17 +334,17 @@
     <div class="absolute top-4 left-4 z-40 flex flex-col gap-3">
         <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
             <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
-            <span class="text-[10px] font-bold text-pink-500 uppercase" x-text="t('dailyGift')"></span>
+            <span class="text-[10px] font-bold text-pink-500 uppercase">Daily Gift</span>
         </button>
         <div class="safe-badge animate__animated animate__fadeInLeft">
-            <i class="fas fa-shield-alt"></i> <span x-text="t('kidSafe')"></span>
+            <i class="fas fa-shield-alt"></i> Kid-Safe AI
         </div>
     </div>
 
     <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
         <div x-show="!isPremium" class="hidden md:block bg-white px-4 py-2 rounded-xl shadow-lg border-2 border-orange-400">
             <p class="text-[10px] font-bold text-orange-600 uppercase text-center">
-                <span x-text="t('freeQs')"></span> <span x-text="'(' + dailyQuestionsUsed + '/' + maxFreeQuestions + ')'"></span>
+                Free Questions <span x-text="'(' + dailyQuestionsUsed + '/' + maxFreeQuestions + ')'"></span>
             </p>
             <div class="w-20 h-2 bg-gray-100 rounded-full mt-1 overflow-hidden">
                 <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
@@ -394,7 +394,7 @@
                 :style="'color: ' + currentChar.accent"
                 x-text="currentChar.name">
             </h1>
-            <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + currentChar.accent" x-text="t('teacherOf') + ' ' + currentChar.subject + ' ✨'"></p>
+            <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + currentChar.accent" x-text="'Teacher of ' + currentChar.subject + ' ✨'"></p>
         </div>
 
         <div class="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-10 sm:gap-8 lg:gap-12">
@@ -463,7 +463,7 @@
                 <div class="chat-bubble p-6 sm:p-8 md:p-10 mb-8 min-h-[180px] sm:min-h-[220px] flex flex-col justify-between transition-all duration-500"
                      :style="'border-color: ' + currentChar.accent">
                     <div>
-                        <span class="font-kids text-base sm:text-lg uppercase tracking-widest block mb-2" :style="'color: ' + currentChar.accent" x-text="currentChar.name + ' ' + t('says') + ':'"></span>
+                        <span class="font-kids text-base sm:text-lg uppercase tracking-widest block mb-2" :style="'color: ' + currentChar.accent" x-text="currentChar.name + ' says:'"></span>
                         <p class="text-xl sm:text-2xl md:text-3xl text-gray-800 font-semibold leading-relaxed" x-text="displayText"></p>
                     </div>
                     
@@ -472,7 +472,7 @@
                             @click="startQuiz()"
                             class="flex items-center gap-2 px-5 py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4 bg-yellow-400 border-yellow-600 text-yellow-900 shadow-md"
                         >
-                            <span class="text-xl">🏆</span> <span x-text="t('challengeMe')"></span>
+                            <span class="text-xl">🏆</span> Challenge Me!
                         </button>
 
                         <button 
@@ -481,7 +481,7 @@
                             :style="'background: ' + currentChar.accent + '22; color: ' + currentChar.accent + '; border-color: ' + currentChar.accent + '44'"
                         >
                             <i class="fas" :class="isSpeaking ? 'fa-pause-circle' : 'fa-play-circle'"></i>
-                            <span x-text="isSpeaking ? t('stop') : t('listen')"></span>
+                            <span x-text="isSpeaking ? 'Stop' : 'Listen'"></span>
                         </button>
                     </div>
                 </div>
@@ -502,7 +502,7 @@
                         type="text" 
                         x-model="userQuery" 
                         @keyup.enter="askTutor()"
-                        :placeholder="isListening ? t('listening') + '...' : t('askAbout') + ' ' + currentChar.subject + '...'" 
+                        :placeholder="isListening ? 'Listening...' : 'Ask about ' + currentChar.subject + '...'" 
                         class="flex-1 bg-transparent px-2 py-3 sm:py-4 outline-none text-base sm:text-xl font-bold text-gray-700 min-w-0"
                     >
                     
@@ -511,7 +511,7 @@
                         class="ml-2 btn-grad text-white rounded-2xl px-3 py-2 sm:px-6 sm:py-2 font-kids text-xs sm:text-lg shadow-lg transform transition hover:scale-105 active:scale-90 whitespace-nowrap"
                         style="background: linear-gradient(to right, #ec4899, #8b5cf6)"
                     >
-                        🎨 <span x-text="t('draw')"></span>
+                        🎨 Draw
                     </button>
 
                     <button 
@@ -519,12 +519,12 @@
                         class="btn-grad text-white rounded-2xl px-3 py-2 sm:px-6 sm:py-2 font-kids text-xs sm:text-lg shadow-lg transform transition hover:scale-105 active:scale-90 mr-1 sm:mr-0 whitespace-nowrap"
                         :style="'background: linear-gradient(to right, ' + currentChar.accent + ', #ff512f)'"
                     >
-                        <span x-text="t('askBtn')"></span>! 🚀
+                        ASK! 🚀
                     </button>
                     
                      <div class="absolute -bottom-6 left-0 right-0 flex justify-center opacity-70">
                          <span class="text-[9px] font-bold text-slate-400 flex items-center gap-1 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
-                             <i class="fas fa-lock text-green-500"></i> <span x-text="t('safeModeOn')"></span>
+                             <i class="fas fa-lock text-green-500"></i> Safe-Response Mode ON
                          </span>
                     </div>
 
@@ -549,8 +549,8 @@
             
             <div class="p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
                 <div>
-                    <h2 class="text-3xl font-kids text-slate-800"><span x-text="t('adventureMap')"></span> 🗺️</h2>
-                    <p class="text-gray-500 font-bold" x-show="!currentPath" x-text="t('chooseJourney')"></p>
+                    <h2 class="text-3xl font-kids text-slate-800">Adventure Map 🗺️</h2>
+                    <p class="text-gray-500 font-bold" x-show="!currentPath">Choose your journey!</p>
                     <p class="text-gray-500 font-bold" x-show="currentPath" x-text="currentPath ? currentPath.name : ''"></p>
                 </div>
                 <div class="flex gap-2">
@@ -592,7 +592,7 @@
                              <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
                                 <div class="h-full rounded-full transition-all duration-1000" :class="path.color" :style="'width: ' + getPathProgress(path.id) + '%'"></div>
                              </div>
-                             <p class="text-xs text-gray-400 font-bold mt-2" x-text="Math.round(getPathProgress(path.id)) + '% ' + t('complete')"></p>
+                             <p class="text-xs text-gray-400 font-bold mt-2" x-text="Math.round(getPathProgress(path.id)) + '% Complete'"></p>
 
                              <template x-if="isPremium && getPathProgress(path.id) === 100">
                                 <button @click.stop="printCertificate(path)" class="mt-4 bg-amber-400 text-amber-900 px-4 py-2 rounded-xl text-xs font-kids shadow-lg hover:scale-105 transition-transform">
@@ -606,7 +606,7 @@
 
             <div x-show="currentPath" class="flex-1 overflow-y-auto relative bg-slate-50 custom-scroll">
                  <button @click="currentPath = null" class="absolute top-4 left-4 z-20 bg-white px-4 py-2 rounded-xl shadow-md font-bold text-gray-600 hover:text-blue-500">
-                    <i class="fas fa-arrow-left mr-2"></i> <span x-text="t('back')"></span>
+                    <i class="fas fa-arrow-left mr-2"></i> Back
                  </button>
 
                  <div x-show="currentPath && currentPath.premium && !isPremium" class="absolute inset-0 z-30 bg-white/90 flex flex-col items-center justify-center text-center p-8 backdrop-blur-sm">
@@ -667,16 +667,16 @@
                     <div class="text-6xl mb-6 bounce">👨‍🏫</div>
                     <p class="text-xl sm:text-2xl text-slate-700 font-medium leading-relaxed mb-8" x-text="activeLesson ? activeLesson.content : ''"></p>
                     
-                    <button @click="speak(activeLesson.content)" class="mb-8 text-blue-500 font-bold hover:underline"><i class="fas fa-volume-up mr-2"></i> <span x-text="t('readToMe')"></span></button>
+                    <button @click="speak(activeLesson.content)" class="mb-8 text-blue-500 font-bold hover:underline"><i class="fas fa-volume-up mr-2"></i> Read to me</button>
 
                     <button @click="lessonStep = 'quiz'" class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
-                        <span x-text="t('startQuiz')"></span>! 📝
+                        Start Quiz! 📝
                     </button>
                 </div>
 
                 <div x-show="lessonStep === 'quiz'" class="text-left">
                     <div class="mb-4 flex justify-between items-center">
-                         <span class="text-xs font-bold uppercase text-gray-400" x-text="t('question') + ' ' + (currentLessonQuizIndex + 1) + '/3'"></span>
+                         <span class="text-xs font-bold uppercase text-gray-400">Question <span x-text="currentLessonQuizIndex + 1"></span>/3</span>
                          <div class="flex gap-1">
                             <template x-for="i in 3">
                                 <div class="w-2 h-2 rounded-full transition-colors" :class="i <= currentLessonQuizIndex ? 'bg-blue-500' : 'bg-gray-200'"></div>
@@ -714,7 +714,7 @@
                     </div>
 
                     <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-blue-600 transition-transform transform hover:scale-105">
-                        <span x-text="t('continueJourney')"></span> 🚀
+                        Continue Journey 🚀
                     </button>
                 </div>
             </div>
@@ -750,16 +750,16 @@
 
             <div class="text-center" x-show="quizState === 'correct'">
                 <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
-                <h2 class="text-3xl font-kids text-green-500 mb-2" x-text="t('correct')"></h2>
-                <p class="font-bold text-gray-500 mb-6" x-text="t('earnedCoins')"></p>
-                <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform" x-text="t('awesome')"></button>
+                <h2 class="text-3xl font-kids text-green-500 mb-2">Correct!</h2>
+                <p class="font-bold text-gray-500 mb-6">You earned 20 Coins!</p>
+                <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Awesome!</button>
             </div>
 
             <div class="text-center" x-show="quizState === 'wrong'">
                 <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
-                <h2 class="text-3xl font-kids text-orange-500 mb-2" x-text="t('oops')"></h2>
-                <p class="font-bold text-gray-500 mb-6" x-text="t('tryAgainText')"></p>
-                <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform" x-text="t('tryAgainBtn')"></button>
+                <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
+                <p class="font-bold text-gray-500 mb-6">That wasn't quite right. Try again?</p>
+                <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
             </div>
         </div>
     </div>
@@ -768,28 +768,29 @@
         <div @click.away="showArtModal = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__zoomIn text-center border-4 border-pink-200">
             <button @click="showArtModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
             
-            <h2 class="text-4xl font-kids text-pink-500 mb-2" x-text="t('artStudio')"></h2>
-            <p class="text-gray-500 font-bold mb-6" x-text="t('paintingPage')"></p>
+            <h2 class="text-4xl font-kids text-pink-500 mb-2">Magic Art Studio 🎨</h2>
+            <p class="text-gray-500 font-bold mb-6">Turning your words into coloring pages...</p>
 
             <div class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 mb-6 relative overflow-hidden">
                 <div x-show="isDrawing" class="flex flex-col items-center">
                     <div class="spinner border-pink-400 mb-4"></div>
-                    <p class="font-kids text-pink-400 animate-pulse" x-text="t('painting') + '... 🖌️'"></p>
+                    <p class="font-kids text-pink-400 animate-pulse">Painting... 🖌️</p>
                 </div>
                 
                 <img id="printable-art" x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
                 
-                <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold" x-text="t('drawPrompt')">
+                <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold">
+                    Tell me what to draw first!
                 </div>
             </div>
 
             <div class="flex justify-center gap-4" x-show="artImage && !isDrawing">
                 <button @click="window.print()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">
-                    <i class="fas fa-print mr-2"></i> <span x-text="t('print')"></span>
+                    <i class="fas fa-print mr-2"></i> Print
                 </button>
                 
                 <button @click="downloadArt()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
-                    <i class="fas fa-download mr-2"></i> <span x-text="t('save')"></span>
+                    <i class="fas fa-download mr-2"></i> Save
                 </button>
             </div>
         </div>
@@ -870,8 +871,8 @@
                 <i class="fas fa-times-circle"></i>
             </button>
             
-            <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600" x-text="t('magicAuras')"></h2>
-            <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8" x-text="t('auraSub')"></p>
+            <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600">Magic Auras</h2>
+            <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8">Add magic effects to your teacher!</p>
             
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
                 <template x-for="item in shopItems">
@@ -900,7 +901,7 @@
                                 : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
                             :disabled="!inventory.includes(item.id) && coins < item.price"
                         >
-                            <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? t('active') + ' ✨' : t('activate')) : t('buyNow')"></span>
+                            <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? 'Active ✨' : 'Activate') : 'Buy Now'"></span>
                         </button>
                     </div>
                 </template>
@@ -909,7 +910,7 @@
             <div class="mt-6 sm:mt-8 flex justify-center">
                 <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
                     <span class="text-xl sm:text-2xl">💰</span>
-                    <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="t('haveCoins').replace('{0}', coins)"></span>
+                    <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="'You have ' + coins + ' coins'"></span>
                 </div>
             </div>
         </div>
@@ -918,12 +919,12 @@
     <div x-show="showRewards" x-cloak
          class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
          x-transition.opacity>
-        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
+        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
             <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600">
                 <i class="fas fa-times-circle"></i>
             </button>
-            <h2 class="text-4xl font-kids text-pink-500 mb-2" x-text="t('dailyRewards')"></h2>
-            <p class="font-bold text-gray-500 mb-6" x-text="t('dailyRewardsSub')"></p>
+            <h2 class="text-4xl font-kids text-pink-500 mb-2">Daily Rewards!</h2>
+            <p class="font-bold text-gray-500 mb-6">Come back every day for free coins!</p>
             <div class="grid grid-cols-4 gap-3 mb-8">
                 <template x-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
                     <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
@@ -937,7 +938,7 @@
             <button @click="claimReward()" :disabled="rewardClaimedToday"
                 class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
                 :class="rewardClaimedToday ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'">
-                <span x-text="rewardClaimedToday ? t('seeYouTomorrow') : (todayIndex === 6 ? t('claimCoins').replace('{0}', 100) : t('claimCoins').replace('{0}', 50))"></span>
+                <span x-text="rewardClaimedToday ? 'See You Tomorrow!' : (todayIndex === 6 ? 'Claim 100 Coins! ✨' : 'Claim 50 Coins! ✨')"></span>
             </button>
         </div>
     </div>
@@ -1047,7 +1048,7 @@
                             <div><p class="text-xs text-slate-400 font-bold uppercase">Name</p><p class="text-xl font-kids text-slate-800" x-text="childProfile.name"></p></div>
                             <div class="flex gap-6">
                                 <div><p class="text-xs text-slate-400 font-bold uppercase">Age Group</p><p class="text-lg font-bold text-slate-700" x-text="(childProfile.ageRange || '6-7') + ' Years'"></p></div>
-                                <div><p class="text-xs text-slate-400 font-bold uppercase">Language</p><p class="text-lg font-bold text-slate-700" x-text="currentLang === 'en' ? 'English' : (currentLang === 'es' ? 'Spanish' : 'French')"></p></div>
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Difficulty</p><p class="text-lg font-bold text-slate-700" x-text="childProfile.ageRange === '4-5' ? 'Easy' : (childProfile.ageRange === '8-9' ? 'Advanced' : 'Standard')"></p></div>
                             </div>
                         </div>
 
@@ -1060,16 +1061,6 @@
                                     <option value="4-5">4-5 Years (Beginner)</option>
                                     <option value="6-7">6-7 Years (Standard)</option>
                                     <option value="8-9">8-9 Years (Advanced)</option>
-                                </select>
-                            </div>
-
-                            <div class="mt-2">
-                                <label class="text-xs text-slate-400 font-bold uppercase">App Language</label>
-                                <select x-model="currentLang" @change="syncData()" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
-                                    <option value="en">English (US)</option>
-                                    <option value="es">Español (Spanish)</option>
-                                    <option value="fr">Français (French)</option>
-                                    <option value="de">Deutsch (German)</option>
                                 </select>
                             </div>
                             
@@ -1099,28 +1090,16 @@
 
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails Active
+                            <i class="fas fa-globe text-blue-500"></i> App Language
                         </h3>
                         <div class="space-y-4">
-                             <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-book"></i></div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-700 uppercase">Curriculum Aligned</p>
-                                    <p class="text-[10px] text-slate-500 leading-tight">AI answers are restricted to age-appropriate educational topics only.</p>
-                                </div>
-                             </div>
-                             <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-700 uppercase">Email Summary Status</p>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
-                                            <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
-                                        </button>
-                                        <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Emails ON' : 'Weekly Emails OFF'"></span>
-                                    </div>
-                                </div>
-                             </div>
+                            <p class="text-[10px] text-gray-500 font-bold uppercase">Teacher Speech & App Text</p>
+                            <select x-model="selectedLanguage" @change="syncData()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-blue-500 transition-all">
+                                <template x-for="lang in languages">
+                                    <option :value="lang.code" x-text="lang.name"></option>
+                                </template>
+                            </select>
+                            <p class="text-[10px] text-slate-400 leading-tight italic">Changing this will instruct your AI teacher to speak and respond in the selected language.</p>
                         </div>
                     </div>
                 </div>
@@ -1296,10 +1275,8 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
-                // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
-                currentLang: 'en',
                 
                 legalAccepted: false,
                 showLegalDoc: null,
@@ -1331,6 +1308,17 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
+                // MULTILINGUAL FEATURE
+                selectedLanguage: 'en-US',
+                languages: [
+                    { name: 'English 🇺🇸', code: 'en-US' },
+                    { name: 'Spanish 🇪🇸', code: 'es-ES' },
+                    { name: 'French 🇫🇷', code: 'fr-FR' },
+                    { name: 'German 🇩🇪', code: 'de-DE' },
+                    { name: 'Italian 🇮🇹', code: 'it-IT' },
+                    { name: 'Chinese 🇨🇳', code: 'zh-CN' }
+                ],
+
                 // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
@@ -1339,14 +1327,12 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
 
-                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1356,7 +1342,6 @@
                         science: 0, 
                         nature: 0 
                     },
-                    // We will store child_profile here to avoid DB errors
                     child_profile: null 
                 },
                 xp: 0,
@@ -1381,61 +1366,10 @@
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn', // learn, quiz, success
+                lessonStep: 'learn', 
                 currentLessonQuizIndex: 0,
-                pathProgress: {}, // Stores completion per subject
+                pathProgress: {}, 
                 selectedCertificatePath: null,
-
-                translations: {
-                    en: {
-                        dailyGift: "Daily Gift", kidSafe: "Kid-Safe AI", freeQs: "Free Questions", says: "says", challengeMe: "Challenge Me",
-                        listen: "Listen", stop: "Stop", listening: "Listening", askAbout: "Ask about", draw: "Draw", askBtn: "ASK", safeModeOn: "Safe-Response Mode ON",
-                        adventureMap: "Adventure Map", chooseJourney: "Choose your journey!", complete: "Complete", back: "Back", readToMe: "Read to me",
-                        startQuiz: "Start Quiz", continueJourney: "Continue Journey", correct: "Correct!", earnedCoins: "You earned 20 Coins!", awesome: "Awesome!",
-                        oops: "Oops!", tryAgainText: "That wasn't quite right. Try again?", tryAgainBtn: "Try Again", artStudio: "Magic Art Studio",
-                        paintingPage: "Turning your words into coloring pages...", painting: "Painting", drawPrompt: "Tell me what to draw first!", print: "Print",
-                        save: "Save", magicAuras: "Magic Auras", auraSub: "Add magic effects to your teacher!", buyNow: "Buy Now", active: "Active",
-                        activate: "Activate", haveCoins: "You have {0} coins", dailyRewards: "Daily Rewards!", dailyRewardsSub: "Come back every day for free coins!",
-                        seeYouTomorrow: "See You Tomorrow!", claimCoins: "Claim {0} Coins! ✨", teacherOf: "Teacher of", question: "Question"
-                    },
-                    es: {
-                        dailyGift: "Regalo Diario", kidSafe: "IA Segura", freeQs: "Preguntas Gratis", says: "dice", challengeMe: "¡Desafíame!",
-                        listen: "Escuchar", stop: "Parar", listening: "Escuchando", askAbout: "Pregunta sobre", draw: "Dibujar", askBtn: "PREGUNTAR", safeModeOn: "Modo Seguro ON",
-                        adventureMap: "Mapa de Aventura", chooseJourney: "¡Elige tu viaje!", complete: "Completado", back: "Atrás", readToMe: "Léeme",
-                        startQuiz: "Empezar Quiz", continueJourney: "Continuar Viaje", correct: "¡Correcto!", earnedCoins: "¡Ganaste 20 monedas!", awesome: "¡Genial!",
-                        oops: "¡Ups!", tryAgainText: "Eso no estuvo bien. ¿Intentar de nuevo?", tryAgainBtn: "Reintentar", artStudio: "Estudio de Arte Mágico",
-                        paintingPage: "Convirtiendo tus palabras en dibujos...", painting: "Pintando", drawPrompt: "¡Dime qué dibujar primero!", print: "Imprimir",
-                        save: "Guardar", magicAuras: "Auras Mágicas", auraSub: "¡Añade efectos a tu profesor!", buyNow: "Comprar", active: "Activo",
-                        activate: "Activar", haveCoins: "Tienes {0} monedas", dailyRewards: "¡Premios Diarios!", dailyRewardsSub: "¡Vuelve cada día por monedas!",
-                        seeYouTomorrow: "¡Hasta Mañana!", claimCoins: "¡Canjear {0} Monedas! ✨", teacherOf: "Profesor de", question: "Pregunta"
-                    },
-                    fr: {
-                        dailyGift: "Cadeau Quotidien", kidSafe: "IA Sécurisée", freeQs: "Questions Gratuites", says: "dit", challengeMe: "Défie-moi !",
-                        listen: "Écouter", stop: "Arrêter", listening: "Écoute...", askAbout: "Demande sur", draw: "Dessiner", askBtn: "DEMANDER", safeModeOn: "Mode Sécurisé ON",
-                        adventureMap: "Carte d'Aventure", chooseJourney: "Choisis ton voyage !", complete: "Terminé", back: "Retour", readToMe: "Lis-moi",
-                        startQuiz: "Lancer le Quiz", continueJourney: "Continuer l'aventure", correct: "Correct !", earnedCoins: "Tu as gagné 20 pièces !", awesome: "Génial !",
-                        oops: "Oups !", tryAgainText: "Ce n'est pas tout à fait ça. Réessaie ?", tryAgainBtn: "Réessayer", artStudio: "Studio d'Art Magique",
-                        paintingPage: "Tes mots deviennent des coloriages...", painting: "Peinture en cours", drawPrompt: "Dis-moi quoi dessiner !", print: "Imprimer",
-                        save: "Enregistrer", magicAuras: "Auras Magiques", auraSub: "Ajoute de la magie à ton prof !", buyNow: "Acheter", active: "Actif",
-                        activate: "Activer", haveCoins: "Tu as {0} pièces", dailyRewards: "Récompenses !", dailyRewardsSub: "Reviens demain pour des pièces !",
-                        seeYouTomorrow: "À demain !", claimCoins: "Récupérer {0} pièces ! ✨", teacherOf: "Professeur de", question: "Question"
-                    },
-                    de: {
-                        dailyGift: "Tägliches Geschenk", kidSafe: "Sichere KI", freeQs: "Freie Fragen", says: "sagt", challengeMe: "Fordere mich heraus!",
-                        listen: "Hören", stop: "Stopp", listening: "Hören...", askAbout: "Frage über", draw: "Zeichnen", askBtn: "FRAGEN", safeModeOn: "Sicherer Modus AN",
-                        adventureMap: "Abenteuerkarte", chooseJourney: "Wähle deine Reise!", complete: "Fertig", back: "Zurück", readToMe: "Lies mir vor",
-                        startQuiz: "Quiz starten", continueJourney: "Weiter geht's", correct: "Richtig!", earnedCoins: "Du hast 20 Münzen verdient!", awesome: "Super!",
-                        oops: "Ups!", tryAgainText: "Das war nicht ganz richtig. Noch mal?", tryAgainBtn: "Noch mal", artStudio: "Magisches Kunststudio",
-                        paintingPage: "Ich male dein Bild...", painting: "Malen", drawPrompt: "Sag mir, was ich malen soll!", print: "Drucken",
-                        save: "Speichern", magicAuras: "Magische Auren", auraSub: "Gib deinem Lehrer Magie!", buyNow: "Kaufen", active: "Aktiv",
-                        activate: "Aktivieren", haveCoins: "Du hast {0} Münzen", dailyRewards: "Belohnungen!", dailyRewardsSub: "Komm morgen wieder!",
-                        seeYouTomorrow: "Bis morgen!", claimCoins: "{0} Münzen holen! ✨", teacherOf: "Lehrer für", question: "Frage"
-                    }
-                },
-
-                t(key) {
-                    return this.translations[this.currentLang][key] || this.translations['en'][key];
-                },
 
                 curriculum: [
                     { 
@@ -1517,7 +1451,6 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
-                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
                         this.totalMinutesLearned++;
@@ -1558,7 +1491,6 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // --- NEW METHODS FOR LEARNING PATH ---
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1566,7 +1498,6 @@
                 },
                 isLevelUnlocked(pathId, levelId) {
                     const completed = this.pathProgress[pathId] || 0;
-                    // Level 1 is always unlocked. Level 2 unlocks if completed >= 1
                     return levelId === 1 || completed >= (levelId - 1);
                 },
                 isLevelComplete(pathId, levelId) {
@@ -1594,7 +1525,6 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
-                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1604,11 +1534,9 @@
                     }
                 },
                 async completeLesson() {
-                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
                     
-                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
@@ -1665,7 +1593,7 @@
                     this.masterPin = data.pin;
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
-                    this.currentLang = data.language || 'en';
+                    this.selectedLanguage = data.selected_language || 'en-US';
                     
                     this.childProfile = (data.learning_stats && data.learning_stats.child_profile) 
                         ? data.learning_stats.child_profile 
@@ -1706,10 +1634,9 @@
                 },
 
                 get journeyProgress() {
-                    // Logic to fill bar based on milestones
                     if (this.xp < 1000) return (this.xp / 1000) * 33; 
                     if (this.xp < 3000) return 33 + ((this.xp - 1000) / 2000) * 33;
-                    return 66 + ((this.xp - 3000) / 2000) * 34; // Max out at 5000+
+                    return 66 + ((this.xp - 3000) / 2000) * 34; 
                 },
 
                 getTopSubjects() {
@@ -1749,7 +1676,6 @@
                 async saveChildProfile() {
                     this.isEditingProfile = false;
                     await this.syncData();
-                    // Update login form name just in case
                     this.loginForm.name = this.childProfile.name;
                 },
 
@@ -1765,7 +1691,6 @@
                         return;
                     }
                     alert("Generating Progress Report... Your PDF will download shortly.");
-                    // Simulate PDF generation
                 },
 
                 async generateArt() {
@@ -1790,7 +1715,6 @@
                     this.artImage = null;
                     this.toggleScroll(true);
 
-                    // USE POLLINATIONS AI
                     const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                     const encodedPrompt = encodeURIComponent(prompt);
                     const randomSeed = Math.floor(Math.random() * 1000);
@@ -1825,20 +1749,23 @@
                     }
                 },
 
-                // Helper for Age Logic
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
-                    const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
-                    const langNames = {en: 'English', es: 'Spanish', fr: 'French', de: 'German'};
-                    const langPrompt = `CRITICAL: You must respond ONLY in ${langNames[this.currentLang]}. No other language.`;
+                    const langName = this.languages.find(l => l.code === this.selectedLanguage)?.name || 'English';
+                    const languageInstruction = `CRITICAL: Answer ONLY in ${langName}. Translate all your knowledge and personality into this language.`;
                     
+                    const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
+                    
+                    let ageDetails = '';
                     if (range === '4-5') {
-                        return `${langPrompt} ${priority} TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character. Avoid complex concepts.`;
+                        ageDetails = `${priority} TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful. Avoid complex concepts.`;
+                    } else if (range === '8-9') {
+                        ageDetails = `${priority} TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher.`;
+                    } else {
+                        ageDetails = `${priority} TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly.`;
                     }
-                    if (range === '8-9') {
-                        return `${langPrompt} ${priority} TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher, cool and smart.`;
-                    }
-                    return `${langPrompt} ${priority} TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly and helpful.`;
+
+                    return `${ageDetails} ${languageInstruction}`;
                 },
 
                 async startQuiz() {
@@ -1847,16 +1774,15 @@
                     this.toggleScroll(true);
 
                     const ageRange = this.childProfile.ageRange || '6-7';
-                    const langNames = {en: 'English', es: 'Spanish', fr: 'French', de: 'German'};
+                    const langName = this.languages.find(l => l.code === this.selectedLanguage)?.name || 'English';
 
                     try {
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
-                        TARGET AGE: ${ageRange}. LANGUAGE: ${langNames[this.currentLang]}.
+                        TARGET AGE: ${ageRange}. LANGUAGE: ${langName}.
                         Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
-                        Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
+                        Adjust difficulty accordingly. RETURN IN ${langName}.
                         Return strictly this JSON format: 
-                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
-                        Make sure the options are short and simple.`;
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
@@ -1934,7 +1860,7 @@
                                 xp: 0,
                                 learning_stats: initialStats,
                                 parent_logs: [],
-                                language: this.currentLang
+                                selected_language: 'en-US'
                             }
                         ]);
 
@@ -2024,7 +1950,7 @@
                         parent_logs: safeLogs, 
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
-                        language: this.currentLang,
+                        selected_language: this.selectedLanguage,
                         daily_usage: {
                             date: new Date().toDateString(),
                             questions_used: this.dailyQuestionsUsed,
@@ -2215,7 +2141,7 @@
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     if (!SpeechRecognition) return;
                     const recognition = new SpeechRecognition();
-                    recognition.lang = this.currentLang === 'en' ? 'en-US' : (this.currentLang === 'es' ? 'es-ES' : (this.currentLang === 'fr' ? 'fr-FR' : 'de-DE'));
+                    recognition.lang = this.selectedLanguage;
                     recognition.onstart = () => { this.isListening = true; window.speechSynthesis.cancel(); this.isSpeaking = false; };
                     recognition.onresult = (event) => { this.userQuery = event.results[0][0].transcript; this.isListening = false; this.askTutor(); };
                     recognition.onerror = () => { this.isListening = false; };
@@ -2325,14 +2251,13 @@
                     if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
                     const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                     const msg = new SpeechSynthesisUtterance(cleanText);
+                    msg.lang = this.selectedLanguage;
                     const voices = window.speechSynthesis.getVoices();
                     
-                    // Set language code based on setting
-                    const langCode = this.currentLang === 'en' ? 'en-US' : (this.currentLang === 'es' ? 'es-ES' : (this.currentLang === 'fr' ? 'fr-FR' : 'de-DE'));
-                    msg.lang = langCode;
-
-                    let baseVoice = voices.find(v => v.lang.startsWith(this.currentLang)) || voices[0];
-                    msg.voice = baseVoice;
+                    let bestVoice = voices.find(v => v.lang.startsWith(this.selectedLanguage.split('-')[0]));
+                    if (!bestVoice) bestVoice = voices.find(v => v.name.includes('Google US English')) || voices[0];
+                    
+                    msg.voice = bestVoice;
                     msg.pitch = this.currentChar.pitch; 
                     msg.rate = this.currentChar.rate;
                     msg.onstart = () => { this.isSpeaking = true; };
