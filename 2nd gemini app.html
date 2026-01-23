@@ -1143,12 +1143,12 @@
                              <div class="flex items-start gap-3">
                                 <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
                                 <div>
-                                    <p class="text-xs font-bold text-slate-700 uppercase">Email Summary Status</p>
+                                    <p class="text-xs font-bold text-slate-700 uppercase">Learning Wins Summaries</p>
                                     <div class="flex items-center gap-2 mt-1">
                                         <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
                                             <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
                                         </button>
-                                        <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Emails ON' : 'Weekly Emails OFF'"></span>
+                                        <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Summaries ON' : 'Weekly Summaries OFF'"></span>
                                     </div>
                                 </div>
                              </div>
@@ -1380,6 +1380,7 @@
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
+                lastSummaryDate: null,
 
                 // UPDATED: Stats specific to the 5 characters
                 learningStats: {
@@ -1759,6 +1760,51 @@
                     doc.save(`Report_${this.childProfile.name}.pdf`);
                 },
 
+                // --- PARENT "PROOF OF PROGRESS" AUTO-EMAIL ---
+                async sendWeeklySummary() {
+                    if (!this.emailSummaryEnabled || !this.isPremium) return;
+
+                    const today = new Date();
+                    const lastSent = this.lastSummaryDate ? new Date(this.lastSummaryDate) : null;
+
+                    // Check if 7 days have passed
+                    if (lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
+
+                    try {
+                        const topSubjects = Object.entries(this.getTopSubjects())
+                            .filter(([_, score]) => score > 0)
+                            .map(([name, score]) => `${name} (${score} points)`)
+                            .join(", ");
+
+                        const summaryContent = `
+                            Weekly Learning Wins for ${this.childProfile.name}:
+                            - Time Spent Learning: ${this.totalMinutesLearned} minutes
+                            - New Words Explored: ${this.learningStats.wordsLearned}
+                            - Top Subjects Mastered: ${topSubjects || 'Beginning the journey!'}
+                            - Questions Asked: ${this.parentLogs.length}
+                        `;
+
+                        // Simulate API call to email service
+                        console.log("SENDING WEEKLY SUMMARY TO: " + this.registeredEmail);
+                        console.log("CONTENT: " + summaryContent);
+
+                        const response = await fetch("/api/send-email", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                to: this.registeredEmail,
+                                subject: `Learning Wins: Weekly Summary for ${this.childProfile.name}`,
+                                body: summaryContent
+                            })
+                        });
+
+                        this.lastSummaryDate = today.toISOString();
+                        await this.syncData();
+                    } catch (e) {
+                        console.error("Failed to send weekly summary:", e);
+                    }
+                },
+
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1864,6 +1910,7 @@
 
                     this.totalMinutesLearned = data.total_minutes || 0;
                     this.emailSummaryEnabled = data.email_summary_enabled || false;
+                    this.lastSummaryDate = data.last_summary_date || null;
                     this.currentLanguage = data.current_language || 'English';
 
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1946,7 +1993,7 @@
                 async toggleEmailSummary() {
                     this.emailSummaryEnabled = !this.emailSummaryEnabled;
                     await this.syncData();
-                    alert(this.emailSummaryEnabled ? "Email summaries activated! You will receive weekly updates." : "Email summaries deactivated.");
+                    alert(this.emailSummaryEnabled ? "Weekly summaries activated! We will email you your child's learning wins." : "Weekly summaries deactivated.");
                 },
 
                 async generateArt() {
@@ -2194,6 +2241,7 @@
                         xp: this.xp,
                         total_minutes: this.totalMinutesLearned,
                         email_summary_enabled: this.emailSummaryEnabled,
+                        last_summary_date: this.lastSummaryDate,
                         current_language: this.currentLanguage,
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
@@ -2345,6 +2393,8 @@
                     } else {
                         if(this.pinInput === this.masterPin) {
                             this.parentAuthenticated = true;
+                            // Trigger weekly summary check when portal is unlocked
+                            this.sendWeeklySummary();
                         } else {
                             this.pinInput = '';
                         }
