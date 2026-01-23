@@ -1133,6 +1133,15 @@
                                 </select>
                              </div>
 
+                             <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Regional Curriculum</label>
+                                <select x-model="currentCurriculumRegion" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
+                                    <option value="Global">Global Standards 🌍</option>
+                                    <option value="US">US (Common Core) 🇺🇸</option>
+                                    <option value="UK">UK (National Curriculum) 🇬🇧</option>
+                                </select>
+                             </div>
+
                              <div class="flex items-start gap-3">
                                 <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-book"></i></div>
                                 <div>
@@ -1239,22 +1248,22 @@
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
-                        <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 text-center">
+                        <div class="bg-orange-50 p-4 rounded-2xl border-orange-100 border text-center">
                             <div class="text-2xl mb-1">❓</div>
                             <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
                             <div class="text-[10px] text-orange-400 font-bold uppercase">Questions Asked</div>
                         </div>
-                        <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-center">
+                        <div class="bg-blue-50 p-4 rounded-2xl border-blue-100 border text-center">
                             <div class="text-2xl mb-1">📖</div>
                             <div class="text-2xl font-bold text-blue-600" x-text="learningStats.wordsLearned"></div>
                             <div class="text-[10px] text-blue-400 font-bold uppercase">Words Read</div>
                         </div>
-                         <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100 text-center">
+                         <div class="bg-yellow-50 p-4 rounded-2xl border-yellow-100 border text-center">
                             <div class="text-2xl mb-1">💰</div>
                             <div class="text-2xl font-bold text-yellow-600" x-text="coins"></div>
                             <div class="text-[10px] text-yellow-400 font-bold uppercase">Coins Earned</div>
                         </div>
-                        <div class="bg-pink-50 p-4 rounded-2xl border border-pink-100 text-center">
+                        <div class="bg-pink-50 p-4 rounded-2xl border-pink-100 border text-center">
                             <div class="text-2xl mb-1">⭐</div>
                             <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
                             <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
@@ -1370,9 +1379,10 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                // MULTILINGUAL STATE
+                // CURRICULUM & MULTILINGUAL STATE
                 currentLanguage: 'English',
                 availableLanguages: ['English', 'Spanish', 'French', 'German', 'Arabic'],
+                currentCurriculumRegion: 'Global',
 
                 // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
@@ -1614,11 +1624,13 @@
                     this.isGeneratingPath = true;
                     const ageRange = this.childProfile.ageRange || '6-7';
                     const currentTopics = this.curriculum.map(p => p.name).join(", ");
+                    const region = this.currentCurriculumRegion || 'Global';
 
                     try {
                         const systemPrompt = `You are a curriculum designer for kids. Create a NEW 3-level learning path for a ${ageRange} year old.
                         The topic must be educational (Science, Math, History, or Arts) and NOT already in this list: ${currentTopics}.
                         All content must be in ${this.currentLanguage}.
+                        Strictly follow ${region} educational standards.
                         
                         Return ONLY JSON in this format:
                         {
@@ -1912,6 +1924,7 @@
                     this.emailSummaryEnabled = data.email_summary_enabled || false;
                     this.lastSummaryDate = data.last_summary_date || null;
                     this.currentLanguage = data.current_language || 'English';
+                    this.currentCurriculumRegion = data.current_curriculum_region || 'Global';
 
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.get('payment') !== 'success') {
@@ -2071,11 +2084,13 @@
                     this.toggleScroll(true);
 
                     const ageRange = this.childProfile.ageRange || '6-7';
+                    const region = this.currentCurriculumRegion || 'Global';
 
                     try {
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
                         TARGET AGE: ${ageRange}.
                         You MUST generate the quiz in ${this.currentLanguage}.
+                        Strictly follow ${region} educational standards.
                         Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
                         Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
                         Return strictly this JSON format: 
@@ -2157,7 +2172,8 @@
                                 coins: 50, 
                                 xp: 0,
                                 learning_stats: initialStats,
-                                parent_logs: []
+                                parent_logs: [],
+                                current_curriculum_region: 'Global'
                             }
                         ]);
 
@@ -2170,6 +2186,7 @@
                         
                         this.childProfile = initialChildProfile;
                         this.learningStats = initialStats;
+                        this.currentCurriculumRegion = 'Global';
 
                         this.coins = 50; 
                         this.isLoggedIn = true;
@@ -2243,6 +2260,7 @@
                         email_summary_enabled: this.emailSummaryEnabled,
                         last_summary_date: this.lastSummaryDate,
                         current_language: this.currentLanguage,
+                        current_curriculum_region: this.currentCurriculumRegion,
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
                         learning_stats: safeStats,
@@ -2490,12 +2508,14 @@
                     this.currentMoodIcon = this.currentChar.mood_think;
 
                     const ageLogicInstruction = this.getAgeLogic();
+                    const region = this.currentCurriculumRegion || 'Global';
 
                     try {
                         const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
                         ${ageLogicInstruction}
                         YOUR SUBJECT: ${this.currentChar.subject}.
                         You MUST respond ONLY in ${this.currentLanguage}.
+                        Strictly follow ${region} educational standards.
                         
                         CRITICAL RULES:
                         1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
