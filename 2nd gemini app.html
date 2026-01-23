@@ -2503,15 +2503,19 @@
                     const osc = context.createOscillator();
                     const gain = context.createGain();
                     
-                    osc.type = 'square';
-                    osc.frequency.setValueAtTime(150 + Math.random() * 50, context.currentTime);
+                    // Bubble Pop / Magical Sound
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, context.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1200, context.currentTime + 0.05);
+                    
                     gain.gain.setValueAtTime(0.1, context.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.08);
                     
                     osc.connect(gain);
                     gain.connect(context.destination);
+                    
                     osc.start();
-                    osc.stop(context.currentTime + 0.05);
+                    osc.stop(context.currentTime + 0.08);
                 },
                 speak(text) {
                     if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
