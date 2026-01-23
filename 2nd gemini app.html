@@ -15,6 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -1090,16 +1091,28 @@
 
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-globe text-blue-500"></i> App Language
+                            <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails Active
                         </h3>
                         <div class="space-y-4">
-                            <p class="text-[10px] text-gray-500 font-bold uppercase">Teacher Speech & App Text</p>
-                            <select x-model="selectedLanguage" @change="syncData()" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-blue-500 transition-all">
-                                <template x-for="lang in languages">
-                                    <option :value="lang.code" x-text="lang.name"></option>
-                                </template>
-                            </select>
-                            <p class="text-[10px] text-slate-400 leading-tight italic">Changing this will instruct your AI teacher to speak and respond in the selected language.</p>
+                             <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-book"></i></div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700 uppercase">Curriculum Aligned</p>
+                                    <p class="text-[10px] text-slate-500 leading-tight">AI answers are restricted to age-appropriate educational topics only.</p>
+                                </div>
+                             </div>
+                             <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700 uppercase">Email Summary Status</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
+                                            <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
+                                        </button>
+                                        <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Emails ON' : 'Weekly Emails OFF'"></span>
+                                    </div>
+                                </div>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -1275,6 +1288,7 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
+                // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
                 
@@ -1308,17 +1322,6 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
-                // MULTILINGUAL FEATURE
-                selectedLanguage: 'en-US',
-                languages: [
-                    { name: 'English 🇺🇸', code: 'en-US' },
-                    { name: 'Spanish 🇪🇸', code: 'es-ES' },
-                    { name: 'French 🇫🇷', code: 'fr-FR' },
-                    { name: 'German 🇩🇪', code: 'de-DE' },
-                    { name: 'Italian 🇮🇹', code: 'it-IT' },
-                    { name: 'Chinese 🇨🇳', code: 'zh-CN' }
-                ],
-
                 // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
@@ -1327,12 +1330,14 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
+                // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
 
+                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1342,6 +1347,7 @@
                         science: 0, 
                         nature: 0 
                     },
+                    // We will store child_profile here to avoid DB errors
                     child_profile: null 
                 },
                 xp: 0,
@@ -1366,9 +1372,9 @@
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn', 
+                lessonStep: 'learn', // learn, quiz, success
                 currentLessonQuizIndex: 0,
-                pathProgress: {}, 
+                pathProgress: {}, // Stores completion per subject
                 selectedCertificatePath: null,
 
                 curriculum: [
@@ -1395,7 +1401,7 @@
                         levels: [
                             { id: 1, title: 'Solar System', content: 'We live on Earth! The Sun is a giant hot star in the middle.', quiz: [{q: 'We live on...', options:['Mars', 'Earth', 'Sun'], correct:1}, {q: 'Is the sun hot?', options:['Yes', 'No', 'Cold'], correct:0}, {q: 'The moon is made of cheese?', options:['Yes', 'No', 'Maybe'], correct:1}] },
                             { id: 2, title: 'Dinosaurs', content: 'Dinosaurs lived long ago. The T-Rex was very big and scary!', quiz: [{q: 'T-Rex was...', options:['Small', 'Big', 'Tiny'], correct:1}, {q: 'Are dinos alive today?', options:['Yes', 'No', 'Birds are!'], correct:2}, {q: 'Did they eat pizza?', options:['Yes', 'No', 'Always'], correct:1}] },
-                            { id: 3, title: 'Water Cycle', content: 'Rain comes from clouds. Sun dries it up. Then it rains again!', quiz: [{q: 'Rain comes from...', options:['Ground', 'Clouds', 'Trees'], correct:1}, {q: 'Sun makes water...', options:['Freeze', 'Dry up', 'Green'], correct:1}, {q: 'Is snow water?', options:['Yes', 'No', 'Maybe'], correct:0}] }
+                            { id: 3, title: 'Water Cycle', content: 'Water comes from clouds. Sun dries it up. Then it rains again!', quiz: [{q: 'Rain comes from...', options:['Ground', 'Clouds', 'Trees'], correct:1}, {q: 'Sun makes water...', options:['Freeze', 'Dry up', 'Green'], correct:1}, {q: 'Is snow water?', options:['Yes', 'No', 'Maybe'], correct:0}] }
                         ]
                     }
                 ],
@@ -1451,6 +1457,7 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
+                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
                         this.totalMinutesLearned++;
@@ -1491,6 +1498,89 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
+                // --- UPDATED: PDF Methods using jsPDF ---
+                printCertificate(path) {
+                    this.selectedCertificatePath = path;
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({
+                        orientation: "landscape",
+                        unit: "mm",
+                        format: "a4"
+                    });
+
+                    // Background color & border
+                    doc.setFillColor(255, 255, 255);
+                    doc.rect(0, 0, 297, 210, 'F');
+                    doc.setDrawColor(245, 158, 11); // Amber-600
+                    doc.setLineWidth(5);
+                    doc.rect(10, 10, 277, 190);
+
+                    // Content
+                    doc.setTextColor(245, 158, 11);
+                    doc.setFontSize(40);
+                    doc.text("Certificate of Achievement", 148, 40, { align: "center" });
+
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFontSize(20);
+                    doc.text("This award is proudly presented to", 148, 60, { align: "center" });
+
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFontSize(50);
+                    doc.text(this.childProfile.name, 148, 90, { align: "center" });
+
+                    doc.setTextColor(100, 100, 100);
+                    doc.setFontSize(16);
+                    const description = `For successfully completing the ${path.name} adventure path and showing incredible curiosity and brilliance in learning!`;
+                    const splitDescription = doc.splitTextToSize(description, 200);
+                    doc.text(splitDescription, 148, 110, { align: "center" });
+
+                    doc.text("Date: " + new Date().toLocaleDateString(), 148, 150, { align: "center" });
+                    doc.text("Teacher: AI Tutor " + path.icon, 148, 160, { align: "center" });
+
+                    doc.save(`Certificate_${this.childProfile.name}_${path.id}.pdf`);
+                },
+
+                downloadMonthlyReport() {
+                    if (!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+                    
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    doc.setFontSize(22);
+                    doc.text("Monthly Learning Report", 20, 20);
+                    
+                    doc.setFontSize(14);
+                    doc.text(`Student: ${this.childProfile.name}`, 20, 35);
+                    doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 42);
+                    
+                    doc.setLineWidth(0.5);
+                    doc.line(20, 48, 190, 48);
+
+                    doc.setFontSize(16);
+                    doc.text("Stats Overview", 20, 60);
+                    doc.setFontSize(12);
+                    doc.text(`- Questions Asked: ${this.parentLogs.length}`, 30, 70);
+                    doc.text(`- Words Read: ${this.learningStats.wordsLearned}`, 30, 77);
+                    doc.text(`- Coins Earned: ${this.coins}`, 30, 84);
+                    doc.text(`- Total Experience (XP): ${this.xp}`, 30, 91);
+
+                    doc.setFontSize(16);
+                    doc.text("Subject Mastery", 20, 110);
+                    let y = 120;
+                    Object.entries(this.getTopSubjects()).forEach(([subject, score]) => {
+                        doc.setFontSize(12);
+                        doc.text(`${subject}: ${score} pts`, 30, y);
+                        y += 7;
+                    });
+
+                    doc.save(`Report_${this.childProfile.name}.pdf`);
+                },
+
+                // --- END OF PDF UPDATES ---
+
                 getPathProgress(pathId) {
                     const completed = this.pathProgress[pathId] || 0;
                     const total = this.curriculum.find(p => p.id === pathId).levels.length;
@@ -1525,6 +1615,7 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
+                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1534,9 +1625,11 @@
                     }
                 },
                 async completeLesson() {
+                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
                     
+                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
@@ -1546,13 +1639,6 @@
                     this.updateLevel();
                     await this.syncData();
                     this.closeLesson();
-                },
-
-                printCertificate(path) {
-                    this.selectedCertificatePath = path;
-                    setTimeout(() => {
-                        window.print();
-                    }, 500);
                 },
 
                 async resetMapProgress() {
@@ -1593,7 +1679,6 @@
                     this.masterPin = data.pin;
                     this.coins = Number(data.coins) || 0; 
                     this.xp = data.xp || 0;
-                    this.selectedLanguage = data.selected_language || 'en-US';
                     
                     this.childProfile = (data.learning_stats && data.learning_stats.child_profile) 
                         ? data.learning_stats.child_profile 
@@ -1685,14 +1770,6 @@
                     alert(this.emailSummaryEnabled ? "Email summaries activated! You will receive weekly updates." : "Email summaries deactivated.");
                 },
 
-                downloadMonthlyReport() {
-                    if (!this.isPremium) {
-                        this.showPremiumModal = true;
-                        return;
-                    }
-                    alert("Generating Progress Report... Your PDF will download shortly.");
-                },
-
                 async generateArt() {
                     if (!this.userQuery) {
                         alert("Tell me what to draw first! (Type in the box)");
@@ -1751,21 +1828,15 @@
 
                 getAgeLogic() {
                     const range = this.childProfile.ageRange || '6-7';
-                    const langName = this.languages.find(l => l.code === this.selectedLanguage)?.name || 'English';
-                    const languageInstruction = `CRITICAL: Answer ONLY in ${langName}. Translate all your knowledge and personality into this language.`;
-                    
                     const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
                     
-                    let ageDetails = '';
                     if (range === '4-5') {
-                        ageDetails = `${priority} TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful. Avoid complex concepts.`;
-                    } else if (range === '8-9') {
-                        ageDetails = `${priority} TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher.`;
-                    } else {
-                        ageDetails = `${priority} TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly.`;
+                        return `${priority} TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character. Avoid complex concepts.`;
                     }
-
-                    return `${ageDetails} ${languageInstruction}`;
+                    if (range === '8-9') {
+                        return `${priority} TARGET AUDIENCE: Age 8-9 (Upper Elementary). Use moderate vocabulary. You can explain deeper concepts. Tone: Encouraging teacher, cool and smart.`;
+                    }
+                    return `${priority} TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly and helpful.`;
                 },
 
                 async startQuiz() {
@@ -1774,15 +1845,15 @@
                     this.toggleScroll(true);
 
                     const ageRange = this.childProfile.ageRange || '6-7';
-                    const langName = this.languages.find(l => l.code === this.selectedLanguage)?.name || 'English';
 
                     try {
                         const systemPrompt = `You are an AI Quiz Generator for kids. 
-                        TARGET AGE: ${ageRange}. LANGUAGE: ${langName}.
+                        TARGET AGE: ${ageRange}.
                         Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
-                        Adjust difficulty accordingly. RETURN IN ${langName}.
+                        Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
                         Return strictly this JSON format: 
-                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}`;
+                        {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
+                        Make sure the options are short and simple.`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
@@ -1859,8 +1930,7 @@
                                 coins: 50, 
                                 xp: 0,
                                 learning_stats: initialStats,
-                                parent_logs: [],
-                                selected_language: 'en-US'
+                                parent_logs: []
                             }
                         ]);
 
@@ -1950,7 +2020,6 @@
                         parent_logs: safeLogs, 
                         is_premium: this.isPremium,
                         premium_expiry: this.premiumExpiry,
-                        selected_language: this.selectedLanguage,
                         daily_usage: {
                             date: new Date().toDateString(),
                             questions_used: this.dailyQuestionsUsed,
@@ -2141,7 +2210,7 @@
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     if (!SpeechRecognition) return;
                     const recognition = new SpeechRecognition();
-                    recognition.lang = this.selectedLanguage;
+                    recognition.lang = 'en-US';
                     recognition.onstart = () => { this.isListening = true; window.speechSynthesis.cancel(); this.isSpeaking = false; };
                     recognition.onresult = (event) => { this.userQuery = event.results[0][0].transcript; this.isListening = false; this.askTutor(); };
                     recognition.onerror = () => { this.isListening = false; };
@@ -2251,13 +2320,9 @@
                     if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
                     const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                     const msg = new SpeechSynthesisUtterance(cleanText);
-                    msg.lang = this.selectedLanguage;
                     const voices = window.speechSynthesis.getVoices();
-                    
-                    let bestVoice = voices.find(v => v.lang.startsWith(this.selectedLanguage.split('-')[0]));
-                    if (!bestVoice) bestVoice = voices.find(v => v.name.includes('Google US English')) || voices[0];
-                    
-                    msg.voice = bestVoice;
+                    let baseVoice = voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.name.includes('Samantha')) || voices[0];
+                    msg.voice = baseVoice;
                     msg.pitch = this.currentChar.pitch; 
                     msg.rate = this.currentChar.rate;
                     msg.onstart = () => { this.isSpeaking = true; };
