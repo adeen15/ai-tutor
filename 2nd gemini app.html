@@ -16,7 +16,6 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -517,6 +516,7 @@
                         type="text" 
                         x-model="userQuery" 
                         x-ref="queryInput"
+                        @keyup="if(isKeyboardMode) playClickSound()"
                         @keyup.enter="askTutor()"
                         :placeholder="isListening ? t('listening') + '...' : (isKeyboardMode ? t('type_here') + '...' : t('ask_about') + ' ' + currentChar.subject + '...')" 
                         class="flex-1 bg-transparent px-2 py-3 sm:py-4 outline-none text-base sm:text-xl font-bold text-gray-700 min-w-0"
@@ -1143,10 +1143,7 @@
                              <div class="flex items-start gap-3">
                                 <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
                                 <div>
-                                    <div class="flex justify-between items-center w-full">
-                                        <p class="text-xs font-bold text-slate-700 uppercase">Email Summary Status</p>
-                                        <button x-show="emailSummaryEnabled" @click="sendEmailReport()" class="text-[9px] text-blue-500 font-bold hover:underline">SEND NOW</button>
-                                    </div>
+                                    <p class="text-xs font-bold text-slate-700 uppercase">Email Summary Status</p>
                                     <div class="flex items-center gap-2 mt-1">
                                         <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
                                             <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
@@ -1383,7 +1380,6 @@
                 isEditingProfile: false,
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
-                lastReportDate: null,
 
                 // UPDATED: Stats specific to the 5 characters
                 learningStats: {
@@ -1559,11 +1555,6 @@
                 },
                 
                 async init() {
-                    // Initialize EmailJS
-                    (function(){
-                        emailjs.init("YOUR_PUBLIC_KEY");
-                    })();
-
                     this.currentChar = this.characters[0];
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
@@ -1607,46 +1598,6 @@
                     }
 
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
-                },
-
-                // --- DIRECT EMAIL REPORTS (EmailJS) ---
-                async sendEmailReport() {
-                    if (!this.emailSummaryEnabled || !this.isPremium) return;
-                    
-                    const templateParams = {
-                        parent_name: this.loginForm.name,
-                        parent_email: this.registeredEmail,
-                        child_name: this.childProfile.name,
-                        xp: this.xp,
-                        coins: this.coins,
-                        words_learned: this.learningStats.wordsLearned,
-                        subjects: Object.entries(this.getTopSubjects())
-                            .map(([subject, score]) => `${subject}: ${score} pts`)
-                            .join(", ")
-                    };
-
-                    try {
-                        await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams);
-                        console.log('Progress report emailed successfully!');
-                        this.lastReportDate = new Date().toISOString();
-                        await this.syncData();
-                        if(this.parentAuthenticated) alert("Progress report sent to " + this.registeredEmail);
-                    } catch (error) {
-                        console.error('Email report failed...', error);
-                    }
-                },
-
-                checkWeeklyReport() {
-                    if (!this.emailSummaryEnabled || !this.isPremium) return;
-                    
-                    const lastSent = this.lastReportDate ? new Date(this.lastReportDate) : new Date(0);
-                    const now = new Date();
-                    const diffTime = Math.abs(now - lastSent);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays >= 7) {
-                        this.sendEmailReport();
-                    }
                 },
 
                 // --- INFINITE CONTENT GENERATOR ---
@@ -1888,7 +1839,6 @@
                             this.populateUserData(data);
                             this.isLoggedIn = true;
                             this.playPing();
-                            this.checkWeeklyReport(); // Automatic trigger on login
                             if (!this.rewardClaimedToday) {
                                 setTimeout(() => {
                                     this.showRewards = true;
@@ -1914,7 +1864,6 @@
 
                     this.totalMinutesLearned = data.total_minutes || 0;
                     this.emailSummaryEnabled = data.email_summary_enabled || false;
-                    this.lastReportDate = data.last_report_date;
                     this.currentLanguage = data.current_language || 'English';
 
                     const urlParams = new URLSearchParams(window.location.search);
@@ -2245,7 +2194,6 @@
                         xp: this.xp,
                         total_minutes: this.totalMinutesLearned,
                         email_summary_enabled: this.emailSummaryEnabled,
-                        last_report_date: this.lastReportDate,
                         current_language: this.currentLanguage,
                         inventory: safeInventory,
                         equipped_item: this.equippedItem,
@@ -2555,6 +2503,7 @@
                     const osc = context.createOscillator();
                     const gain = context.createGain();
                     
+                    // Bubble Pop / Magical Sound
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(400, context.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(1200, context.currentTime + 0.05);
