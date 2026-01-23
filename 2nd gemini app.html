@@ -93,6 +93,9 @@
         .mic-active { animation: pulse-red 1.5s infinite; color: #ef4444 !important; }
         @keyframes pulse-red { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
+        /* Type-to-Talk Style */
+        .keyboard-active { color: #3b82f6 !important; transform: scale(1.1); }
+
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
@@ -491,8 +494,18 @@
                      :style="'border-color: ' + currentChar.accent + '44'">
                     
                     <button 
-                        @click="startListening()"
+                        @click="isKeyboardMode = !isKeyboardMode; if(isKeyboardMode) $nextTick(() => $refs.queryInput.focus())"
                         class="ml-2 sm:ml-4 text-2xl transition-all hover:scale-110"
+                        :class="isKeyboardMode ? 'keyboard-active animate-pulse' : 'text-gray-400'"
+                        :style="isKeyboardMode ? 'color: ' + currentChar.accent : ''"
+                        title="Type to Talk"
+                    >
+                        <i class="fas fa-keyboard"></i>
+                    </button>
+
+                    <button 
+                        @click="startListening()"
+                        class="text-2xl transition-all hover:scale-110"
                         :class="isListening ? 'mic-active' : 'text-gray-400'"
                         :style="!isListening ? 'color: ' + currentChar.accent : ''"
                     >
@@ -502,8 +515,9 @@
                     <input 
                         type="text" 
                         x-model="userQuery" 
+                        x-ref="queryInput"
                         @keyup.enter="askTutor()"
-                        :placeholder="isListening ? t('listening') + '...' : t('ask_about') + ' ' + currentChar.subject + '...'" 
+                        :placeholder="isListening ? t('listening') + '...' : (isKeyboardMode ? t('type_here') + '...' : t('ask_about') + ' ' + currentChar.subject + '...')" 
                         class="flex-1 bg-transparent px-2 py-3 sm:py-4 outline-none text-base sm:text-xl font-bold text-gray-700 min-w-0"
                     >
                     
@@ -729,7 +743,7 @@
                         </div>
                     </div>
 
-                    <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-blue-600 transition-transform transform hover:scale-105">
+                    <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
                         Continue Journey 🚀
                     </button>
                 </div>
@@ -1320,6 +1334,7 @@
                 showLegalDoc: null,
 
                 userQuery: '',
+                isKeyboardMode: false,
                 displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                 isThinking: false,
                 isSpeaking: false,
@@ -1492,7 +1507,7 @@
                             art_studio: 'Magic Art Studio 🎨', daily_rewards: 'Daily Rewards!', claim: 'Claim',
                             see_you_tomorrow: 'See You Tomorrow!', active: 'Active', buy_now: 'Buy Now', activate: 'Activate',
                             personalized_mission: 'Personalized Mission', choose_journey: 'Choose your journey!', complete: 'Complete',
-                            read_to_me: 'Read to me', start_quiz: 'Start Quiz!'
+                            read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here'
                         },
                         'Spanish': {
                             adventure_map: 'Mapa de Aventuras 🗺️', magic_auras: 'Auras Mágicas', daily_gift: 'Regalo Diario',
@@ -1502,7 +1517,7 @@
                             art_studio: 'Estudio de Arte Mágico 🎨', daily_rewards: '¡Premios Diarios!', claim: 'Reclamar',
                             see_you_tomorrow: '¡Hasta Mañana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
                             personalized_mission: 'Misión Personalizada', choose_journey: '¡Elige tu viaje!', complete: 'Completo',
-                            read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!'
+                            read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí'
                         },
                         'French': {
                             adventure_map: 'Carte d\'Aventure 🗺️', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
@@ -1512,7 +1527,7 @@
                             art_studio: 'Studio d\'Art Magique 🎨', daily_rewards: 'Récompenses Quotidiennes!', claim: 'Réclamer',
                             see_you_tomorrow: 'À Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
                             personalized_mission: 'Mission Personnalisée', choose_journey: 'Choisis ton voyage!', complete: 'Terminé',
-                            read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!'
+                            read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Écris ici'
                         },
                         'German': {
                             adventure_map: 'Abenteuerkarte 🗺️', magic_auras: 'Magische Auren', daily_gift: 'Tägliches Geschenk',
@@ -1522,7 +1537,7 @@
                             art_studio: 'Magisches Kunstatelier 🎨', daily_rewards: 'Tägliche Belohnungen!', claim: 'Abholen',
                             see_you_tomorrow: 'Bis morgen!', active: 'Aktiv', buy_now: 'Kaufen', activate: 'Aktivieren',
                             personalized_mission: 'Personalisierte Mission', choose_journey: 'Wähle deine Reise!', complete: 'Abgeschlossen',
-                            read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!'
+                            read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!', type_here: 'Hier tippen'
                         },
                         'Arabic': {
                             adventure_map: 'خريطة المغامرة 🗺️', magic_auras: 'الهالات السحرية', daily_gift: 'هدية يومية',
@@ -1532,7 +1547,7 @@
                             art_studio: 'مرسم الفن السحري 🎨', daily_rewards: 'مكافآت يومية!', claim: 'احصل عليها',
                             see_you_tomorrow: 'أراك غداً!', active: 'نشط', buy_now: 'شراء', activate: 'تفعيل',
                             personalized_mission: 'مهمة مخصصة', choose_journey: 'اختر رحلتك!', complete: 'مكتمل',
-                            read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!'
+                            read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!', type_here: 'اكتب هنا'
                         }
                     };
                     return dict[this.currentLanguage][key] || dict['English'][key];
@@ -2376,7 +2391,7 @@
                     if (!SpeechRecognition) return;
                     const recognition = new SpeechRecognition();
                     recognition.lang = 'en-US';
-                    recognition.onstart = () => { this.isListening = true; window.speechSynthesis.cancel(); this.isSpeaking = false; };
+                    recognition.onstart = () => { this.isListening = true; this.isKeyboardMode = false; window.speechSynthesis.cancel(); this.isSpeaking = false; };
                     recognition.onresult = (event) => { this.userQuery = event.results[0][0].transcript; this.isListening = false; this.askTutor(); };
                     recognition.onerror = () => { this.isListening = false; };
                     recognition.onend = () => { this.isListening = false; };
