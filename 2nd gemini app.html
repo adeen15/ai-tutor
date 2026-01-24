@@ -62,6 +62,10 @@
         .wiggle-speak { animation: wiggle 0.4s ease-in-out infinite; }
         @keyframes wiggle { 0%, 100% { transform: scale(1.1) rotate(0deg); } 25% { transform: scale(1.1) rotate(3deg); } 75% { transform: scale(1.1) rotate(-3deg); } }
 
+        /* Hands-Free Listening Pulse */
+        .listening-pulse { animation: pulse-border 1.5s infinite; }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0px rgba(59, 130, 246, 0.7); } 100% { box-shadow: 0 0 0 30px rgba(59, 130, 246, 0); } }
+
         .effect-glow { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); animation: pulse-glow 2s infinite; }
         @keyframes pulse-glow { 0%, 100% { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); } 50% { filter: drop-shadow(0 0 60px #fff700) drop-shadow(0 0 20px #ff9100); } }
 
@@ -405,8 +409,8 @@
             
             <div class="relative flex flex-col items-center order-2 lg:order-1">
                 
-                <div class="relative char-float select-none cursor-pointer transition-all duration-300" 
-                     :class="[isSpeaking ? 'wiggle-speak' : '', getEquippedItemData().effectType === 'glow' ? 'effect-glow' : '']">
+                <div class="relative char-float select-none cursor-pointer transition-all duration-300 rounded-full" 
+                     :class="[isSpeaking ? 'wiggle-speak' : '', getEquippedItemData().effectType === 'glow' ? 'effect-glow' : '', isListening ? 'listening-pulse' : '']">
                      
                      <template x-if="getEquippedItemData().effectType === 'sparkles'">
                          <div class="absolute inset-0 pointer-events-none">
@@ -491,10 +495,10 @@
                 </div>
 
                 <div class="relative bg-white rounded-3xl shadow-2xl p-2 sm:p-3 border-4 transition-all flex items-center gap-2 sm:gap-4 pr-2 sm:pr-3"
-                     :style="'border-color: ' + currentChar.accent + '44'">
+                     :style="'border-color: ' + (isListening ? '#3b82f6' : currentChar.accent + '44')">
                     
                     <button 
-                        @click="isKeyboardMode = !isKeyboardMode; if(isKeyboardMode) $nextTick(() => $refs.queryInput.focus())"
+                        @click="isKeyboardMode = !isKeyboardMode; if(isKeyboardMode) { stopVoiceMode(); $nextTick(() => $refs.queryInput.focus()); }"
                         class="ml-2 sm:ml-4 text-2xl transition-all hover:scale-110"
                         :class="isKeyboardMode ? 'keyboard-active animate-pulse' : 'text-gray-400'"
                         :style="isKeyboardMode ? 'color: ' + currentChar.accent : ''"
@@ -504,12 +508,16 @@
                     </button>
 
                     <button 
-                        @click="startListening()"
-                        class="text-2xl transition-all hover:scale-110"
-                        :class="isListening ? 'mic-active' : 'text-gray-400'"
-                        :style="!isListening ? 'color: ' + currentChar.accent : ''"
+                        @click="isVoiceNativeMode ? stopVoiceMode() : startVoiceMode()"
+                        class="text-2xl transition-all hover:scale-110 relative"
+                        :class="isListening || isVoiceNativeMode ? 'mic-active' : 'text-gray-400'"
+                        :style="(!isListening && !isVoiceNativeMode) ? 'color: ' + currentChar.accent : ''"
                     >
                         <i class="fas fa-microphone"></i>
+                        <span x-show="isVoiceNativeMode" class="absolute -top-2 -right-2 flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                        </span>
                     </button>
 
                     <input 
@@ -1345,6 +1353,7 @@
 
                 userQuery: '',
                 isKeyboardMode: false,
+                isVoiceNativeMode: false, // New State
                 displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                 isThinking: false,
                 isSpeaking: false,
@@ -1609,6 +1618,93 @@
                     }
 
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
+                },
+
+                // --- VOICE-NATIVE HANDS-FREE LOGIC ---
+                startVoiceMode() {
+                    this.isVoiceNativeMode = true;
+                    this.isKeyboardMode = false;
+                    window.speechSynthesis.cancel();
+                    this.startListening();
+                },
+
+                stopVoiceMode() {
+                    this.isVoiceNativeMode = false;
+                    this.isListening = false;
+                    window.speechSynthesis.cancel();
+                    this.isSpeaking = false;
+                },
+
+                startListening() {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRecognition) {
+                        alert("Voice is not supported on this browser.");
+                        return;
+                    }
+                    
+                    const recognition = new SpeechRecognition();
+                    // Map current language to recognition code
+                    const langCodes = { 'English': 'en-US', 'Spanish': 'es-ES', 'French': 'fr-FR', 'German': 'de-DE', 'Arabic': 'ar-SA' };
+                    recognition.lang = langCodes[this.currentLanguage] || 'en-US';
+                    
+                    recognition.onstart = () => { 
+                        this.isListening = true; 
+                        window.speechSynthesis.cancel(); 
+                        this.isSpeaking = false; 
+                    };
+                    
+                    recognition.onresult = (event) => { 
+                        this.userQuery = event.results[0][0].transcript; 
+                        this.isListening = false; 
+                        this.askTutor(); 
+                    };
+                    
+                    recognition.onerror = (event) => { 
+                        console.error("Mic Error:", event.error);
+                        this.isListening = false;
+                        // If in hands-free mode and just a timeout, restart
+                        if (this.isVoiceNativeMode && event.error === 'no-speech') {
+                            this.startListening();
+                        }
+                    };
+                    
+                    recognition.onend = () => { 
+                        this.isListening = false; 
+                    };
+                    
+                    recognition.start();
+                },
+
+                speak(text) {
+                    if (this.isSpeaking) { 
+                        window.speechSynthesis.cancel(); 
+                        this.isSpeaking = false; 
+                        return; 
+                    }
+                    
+                    const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                    const msg = new SpeechSynthesisUtterance(cleanText);
+                    const voices = window.speechSynthesis.getVoices();
+                    
+                    const langCodes = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
+                    const targetCode = langCodes[this.currentLanguage] || 'en';
+                    
+                    let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
+                    msg.voice = baseVoice;
+                    msg.pitch = this.currentChar.pitch; 
+                    msg.rate = this.currentChar.rate;
+                    
+                    msg.onstart = () => { this.isSpeaking = true; };
+                    
+                    msg.onend = () => { 
+                        this.isSpeaking = false; 
+                        // CRITICAL: HANDS-FREE LOOP
+                        if (this.isVoiceNativeMode) {
+                            this.startListening();
+                        }
+                    };
+                    
+                    window.speechSynthesis.speak(msg);
                 },
 
                 // --- INFINITE CONTENT GENERATOR ---
@@ -2455,17 +2551,6 @@
                     if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
                     if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
                 },
-                startListening() {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    if (!SpeechRecognition) return;
-                    const recognition = new SpeechRecognition();
-                    recognition.lang = 'en-US';
-                    recognition.onstart = () => { this.isListening = true; this.isKeyboardMode = false; window.speechSynthesis.cancel(); this.isSpeaking = false; };
-                    recognition.onresult = (event) => { this.userQuery = event.results[0][0].transcript; this.isListening = false; this.askTutor(); };
-                    recognition.onerror = () => { this.isListening = false; };
-                    recognition.onend = () => { this.isListening = false; };
-                    recognition.start();
-                },
                 setChar(char) {
                     this.currentChar = char;
                     this.currentMoodIcon = char.icon;
@@ -2474,6 +2559,7 @@
                     this.hasAnswered = false;
                     window.speechSynthesis.cancel();
                     this.isSpeaking = false;
+                    this.isVoiceNativeMode = false;
                 },
                 updateLevel() {
                     this.level = Math.floor(this.xp / 100) + 1;
@@ -2557,6 +2643,9 @@
                     this.playPing();
                     this.updateProgress(originalQuery, response);
                     
+                    // Automatic Text-to-Speech
+                    this.speak(response);
+                    
                     await this.syncData();
                 },
                 playPing() {
@@ -2573,7 +2662,6 @@
                     const osc = context.createOscillator();
                     const gain = context.createGain();
                     
-                    // Bubble Pop / Magical Sound
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(400, context.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(1200, context.currentTime + 0.05);
@@ -2586,24 +2674,6 @@
                     
                     osc.start();
                     osc.stop(context.currentTime + 0.08);
-                },
-                speak(text) {
-                    if (this.isSpeaking) { window.speechSynthesis.cancel(); this.isSpeaking = false; return; }
-                    const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
-                    const msg = new SpeechSynthesisUtterance(cleanText);
-                    const voices = window.speechSynthesis.getVoices();
-                    
-                    // Language Mapping for Voice
-                    const langCodes = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
-                    const targetCode = langCodes[this.currentLanguage] || 'en';
-                    
-                    let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
-                    msg.voice = baseVoice;
-                    msg.pitch = this.currentChar.pitch; 
-                    msg.rate = this.currentChar.rate;
-                    msg.onstart = () => { this.isSpeaking = true; };
-                    msg.onend = () => { this.isSpeaking = false; };
-                    window.speechSynthesis.speak(msg);
                 },
                 generateWorksheet() {
                     if(!this.isPremium) {
