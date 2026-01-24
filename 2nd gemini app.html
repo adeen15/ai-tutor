@@ -83,10 +83,6 @@
         .dust-particle { position: absolute; bottom: 0; animation: float-up 3s linear infinite; }
         @keyframes float-up { 0% { transform: translateY(20px) scale(0.5); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-150px) scale(1.5) rotate(45deg); opacity: 0; } }
 
-        /* Rainbow Trail Effect */
-        .rainbow-trail { position: absolute; width: 20px; height: 20px; border-radius: 50%; animation: rainbow-fade 1s forwards; pointer-events: none; }
-        @keyframes rainbow-fade { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
-
         /* --- UI ELEMENTS --- */
         .btn-grad { transition: 0.5s; background-size: 200% auto; }
         .btn-grad:hover { background-position: right center; }
@@ -363,11 +359,6 @@
             </div>
         </div>
 
-        <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex items-center gap-1 sm:gap-2">
-            <span class="text-xl sm:text-3xl">🔥</span>
-            <span class="font-kids text-lg sm:text-2xl text-orange-600" x-text="streak"></span>
-        </div>
-
         <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-1 sm:gap-2">
             <span class="text-xl sm:text-3xl">💰</span>
             <span class="font-kids text-lg sm:text-2xl text-yellow-700" x-text="coins"></span>
@@ -458,15 +449,6 @@
                                     🪄
                                </div>
                            </template>
-                        </div>
-                    </template>
-
-                    <template x-if="getEquippedItemData().effectType === 'crown'">
-                        <div class="absolute -top-10 left-1/2 -translate-x-1/2 text-5xl z-20 animate__animated animate__pulse animate__infinite">👑</div>
-                    </template>
-
-                    <template x-if="getEquippedItemData().effectType === 'rainbow'">
-                        <div class="absolute inset-0 pointer-events-none" id="rainbow-container">
                         </div>
                     </template>
 
@@ -981,16 +963,7 @@
                 <i class="fas fa-times-circle"></i>
             </button>
             <h2 class="text-4xl font-kids text-pink-500 mb-2" x-text="t('daily_rewards')">Daily Rewards!</h2>
-            <p class="font-bold text-gray-500 mb-2">Come back every day for free coins!</p>
-            
-            <div class="bg-orange-50 p-4 rounded-2xl mb-6 border-2 border-orange-200 flex items-center justify-center gap-4">
-                <div class="text-4xl">🔥</div>
-                <div class="text-left">
-                    <p class="font-kids text-xl text-orange-600" x-text="streak + ' Day Streak!'"></p>
-                    <p class="text-xs font-bold text-orange-400 uppercase tracking-widest" x-text="'+' + (streak * 10) + ' Streak Bonus Coins today!'"></p>
-                </div>
-            </div>
-
+            <p class="font-bold text-gray-500 mb-6">Come back every day for free coins!</p>
             <div class="grid grid-cols-4 gap-3 mb-8">
                 <template x-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
                     <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
@@ -1004,7 +977,7 @@
             <button @click="claimReward()" :disabled="rewardClaimedToday"
                 class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
                 :class="rewardClaimedToday ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'">
-                <span x-text="rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' ' + (100 + (streak*10)) + ' Coins! ✨' : t('claim') + ' ' + (50 + (streak*10)) + ' Coins! ✨')"></span>
+                <span x-text="rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' 100 Coins! ✨' : t('claim') + ' 50 Coins! ✨')"></span>
             </button>
         </div>
     </div>
@@ -1397,8 +1370,6 @@
                 lastUsageDate: new Date().toDateString(),
                 
                 coins: 0, 
-                streak: 0,
-                lastStreakDate: null,
                 
                 showRewards: false,
                 rewardClaimedToday: false,
@@ -1505,9 +1476,7 @@
                     { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
                     { id: 'fireflies', name: 'Fireflies', icon: '🐝', price: 350, effectType: 'fireflies' },
                     { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
-                    { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' },
-                    { id: 'crown', name: 'Golden Crown', icon: '👑', price: 600, effectType: 'crown' },
-                    { id: 'rainbow', name: 'Rainbow Trail', icon: '🌈', price: 750, effectType: 'rainbow' }
+                    { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
                 ],
                 characters: [
                     { 
@@ -1616,23 +1585,6 @@
                         this.totalMinutesLearned++;
                         this.syncData();
                     }, 60000);
-
-                    // Rainbow trail handler
-                    setInterval(() => {
-                        if (this.equippedItem === 'rainbow' && this.isSpeaking) {
-                            const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
-                            const container = document.getElementById('rainbow-container');
-                            if (container) {
-                                const particle = document.createElement('div');
-                                particle.className = 'rainbow-trail';
-                                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                                particle.style.left = (Math.random() * 100) + '%';
-                                particle.style.top = (Math.random() * 100) + '%';
-                                container.appendChild(particle);
-                                setTimeout(() => particle.remove(), 1000);
-                            }
-                        }
-                    }, 100);
 
                     try {
                         const res = await fetch('/api/config');
@@ -2089,25 +2041,9 @@
                     
                     const dailyData = data.daily_usage || {};
                     const today = new Date().toDateString();
-                    
-                    // Streak Logic
-                    this.streak = data.streak || 0;
-                    this.lastStreakDate = data.last_streak_date;
-                    
                     if (dailyData.date !== today) {
                         this.dailyQuestionsUsed = 0;
                         this.rewardClaimedToday = false;
-                        
-                        // Check if day was consecutive for streak
-                        const yesterday = new Date();
-                        yesterday.setDate(yesterday.getDate() - 1);
-                        const yesterdayStr = yesterday.toDateString();
-                        
-                        if (this.lastStreakDate === yesterdayStr) {
-                            this.streak++;
-                        } else if (this.lastStreakDate !== today) {
-                            this.streak = 1; // Reset or Start streak
-                        }
                     } else {
                         this.dailyQuestionsUsed = dailyData.questions_used || 0;
                         this.rewardClaimedToday = dailyData.reward_claimed || false;
@@ -2331,8 +2267,6 @@
                                 pin: this.loginForm.pin,
                                 coins: 50, 
                                 xp: 0,
-                                streak: 1,
-                                last_streak_date: new Date().toDateString(),
                                 learning_stats: initialStats,
                                 parent_logs: [],
                                 current_curriculum_region: 'Global'
@@ -2353,7 +2287,6 @@
                         this.coins = 50; 
                         this.isLoggedIn = true;
                         this.hasAccount = true;
-                        this.streak = 1;
                         this.playPing();
                         
                         confetti({ particleCount: 150, spread: 70 });
@@ -2419,8 +2352,6 @@
                     const updateData = {
                         coins: this.coins,
                         xp: this.xp,
-                        streak: this.streak,
-                        last_streak_date: this.lastStreakDate,
                         total_minutes: this.totalMinutesLearned,
                         email_summary_enabled: this.emailSummaryEnabled,
                         last_summary_date: this.lastSummaryDate,
@@ -2529,13 +2460,9 @@
                 
                 async claimReward() {
                     if (this.rewardClaimedToday) return;
-                    
-                    let baseReward = (this.todayIndex === 6) ? 100 : 50;
-                    let streakBonus = this.streak * 10; // 10 coins extra per streak day
-                    
-                    this.coins = Number(this.coins) + baseReward + streakBonus;
+                    let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
+                    this.coins = Number(this.coins) + rewardAmount;
                     this.rewardClaimedToday = true;
-                    this.lastStreakDate = new Date().toDateString();
                     
                     confetti({
                         particleCount: 150,
