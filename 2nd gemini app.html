@@ -998,7 +998,7 @@
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Monthly Progress Reports (PDF)</span></div>
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Priority AI Explanations</span></div>
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Official Path Certificates</span></div>
-                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Parent Email Summaries</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Hero Storybooks (Weekly PDF)</span></div>
                 </div>
                 <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
                     Get Premium ($4.99/mo)
@@ -1157,18 +1157,6 @@
                                     <p class="text-[10px] text-slate-500 leading-tight">AI answers are restricted to age-appropriate educational topics only.</p>
                                 </div>
                              </div>
-                             <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-700 uppercase">Learning Wins Summaries</p>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
-                                            <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
-                                        </button>
-                                        <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Summaries ON' : 'Weekly Summaries OFF'"></span>
-                                    </div>
-                                </div>
-                             </div>
                         </div>
                     </div>
                 </div>
@@ -1196,23 +1184,32 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
-                        <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
-                            <div>
-                                <i class="fas fa-lock text-gray-400 mb-2"></i>
-                                <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
-                                <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                    <div class="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-3xl shadow-sm border border-purple-200 relative overflow-hidden">
+                         <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-lock text-gray-400 mb-1"></i>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">Premium Only</p>
                             </div>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                            <i class="fas fa-chart-line text-blue-500"></i> Monthly Report
-                        </h3>
-                        <div class="space-y-4">
-                            <p class="text-[10px] text-gray-500">A detailed analysis of subjects learned, questions asked, and vocabulary milestones.</p>
-                            <button @click="downloadMonthlyReport()" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-file-download mr-2"></i> Download Report (PDF)
+                         </div>
+
+                         <div class="relative z-0">
+                            <h3 class="font-bold text-purple-900 text-lg mb-2 flex items-center gap-2">
+                                <i class="fas fa-book-open text-purple-600"></i> Weekly Hero Storybook
+                            </h3>
+                            <p class="text-xs text-purple-700 mb-4 font-bold">
+                                Turn this week's learned facts into a personalized adventure starring <span x-text="childProfile.name"></span>!
+                            </p>
+                            
+                            <div class="bg-white/50 rounded-xl p-3 mb-4 text-xs text-purple-800">
+                                <p class="font-bold">Next Story Includes:</p>
+                                <p class="opacity-80 truncate" x-text="Object.entries(getTopSubjects()).filter(s => s[1] > 0).map(s => s[0]).join(', ') || 'General Curiosity'"></p>
+                            </div>
+
+                            <button @click="generateHeroStory()" :disabled="isGeneratingStory" class="w-full bg-white text-purple-600 py-3 rounded-xl font-bold text-sm shadow-md hover:scale-105 transition-transform flex items-center justify-center gap-2 border border-purple-200">
+                                <span x-show="!isGeneratingStory"><i class="fas fa-wand-magic-sparkles"></i> Generate Story (PDF)</span>
+                                <span x-show="isGeneratingStory"><i class="fas fa-spinner fa-spin"></i> Writing magic...</span>
                             </button>
-                        </div>
+                         </div>
                     </div>
                 </div>
 
@@ -1400,6 +1397,7 @@
                 sessionStartTime: null,
                 emailSummaryEnabled: false,
                 lastSummaryDate: null,
+                isGeneratingStory: false, // NEW STATE FOR STORYBOOK
 
                 // UPDATED: Stats specific to the 5 characters
                 learningStats: {
@@ -1705,6 +1703,105 @@
                     };
                     
                     window.speechSynthesis.speak(msg);
+                },
+
+                // --- NEW FEATURE: HERO STORYBOOK GENERATOR ---
+                async generateHeroStory() {
+                    if (!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+                    if (this.isGeneratingStory) return;
+
+                    this.isGeneratingStory = true;
+                    
+                    // 1. Gather Context
+                    const name = this.childProfile.name || "Hero";
+                    const age = this.childProfile.ageRange || '6-7';
+                    const topSubjects = Object.entries(this.getTopSubjects())
+                        .filter(s => s[1] > 0)
+                        .map(s => s[0])
+                        .slice(0, 3) // Take top 3
+                        .join(", ");
+                    
+                    const topics = topSubjects || "curiosity and kindness";
+
+                    try {
+                        // 2. AI Prompt
+                        const systemPrompt = `You are a children's book author. Write a short, personalized adventure story (approx 300 words).
+                        Hero Name: ${name}.
+                        Target Age: ${age}.
+                        Language: ${this.currentLanguage}.
+                        Theme: The hero uses knowledge about [${topics}] to save the day.
+                        
+                        Structure the response as JSON:
+                        {
+                            "title": "Story Title",
+                            "story": "Full story text here..."
+                        }`;
+
+                        const response = await fetch("/api/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "messages": [
+                                    { "role": "system", "content": systemPrompt },
+                                    { "role": "user", "content": "Write the hero story." }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                        const storyData = JSON.parse(cleanJson);
+
+                        // 3. Generate PDF
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF();
+                        const pageWidth = doc.internal.pageSize.getWidth();
+                        
+                        // Cover Page
+                        doc.setFillColor(243, 232, 255); // Purple-50
+                        doc.rect(0, 0, pageWidth, 297, 'F');
+                        
+                        doc.setTextColor(107, 33, 168); // Purple-800
+                        doc.setFontSize(32);
+                        doc.text(storyData.title, pageWidth / 2, 80, { align: "center", maxWidth: 170 });
+                        
+                        doc.setFontSize(20);
+                        doc.setTextColor(88, 28, 135);
+                        doc.text("A Hero Story for", pageWidth / 2, 110, { align: "center" });
+                        doc.setFontSize(40);
+                        doc.text(name, pageWidth / 2, 130, { align: "center" });
+                        
+                        doc.setFontSize(14);
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Generated by AI Tutor", pageWidth / 2, 250, { align: "center" });
+                        doc.text(new Date().toLocaleDateString(), pageWidth / 2, 260, { align: "center" });
+
+                        // Story Page
+                        doc.addPage();
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(24);
+                        doc.text(storyData.title, 20, 30);
+                        
+                        doc.setFontSize(14);
+                        doc.setTextColor(50, 50, 50);
+                        const splitText = doc.splitTextToSize(storyData.story, 170);
+                        doc.text(splitText, 20, 50);
+                        
+                        // Download
+                        doc.save(`${name}_Weekly_Adventure.pdf`);
+                        
+                        this.playPing();
+                        confetti({ particleCount: 150, spread: 70 });
+
+                    } catch (e) {
+                        console.error("Story Gen Error:", e);
+                        alert("The story scribes are taking a break. Try again later!");
+                    } finally {
+                        this.isGeneratingStory = false;
+                    }
                 },
 
                 // --- INFINITE CONTENT GENERATOR ---
