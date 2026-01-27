@@ -16,6 +16,7 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -60,11 +61,11 @@
         @keyframes floating { 0%, 100% { transform: translateY(0px) rotate(-2deg); } 50% { transform: translateY(-30px) rotate(3deg); } }
 
         .wiggle-speak { animation: wiggle 0.4s ease-in-out infinite; }
-        @keyframes wiggle { 0%, 100% { transform: scale(1.1) rotate(0deg); } 25% { transform: scale(1.1) rotate(3deg); } 75% { transform: scale(1.1) rotate(-3deg); } }
+        @keyframes wiggle { 0%, 100% { transform: scale(1.05) rotate(0deg); } 25% { transform: scale(1.05) rotate(2deg); } 75% { transform: scale(1.05) rotate(-2deg); } }
 
         /* Hands-Free Listening Pulse */
         .listening-pulse { animation: pulse-border 1.5s infinite; }
-        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0px rgba(59, 130, 246, 0.7); } 100% { box-shadow: 0 0 0 30px rgba(59, 130, 246, 0); } }
+        @keyframes pulse-border { 0% { filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0)); } 50% { filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.6)); } 100% { filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0)); } }
 
         .effect-glow { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); animation: pulse-glow 2s infinite; }
         @keyframes pulse-glow { 0%, 100% { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 10px orange); } 50% { filter: drop-shadow(0 0 60px #fff700) drop-shadow(0 0 20px #ff9100); } }
@@ -452,7 +453,19 @@
                         </div>
                     </template>
 
-                     <div class="text-[6rem] sm:text-[9rem] md:text-[12rem] lg:text-[15rem]" x-text="currentMoodIcon"></div>
+                    <div x-show="!currentChar.lottie" class="text-[6rem] sm:text-[9rem] md:text-[12rem] lg:text-[15rem]" x-text="currentMoodIcon"></div>
+                    
+                    <div x-show="currentChar.lottie" class="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
+                        <lottie-player 
+                            :src="currentChar.lottie" 
+                            background="transparent" 
+                            speed="1" 
+                            style="width: 100%; height: 100%;" 
+                            loop 
+                            autoplay>
+                        </lottie-player>
+                    </div>
+
                 </div>
                 
                 <div x-show="isThinking" class="absolute -top-8 left-8 sm:-top-10 sm:left-10 animate__animated animate__fadeIn">
@@ -831,73 +844,6 @@
                 <button @click="downloadArt()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
                     <i class="fas fa-download mr-2"></i> Save
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
-        <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
-            <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
-            <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
-                
-                <template x-if="showLegalDoc === 'privacy'">
-                    <div class="space-y-4">
-                        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
-                            <p class="font-bold text-green-700 flex items-center gap-2"><i class="fas fa-shield-alt"></i> STRICT NO DATA SALE POLICY</p>
-                            <p class="text-xs text-green-800 mt-1">We do NOT sell, trade, or rent your child's personal identification information to others. Ever.</p>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-slate-800">1. Information We Collect (Strictly Necessary Only)</h3>
-                            <ul class="list-disc ml-4 text-xs space-y-1 mt-1">
-                                <li><strong>Parent Email:</strong> Used solely for account recovery and login.</li>
-                                <li><strong>PIN Code:</strong> Encrypted locally and used for parental controls.</li>
-                                <li><strong>Progress Data:</strong> Coins, inventory, and learning stats (synced securely).</li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-slate-800">2. What We Do NOT Collect</h3>
-                            <p>We do NOT store voice recordings. Voice inputs are processed instantly and discarded. We do not collect GPS location or physical addresses.</p>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-slate-800">3. AI & COPPA Compliance</h3>
-                            <p>Our AI interactions are filtered for safety. No personally identifiable information (PII) is sent to AI models for training purposes. We use stateless inference APIs.</p>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-slate-800">4. Your Rights</h3>
-                            <p>You can delete your account and all associated data instantly via the "Reset Account" button in the login screen.</p>
-                        </div>
-                    </div>
-                </template>
-
-                <template x-if="showLegalDoc === 'terms'">
-                    <div class="space-y-4">
-                        <div>
-                            <h3 class="font-bold text-slate-800">1. Acceptance of Terms</h3>
-                            <p>By accessing AI Tutor, you agree to be bound by these Terms of Service. This app is intended for educational use by children under parental supervision.</p>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-slate-800">2. Parental Responsibility</h3>
-                            <p>You represent that you are the parent or legal guardian of the child using this app. You are responsible for maintaining the confidentiality of your PIN.</p>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-slate-800">3. Subscriptions & Payments</h3>
-                            <p>Premium features are offered on a monthly basis. You may cancel at any time via the Parent Portal. (Note: This is a demo application; payments are simulated).</p>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-slate-800">4. Limitation of Liability</h3>
-                            <p>The app is provided "as is". While we strive for educational accuracy, AI responses may occasionally vary. We are not liable for incidental damages.</p>
-                        </div>
-                    </div>
-                </template>
-
             </div>
         </div>
     </div>
@@ -1370,7 +1316,6 @@
                 lastUsageDate: new Date().toDateString(),
                 
                 coins: 0, 
-                currentAudio: null, // Track active audio player
                 
                 showRewards: false,
                 rewardClaimedToday: false,
@@ -1485,40 +1430,45 @@
                         subject: "History", 
                         drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
                         suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false,
-                        voiceId: "onyx"
+                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", 
+                        lottie: "https://assets5.lottiefiles.com/packages/lf20_3ntisyac.json",
+                        bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                     },
                     { 
                         name: "Rocket Robot", 
                         subject: "Robots and AI", 
                         drawingTopics: ["robot", "bot", "computer", "phone", "screen", "wire", "circuit", "drone", "cyborg", "machine", "future", "tech", "ai", "code", "game"],
                         suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
-                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true,
-                        voiceId: "alloy"
+                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", 
+                        lottie: "https://assets9.lottiefiles.com/packages/lf20_9wjm14ni.json",
+                        bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
                     },
                     { 
                         name: "Starry Alien", 
                         subject: "Space Exploration", 
                         drawingTopics: ["space", "star", "moon", "sun", "planet", "mars", "earth", "galaxy", "comet", "rocket", "ship", "ufo", "alien", "astronaut", "sky"],
                         suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
-                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true,
-                        voiceId: "nova"
+                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", 
+                        lottie: "https://assets10.lottiefiles.com/packages/lf20_29pf8l.json",
+                        bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
                     },
                     { 
                         name: "Magic Cat", 
                         subject: "Science", 
                         drawingTopics: ["science", "lab", "flask", "atom", "magnet", "microscope", "bacteria", "cell", "germ", "ice", "fire", "smoke", "chemical", "potion", "glass"],
                         suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
-                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true,
-                        voiceId: "shimmer"
+                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", 
+                        lottie: "https://assets2.lottiefiles.com/packages/lf20_w98qte06.json",
+                        bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
                     },
                     { 
                         name: "Bouncy Bee", 
                         subject: "Nature", 
                         drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
                         suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
-                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true,
-                        voiceId: "fable"
+                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", 
+                        lottie: "https://assets1.lottiefiles.com/packages/lf20_c9c10p.json",
+                        bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
                     }
                 ],
                 currentChar: null,
@@ -1584,7 +1534,6 @@
                     this.currentChar = this.characters[0];
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
-                    this.currentAudio = null;
 
                     // Start Session Timer
                     this.sessionStartTime = Date.now();
@@ -1631,20 +1580,14 @@
                 startVoiceMode() {
                     this.isVoiceNativeMode = true;
                     this.isKeyboardMode = false;
-                    if(this.currentAudio) {
-                        this.currentAudio.pause();
-                        this.currentAudio = null;
-                    }
+                    window.speechSynthesis.cancel();
                     this.startListening();
                 },
 
                 stopVoiceMode() {
                     this.isVoiceNativeMode = false;
                     this.isListening = false;
-                    if(this.currentAudio) {
-                        this.currentAudio.pause();
-                        this.currentAudio = null;
-                    }
+                    window.speechSynthesis.cancel();
                     this.isSpeaking = false;
                 },
 
@@ -1662,10 +1605,7 @@
                     
                     recognition.onstart = () => { 
                         this.isListening = true; 
-                        if(this.currentAudio) {
-                            this.currentAudio.pause();
-                            this.currentAudio = null;
-                        }
+                        window.speechSynthesis.cancel(); 
                         this.isSpeaking = false; 
                     };
                     
@@ -1691,65 +1631,36 @@
                     recognition.start();
                 },
 
-                async speak(text) {
+                speak(text) {
                     if (this.isSpeaking) { 
-                        if(this.currentAudio) {
-                            this.currentAudio.pause();
-                            this.currentAudio = null;
-                        }
+                        window.speechSynthesis.cancel(); 
                         this.isSpeaking = false; 
                         return; 
                     }
                     
-                    // Stop any existing audio
-                    if(this.currentAudio) {
-                        this.currentAudio.pause();
-                        this.currentAudio = null;
-                    }
-
-                    this.isSpeaking = true;
                     const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                    const msg = new SpeechSynthesisUtterance(cleanText);
+                    const voices = window.speechSynthesis.getVoices();
                     
-                    try {
-                        // Using OpenAI or ElevenLabs TTS backend route
-                        const response = await fetch('/api/tts', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                text: cleanText,
-                                voice: this.currentChar.voiceId || 'alloy',
-                                speed: this.currentChar.rate || 1.0
-                            })
-                        });
-
-                        if (!response.ok) throw new Error("TTS Failed");
-
-                        const blob = await response.blob();
-                        const audioUrl = URL.createObjectURL(blob);
-                        this.currentAudio = new Audio(audioUrl);
-                        
-                        this.currentAudio.onended = () => {
-                            this.isSpeaking = false;
-                            this.currentAudio = null;
-                            if (this.isVoiceNativeMode) {
-                                this.startListening();
-                            }
-                        };
-
-                        this.currentAudio.play();
-
-                    } catch (e) {
-                        console.error("TTS Error, falling back to robotic voice", e);
-                        // Fallback only if API fails
-                        const msg = new SpeechSynthesisUtterance(cleanText);
-                        msg.rate = this.currentChar.rate || 1.0;
-                        msg.pitch = this.currentChar.pitch || 1.0;
-                        msg.onend = () => {
-                             this.isSpeaking = false;
-                             if (this.isVoiceNativeMode) this.startListening();
-                        };
-                        window.speechSynthesis.speak(msg);
-                    }
+                    const langCodes = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
+                    const targetCode = langCodes[this.currentLanguage] || 'en';
+                    
+                    let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
+                    msg.voice = baseVoice;
+                    msg.pitch = this.currentChar.pitch; 
+                    msg.rate = this.currentChar.rate;
+                    
+                    msg.onstart = () => { this.isSpeaking = true; };
+                    
+                    msg.onend = () => { 
+                        this.isSpeaking = false; 
+                        // CRITICAL: HANDS-FREE LOOP
+                        if (this.isVoiceNativeMode) {
+                            this.startListening();
+                        }
+                    };
+                    
+                    window.speechSynthesis.speak(msg);
                 },
 
                 // --- INFINITE CONTENT GENERATOR ---
@@ -2602,14 +2513,7 @@
                     this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
                     this.suggestions = char.suggestions;
                     this.hasAnswered = false;
-                    
-                    // Stop any ongoing audio when changing characters
-                    if(this.currentAudio) {
-                        this.currentAudio.pause();
-                        this.currentAudio = null;
-                    }
                     window.speechSynthesis.cancel();
-                    
                     this.isSpeaking = false;
                     this.isVoiceNativeMode = false;
                 },
@@ -2638,14 +2542,7 @@
 
                     const savedQuery = this.userQuery;
                     this.logActivity(this.userQuery);
-                    
-                    // Stop previous audio
-                    if(this.currentAudio) {
-                        this.currentAudio.pause();
-                        this.currentAudio = null;
-                    }
                     window.speechSynthesis.cancel();
-                    
                     this.isSpeaking = false;
                     this.isThinking = true;
                     this.hasAnswered = false;
@@ -2702,7 +2599,7 @@
                     this.playPing();
                     this.updateProgress(originalQuery, response);
                     
-                    // Trigger New High-Quality TTS
+                    // Automatic Text-to-Speech
                     this.speak(response);
                     
                     await this.syncData();
