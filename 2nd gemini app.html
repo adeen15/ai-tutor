@@ -1370,6 +1370,7 @@
                 lastUsageDate: new Date().toDateString(),
                 
                 coins: 0, 
+                currentAudio: null, // Track active audio player
                 
                 showRewards: false,
                 rewardClaimedToday: false,
@@ -1484,35 +1485,40 @@
                         subject: "History", 
                         drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
                         suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
+                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false,
+                        voiceId: "onyx"
                     },
                     { 
                         name: "Rocket Robot", 
                         subject: "Robots and AI", 
                         drawingTopics: ["robot", "bot", "computer", "phone", "screen", "wire", "circuit", "drone", "cyborg", "machine", "future", "tech", "ai", "code", "game"],
                         suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
-                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
+                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true,
+                        voiceId: "alloy"
                     },
                     { 
                         name: "Starry Alien", 
                         subject: "Space Exploration", 
                         drawingTopics: ["space", "star", "moon", "sun", "planet", "mars", "earth", "galaxy", "comet", "rocket", "ship", "ufo", "alien", "astronaut", "sky"],
                         suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
-                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
+                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true,
+                        voiceId: "nova"
                     },
                     { 
                         name: "Magic Cat", 
                         subject: "Science", 
                         drawingTopics: ["science", "lab", "flask", "atom", "magnet", "microscope", "bacteria", "cell", "germ", "ice", "fire", "smoke", "chemical", "potion", "glass"],
                         suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
-                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
+                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true,
+                        voiceId: "shimmer"
                     },
                     { 
                         name: "Bouncy Bee", 
                         subject: "Nature", 
                         drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
                         suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
-                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
+                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true,
+                        voiceId: "fable"
                     }
                 ],
                 currentChar: null,
@@ -1578,6 +1584,7 @@
                     this.currentChar = this.characters[0];
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
+                    this.currentAudio = null;
 
                     // Start Session Timer
                     this.sessionStartTime = Date.now();
@@ -1624,14 +1631,20 @@
                 startVoiceMode() {
                     this.isVoiceNativeMode = true;
                     this.isKeyboardMode = false;
-                    window.speechSynthesis.cancel();
+                    if(this.currentAudio) {
+                        this.currentAudio.pause();
+                        this.currentAudio = null;
+                    }
                     this.startListening();
                 },
 
                 stopVoiceMode() {
                     this.isVoiceNativeMode = false;
                     this.isListening = false;
-                    window.speechSynthesis.cancel();
+                    if(this.currentAudio) {
+                        this.currentAudio.pause();
+                        this.currentAudio = null;
+                    }
                     this.isSpeaking = false;
                 },
 
@@ -1649,7 +1662,10 @@
                     
                     recognition.onstart = () => { 
                         this.isListening = true; 
-                        window.speechSynthesis.cancel(); 
+                        if(this.currentAudio) {
+                            this.currentAudio.pause();
+                            this.currentAudio = null;
+                        }
                         this.isSpeaking = false; 
                     };
                     
@@ -1675,36 +1691,65 @@
                     recognition.start();
                 },
 
-                speak(text) {
+                async speak(text) {
                     if (this.isSpeaking) { 
-                        window.speechSynthesis.cancel(); 
+                        if(this.currentAudio) {
+                            this.currentAudio.pause();
+                            this.currentAudio = null;
+                        }
                         this.isSpeaking = false; 
                         return; 
                     }
                     
+                    // Stop any existing audio
+                    if(this.currentAudio) {
+                        this.currentAudio.pause();
+                        this.currentAudio = null;
+                    }
+
+                    this.isSpeaking = true;
                     const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
-                    const msg = new SpeechSynthesisUtterance(cleanText);
-                    const voices = window.speechSynthesis.getVoices();
                     
-                    const langCodes = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
-                    const targetCode = langCodes[this.currentLanguage] || 'en';
-                    
-                    let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
-                    msg.voice = baseVoice;
-                    msg.pitch = this.currentChar.pitch; 
-                    msg.rate = this.currentChar.rate;
-                    
-                    msg.onstart = () => { this.isSpeaking = true; };
-                    
-                    msg.onend = () => { 
-                        this.isSpeaking = false; 
-                        // CRITICAL: HANDS-FREE LOOP
-                        if (this.isVoiceNativeMode) {
-                            this.startListening();
-                        }
-                    };
-                    
-                    window.speechSynthesis.speak(msg);
+                    try {
+                        // Using OpenAI or ElevenLabs TTS backend route
+                        const response = await fetch('/api/tts', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                text: cleanText,
+                                voice: this.currentChar.voiceId || 'alloy',
+                                speed: this.currentChar.rate || 1.0
+                            })
+                        });
+
+                        if (!response.ok) throw new Error("TTS Failed");
+
+                        const blob = await response.blob();
+                        const audioUrl = URL.createObjectURL(blob);
+                        this.currentAudio = new Audio(audioUrl);
+                        
+                        this.currentAudio.onended = () => {
+                            this.isSpeaking = false;
+                            this.currentAudio = null;
+                            if (this.isVoiceNativeMode) {
+                                this.startListening();
+                            }
+                        };
+
+                        this.currentAudio.play();
+
+                    } catch (e) {
+                        console.error("TTS Error, falling back to robotic voice", e);
+                        // Fallback only if API fails
+                        const msg = new SpeechSynthesisUtterance(cleanText);
+                        msg.rate = this.currentChar.rate || 1.0;
+                        msg.pitch = this.currentChar.pitch || 1.0;
+                        msg.onend = () => {
+                             this.isSpeaking = false;
+                             if (this.isVoiceNativeMode) this.startListening();
+                        };
+                        window.speechSynthesis.speak(msg);
+                    }
                 },
 
                 // --- INFINITE CONTENT GENERATOR ---
@@ -2557,7 +2602,14 @@
                     this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
                     this.suggestions = char.suggestions;
                     this.hasAnswered = false;
+                    
+                    // Stop any ongoing audio when changing characters
+                    if(this.currentAudio) {
+                        this.currentAudio.pause();
+                        this.currentAudio = null;
+                    }
                     window.speechSynthesis.cancel();
+                    
                     this.isSpeaking = false;
                     this.isVoiceNativeMode = false;
                 },
@@ -2586,7 +2638,14 @@
 
                     const savedQuery = this.userQuery;
                     this.logActivity(this.userQuery);
+                    
+                    // Stop previous audio
+                    if(this.currentAudio) {
+                        this.currentAudio.pause();
+                        this.currentAudio = null;
+                    }
                     window.speechSynthesis.cancel();
+                    
                     this.isSpeaking = false;
                     this.isThinking = true;
                     this.hasAnswered = false;
@@ -2643,7 +2702,7 @@
                     this.playPing();
                     this.updateProgress(originalQuery, response);
                     
-                    // Automatic Text-to-Speech
+                    // Trigger New High-Quality TTS
                     this.speak(response);
                     
                     await this.syncData();
