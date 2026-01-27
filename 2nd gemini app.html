@@ -915,7 +915,7 @@
             
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
                 <template x-for="item in shopItems">
-                    <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-110"
+                    <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-105"
                          :class="equippedItem === item.id ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200' : 'bg-gray-50 border-gray-100'">
                         
                         <div class="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white rounded-full shadow-inner text-3xl sm:text-5xl">
@@ -1280,41 +1280,26 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-indigo-100 relative overflow-hidden flex flex-col justify-between">
-                         <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-user-md text-9xl text-indigo-500"></i></div>
-                         <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2 relative z-10">
-                            <i class="fas fa-stethoscope text-indigo-500"></i> AI Skills Diagnostic
-                         </h3>
-                         
-                         <div class="space-y-3 relative z-10 mb-4">
-                            <template x-for="stat in getDiagnosticStats()">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-slate-800 text-lg mb-4">Top Subjects</h3>
+                        <div class="space-y-4">
+                            <template x-for="(score, subject) in getTopSubjects()">
                                 <div>
-                                    <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                                        <span x-text="stat.label"></span>
-                                        <span x-text="stat.percent + '% Mastery'"></span>
+                                    <div class="flex justify-between text-xs font-bold text-gray-500 mb-1 uppercase">
+                                        <span x-text="subject"></span>
+                                        <span x-text="score + ' pts'"></span>
                                     </div>
-                                    <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
                                         <div class="h-full rounded-full transition-all duration-1000" 
-                                             :class="stat.color" 
-                                             :style="'width: ' + stat.percent + '%'"></div>
+                                             :class="getSubjectColor(subject)" 
+                                             :style="'width: ' + Math.min((score / 50) * 100, 100) + '%'"></div>
                                     </div>
                                 </div>
                             </template>
-                            <div x-show="getDiagnosticStats().every(s => s.percent === 0)" class="text-center text-gray-400 text-sm py-2">
-                                No data yet. Start learning to see gaps!
+                             <div x-show="Object.values(learningStats.subjects).reduce((a, b) => a + b, 0) === 0" class="text-center text-gray-400 text-sm py-4">
+                                No data yet. Start asking questions!
                             </div>
-                         </div>
-
-                         <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 relative z-10" x-show="getWeakestSubject()">
-                             <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Recommended Focus</p>
-                             <p class="text-sm font-bold text-slate-700 leading-relaxed">
-                                 <span x-text="childProfile.name"></span> is strong in <span x-text="getStrongestSubject()"></span>, but only <span x-text="getWeakestSubject().percent + '%'"></span> at <span x-text="getWeakestSubject().label"></span>.
-                             </p>
-                             <button @click="closeParentPortal(); showLearningPath = true; currentPath = curriculum.find(c => c.id === getWeakestSubject().pathId)" 
-                                     class="mt-3 w-full py-2 bg-indigo-500 text-white rounded-lg text-xs font-bold shadow-md hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2">
-                                 Start '<span x-text="getWeakestSubject().pathName"></span>' Path 🚀
-                             </button>
-                         </div>
+                        </div>
                     </div>
 
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
@@ -1322,7 +1307,7 @@
                              <h3 class="font-bold text-slate-800 text-lg">Recent Questions</h3>
                              <button @click="clearLogs" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase">Clear History</button>
                         </div>
-                        <div class="flex-1 overflow-y-auto max-h-[350px] custom-scroll pr-2 space-y-3">
+                        <div class="flex-1 overflow-y-auto max-h-[200px] custom-scroll pr-2 space-y-3">
                             <template x-for="log in parentLogs.slice().reverse().slice(0, 10)">
                                 <div class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-400">
                                     <div class="flex justify-between items-center mb-1">
@@ -1416,7 +1401,7 @@
                 emailSummaryEnabled: false,
                 lastSummaryDate: null,
 
-                // UPDATED: Stats specific to the 5 characters + Basic subjects for Diagnostic
+                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
                     subjects: { 
@@ -1424,9 +1409,7 @@
                         robots: 0, 
                         space: 0, 
                         science: 0, 
-                        nature: 0,
-                        math: 0,     // Added for diagnostic
-                        english: 0   // Added for diagnostic
+                        nature: 0 
                     },
                     // We will store child_profile here to avoid DB errors
                     child_profile: null 
@@ -1876,9 +1859,9 @@
                     doc.setFontSize(16);
                     doc.text("Subject Mastery", 20, 110);
                     let y = 120;
-                    Object.entries(this.learningStats.subjects).forEach(([subject, score]) => {
+                    Object.entries(this.getTopSubjects()).forEach(([subject, score]) => {
                         doc.setFontSize(12);
-                        doc.text(`${subject.toUpperCase()}: ${score} pts`, 30, y);
+                        doc.text(`${subject}: ${score} pts`, 30, y);
                         y += 7;
                     });
 
@@ -1896,7 +1879,7 @@
                     if (lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
 
                     try {
-                        const topSubjects = Object.entries(this.learningStats.subjects)
+                        const topSubjects = Object.entries(this.getTopSubjects())
                             .filter(([_, score]) => score > 0)
                             .map(([name, score]) => `${name} (${score} points)`)
                             .join(", ");
@@ -2050,7 +2033,7 @@
                     this.parentLogs = data.parent_logs || [];
                     this.learningStats = data.learning_stats || {
                         wordsLearned: 0,
-                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0, math: 0, english: 0 },
+                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                         child_profile: this.childProfile
                     };
 
@@ -2076,46 +2059,38 @@
                     return 66 + ((this.xp - 3000) / 2000) * 34; 
                 },
 
-                // NEW DIAGNOSTIC FUNCTIONS
-                getDiagnosticStats() {
-                    const stats = this.learningStats.subjects;
-                    // Define map of internal keys to display labels and color styles
-                    const mappings = [
-                        { key: 'history', label: 'History', color: 'bg-orange-500' },
-                        { key: 'math', label: 'Math', color: 'bg-blue-500' },
-                        { key: 'english', label: 'Reading', color: 'bg-green-500' },
-                        { key: 'science', label: 'Science', color: 'bg-purple-500' }
-                    ];
-
-                    return mappings.map(m => {
-                        const rawScore = stats[m.key] || 0;
-                        // Cap mastery at 100% (assuming 100 points is "mastery" for this demo)
-                        const percent = Math.min(Math.round((rawScore / 100) * 100), 100); 
-                        return { ...m, percent: percent, raw: rawScore };
-                    });
-                },
-
-                getWeakestSubject() {
-                    const stats = this.getDiagnosticStats();
-                    // Sort by percent ascending
-                    const sorted = stats.sort((a, b) => a.percent - b.percent);
-                    const weakest = sorted[0];
-
-                    // Map weakest subject to a specific curriculum Path ID
-                    const pathMap = {
-                        'history': { pathId: 'english', pathName: 'English ABCs' }, // Fallback as no history path exists in basic curriculum
-                        'math': { pathId: 'math', pathName: 'Math Geniuses' },
-                        'english': { pathId: 'english', pathName: 'English ABCs' },
-                        'science': { pathId: 'science', pathName: 'Science Fun' }
+                getTopSubjects() {
+                    const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
+                    const displayNames = {
+                        history: 'History',
+                        robots: 'Robots and AI',
+                        space: 'Space Exploration',
+                        science: 'Science',
+                        nature: 'Nature'
                     };
+                    
+                    let statsArray = requiredKeys.map(key => {
+                        const score = this.learningStats.subjects[key] || 0;
+                        return [displayNames[key], score];
+                    });
 
-                    return { ...weakest, ...pathMap[weakest.key] };
+                    statsArray.sort((a, b) => b[1] - a[1]);
+
+                    return statsArray.reduce((obj, [name, score]) => {
+                        obj[name] = score;
+                        return obj;
+                    }, {});
                 },
 
-                getStrongestSubject() {
-                    const stats = this.getDiagnosticStats();
-                    const sorted = stats.sort((a, b) => b.percent - a.percent);
-                    return sorted[0].label;
+                getSubjectColor(subject) {
+                    const colors = {
+                        'History': 'bg-orange-500',
+                        'Robots and AI': 'bg-blue-600',
+                        'Space Exploration': 'bg-purple-600',
+                        'Science': 'bg-pink-500',
+                        'Nature': 'bg-green-500'
+                    };
+                    return colors[subject] || 'bg-gray-500';
                 },
 
                 async saveChildProfile() {
@@ -2560,7 +2535,7 @@
                         this.parentLogs.splice(0, this.parentLogs.length);
                         
                         this.learningStats.wordsLearned = 0;
-                        this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0, math: 0, english: 0 };
+                        this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                         
                         await this.syncData(); 
                         alert("Search history cleared.");
@@ -2575,9 +2550,6 @@
                     if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
                     if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
                     if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
-                    // ADDED FOR DIAGNOSTIC
-                    if (queryLower.match(/count|add|plus|minus|number|math|shape|money/)) this.learningStats.subjects.math += 10;
-                    if (queryLower.match(/read|spell|rhyme|word|letter|english|book/)) this.learningStats.subjects.english += 10;
                 },
                 setChar(char) {
                     this.currentChar = char;
