@@ -1167,9 +1167,6 @@
                                         </button>
                                         <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Summaries ON' : 'Weekly Summaries OFF'"></span>
                                     </div>
-                                    <button @click="sendWeeklySummary(true)" class="mt-2 text-[10px] bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold hover:bg-blue-200 transition-colors" :disabled="!isPremium">
-                                        <i class="fas fa-paper-plane mr-1"></i> Send Report Now
-                                    </button>
                                 </div>
                              </div>
                         </div>
@@ -1872,70 +1869,47 @@
                 },
 
                 // --- PARENT "PROOF OF PROGRESS" AUTO-EMAIL ---
-                async sendWeeklySummary(force = false) {
-                    if (!this.isPremium) {
-                         if (force) alert("Please upgrade to Premium to unlock detailed reports.");
-                         return;
-                    }
-                    
-                    if (!this.emailSummaryEnabled && !force) return;
+                async sendWeeklySummary() {
+                    if (!this.emailSummaryEnabled || !this.isPremium) return;
 
                     const today = new Date();
                     const lastSent = this.lastSummaryDate ? new Date(this.lastSummaryDate) : null;
 
-                    // Check if 7 days have passed, unless forced
-                    if (!force && lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
+                    // Check if 7 days have passed
+                    if (lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
 
                     try {
                         const topSubjects = Object.entries(this.getTopSubjects())
                             .filter(([_, score]) => score > 0)
-                            .map(([name, score]) => `${name} (${score} pts)`)
+                            .map(([name, score]) => `${name} (${score} points)`)
                             .join(", ");
 
                         const summaryContent = `
-                            VERIFIED PROGRESS REPORT
-                            --------------------------------------------------
-                            Student: ${this.childProfile.name}
-                            Report Date: ${today.toLocaleDateString()}
-                            
-                            🏆 LEARNING MILESTONES
-                            - Active Learning Time: ${this.totalMinutesLearned} minutes
-                            - New Words Mastered: ${this.learningStats.wordsLearned}
-                            - Total XP Gained: ${this.xp}
+                            Weekly Learning Wins for ${this.childProfile.name}:
+                            - Time Spent Learning: ${this.totalMinutesLearned} minutes
+                            - New Words Explored: ${this.learningStats.wordsLearned}
+                            - Top Subjects Mastered: ${topSubjects || 'Beginning the journey!'}
                             - Questions Asked: ${this.parentLogs.length}
-
-                            📚 SUBJECT BREAKDOWN
-                            ${Object.entries(this.getTopSubjects()).map(([k,v]) => `- ${k}: ${v} pts`).join('\n')}
-
-                            📝 RECENT CURIOSITY
-                            ${this.parentLogs.slice(0, 3).map(l => `- Asked "${l.query}"`).join('\n')}
-                            
-                            This report verifies active engagement with the AI Tutor curriculum.
                         `;
 
                         // Simulate API call to email service
                         console.log("SENDING WEEKLY SUMMARY TO: " + this.registeredEmail);
-                        console.log(summaryContent);
+                        console.log("CONTENT: " + summaryContent);
 
                         const response = await fetch("/api/send-email", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 to: this.registeredEmail,
-                                subject: `Verified Progress Report: ${this.childProfile.name}`,
+                                subject: `Learning Wins: Weekly Summary for ${this.childProfile.name}`,
                                 body: summaryContent
                             })
                         });
 
                         this.lastSummaryDate = today.toISOString();
                         await this.syncData();
-                        
-                        if (force) {
-                            alert(`Verified Report sent to ${this.registeredEmail}!`);
-                        }
                     } catch (e) {
-                        console.error("Failed to send summary:", e);
-                        if (force) alert("Failed to send report. Please try again later.");
+                        console.error("Failed to send weekly summary:", e);
                     }
                 },
 
