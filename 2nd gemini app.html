@@ -999,6 +999,7 @@
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Priority AI Explanations</span></div>
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Official Path Certificates</span></div>
                     <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Parent Email Summaries</span></div>
+                    <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>High-Quality Character Voices</span></div>
                 </div>
                 <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
                     Get Premium ($4.99/mo)
@@ -1148,6 +1149,12 @@
                                     <option value="US">US (Common Core) 🇺🇸</option>
                                     <option value="UK">UK (National Curriculum) 🇬🇧</option>
                                 </select>
+                             </div>
+
+                             <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">ElevenLabs API Key (Premium Voice)</label>
+                                <input type="password" x-model="elevenLabsApiKey" placeholder="Enter API Key here..." @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
+                                <p class="text-[9px] text-slate-400 mt-1">Leave blank to use standard browser voice.</p>
                              </div>
 
                              <div class="flex items-start gap-3">
@@ -1350,6 +1357,7 @@
                 // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
+                elevenLabsApiKey: localStorage.getItem('elevenlabs_key') || '',
                 
                 legalAccepted: false,
                 showLegalDoc: null,
@@ -1488,35 +1496,40 @@
                         subject: "History", 
                         drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
                         suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
+                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false,
+                        voiceId: "ErXwobaYiN019PkySvjV" 
                     },
                     { 
                         name: "Rocket Robot", 
                         subject: "Robots and AI", 
                         drawingTopics: ["robot", "bot", "computer", "phone", "screen", "wire", "circuit", "drone", "cyborg", "machine", "future", "tech", "ai", "code", "game"],
                         suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
-                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
+                        icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true,
+                        voiceId: "TxGEqnHWrfWFTfGW9XjX" 
                     },
                     { 
                         name: "Starry Alien", 
                         subject: "Space Exploration", 
                         drawingTopics: ["space", "star", "moon", "sun", "planet", "mars", "earth", "galaxy", "comet", "rocket", "ship", "ufo", "alien", "astronaut", "sky"],
                         suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
-                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
+                        icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true,
+                        voiceId: "MF3mGyEYCl7XYWbV9V6O" 
                     },
                     { 
                         name: "Magic Cat", 
                         subject: "Science", 
                         drawingTopics: ["science", "lab", "flask", "atom", "magnet", "microscope", "bacteria", "cell", "germ", "ice", "fire", "smoke", "chemical", "potion", "glass"],
                         suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
-                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
+                        icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true,
+                        voiceId: "EXAVITQu4vr4xnSDxMaL" 
                     },
                     { 
                         name: "Bouncy Bee", 
                         subject: "Nature", 
                         drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
                         suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
-                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
+                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true,
+                        voiceId: "21m00Tcm4TlvDq8ikWAM" 
                     }
                 ],
                 currentChar: null,
@@ -1622,6 +1635,7 @@
                     }
 
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
+                    this.$watch('elevenLabsApiKey', value => localStorage.setItem('elevenlabs_key', value));
                 },
 
                 // --- VOICE-NATIVE HANDS-FREE LOGIC ---
@@ -1679,7 +1693,7 @@
                     recognition.start();
                 },
 
-                speak(text) {
+                async speak(text) {
                     if (this.isSpeaking) { 
                         window.speechSynthesis.cancel(); 
                         this.isSpeaking = false; 
@@ -1687,6 +1701,45 @@
                     }
                     
                     const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+
+                    // --- HIGH-QUALITY VOICE SYNTHESIS (ElevenLabs) ---
+                    if (this.elevenLabsApiKey && this.isPremium && this.currentChar.voiceId) {
+                        try {
+                            this.isSpeaking = true;
+                            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${this.currentChar.voiceId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'xi-api-key': this.elevenLabsApiKey,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    text: cleanText,
+                                    model_id: "eleven_multilingual_v2", // Better for languages support
+                                    voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+                                })
+                            });
+
+                            if (!response.ok) throw new Error('ElevenLabs API Error');
+
+                            const blob = await response.blob();
+                            const url = URL.createObjectURL(blob);
+                            const audio = new Audio(url);
+
+                            audio.onended = () => {
+                                this.isSpeaking = false;
+                                if (this.isVoiceNativeMode) this.startListening();
+                                URL.revokeObjectURL(url);
+                            };
+
+                            audio.play();
+                            return; // Exit function to avoid fallback playback
+                        } catch (e) {
+                            console.warn("High-Quality Voice failed, falling back to browser voice:", e);
+                            this.isSpeaking = false; // Reset to allow fallback
+                        }
+                    }
+
+                    // --- FALLBACK TO BROWSER TTS ---
                     const msg = new SpeechSynthesisUtterance(cleanText);
                     const voices = window.speechSynthesis.getVoices();
                     
