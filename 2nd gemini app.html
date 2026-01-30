@@ -1415,7 +1415,8 @@
                         nature: 0 
                     },
                     // We will store child_profile here to avoid DB errors
-                    child_profile: null 
+                    child_profile: null,
+                    recent_mistakes: []
                 },
                 xp: 0,
                 level: 1,
@@ -2057,11 +2058,16 @@
                     this.inventory = data.inventory || [];
                     this.equippedItem = data.equipped_item;
                     this.parentLogs = data.parent_logs || [];
+                    
+                    // --- ENHANCED STATS LOAD ---
                     this.learningStats = data.learning_stats || {
                         wordsLearned: 0,
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                        child_profile: this.childProfile
+                        child_profile: this.childProfile,
+                        recent_mistakes: []
                     };
+                    // Ensure recent_mistakes exists even if old data loaded
+                    if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
 
                     this.pathProgress = data.learning_stats?.path_progress || {};
                     
@@ -2257,6 +2263,16 @@
                         this.syncData();
                     } else {
                         this.quizState = 'wrong';
+                        
+                        // --- ADAPTIVE MEMORY: STORE MISTAKE ---
+                        if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
+                        this.learningStats.recent_mistakes.push(this.quizQuestion);
+                        
+                        // Keep only last 5 mistakes
+                        if(this.learningStats.recent_mistakes.length > 5) {
+                            this.learningStats.recent_mistakes.shift();
+                        }
+                        this.syncData();
                     }
                 },
 
@@ -2282,7 +2298,8 @@
 
                     const initialStats = {
                         ...this.learningStats,
-                        child_profile: initialChildProfile
+                        child_profile: initialChildProfile,
+                        recent_mistakes: []
                     };
 
                     try {
@@ -2622,10 +2639,29 @@
                     const ageLogicInstruction = this.getAgeLogic();
                     const region = this.currentCurriculumRegion || 'Global';
 
+                    // --- ADAPTIVE MEMORY: RETRIEVE CONTEXT ---
+                    // Retrieve child's name, top favorite topics, and recent struggles
+                    const childName = this.childProfile.name || "friend";
+                    const topSubjects = Object.entries(this.getTopSubjects()).slice(0, 2).map(s => s[0]).join(" and ");
+                    
+                    const mistakeList = (this.learningStats.recent_mistakes || []).slice(-3); // Get last 3 mistakes
+                    const mistakesContext = mistakeList.length > 0 ? mistakeList.join("; ") : "None";
+                    
+                    const lastQuestion = this.parentLogs.length > 1 ? this.parentLogs[this.parentLogs.length - 2].query : "nothing yet"; // Use -2 because current query is already pushed
+
+                    const memoryContext = `
+                        PERSONAL CONTEXT (Use this to connect warmly, but don't list these facts mechanically):
+                        - Child's Name: ${childName}
+                        - Loves: ${topSubjects}
+                        - Recently struggled with: ${mistakesContext}
+                        - Previously asked about: ${lastQuestion}
+                    `;
+
                     try {
                         const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
                         ${ageLogicInstruction}
                         YOUR SUBJECT: ${this.currentChar.subject}.
+                        ${memoryContext}
                         You MUST respond ONLY in ${this.currentLanguage}.
                         Strictly follow ${region} educational standards.
                         
