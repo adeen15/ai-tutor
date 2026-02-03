@@ -62,7 +62,6 @@
         .wiggle-speak { animation: wiggle 0.4s ease-in-out infinite; }
         @keyframes wiggle { 0%, 100% { transform: scale(1.1) rotate(0deg); } 25% { transform: scale(1.1) rotate(3deg); } 75% { transform: scale(1.1) rotate(-3deg); } }
 
-        /* Hands-Free Listening Pulse */
         .listening-pulse { animation: pulse-border 1.5s infinite; }
         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0px rgba(59, 130, 246, 0.7); } 100% { box-shadow: 0 0 0 30px rgba(59, 130, 246, 0); } }
 
@@ -97,7 +96,6 @@
         .mic-active { animation: pulse-red 1.5s infinite; color: #ef4444 !important; }
         @keyframes pulse-red { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Type-to-Talk Style */
         .keyboard-active { color: #3b82f6 !important; transform: scale(1.1); }
 
         ::-webkit-scrollbar { width: 10px; }
@@ -116,11 +114,9 @@
         .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid #3b82f6; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- NEW STYLES FOR LEARNING MAP --- */
         .level-connector { position: absolute; width: 4px; background-color: #e5e7eb; left: 50%; transform: translateX(-50%); z-index: 0; }
         .bounce { animation: bounce 2s infinite; }
 
-        /* Certificate Styles */
         .certificate-border { border: 20px solid #f59e0b; border-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M20 0l5 15h15l-12 9 4 16-12-9-12 9 4-16-12-9h15z' fill='%23f59e0b'/%3E%3C/svg%3E") 30; }
 
         @media (max-width: 640px) {
@@ -497,6 +493,15 @@
                         </span>
                     </button>
 
+                    <button 
+                        @click="openVisionModal()"
+                        class="text-2xl text-gray-400 transition-all hover:scale-110"
+                        :style="'color: ' + currentChar.accent"
+                        title="Vision Helper"
+                    >
+                        <i class="fas fa-camera"></i>
+                    </button>
+
                     <input 
                         type="text" 
                         x-model="userQuery" 
@@ -540,6 +545,47 @@
                             x-text="q">
                         </button>
                     </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="showVisionModal" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+        <div @click.away="!isThinking ? closeVisionModal() : null" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200">
+            <button @click="closeVisionModal()" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
+            
+            <h2 class="text-3xl font-kids text-blue-500 text-center mb-2">Vision Studio 📸</h2>
+            <p class="text-center text-gray-500 font-bold mb-6">Show me your homework or a drawing!</p>
+
+            <div class="flex flex-col items-center gap-6">
+                <div class="w-full aspect-video bg-gray-50 rounded-2xl border-4 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
+                    <template x-if="visionPreview">
+                        <img :src="visionPreview" class="w-full h-full object-contain">
+                    </template>
+                    <template x-if="!visionPreview">
+                        <div class="text-center">
+                            <i class="fas fa-image text-4xl text-gray-300 mb-2"></i>
+                            <p class="text-xs font-bold text-gray-400">SELECT A PHOTO</p>
+                        </div>
+                    </template>
+                    
+                    <input type="file" @change="handleVisionUpload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                </div>
+
+                <div x-show="isThinking" class="flex flex-col items-center">
+                    <div class="spinner border-blue-500 mb-2"></div>
+                    <p class="font-kids text-blue-500 animate-pulse">Analyzing magic...</p>
+                </div>
+
+                <div class="flex flex-col w-full gap-3" x-show="!isThinking">
+                    <button 
+                        @click="analyzeImage()"
+                        :disabled="!visionFile"
+                        class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:grayscale"
+                    >
+                        Explain it to me! 🚀
+                    </button>
+                    <button @click="visionFile = null; visionPreview = null" class="text-xs font-bold text-gray-400 uppercase tracking-widest">Clear Photo</button>
                 </div>
             </div>
         </div>
@@ -1324,7 +1370,6 @@
                 isLoggedIn: false,
                 hasAccount: false,
                 savedProfile: null,
-                // Default ageRange set to 6-7
                 loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                 registeredEmail: '',
                 
@@ -1339,7 +1384,7 @@
 
                 userQuery: '',
                 isKeyboardMode: false,
-                isVoiceNativeMode: false, // New State
+                isVoiceNativeMode: false, 
                 displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                 isThinking: false,
                 isSpeaking: false,
@@ -1366,7 +1411,6 @@
                     forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
                 },
                 
-                // --- DASHBOARD STATE ---
                 showParentPortal: false,
                 parentAuthenticated: false,
                 isChangingPin: false,
@@ -1374,12 +1418,10 @@
                 masterPin: '1234', 
                 parentLogs: [],
                 
-                // CURRICULUM & MULTILINGUAL STATE
                 currentLanguage: 'English',
                 availableLanguages: ['English', 'Spanish', 'French', 'German', 'Arabic'],
                 currentCurriculumRegion: 'Global',
 
-                // FIXED: Default child profile
                 childProfile: { name: '', age: '', grade: '', ageRange: '6-7' },
                 totalMinutesLearned: 0,
                 isEditingProfile: false,
@@ -1387,17 +1429,9 @@
                 emailSummaryEnabled: false,
                 lastSummaryDate: null,
 
-                // UPDATED: Stats specific to the 5 characters
                 learningStats: {
                     wordsLearned: 0,
-                    subjects: { 
-                        history: 0, 
-                        robots: 0, 
-                        space: 0, 
-                        science: 0, 
-                        nature: 0 
-                    },
-                    // We will store child_profile here to avoid DB errors
+                    subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                     child_profile: null,
                     recent_mistakes: []
                 },
@@ -1408,7 +1442,6 @@
                 inventory: [],
                 equippedItem: null,
                 
-                // --- QUIZ & ART STATES ---
                 showQuiz: false,
                 quizState: 'loading',
                 quizQuestion: '',
@@ -1419,13 +1452,17 @@
                 isDrawing: false,
                 artImage: null,
 
-                // --- LEARNING PATH STATE ---
+                // --- VISION STATE ---
+                showVisionModal: false,
+                visionFile: null,
+                visionPreview: null,
+
                 showLearningPath: false,
                 currentPath: null,
                 activeLesson: null,
-                lessonStep: 'learn', // learn, quiz, success
+                lessonStep: 'learn', 
                 currentLessonQuizIndex: 0,
-                pathProgress: {}, // Stores completion per subject
+                pathProgress: {}, 
                 selectedCertificatePath: null,
                 isGeneratingPath: false,
 
@@ -1504,7 +1541,6 @@
                 ],
                 currentChar: null,
 
-                // MULTILINGUAL DICTIONARY
                 t(key) {
                     const dict = {
                         'English': {
@@ -1566,10 +1602,8 @@
                     this.currentMoodIcon = this.currentChar.icon;
                     this.isLoading = true;
 
-                    // Generate Gate Question
                     this.generateGate();
 
-                    // Start Session Timer
                     this.sessionStartTime = Date.now();
                     setInterval(() => {
                         this.totalMinutesLearned++;
@@ -1610,7 +1644,6 @@
                     this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                 },
 
-                // Parental Gate Helper
                 generateGate() {
                     const num1 = Math.floor(Math.random() * 20) + 10;
                     const num2 = Math.floor(Math.random() * 15) + 5;
@@ -1628,7 +1661,6 @@
                     }
                 },
 
-                // --- VOICE-NATIVE HANDS-FREE LOGIC ---
                 startVoiceMode() {
                     this.isVoiceNativeMode = true;
                     this.isKeyboardMode = false;
@@ -1651,7 +1683,6 @@
                     }
                     
                     const recognition = new SpeechRecognition();
-                    // Map current language to recognition code
                     const langCodes = { 'English': 'en-US', 'Spanish': 'es-ES', 'French': 'fr-FR', 'German': 'de-DE', 'Arabic': 'ar-SA' };
                     recognition.lang = langCodes[this.currentLanguage] || 'en-US';
                     
@@ -1670,7 +1701,6 @@
                     recognition.onerror = (event) => { 
                         console.error("Mic Error:", event.error);
                         this.isListening = false;
-                        // If in hands-free mode and just a timeout, restart
                         if (this.isVoiceNativeMode && event.error === 'no-speech') {
                             this.startListening();
                         }
@@ -1706,7 +1736,6 @@
                     
                     msg.onend = () => { 
                         this.isSpeaking = false; 
-                        // CRITICAL: HANDS-FREE LOOP
                         if (this.isVoiceNativeMode) {
                             this.startListening();
                         }
@@ -1715,11 +1744,9 @@
                     window.speechSynthesis.speak(msg);
                 },
 
-                // --- INFINITE CONTENT GENERATOR ---
                 async generateNewPath() {
                     if (this.isGeneratingPath) return;
                     
-                    // Only for Premium
                     if (!this.isPremium) {
                         this.showPremiumModal = true;
                         return;
@@ -1774,7 +1801,6 @@
                         let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
                         const newPath = JSON.parse(cleanJson);
                         
-                        // Prevent ID collision
                         newPath.id = 'gen_' + Date.now();
                         
                         this.curriculum.push(newPath);
@@ -1795,7 +1821,6 @@
                     }
                 },
 
-                // --- PDF Methods using jsPDF ---
                 printCertificate(path) {
                     this.selectedCertificatePath = path;
                     const { jsPDF } = window.jspdf;
@@ -1805,14 +1830,12 @@
                         format: "a4"
                     });
 
-                    // Background color & border
                     doc.setFillColor(255, 255, 255);
                     doc.rect(0, 0, 297, 210, 'F');
-                    doc.setDrawColor(245, 158, 11); // Amber-600
+                    doc.setDrawColor(245, 158, 11); 
                     doc.setLineWidth(5);
                     doc.rect(10, 10, 277, 190);
 
-                    // Content
                     doc.setTextColor(245, 158, 11);
                     doc.setFontSize(40);
                     doc.text("Certificate of Achievement", 148, 40, { align: "center" });
@@ -1876,7 +1899,6 @@
                     doc.save(`Report_${this.childProfile.name}.pdf`);
                 },
 
-                // --- PARENT "PROOF OF PROGRESS" AUTO-EMAIL ---
                 async sendWeeklySummary(force = false) {
                     if (!this.isPremium) {
                          if (force) alert("Please upgrade to Premium to unlock detailed reports.");
@@ -1888,7 +1910,6 @@
                     const today = new Date();
                     const lastSent = this.lastSummaryDate ? new Date(this.lastSummaryDate) : null;
 
-                    // Check if 7 days have passed, unless forced
                     if (!force && lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
 
                     try {
@@ -1918,9 +1939,7 @@
                             This report verifies active engagement with the AI Tutor curriculum.
                         `;
 
-                        // Simulate API call to email service
                         console.log("SENDING WEEKLY SUMMARY TO: " + this.registeredEmail);
-                        console.log(summaryContent);
 
                         const response = await fetch("/api/send-email", {
                             method: "POST",
@@ -1978,7 +1997,6 @@
                         if(this.currentLessonQuizIndex < 2) {
                             this.currentLessonQuizIndex++;
                         } else {
-                            // All correct
                             this.lessonStep = 'success';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
@@ -1988,11 +2006,9 @@
                     }
                 },
                 async completeLesson() {
-                    // Update progress
                     const pathId = this.currentPath.id;
                     const currentLevel = this.pathProgress[pathId] || 0;
                     
-                    // Only increment if this is the next new level
                     if (this.activeLesson.id > currentLevel) {
                         this.pathProgress[pathId] = this.activeLesson.id;
                     }
@@ -2063,14 +2079,12 @@
                     this.equippedItem = data.equipped_item;
                     this.parentLogs = data.parent_logs || [];
                     
-                    // --- ENHANCED STATS LOAD ---
                     this.learningStats = data.learning_stats || {
                         wordsLearned: 0,
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                         child_profile: this.childProfile,
                         recent_mistakes: []
                     };
-                    // Ensure recent_mistakes exists even if old data loaded
                     if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
 
                     this.pathProgress = data.learning_stats?.path_progress || {};
@@ -2268,11 +2282,9 @@
                     } else {
                         this.quizState = 'wrong';
                         
-                        // --- ADAPTIVE MEMORY: STORE MISTAKE ---
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
                         this.learningStats.recent_mistakes.push(this.quizQuestion);
                         
-                        // Keep only last 5 mistakes
                         if(this.learningStats.recent_mistakes.length > 5) {
                             this.learningStats.recent_mistakes.shift();
                         }
@@ -2554,7 +2566,6 @@
                     } else {
                         if(this.pinInput === this.masterPin) {
                             this.parentAuthenticated = true;
-                            // Trigger weekly summary check when portal is unlocked
                             this.sendWeeklySummary();
                         } else {
                             this.pinInput = '';
@@ -2617,6 +2628,75 @@
                     const combinedFilters = [...blocked, ...this.safetySettings.forbiddenTopics];
                     return !combinedFilters.some(word => word !== "" && lowerQuery.includes(word));
                 },
+
+                // --- VISION LOGIC ---
+                openVisionModal() {
+                    if (!this.isPremium) {
+                        this.showPremiumModal = true;
+                        return;
+                    }
+                    this.showVisionModal = true;
+                    this.toggleScroll(true);
+                },
+                closeVisionModal() {
+                    this.showVisionModal = false;
+                    this.visionFile = null;
+                    this.visionPreview = null;
+                    this.toggleScroll(false);
+                },
+                handleVisionUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    this.visionFile = file;
+                    this.visionPreview = URL.createObjectURL(file);
+                },
+                async analyzeImage() {
+                    if (!this.visionFile) return;
+                    
+                    this.isThinking = true;
+                    this.currentMoodIcon = this.currentChar.mood_think;
+                    
+                    const ageRange = this.childProfile.ageRange || '6-7';
+                    const reader = new FileReader();
+                    
+                    reader.onload = async (e) => {
+                        const base64Image = e.target.result.split(',')[1];
+                        
+                        try {
+                            const systemPrompt = `You are ${this.currentChar.name}, a helpful AI teacher.
+                            TARGET AGE: ${ageRange}. Personality: ${this.currentChar.personality}.
+                            Language: ${this.currentLanguage}.
+                            An image has been uploaded. It is either a child's drawing or a homework page.
+                            Look at the image and explain what you see in a way that helps the child learn.
+                            - If it is homework, explain the steps to solve it (don't just give the answer).
+                            - If it is a drawing, praise their creativity and tell them a fun fact about the subject.
+                            Max 3 sentences. Character Intro: ${this.currentChar.intro_phrase}`;
+
+                            const response = await fetch("/api/vision", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    prompt: "Explain this to me please!",
+                                    image: base64Image,
+                                    systemInstruction: systemPrompt
+                                })
+                            });
+
+                            const data = await response.json();
+                            const aiResponse = data.response;
+                            
+                            this.closeVisionModal();
+                            this.finishThinking(aiResponse, "Looked at a photo!");
+                            
+                        } catch (err) {
+                            console.error("Vision API Error:", err);
+                            this.closeVisionModal();
+                            this.finishThinking("My magic eyes are a bit blurry right now. Can we try another photo?", "Vision Error");
+                        }
+                    };
+                    reader.readAsDataURL(this.visionFile);
+                },
+
                 async askTutor() {
                     if (!this.userQuery.trim()) return;
                     if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
@@ -2643,18 +2723,16 @@
                     const ageLogicInstruction = this.getAgeLogic();
                     const region = this.currentCurriculumRegion || 'Global';
 
-                    // --- ADAPTIVE MEMORY: RETRIEVE CONTEXT ---
-                    // Retrieve child's name, top favorite topics, and recent struggles
                     const childName = this.childProfile.name || "friend";
                     const topSubjects = Object.entries(this.getTopSubjects()).slice(0, 2).map(s => s[0]).join(" and ");
                     
-                    const mistakeList = (this.learningStats.recent_mistakes || []).slice(-3); // Get last 3 mistakes
+                    const mistakeList = (this.learningStats.recent_mistakes || []).slice(-3); 
                     const mistakesContext = mistakeList.length > 0 ? mistakeList.join("; ") : "None";
                     
-                    const lastQuestion = this.parentLogs.length > 1 ? this.parentLogs[this.parentLogs.length - 2].query : "nothing yet"; // Use -2 because current query is already pushed
+                    const lastQuestion = this.parentLogs.length > 1 ? this.parentLogs[this.parentLogs.length - 2].query : "nothing yet";
 
                     const memoryContext = `
-                        PERSONAL CONTEXT (Use this to connect warmly, but don't list these facts mechanically):
+                        PERSONAL CONTEXT:
                         - Child's Name: ${childName}
                         - Loves: ${topSubjects}
                         - Recently struggled with: ${mistakesContext}
@@ -2709,7 +2787,6 @@
                     this.playPing();
                     this.updateProgress(originalQuery, response);
                     
-                    // Automatic Text-to-Speech
                     this.speak(response);
                     
                     await this.syncData();
