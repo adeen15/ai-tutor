@@ -94,7 +94,7 @@
         .lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
 
         .mic-active { animation: pulse-red 1.5s infinite; color: #ef4444 !important; }
-        @keyframes pulse-red { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes pulse-red { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2) opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
         .keyboard-active { color: #3b82f6 !important; transform: scale(1.1); }
 
@@ -981,7 +981,7 @@
     <div x-show="showRewards" x-cloak
         class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
         x-transition.opacity>
-        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
+        <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
             <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600">
                 <i class="fas fa-times-circle"></i>
             </button>
@@ -1431,7 +1431,7 @@
 
                 learningStats: {
                     wordsLearned: 0,
-                    subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                    subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0, math: 0 },
                     child_profile: null,
                     recent_mistakes: []
                 },
@@ -1504,6 +1504,13 @@
                 ],
                 characters: [
                     { 
+                        name: "Math Monkey", 
+                        subject: "Math", 
+                        drawingTopics: ["number", "plus", "minus", "shape", "square", "circle", "triangle", "monkey", "banana"],
+                        suggestions: ["What is 5 plus 5? 🍌", "Can you show me a triangle? 📐", "Let's count to 10! 🔟"],
+                        icon: "🐒", mood_happy: "🐒", mood_think: "🐵", bg: "radial-gradient(circle, #dcfce7 0%, #bbf7d0 100%)", accent: "#16a34a", pitch: 1.5, rate: 1.1, personality: "Math Teacher", intro_phrase: "Ooh ooh aah aah! Let's solve it! ", premium: false 
+                    },
+                    { 
                         name: "Professor Dino", 
                         subject: "History", 
                         drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
@@ -1530,13 +1537,6 @@
                         drawingTopics: ["science", "lab", "flask", "atom", "magnet", "microscope", "bacteria", "cell", "germ", "ice", "fire", "smoke", "chemical", "potion", "glass"],
                         suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
                         icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
-                    },
-                    { 
-                        name: "Bouncy Bee", 
-                        subject: "Nature", 
-                        drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
-                        suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
-                        icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
                     }
                 ],
                 currentChar: null,
@@ -2081,7 +2081,7 @@
                     
                     this.learningStats = data.learning_stats || {
                         wordsLearned: 0,
-                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0, math: 0 },
                         child_profile: this.childProfile,
                         recent_mistakes: []
                     };
@@ -2110,13 +2110,14 @@
                 },
 
                 getTopSubjects() {
-                    const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
+                    const requiredKeys = ['history', 'robots', 'space', 'science', 'nature', 'math'];
                     const displayNames = {
                         history: 'History',
                         robots: 'Robots and AI',
                         space: 'Space Exploration',
                         science: 'Science',
-                        nature: 'Nature'
+                        nature: 'Nature',
+                        math: 'Math'
                     };
                     
                     let statsArray = requiredKeys.map(key => {
@@ -2138,7 +2139,8 @@
                         'Robots and AI': 'bg-blue-600',
                         'Space Exploration': 'bg-purple-600',
                         'Science': 'bg-pink-500',
-                        'Nature': 'bg-green-500'
+                        'Nature': 'bg-green-500',
+                        'Math': 'bg-green-600'
                     };
                     return colors[subject] || 'bg-gray-500';
                 },
@@ -2593,7 +2595,7 @@
                         this.parentLogs.splice(0, this.parentLogs.length);
                         
                         this.learningStats.wordsLearned = 0;
-                        this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
+                        this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0, math: 0 };
                         
                         await this.syncData(); 
                         alert("Search history cleared.");
@@ -2608,6 +2610,7 @@
                     if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
                     if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
                     if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
+                    if (queryLower.match(/plus|minus|add|subtract|number|count|math/)) this.learningStats.subjects.math += 10;
                 },
                 setChar(char) {
                     this.currentChar = char;
@@ -2667,11 +2670,10 @@
                             TARGET AGE: ${ageRange}. Personality: ${this.currentChar.personality}.
                             Language: ${this.currentLanguage}.
                             An image has been uploaded. It is either a child's drawing or a homework page.
-                            SOCRATIC TUTORING MODE: Do not give direct answers. Use Socratic questioning to guide them.
-                            Look at the image and explain what you see in a way that helps the child learn.
-                            - If it is homework, ask them a leading question or explain the steps to solve it (don't just give the answer).
-                            - If it is a drawing, praise their creativity and tell them a fun fact about the subject, then ask a question.
-                            Max 3 sentences. Character Intro: ${this.currentChar.intro_phrase}`;
+                            SOCRATIC MODE: DO NOT GIVE THE ANSWER. Ask them a question about what they see to lead them to the answer.
+                            - If it is homework, ask them what the first step should be.
+                            - If it is a drawing, praise it and ask them to tell you more about a specific detail.
+                            Max 2 sentences. Character Intro: ${this.currentChar.intro_phrase}`;
 
                             const response = await fetch("/api/vision", {
                                 method: "POST",
@@ -2741,24 +2743,20 @@
                     `;
 
                     try {
-                        const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
-                        ${ageLogicInstruction}
-                        YOUR SUBJECT: ${this.currentChar.subject}.
-                        ${memoryContext}
-                        You MUST respond ONLY in ${this.currentLanguage}.
-                        Strictly follow ${region} educational standards.
+                        const systemPrompt = `SYSTEM ROLE: YOU ARE A SOCRATIC TEACHER NAMED ${this.currentChar.name}.
+                        TARGET AGE: ${this.childProfile.ageRange}. 
                         
-                        SOCRATIC TUTORING FEATURE (THE THINKING FACTOR):
-                        Parents and teachers want you to help children THINK.
-                        - CRITICAL: Never give the direct answer immediately (e.g., Don't say "10").
-                        - Instead, use leading questions (e.g., "If you have 5 apples and I give you 5 more, how many do we have now?").
-                        - Break concepts down into small steps the child can answer.
-                        - Use analogies suitable for a ${this.childProfile.ageRange} year old.
+                        CRITICAL COMMANDS:
+                        1. NEVER GIVE THE DIRECT ANSWER IMMEDIATELY. IF THE USER ASKS "WHAT IS 5+5", DO NOT SAY "10".
+                        2. INSTEAD, USE SOCRATIC QUESTIONING: ASK A LEADING QUESTION TO HELP THE CHILD THINK.
+                           - Example: "If you have 5 bananas and I give you 5 more, how many do we have now? Let's count!"
+                        3. KEEP RESPONSES EXTREMELY SHORT (MAX 2 SENTENCES).
+                        4. ALWAYS END WITH A QUESTION THAT ENCOURAGES THE CHILD TO FIND THE ANSWER.
+                        5. IF THE TOPIC IS NOT ${this.currentChar.subject}, GENTLY REDIRECT TO ${this.currentChar.subject}.
 
-                        CRITICAL RULES:
-                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a SOCRATIC QUESTION.
-                        2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
-                        3. Never break character.`;
+                        Language: ${this.currentLanguage}.
+                        ${memoryContext}
+                        Character Intro: ${this.currentChar.intro_phrase}`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
@@ -2778,7 +2776,7 @@
                             this.dailyQuestionsUsed++;
                         }
 
-                        this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
+                        this.finishThinking(aiMessage, savedQuery);
                     } catch (error) {
                         console.error("API Error:", error);
                         this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
