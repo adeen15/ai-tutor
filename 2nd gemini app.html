@@ -1508,7 +1508,7 @@
                         subject: "History", 
                         drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
                         suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                        icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
+                        icon: "REX", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                     },
                     { 
                         name: "Rocket Robot", 
@@ -1720,7 +1720,7 @@
                         return; 
                     }
                     
-                    const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                    const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83C[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                     const msg = new SpeechSynthesisUtterance(cleanText);
                     const voices = window.speechSynthesis.getVoices();
                     
@@ -2667,9 +2667,9 @@
                             TARGET AGE: ${ageRange}. Personality: ${this.currentChar.personality}.
                             Language: ${this.currentLanguage}.
                             An image has been uploaded. It is either a child's drawing or a homework page.
-                            Look at the image and explain what you see in a way that helps the child learn.
-                            - If it is homework, explain the steps to solve it (don't just give the answer).
-                            - If it is a drawing, praise their creativity and tell them a fun fact about the subject.
+                            Look at the image and help the child learn:
+                            - If it is homework, use Socratic questioning to guide them toward the solution rather than explaining the steps or giving the answer. Ask them what they see first or what the next step might be. DO NOT solve it for them.
+                            - If it is a drawing, praise their creativity and tell them a fun fact about the subject, then ask them a question about their art.
                             Max 3 sentences. Character Intro: ${this.currentChar.intro_phrase}`;
 
                             const response = await fetch("/api/vision", {
@@ -2747,10 +2747,12 @@
                         You MUST respond ONLY in ${this.currentLanguage}.
                         Strictly follow ${region} educational standards.
                         
-                        CRITICAL RULES:
-                        1. IF the question is about ${this.currentChar.subject}, answer it briefly (MAX 2 sentences) and end with a question.
-                        2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
-                        3. Never break character.`;
+                        Socratic Tutoring Mode (CRITICAL):
+                        1. NEVER give the final answer or solution directly.
+                        2. Instead, ask simple, guiding questions to help the child think through the problem and discover the answer themselves.
+                        3. If they seem confused, provide a tiny hint or an analogy, then ask another question.
+                        4. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
+                        5. Never break character and keep responses encouraging.`;
 
                         const response = await fetch("/api/chat", {
                             method: "POST",
