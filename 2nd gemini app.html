@@ -1200,6 +1200,45 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                             <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                <i class="fas fa-smile-beam text-pink-500"></i> Emotional Insights (New)
+                            </h3>
+                            <div class="space-y-4">
+                                <template x-for="insight in getEmotionalInsights()">
+                                    <div class="flex items-start gap-3 p-3 rounded-xl" :class="insight.color">
+                                        <div class="text-2xl" x-text="insight.icon"></div>
+                                        <div>
+                                            <p class="text-xs font-bold uppercase" x-text="insight.subject"></p>
+                                            <p class="text-sm font-semibold text-slate-700" x-text="insight.text"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="parentLogs.length < 3" class="text-center py-4 text-gray-400 text-xs italic">
+                                    Asking more questions will reveal emotional patterns!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                <i class="fas fa-chart-pie text-indigo-500"></i> Learning Mood Trend
+                            </h3>
+                            <div class="h-40 flex items-end justify-between px-4 pb-2 border-b-2 border-slate-50 gap-2">
+                                <template x-for="mood in getMoodStats()">
+                                    <div class="flex-1 flex flex-col items-center">
+                                        <div class="w-full rounded-t-lg transition-all duration-1000" 
+                                            :class="mood.bg"
+                                            :style="'height: ' + mood.percent + '%'"></div>
+                                        <span class="text-[10px] font-bold text-slate-400 mt-2 uppercase" x-text="mood.label"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            <p class="text-[10px] text-center text-slate-400 font-bold uppercase mt-4 tracking-widest">Aggregate Sentiment Analysis</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
                             <div class="flex justify-between items-start">
                                 <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i>Membership</h3>
@@ -1337,7 +1376,10 @@
                                 <template x-for="log in parentLogs.slice().reverse().slice(0, 10)">
                                     <div class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-400">
                                         <div class="flex justify-between items-center mb-1">
-                                            <span class="text-[10px] text-gray-400 font-bold" x-text="log.time"></span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] text-gray-400 font-bold" x-text="log.time"></span>
+                                                <span x-show="log.emotion" :title="log.emotion" class="text-xs" x-text="getEmotionIcon(log.emotion)"></span>
+                                            </div>
                                             <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase whitespace-nowrap ml-2" x-text="'FROM: ' + log.char"></span>
                                         </div>
                                         <p class="text-slate-700 text-sm font-semibold" x-text="log.query"></p>
@@ -1433,7 +1475,8 @@
                         wordsLearned: 0,
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                         child_profile: null,
-                        recent_mistakes: []
+                        recent_mistakes: [],
+                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
                     },
                     xp: 0,
                     level: 1,
@@ -2083,9 +2126,11 @@
                             wordsLearned: 0,
                             subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                             child_profile: this.childProfile,
-                            recent_mistakes: []
+                            recent_mistakes: [],
+                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
                         };
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
+                        if(!this.learningStats.emotions) this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
 
                         this.pathProgress = data.learning_stats?.path_progress || {};
                         
@@ -2164,7 +2209,7 @@
                         const queryLower = this.userQuery.toLowerCase();
                         const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-                        if (!isOnTopic) {
+                        if (!onTopic) {
                             this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
                             this.speak(this.displayText);
                             this.isThinking = false;
@@ -2579,14 +2624,68 @@
                         this.pinInput = '';
                         this.toggleScroll(false);
                     },
-                    logActivity(query) {
+                    logActivity(query, emotion = 'neutral') {
                         let shortName = this.currentChar.name.replace("Professor ", "");
                         const entry = {
                             query: query,
                             time: new Date().toLocaleString(),
-                            char: shortName
+                            char: shortName,
+                            emotion: emotion
                         };
                         this.parentLogs.push(entry);
+                        
+                        // Update sentiment stats
+                        if(this.learningStats.emotions[emotion] !== undefined) {
+                            this.learningStats.emotions[emotion]++;
+                        } else {
+                            this.learningStats.emotions.neutral++;
+                        }
+                    },
+                    getEmotionIcon(emotion) {
+                        const map = { excited: '🤩', curious: '🤔', frustrated: '😤', happy: '😊', neutral: '😐' };
+                        return map[emotion] || '😐';
+                    },
+                    getMoodStats() {
+                        const total = Object.values(this.learningStats.emotions).reduce((a, b) => a + b, 0) || 1;
+                        return [
+                            { label: 'Happy', percent: (this.learningStats.emotions.happy / total) * 100, bg: 'bg-green-400' },
+                            { label: 'Excited', percent: (this.learningStats.emotions.excited / total) * 100, bg: 'bg-yellow-400' },
+                            { label: 'Curious', percent: (this.learningStats.emotions.curious / total) * 100, bg: 'bg-blue-400' },
+                            { label: 'Frustrated', percent: (this.learningStats.emotions.frustrated / total) * 100, bg: 'bg-red-400' }
+                        ];
+                    },
+                    getEmotionalInsights() {
+                        const logs = this.parentLogs.slice(-10);
+                        const subjects = {};
+                        
+                        logs.forEach(log => {
+                            if (!subjects[log.char]) subjects[log.char] = { happy: 0, frustrated: 0, total: 0 };
+                            subjects[log.char].total++;
+                            if (log.emotion === 'frustrated') subjects[log.char].frustrated++;
+                            if (log.emotion === 'excited' || log.emotion === 'happy') subjects[log.char].happy++;
+                        });
+
+                        const insights = [];
+                        Object.keys(subjects).forEach(sub => {
+                            const data = subjects[sub];
+                            if (data.frustrated > data.total / 3) {
+                                insights.push({ 
+                                    subject: sub, 
+                                    icon: '😤', 
+                                    text: `Child seems a bit frustrated with ${sub}. Try a simpler level?`,
+                                    color: 'bg-red-50 text-red-700'
+                                });
+                            } else if (data.happy > data.total / 2) {
+                                insights.push({ 
+                                    subject: sub, 
+                                    icon: '🚀', 
+                                    text: `Great news! Child is very excited about ${sub}!`,
+                                    color: 'bg-green-50 text-green-700'
+                                });
+                            }
+                        });
+
+                        return insights.slice(0, 2);
                     },
                     async clearLogs() {
                         if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
@@ -2594,6 +2693,7 @@
                             
                             this.learningStats.wordsLearned = 0;
                             this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
+                            this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
                             
                             await this.syncData(); 
                             alert("Search history cleared.");
@@ -2712,7 +2812,7 @@
                         }
 
                         const savedQuery = this.userQuery;
-                        this.logActivity(this.userQuery);
+                        
                         window.speechSynthesis.cancel();
                         this.isSpeaking = false;
                         this.isThinking = true;
@@ -2724,39 +2824,23 @@
                         const region = this.currentCurriculumRegion || 'Global';
 
                         const childName = this.childProfile.name || "friend";
-                        const topSubjects = Object.entries(this.getTopSubjects()).slice(0, 2).map(s => s[0]).join(" and ");
                         
-                        const mistakeList = (this.learningStats.recent_mistakes || []).slice(-3); 
-                        const mistakesContext = mistakeList.length > 0 ? mistakeList.join("; ") : "None";
-                        
-                        const lastQuestion = this.parentLogs.length > 1 ? this.parentLogs[this.parentLogs.length - 2].query : "nothing yet";
-
-                        const memoryContext = `
-                            PERSONAL CONTEXT:
-                            - Child's Name: ${childName}
-                            - Loves: ${topSubjects}
-                            - Recently struggled with: ${mistakesContext}
-                            - Previously asked about: ${lastQuestion}
-                        `;
-
                         try {
-                            const systemPrompt = `You are ${this.currentChar.name}, a fun teacher for children. 
+                            const systemPrompt = `You are ${this.currentChar.name}, a fun teacher. 
                             ${ageLogicInstruction}
                             YOUR SUBJECT: ${this.currentChar.subject}.
-                            ${memoryContext}
-                            You MUST respond ONLY in ${this.currentLanguage}.
-                            Strictly follow ${region} educational standards.
+                            Language: ${this.currentLanguage}.
 
-                            SOCRATIC TUTORING PROTOCOL:
-                            - Do NOT give the direct answer immediately if the child asks a factual question (e.g., "What is 5+5?" or "Why is the sky blue?").
-                            - Instead, guide them to the answer using a simple analogy or a leading question based on their age.
-                            - Example: If asked "What is 5+5?", say: "Imagine you have 5 dino-nuggets, and I give you 5 more. How many nuggets do you have now? 🦖"
-                            - Keep the tone encouraging and fun.
-                            
-                            CRITICAL RULES:
-                            1. IF the question is about ${this.currentChar.subject}, use the Socratic method described above. Keep it brief (MAX 3 sentences).
-                            2. IF the question is NOT about ${this.currentChar.subject}, DO NOT ANSWER IT. Instead, gently say: "Ooh! I only know about ${this.currentChar.subject}. Let's talk about that instead! 🦖"
-                            3. Never break character.`;
+                            BEHAVIORAL ANALYSIS:
+                            Analyze the child's tone. 
+                            Return ONLY JSON:
+                            {
+                                "response": "Your encouraging teaching response here...",
+                                "emotion": "excited" | "curious" | "frustrated" | "happy" | "neutral"
+                            }
+
+                            SOCRATIC PROTOCOL:
+                            Guide them to answers with analogies. MAX 3 sentences.`;
 
                             const response = await fetch("/api/chat", {
                                 method: "POST",
@@ -2770,15 +2854,19 @@
                             });
 
                             const data = await response.json();
-                            const aiMessage = data.choices[0].message.content;
+                            let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                            const parsed = JSON.parse(cleanJson);
                             
+                            this.logActivity(savedQuery, parsed.emotion);
+
                             if (!this.isPremium) {
                                 this.dailyQuestionsUsed++;
                             }
 
-                            this.finishThinking(this.currentChar.intro_phrase + aiMessage, savedQuery);
+                            this.finishThinking(this.currentChar.intro_phrase + parsed.response, savedQuery);
                         } catch (error) {
                             console.error("API Error:", error);
+                            this.logActivity(savedQuery, 'neutral');
                             this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
                         }
                     },
