@@ -981,7 +981,7 @@
         <div x-show="showRewards" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
             x-transition.opacity>
-            <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
+            <div @click.away="showRewards = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__backInDown text-center">
                 <button @click="showRewards = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600">
                     <i class="fas fa-times-circle"></i>
                 </button>
@@ -1135,18 +1135,12 @@
                                 <i class="fas fa-flag-checkered"></i> 30-Day Outcomes
                             </h3>
                             <div class="space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm">1</div>
-                                    <p class="text-xs font-bold text-blue-700">Count till 100</p>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm">2</div>
-                                    <p class="text-xs font-bold text-blue-700">Understand plants & animals</p>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm">3</div>
-                                    <p class="text-xs font-bold text-blue-700">Read basic English sentences</p>
-                                </div>
+                                <template x-for="outcome in getRegionalOutcomes()">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm" x-text="outcome.id"></div>
+                                        <p class="text-xs font-bold text-blue-700" x-text="outcome.text"></p>
+                                    </div>
+                                </template>
                             </div>
                         </div>
 
@@ -1196,40 +1190,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold text-slate-800 text-xl flex items-center gap-2">
-                                <i class="fas fa-certificate text-amber-500"></i> Mastery & Skill Outcomes
-                            </h3>
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Evidence-Based Tracking</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <template x-for="skill in masteryLevels">
-                                <div class="space-y-2">
-                                    <div class="flex justify-between items-end">
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-400 uppercase" x-text="skill.category"></p>
-                                            <h4 class="font-bold text-slate-800" x-text="skill.name"></h4>
-                                        </div>
-                                        <div class="text-right">
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase" 
-                                                :class="getMasteryBadgeClass(skill.value)" 
-                                                x-text="getMasteryLabel(skill.value)"></span>
-                                            <p class="text-xs font-bold text-slate-700 mt-1" x-text="skill.value + '%'"></p>
-                                        </div>
-                                    </div>
-                                    <div class="h-3 bg-gray-100 rounded-full overflow-hidden border">
-                                        <div class="h-full rounded-full transition-all duration-1000" 
-                                            :class="skill.color" 
-                                            :style="'width: ' + skill.value + '%'"></div>
-                                    </div>
-                                    <p class="text-[9px] text-gray-500 italic" x-text="skill.description"></p>
-                                </div>
-                            </template>
                         </div>
                     </div>
 
@@ -1380,23 +1340,29 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                            <h3 class="font-bold text-slate-800 text-lg mb-4">Top Subjects</h3>
-                            <div class="space-y-4">
+                            <h3 class="font-bold text-slate-800 text-lg mb-4">Evidence-Based Mastery Levels</h3>
+                            <div class="space-y-6">
                                 <template x-for="(score, subject) in getTopSubjects()">
                                     <div>
-                                        <div class="flex justify-between text-xs font-bold text-gray-500 mb-1 uppercase">
-                                            <span x-text="subject"></span>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-xs font-bold text-gray-500 uppercase" x-text="subject"></span>
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase shadow-sm" 
+                                                  :class="getMasteryBadge(score).bg" 
+                                                  x-text="getMasteryBadge(score).label"></span>
+                                        </div>
+                                        <div class="flex justify-between text-[9px] font-bold text-gray-400 mb-1">
+                                            <span x-text="currentCurriculumRegion + ' Standard Alignment'"></span>
                                             <span x-text="score + ' pts'"></span>
                                         </div>
-                                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
                                             <div class="h-full rounded-full transition-all duration-1000" 
                                                 :class="getSubjectColor(subject)" 
-                                                :style="'width: ' + Math.min((score / 50) * 100, 100) + '%'"></div>
+                                                :style="'width: ' + Math.min((score / 150) * 100, 100) + '%'"></div>
                                         </div>
                                     </div>
                                 </template>
                                 <div x-show="Object.values(learningStats.subjects).reduce((a, b) => a + b, 0) === 0" class="text-center text-gray-400 text-sm py-4">
-                                    No data yet. Start asking questions!
+                                    No mastery data yet. Start asking questions!
                                 </div>
                             </div>
                         </div>
@@ -1504,15 +1470,6 @@
                     sessionStartTime: null,
                     emailSummaryEnabled: false,
                     lastSummaryDate: null,
-
-                    // --- NEW FEATURE: MASTERY LEVELS STATE ---
-                    masteryLevels: [
-                        { id: 'num', name: 'Numbers & Counting', category: 'Mathematics', value: 0, color: 'bg-blue-500', description: 'Recognizing numbers and patterns.', standard: 'CCSS.MATH.K.CC' },
-                        { id: 'ops', name: 'Operations (Add/Sub)', category: 'Mathematics', value: 0, color: 'bg-indigo-500', description: 'Solving simple math problems.', standard: 'CCSS.MATH.1.OA' },
-                        { id: 'voc', name: 'Vocabulary & ABCs', category: 'Language Arts', value: 0, color: 'bg-green-500', description: 'Understanding new words and phonics.', standard: 'CCSS.ELA.L.1.6' },
-                        { id: 'sci', name: 'Scientific Inquiry', category: 'Science', value: 0, color: 'bg-pink-500', description: 'Asking questions about the world.', standard: 'NGSS.K-2-ETS1' },
-                        { id: 'his', name: 'Historical Awareness', category: 'History', value: 0, color: 'bg-orange-500', description: 'Understanding timelines and past events.', standard: 'NCSS.D2.His' }
-                    ],
 
                     learningStats: {
                         wordsLearned: 0,
@@ -1728,26 +1685,6 @@
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
-                    },
-
-                    // --- NEW FEATURE: MASTERY UTILITIES ---
-                    getMasteryLabel(val) {
-                        if (val < 25) return 'Beginner';
-                        if (val < 50) return 'Developing';
-                        if (val < 75) return 'Proficient';
-                        return 'Master';
-                    },
-                    getMasteryBadgeClass(val) {
-                        if (val < 25) return 'bg-gray-100 text-gray-600';
-                        if (val < 50) return 'bg-blue-100 text-blue-600';
-                        if (val < 75) return 'bg-indigo-100 text-indigo-600';
-                        return 'bg-green-100 text-green-600';
-                    },
-                    updateMastery(skillId, increment) {
-                        const skill = this.masteryLevels.find(s => s.id === skillId);
-                        if (skill) {
-                            skill.value = Math.min(100, Math.max(0, skill.value + increment));
-                        }
                     },
 
                     generateGate() {
@@ -1993,14 +1930,13 @@
                         doc.text(`- Coins Earned: ${this.coins}`, 30, 84);
                         doc.text(`- Total Experience (XP): ${this.xp}`, 30, 91);
 
-                        // NEW: Evidence-Based section in PDF
                         doc.setFontSize(16);
-                        doc.text("Mastery Levels (Evidence-Based)", 20, 110);
-                        let my = 120;
-                        this.masteryLevels.forEach(skill => {
-                            doc.setFontSize(11);
-                            doc.text(`${skill.name}: ${skill.value}% - ${this.getMasteryLabel(skill.value)}`, 30, my);
-                            my += 7;
+                        doc.text("Subject Mastery", 20, 110);
+                        let y = 120;
+                        Object.entries(this.getTopSubjects()).forEach(([subject, score]) => {
+                            doc.setFontSize(12);
+                            doc.text(`${subject}: ${score} pts`, 30, y);
+                            y += 7;
                         });
 
                         doc.save(`Report_${this.childProfile.name}.pdf`);
@@ -2020,7 +1956,10 @@
                         if (!force && lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
 
                         try {
-                            const masteryStr = this.masteryLevels.map(s => `- ${s.name}: ${s.value}% (${this.getMasteryLabel(s.value)})`).join('\n');
+                            const topSubjects = Object.entries(this.getTopSubjects())
+                                .filter(([_, score]) => score > 0)
+                                .map(([name, score]) => `${name} (${score} pts)`)
+                                .join(", ");
 
                             const summaryContent = `
                                 VERIFIED PROGRESS REPORT
@@ -2028,16 +1967,22 @@
                                 Student: ${this.childProfile.name}
                                 Report Date: ${today.toLocaleDateString()}
                                 
-                                🏆 MASTERY & OUTCOMES
-                                ${masteryStr}
-
-                                📊 LEARNING MILESTONES
+                                🏆 LEARNING MILESTONES
                                 - Active Learning Time: ${this.totalMinutesLearned} minutes
                                 - New Words Mastered: ${this.learningStats.wordsLearned}
                                 - Total XP Gained: ${this.xp}
+                                - Questions Asked: ${this.parentLogs.length}
+
+                                📚 SUBJECT BREAKDOWN
+                                ${Object.entries(this.getTopSubjects()).map(([k,v]) => `- ${k}: ${v} pts`).join('\n')}
+
+                                📝 RECENT CURIOSITY
+                                ${this.parentLogs.slice(0, 3).map(l => `- Asked "${l.query}"`).join('\n')}
                                 
-                                This report verifies engagement against educational standards.
+                                This report verifies active engagement with the AI Tutor curriculum.
                             `;
+
+                            console.log("SENDING WEEKLY SUMMARY TO: " + this.registeredEmail);
 
                             const response = await fetch("/api/send-email", {
                                 method: "POST",
@@ -2092,12 +2037,6 @@
                         const currentQ = this.getCurrentLessonQuestion();
                         if(index === currentQ.correct) {
                             this.playPing();
-                            
-                            // Update mastery based on correct answers
-                            if (this.currentPath?.id === 'math') this.updateMastery('num', 2);
-                            if (this.currentPath?.id === 'english') this.updateMastery('voc', 2);
-                            if (this.currentPath?.id === 'science') this.updateMastery('sci', 2);
-
                             if(this.currentLessonQuizIndex < 2) {
                                 this.currentLessonQuizIndex++;
                             } else {
@@ -2172,11 +2111,6 @@
                         this.lastSummaryDate = data.last_summary_date || null;
                         this.currentLanguage = data.current_language || 'English';
                         this.currentCurriculumRegion = data.current_curriculum_region || 'Global';
-
-                        // Mastery sync
-                        if (data.learning_stats?.mastery_levels) {
-                            this.masteryLevels = data.learning_stats.mastery_levels;
-                        }
 
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') !== 'success') {
@@ -2254,6 +2188,38 @@
                         return colors[subject] || 'bg-gray-500';
                     },
 
+                    getMasteryBadge(score) {
+                        if (score >= 120) return { label: 'Mastery (Level 4)', bg: 'bg-indigo-500 text-white' };
+                        if (score >= 80) return { label: 'Proficient (Level 3)', bg: 'bg-green-500 text-white' };
+                        if (score >= 40) return { label: 'Developing (Level 2)', bg: 'bg-yellow-500 text-yellow-900' };
+                        return { label: 'Foundational (Level 1)', bg: 'bg-blue-200 text-blue-800' };
+                    },
+
+                    getRegionalOutcomes() {
+                        const region = this.currentCurriculumRegion;
+                        const age = this.childProfile.ageRange || '6-7';
+                        
+                        if (region === 'US') {
+                            return [
+                                { id: 1, text: 'Identify main ideas in simple text' },
+                                { id: 2, text: 'Master addition up to 20' },
+                                { id: 3, text: 'Identify basic solar system bodies' }
+                            ];
+                        }
+                        if (region === 'UK') {
+                            return [
+                                { id: 1, text: 'Phonics: Segmenting spoken words' },
+                                { id: 2, text: 'Number bonds to 10 and 20' },
+                                { id: 3, text: 'Observe seasonal changes in nature' }
+                            ];
+                        }
+                        return [
+                            { id: 1, text: 'Expanded vocabulary milestones' },
+                            { id: 2, text: 'Logical reasoning through inquiry' },
+                            { id: 3, text: 'Global awareness and science basics' }
+                        ];
+                    },
+
                     async saveChildProfile() {
                         this.isEditingProfile = false;
                         await this.syncData();
@@ -2275,7 +2241,7 @@
                         const queryLower = this.userQuery.toLowerCase();
                         const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-                        if (!isOnTopic) {
+                        if (!onTopic) {
                             this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
                             this.speak(this.displayText);
                             this.isThinking = false;
@@ -2388,15 +2354,6 @@
                             this.quizState = 'correct';
                             this.coins += 20; 
                             this.playPing();
-
-                            // Evidence-Based Tracking: Correct Quiz updates mastery
-                            const charSub = this.currentChar.subject.toLowerCase();
-                            if (charSub.includes("math")) this.updateMastery('ops', 3);
-                            if (charSub.includes("history")) this.updateMastery('his', 3);
-                            if (charSub.includes("science") || charSub.includes("nature")) this.updateMastery('sci', 3);
-                            if (charSub.includes("space") || charSub.includes("robots")) this.updateMastery('sci', 2);
-                            this.updateMastery('voc', 1);
-
                             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                             this.syncData();
                         } else {
@@ -2435,8 +2392,7 @@
                         const initialStats = {
                             ...this.learningStats,
                             child_profile: initialChildProfile,
-                            recent_mistakes: [],
-                            mastery_levels: this.masteryLevels 
+                            recent_mistakes: []
                         };
 
                         try {
@@ -2524,7 +2480,6 @@
                         
                         this.learningStats.path_progress = this.pathProgress;
                         this.learningStats.child_profile = this.childProfile;
-                        this.learningStats.mastery_levels = this.masteryLevels; // Sync mastery
 
                         const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                         const safeInventory = JSON.parse(JSON.stringify(this.inventory));
@@ -2780,31 +2735,11 @@
                         const words = response.split(' ').length;
                         this.learningStats.wordsLearned += words;
                         const queryLower = query.toLowerCase();
-                        
-                        // Subject Logic
-                        if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) {
-                             this.learningStats.subjects.nature += 10;
-                             this.updateMastery('sci', 1);
-                        }
-                        if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) {
-                             this.learningStats.subjects.space += 10;
-                             this.updateMastery('sci', 1);
-                        }
-                        if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) {
-                             this.learningStats.subjects.robots += 10;
-                             this.updateMastery('sci', 1);
-                        }
-                        if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) {
-                             this.learningStats.subjects.science += 10;
-                             this.updateMastery('sci', 1);
-                        }
-                        if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) {
-                             this.learningStats.subjects.history += 10;
-                             this.updateMastery('his', 1);
-                        }
-
-                        // Vocabulary Logic
-                        if (words > 20) this.updateMastery('voc', 1);
+                        if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
+                        if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
+                        if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
+                        if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
+                        if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
                     },
                     setChar(char) {
                         this.currentChar = char;
