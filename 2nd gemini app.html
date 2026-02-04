@@ -1560,7 +1560,7 @@
                             subject: "History", 
                             drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
                             suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                            icon: "REX", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
+                            icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                         },
                         { 
                             name: "Rocket Robot", 
@@ -1588,7 +1588,7 @@
                             subject: "Nature", 
                             drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
                             suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
-                            icon: "BE", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
+                            icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
                         }
                     ],
                     currentChar: null,
@@ -1671,8 +1671,23 @@
                             if (storedEmail) {
                                 this.loginForm.email = storedEmail;
                                 this.hasAccount = true;
-                                // Load user profile immediately if email exists
+                                // Wait for data to load before deciding to show rewards
                                 await this.loadUserProfile(storedEmail);
+                            }
+
+                            const urlParams = new URLSearchParams(window.location.search);
+                            if (urlParams.get('payment') === 'success') {
+                                if (storedEmail) await this.loadUserProfile(storedEmail);
+                                
+                                this.isPremium = true;
+                                this.premiumExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); 
+                                await this.syncData();
+
+                                this.showPremiumModal = false;
+                                this.showParentPortal = true;
+                                this.parentAuthenticated = true;
+                                alert("Payment Successful! Welcome to Premium! 🌟");
+                                window.history.replaceState({}, document.title, "/");
                             }
                         } catch (e) {
                             console.error("Initialization error:", e);
@@ -1759,7 +1774,7 @@
                             return; 
                         }
                         
-                        const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                        const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                         const msg = new SpeechSynthesisUtterance(cleanText);
                         const voices = window.speechSynthesis.getVoices();
                         
@@ -1952,11 +1967,6 @@
                         if (!force && lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
 
                         try {
-                            const topSubjects = Object.entries(this.getTopSubjects())
-                                .filter(([_, score]) => score > 0)
-                                .map(([name, score]) => `${name} (${score} pts)`)
-                                .join(", ");
-
                             const summaryContent = `
                                 VERIFIED PROGRESS REPORT
                                 --------------------------------------------------
@@ -2062,7 +2072,7 @@
                             this.pathProgress[pathId] = this.activeLesson.id;
                         }
                         
-                        this.coins = Number(this.coins) + 50;
+                        this.coins += 50;
                         this.xp += 100;
                         this.updateLevel();
                         await this.syncData();
@@ -2090,7 +2100,7 @@
                                 this.isLoggedIn = true;
                                 this.playPing();
                                 
-                                // Only show rewards if NOT claimed today
+                                // Decision logic for the Daily Reward Modal
                                 if (!this.rewardClaimedToday) {
                                     setTimeout(() => {
                                         this.showRewards = true;
@@ -2144,11 +2154,9 @@
                         
                         const dailyData = data.daily_usage || {};
                         const today = new Date().toDateString();
-                        
-                        // Critical Fix: Logic to check reward claimed status correctly
                         if (dailyData.date !== today) {
                             this.dailyQuestionsUsed = 0;
-                            this.rewardClaimedToday = false; 
+                            this.rewardClaimedToday = false;
                         } else {
                             this.dailyQuestionsUsed = dailyData.questions_used || 0;
                             this.rewardClaimedToday = dailyData.reward_claimed || false;
@@ -2249,7 +2257,7 @@
                         }
 
                         const queryLower = this.userQuery.toLowerCase();
-                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+                        const onTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
                         if (!onTopic) {
                             this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
@@ -2368,7 +2376,7 @@
                             this.consecutiveMistakes = 0; // Success resets the streak
                             this.isVisualMode = false;
                             this.quizState = 'correct';
-                            this.coins = Number(this.coins) + 20; 
+                            this.coins += 20; 
                             this.playPing();
                             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                             this.syncData();
@@ -2503,7 +2511,7 @@
                         const safeStats = JSON.parse(JSON.stringify(this.learningStats));
 
                         const updateData = {
-                            coins: Number(this.coins),
+                            coins: this.coins,
                             xp: this.xp,
                             total_minutes: this.totalMinutesLearned,
                             email_summary_enabled: this.emailSummaryEnabled,
@@ -2519,7 +2527,7 @@
                             daily_usage: {
                                 date: new Date().toDateString(),
                                 questions_used: this.dailyQuestionsUsed,
-                                reward_claimed: this.rewardClaimedToday // Saving reward status to cloud
+                                reward_claimed: this.rewardClaimedToday
                             }
                         };
 
@@ -2539,7 +2547,7 @@
 
                     async buyItem(item) {
                         if (this.coins >= item.price) {
-                            this.coins = Number(this.coins) - item.price;
+                            this.coins -= item.price;
                             this.inventory.push(item.id);
                             this.equipItem(item.id);
                             confetti({
@@ -2614,8 +2622,9 @@
                     async claimReward() {
                         if (this.rewardClaimedToday) return;
                         let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
+                        // Explicitly treat coins as a number
                         this.coins = Number(this.coins) + rewardAmount;
-                        this.rewardClaimedToday = true; // Mark as claimed locally
+                        this.rewardClaimedToday = true;
                         
                         confetti({
                             particleCount: 150,
@@ -2624,7 +2633,8 @@
                             colors: ['#FFD700', '#FF69B4', '#00BFFF']
                         });
                         this.playPing();
-                        await this.syncData(); // Save to cloud immediately
+                        // Immediately sync to save the claimed status and new coin balance
+                        await this.syncData(); 
                     },
                     trySetChar(char) {
                         if (char.premium && !this.isPremium) {
@@ -2968,7 +2978,7 @@
                         }
                         this.playPing();
                         window.print();
-                        this.coins = Number(this.coins) + 100;
+                        this.coins += 100;
                         this.syncData();
                     }
                 }
