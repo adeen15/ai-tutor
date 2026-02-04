@@ -1671,8 +1671,6 @@
                             if (storedEmail) {
                                 this.loginForm.email = storedEmail;
                                 this.hasAccount = true;
-                                // Wait for data to load before deciding to show rewards
-                                await this.loadUserProfile(storedEmail);
                             }
 
                             const urlParams = new URLSearchParams(window.location.search);
@@ -1774,7 +1772,7 @@
                             return; 
                         }
                         
-                        const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                        const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                         const msg = new SpeechSynthesisUtterance(cleanText);
                         const voices = window.speechSynthesis.getVoices();
                         
@@ -1967,6 +1965,11 @@
                         if (!force && lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
 
                         try {
+                            const topSubjects = Object.entries(this.getTopSubjects())
+                                .filter(([_, score]) => score > 0)
+                                .map(([name, score]) => `${name} (${score} pts)`)
+                                .join(", ");
+
                             const summaryContent = `
                                 VERIFIED PROGRESS REPORT
                                 --------------------------------------------------
@@ -2099,8 +2102,6 @@
                                 this.populateUserData(data);
                                 this.isLoggedIn = true;
                                 this.playPing();
-                                
-                                // Decision logic for the Daily Reward Modal
                                 if (!this.rewardClaimedToday) {
                                     setTimeout(() => {
                                         this.showRewards = true;
@@ -2257,7 +2258,7 @@
                         }
 
                         const queryLower = this.userQuery.toLowerCase();
-                        const onTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
                         if (!onTopic) {
                             this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
@@ -2622,7 +2623,6 @@
                     async claimReward() {
                         if (this.rewardClaimedToday) return;
                         let rewardAmount = (this.todayIndex === 6) ? 100 : 50;
-                        // Explicitly treat coins as a number
                         this.coins = Number(this.coins) + rewardAmount;
                         this.rewardClaimedToday = true;
                         
@@ -2633,7 +2633,6 @@
                             colors: ['#FFD700', '#FF69B4', '#00BFFF']
                         });
                         this.playPing();
-                        // Immediately sync to save the claimed status and new coin balance
                         await this.syncData(); 
                     },
                     trySetChar(char) {
