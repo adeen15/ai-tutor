@@ -376,6 +376,11 @@
                     x-text="currentChar.name">
                 </h1>
                 <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + currentChar.accent" x-text="t('teacher_of') + ' ' + currentChar.subject + ' ✨'"></p>
+                <div x-show="isVisualMode" class="mt-4 animate__animated animate__fadeInDown">
+                    <span class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-blue-200">
+                        <i class="fas fa-eye mr-2"></i> Visual learning mode ON
+                    </span>
+                </div>
             </div>
 
             <div class="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-10 sm:gap-8 lg:gap-12">
@@ -820,7 +825,7 @@
                 <div class="text-center" x-show="quizState === 'wrong'">
                     <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
                     <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
-                    <p class="font-bold text-gray-500 mb-6">That wasn't quite right. Try again?</p>
+                    <p class="font-bold text-gray-500 mb-6" x-text="consecutiveMistakes >= 2 ? 'Let\'s try something easier together!' : 'That wasn\'t quite right. Try again?'"></p>
                     <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
                 </div>
             </div>
@@ -1417,6 +1422,10 @@
                     
                     legalAccepted: false,
                     showLegalDoc: null,
+
+                    // Adaptive Difficulty State
+                    consecutiveMistakes: 0,
+                    isVisualMode: false,
 
                     // Parental Gate State
                     gateVerified: false,
@@ -2036,6 +2045,8 @@
                     checkLessonAnswer(index) {
                         const currentQ = this.getCurrentLessonQuestion();
                         if(index === currentQ.correct) {
+                            this.consecutiveMistakes = 0; // Reset mistakes on success
+                            this.isVisualMode = false;
                             this.playPing();
                             if(this.currentLessonQuizIndex < 2) {
                                 this.currentLessonQuizIndex++;
@@ -2045,7 +2056,15 @@
                                 confetti({ particleCount: 200, spread: 100 });
                             }
                         } else {
+                            this.handleMistake();
                             alert("Oops! Try again!");
+                        }
+                    },
+                    handleMistake() {
+                        this.consecutiveMistakes++;
+                        if (this.consecutiveMistakes >= 2) {
+                            this.isVisualMode = true;
+                            this.playPing(); // Trigger different feedback sound maybe
                         }
                     },
                     async completeLesson() {
@@ -2290,8 +2309,13 @@
 
                     getAgeLogic() {
                         const range = this.childProfile.ageRange || '6-7';
-                        const priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
+                        let priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
                         
+                        // Adaptive Logic 2.0: Force extreme simplicity if child is struggling
+                        if (this.isVisualMode) {
+                            priority += " [ADAPTIVE TRIGGERED]: The child is struggling. Pivot to Visual Simulation Mode. Use vivid imagery, simple analogies, and zero complex terminology. Explain things as if showing a picture book.";
+                        }
+
                         if (range === '4-5') {
                             return `${priority} TARGET AUDIENCE: Age 4-5 (Preschool). Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character. Avoid complex concepts.`;
                         }
@@ -2314,11 +2338,10 @@
                             TARGET AGE: ${ageRange}.
                             You MUST generate the quiz in ${this.currentLanguage}.
                             Strictly follow ${region} educational standards.
+                            ${this.isVisualMode ? "CRITICAL: CHILD IS STRUGGLING. Make this question extremely simple and visual." : ""}
                             Based on the following text: "${this.displayText}", create ONE multiple-choice question suitable for a ${ageRange} year old.
-                            Adjust difficulty accordingly (4-5: very easy, 8-9: moderate).
                             Return strictly this JSON format: 
-                            {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}
-                            Make sure the options are short and simple.`;
+                            {"question": "The Question?", "options": ["Option A", "Option B", "Option C"], "correctIndex": 0}`;
 
                             const response = await fetch("/api/chat", {
                                 method: "POST",
@@ -2351,12 +2374,15 @@
 
                     checkAnswer(index) {
                         if (index === this.quizCorrectIndex) {
+                            this.consecutiveMistakes = 0; // Success resets the streak
+                            this.isVisualMode = false;
                             this.quizState = 'correct';
                             this.coins += 20; 
                             this.playPing();
                             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                             this.syncData();
                         } else {
+                            this.handleMistake();
                             this.quizState = 'wrong';
                             
                             if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
