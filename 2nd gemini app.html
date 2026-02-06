@@ -2258,48 +2258,48 @@
                         alert(this.emailSummaryEnabled ? "Weekly summaries activated! We will email you your child's learning wins." : "Weekly summaries deactivated.");
                     },
 
-                    async generateArt() {
-                        if (!this.userQuery) {
-                            alert("Tell me what to draw first! (Type in the box)");
-                            return;
-                        }
+                    // ✅ Make sure 'async' is right here!
+async generateArt() {
+    if (!this.userQuery) {
+        alert("Tell me what to draw first! (Type in the box)");
+        return;
+    }
 
-                        const queryLower = this.userQuery.toLowerCase();
-                        // 1. Defined here as 'isOnTopic'
-                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+    const queryLower = this.userQuery.toLowerCase();
+    const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-                        // 2. ERROR WAS HERE: You were checking '!onTopic' (undefined)
-                        // CHANGE THIS LINE:
-                        if (!isOnTopic) { 
-                            this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
-                            this.speak(this.displayText);
-                            this.isThinking = false;
-                            this.currentMoodIcon = '🤔';
-                            return; 
-                        }
+    if (!isOnTopic) { 
+        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+        this.speak(this.displayText);
+        this.isThinking = false;
+        this.currentMoodIcon = '🤔';
+        return; 
+    }
 
-                        this.showArtModal = true;
-                        this.isDrawing = true;
-                        this.artImage = null;
-                        this.toggleScroll(true);
+    this.showArtModal = true;
+    this.isDrawing = true;
+    this.artImage = null;
+    this.toggleScroll(true);
 
-                        // ... rest of the function remains the same
+    const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
+    const randomSeed = Math.floor(Math.random() * 1000);
 
-                        const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
-                        const encodedPrompt = encodeURIComponent(prompt);
-                        const randomSeed = Math.floor(Math.random() * 1000);
-                        
-                        // FIXED: Removed 'model=flux' and 'safe=true' to prevent errors. 
-// We also removed width/height to let the AI decide the fastest size.
-                        const imageUrl = `/api/generate-image?prompt=${encodeURIComponent(prompt)}&seed=${randomSeed}`;
+    // ✅ This block replaces the old setTimeout logic
+    try {
+        const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(prompt)}&seed=${randomSeed}`);
+        const data = await response.json();
 
-                        setTimeout(() => {
-                            this.artImage = imageUrl;
-                            this.isDrawing = false;
-                            this.playPing();
-                            confetti({ particleCount: 150, spread: 70 });
-                        }, 2000);
-                    },
+        if (data.imageUrl) {
+            this.artImage = data.imageUrl; // Direct URL from server
+            this.isDrawing = false;
+            this.playPing();
+            confetti({ particleCount: 150, spread: 70 });
+        }
+    } catch (e) {
+        console.error("Drawing error:", e);
+        this.isDrawing = false;
+    }
+},
 
                     async downloadArt() {
                         if (!this.artImage) return;
