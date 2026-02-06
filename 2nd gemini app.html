@@ -2260,7 +2260,7 @@
 
                     // ✅ Make sure 'async' is right here!
 async generateArt() {
-    // 1. Validate Input
+    // 1. Input Check
     if (!this.userQuery || this.userQuery.trim() === "") {
         alert("Tell me what to draw first! (Type in the box)");
         return;
@@ -2277,31 +2277,30 @@ async generateArt() {
         return; 
     }
 
-    // 3. Reset and Start Loading UI
+    // 3. Reset and Show Magic Studio
     this.artImage = null;
     this.isDrawing = true; 
     this.showArtModal = true;
     this.toggleScroll(true);
 
     try {
-        // Playground AI specific seed range: 0 to 65535
-        const randomSeed = Math.floor(Math.random() * 65535);
+        const randomSeed = Math.floor(Math.random() * 100000);
         
-        // Fetch from your updated server route using Playground v3
+        // Fetch the new Mage-optimized URL from your server
         const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
         
-        if (!response.ok) throw new Error('Magic Studio is busy');
+        if (!response.ok) throw new Error('Mage Studio Busy');
         
         const data = await response.json();
 
         if (data.imageUrl) {
-            // 4. Pixel-Ready Loading: Ensures the image is fully downloaded before showing it
+            // 4. Pixel-Ready Check: This prevents the "empty box" issue
             const img = new Image();
             img.src = data.imageUrl;
             
             img.onload = () => {
                 this.artImage = data.imageUrl; 
-                this.isDrawing = false; // Hide spinner only when pixels are ready
+                this.isDrawing = false; // Only stop the spinner when the drawing is visible
                 this.playPing();
                 confetti({ 
                     particleCount: 150, 
@@ -2313,16 +2312,12 @@ async generateArt() {
             img.onerror = () => {
                 throw new Error("Magic brush failed to load the image.");
             };
-        } else {
-            throw new Error('No image URL returned');
         }
     } catch (e) {
-        console.error("Drawing error:", e);
+        console.error("Mage Error:", e);
         this.isDrawing = false;
-        // Keep the UI open but show a friendly error message instead of an alert if possible
-        this.displayText = "The magic brush is out of paint! Let's try one more time. 🖌️";
-        // Optionally auto-close the modal on total failure
-        setTimeout(() => { if(!this.artImage) this.showArtModal = false; }, 3000);
+        // Updated character feedback
+        this.displayText = "The Mage's magic wand needs a rest! Let's try again in a moment. 🪄";
     }
 },
                     async downloadArt() {
