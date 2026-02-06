@@ -2268,6 +2268,7 @@ async generateArt() {
     const queryLower = this.userQuery.toLowerCase();
     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
+    // Keep your safety/topic check
     if (!isOnTopic) { 
         this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
         this.speak(this.displayText);
@@ -2276,31 +2277,32 @@ async generateArt() {
         return; 
     }
 
-    // Immediately show the modal and the loading spinner
+    // Show the modal and start the spinner immediately
     this.showArtModal = true;
     this.isDrawing = true;
     this.artImage = null;
     this.toggleScroll(true);
 
-    const drawingPrompt = `coloring page for kids, simple black and white outline of ${this.userQuery}`;
-    const randomSeed = Math.floor(Math.random() * 1000);
-
     try {
-        const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(drawingPrompt)}&seed=${randomSeed}`);
+        // We use a much larger seed range for better variety
+        const randomSeed = Math.floor(Math.random() * 9999999);
+        
+        // Call your updated server route
+        const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
         
         if (!response.ok) throw new Error('Network response was not ok');
         
         const data = await response.json();
 
         if (data.imageUrl) {
-            // FIX: Create an invisible image to "pre-load" the pixels
+            // "Pixel-Ready" Pre-loading: This ensures the user never sees a half-loaded image
             const img = new Image();
             img.src = data.imageUrl;
             
-            // This function only triggers when the full image file is downloaded
+            // This event fires ONLY when the full image file is downloaded
             img.onload = () => {
                 this.artImage = data.imageUrl; 
-                this.isDrawing = false; // Now we hide the spinner
+                this.isDrawing = false; // Hide the spinner only when pixels are ready
                 this.playPing();
                 confetti({ 
                     particleCount: 150, 
@@ -2309,15 +2311,22 @@ async generateArt() {
                 });
             };
 
-            // Safety timeout: if image takes > 15s, stop the spinner anyway
+            img.onerror = () => {
+                throw new Error("Magic brush failed to load the image.");
+            };
+
+            // Safety timeout: stop spinner after 20s if something goes wrong
             setTimeout(() => {
-                if (this.isDrawing) this.isDrawing = false;
-            }, 15000);
+                if (this.isDrawing) {
+                    this.isDrawing = false;
+                    this.displayText = "The magic paint is taking a long time... check the studio!";
+                }
+            }, 20000);
         }
     } catch (e) {
         console.error("Drawing error:", e);
         this.isDrawing = false;
-        this.displayText = "Oh no! The magic brush slipped. Try asking again! 🖌️";
+        this.displayText = "Oh no! The magic brush slipped. Let's try one more time! 🖌️";
     }
 },
 
