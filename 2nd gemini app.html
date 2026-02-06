@@ -2260,64 +2260,67 @@
 
                     // ✅ Make sure 'async' is right here!
 async generateArt() {
-    // 1. Input Check
+    // 1. Validate Input
     if (!this.userQuery || this.userQuery.trim() === "") {
-        alert("Tell me what to draw first! (Type in the box)");
+        alert("Tell me what to draw first!");
         return;
     }
 
-    // 2. Topic Check (Ensures educational focus)
+    // 2. Topic Check (Educational Safety)
     const queryLower = this.userQuery.toLowerCase();
     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
     if (!isOnTopic) { 
-        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
         this.speak(this.displayText);
         this.currentMoodIcon = '🤔';
         return; 
     }
 
-    // 3. Reset and Show Magic Studio
+    // 3. Reset UI and Show Studio
     this.artImage = null;
     this.isDrawing = true; 
     this.showArtModal = true;
     this.toggleScroll(true);
 
     try {
-        const randomSeed = Math.floor(Math.random() * 100000);
-        
-        // Fetch the new Mage-optimized URL from your server
+        const randomSeed = Math.floor(Math.random() * 99999);
         const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
         
-        if (!response.ok) throw new Error('Mage Studio Busy');
+        if (!response.ok) throw new Error('Mage Studio Error');
         
         const data = await response.json();
 
         if (data.imageUrl) {
-            // 4. Pixel-Ready Check: This prevents the "empty box" issue
             const img = new Image();
-            img.src = data.imageUrl;
             
+            // Set a Safety Timeout so the child isn't stuck on "Painting..." forever
+            const timeout = setTimeout(() => {
+                if (this.isDrawing) {
+                    this.isDrawing = false;
+                    this.displayText = "The magic paint is drying slowly! Try checking back in a second.";
+                }
+            }, 12000);
+
             img.onload = () => {
+                clearTimeout(timeout); // Image arrived! Cancel the timeout
                 this.artImage = data.imageUrl; 
-                this.isDrawing = false; // Only stop the spinner when the drawing is visible
+                this.isDrawing = false; 
                 this.playPing();
-                confetti({ 
-                    particleCount: 150, 
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
+                confetti({ particleCount: 150, spread: 70 });
             };
 
             img.onerror = () => {
-                throw new Error("Magic brush failed to load the image.");
+                clearTimeout(timeout);
+                throw new Error("Failed to download image pixels.");
             };
+
+            img.src = data.imageUrl; // Start the download
         }
     } catch (e) {
-        console.error("Mage Error:", e);
+        console.error("Art Studio Error:", e);
         this.isDrawing = false;
-        // Updated character feedback
-        this.displayText = "The Mage's magic wand needs a rest! Let's try again in a moment. 🪄";
+        this.displayText = "The Mage's wand is out of mana! Let's try once more. 🪄";
     }
 },
                     async downloadArt() {
