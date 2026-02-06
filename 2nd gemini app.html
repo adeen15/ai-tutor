@@ -2282,7 +2282,7 @@
                         const encodedPrompt = encodeURIComponent(prompt);
                         const randomSeed = Math.floor(Math.random() * 1000);
                         
-                        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=flux&width=1024&height=1024&seed=${randomSeed}&safe=true`;
+                        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&model=turbo&width=1024&height=1024&seed=${randomSeed}`;
 
                         setTimeout(() => {
                             this.artImage = imageUrl;
