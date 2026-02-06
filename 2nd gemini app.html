@@ -2281,16 +2281,20 @@ async generateArt() {
     this.artImage = null;
     this.toggleScroll(true);
 
-    const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
+    // Simple prompt construction for better AI results
+    const drawingPrompt = `coloring page for kids, simple black and white outline of ${this.userQuery}`;
     const randomSeed = Math.floor(Math.random() * 1000);
 
-    // ✅ This block replaces the old setTimeout logic
     try {
-        const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(prompt)}&seed=${randomSeed}`);
+        // We use encodeURIComponent here ONLY once to keep the URL clean
+        const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(drawingPrompt)}&seed=${randomSeed}`);
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
         const data = await response.json();
 
         if (data.imageUrl) {
-            this.artImage = data.imageUrl; // Direct URL from server
+            this.artImage = data.imageUrl; 
             this.isDrawing = false;
             this.playPing();
             confetti({ particleCount: 150, spread: 70 });
@@ -2298,6 +2302,7 @@ async generateArt() {
     } catch (e) {
         console.error("Drawing error:", e);
         this.isDrawing = false;
+        this.displayText = "Oh no! The magic brush slipped. Try asking again! 🖌️";
     }
 },
 
