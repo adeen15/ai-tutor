@@ -24,21 +24,44 @@ app.get('/api/config', (req, res) => {
 
 // --- ART GENERATION ROUTE ---
 // --- UPDATED ART GENERATION ROUTE ---
-app.get('/api/generate-image', (req, res) => {
+// --- NEW PLAYGROUND AI ART ROUTE ---
+app.get('/api/generate-image', async (req, res) => {
     const prompt = req.query.prompt;
-    const seed = req.query.seed || Math.floor(Math.random() * 1000000);
+    const seed = req.query.seed || Math.floor(Math.random() * 65536); // Playground seeds are 0-65535
 
-    if (!prompt) {
-        return res.status(400).json({ error: "Prompt is required" });
+    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+
+    try {
+        const response = await fetch("https://playground.com/api/models/external/v1", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${process.env.PLAYGROUND_API_KEY}`, // Add this to your .env
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "prompt": prompt + ", simple black and white outline, coloring book style for kids, high contrast",
+                "filter_model": "Playground_v2.5", // Fast and reliable
+                "width": 1024,
+                "height": 1024,
+                "seed": parseInt(seed),
+                "num_inference_steps": 30, // Good balance for kids' outlines
+                "guidance_scale": 7
+            })
+        });
+
+        const data = await response.json();
+        
+        // Playground returns the image URL in data.url or similar based on their 2026 spec
+        if (data.url || data.image_url) {
+            res.json({ imageUrl: data.url || data.image_url });
+        } else {
+            throw new Error("Invalid API Response");
+        }
+    } catch (e) {
+        console.error("Playground API Error:", e);
+        res.status(500).json({ error: "Failed to generate image" });
     }
-
-    // Using a refined Flux model endpoint which is more reliable for "coloring book" styles
-    const encodedPrompt = encodeURIComponent(prompt + ", simple black and white outline, coloring book style for kids, white background");
-    
-    // We provide a direct URL that the frontend can use immediately
-    const finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?seed=${seed}&width=1024&height=1024&nologo=true&model=flux`;
-    
-    res.json({ imageUrl: finalUrl });
 });
 
 // --- CHAT API (Standard Questions) ---
