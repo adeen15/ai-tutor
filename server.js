@@ -23,23 +23,21 @@ app.get('/api/config', (req, res) => {
 });
 
 // --- ART GENERATION ROUTE ---
+// --- UPDATED ART GENERATION ROUTE ---
 app.get('/api/generate-image', (req, res) => {
     const prompt = req.query.prompt;
-    const seed = req.query.seed || Math.floor(Math.random() * 1000);
-    const apiKey = process.env.POLLINATIONS_API_KEY;
+    const seed = req.query.seed || Math.floor(Math.random() * 1000000);
 
     if (!prompt) {
         return res.status(400).json({ error: "Prompt is required" });
     }
 
-    // Re-encode to ensure safe URL characters for the Pollinations API
-    const encodedPrompt = encodeURIComponent(prompt); 
-    let finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}`;
+    // Using a refined Flux model endpoint which is more reliable for "coloring book" styles
+    const encodedPrompt = encodeURIComponent(prompt + ", simple black and white outline, coloring book style for kids, white background");
     
-    if (apiKey && apiKey.trim() !== "") {
-        finalUrl += `&key=${apiKey}`;
-    }
-
+    // We provide a direct URL that the frontend can use immediately
+    const finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?seed=${seed}&width=1024&height=1024&nologo=true&model=flux`;
+    
     res.json({ imageUrl: finalUrl });
 });
 
