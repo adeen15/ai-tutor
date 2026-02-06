@@ -6,13 +6,15 @@ const path = require('path');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Increased limit for base64 images
 app.use(express.static(__dirname));
 
+// --- VIEW ROUTES ---
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '2nd gemini app.html'));
 });
 
+// --- CONFIG ROUTE ---
 app.get('/api/config', (req, res) => {
     res.json({
         supabaseUrl: process.env.SUPABASE_URL,
@@ -20,7 +22,7 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// --- FIXED IMAGE ROUTE ---
+// --- ART GENERATION ROUTE ---
 app.get('/api/generate-image', (req, res) => {
     const prompt = req.query.prompt;
     const seed = req.query.seed || Math.floor(Math.random() * 1000);
@@ -30,14 +32,10 @@ app.get('/api/generate-image', (req, res) => {
         return res.status(400).json({ error: "Prompt is required" });
     }
 
-    // FIX: Re-encode the prompt because Express decoded it from the query string.
-    // This ensures spaces like "coloring page" become "coloring%20page" in the URL.
+    // Re-encode to ensure safe URL characters for the Pollinations API
     const encodedPrompt = encodeURIComponent(prompt); 
-    
-    // FIX: Using the standard 'image.pollinations.ai/prompt/' endpoint
     let finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}`;
     
-    // Only add the key if it actually exists in your .env file
     if (apiKey && apiKey.trim() !== "") {
         finalUrl += `&key=${apiKey}`;
     }
@@ -45,6 +43,7 @@ app.get('/api/generate-image', (req, res) => {
     res.json({ imageUrl: finalUrl });
 });
 
+// --- CHAT API (Standard Questions) ---
 app.post('/api/chat', async (req, res) => {
     try {
         const { messages } = req.body;
@@ -57,7 +56,7 @@ app.post('/api/chat', async (req, res) => {
             body: JSON.stringify({
                 "model": "google/gemini-2.0-flash-001",
                 "messages": messages,
-                "max_tokens": 120,
+                "max_tokens": 150,
                 "temperature": 0.6
             })
         });
@@ -69,6 +68,53 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+// --- VISION API (Analyze Homework/Drawings) ---
+app.post('/api/vision', async (req, res) => {
+    try {
+        const { prompt, image, systemInstruction } = req.body;
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "model": "google/gemini-2.0-flash-001",
+                "messages": [
+                    { "role": "system", "content": systemInstruction },
+                    {
+                        "role": "user",
+                        "content": [
+                            { "type": "text", "text": prompt },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": `data:image/jpeg;base64,${image}`
+                                }
+                            }
+                        ]
+                    }
+                ]
+            })
+        });
+        const data = await response.json();
+        res.json({ response: data.choices[0].message.content });
+    } catch (error) {
+        console.error("Vision API Error:", error);
+        res.status(500).json({ error: "Vision analysis failed" });
+    }
+});
+
+// --- EMAIL API (Parent Portal Summaries) ---
+app.post('/api/send-email', async (req, res) => {
+    // This is a placeholder for your email logic (e.g., SendGrid or Nodemailer)
+    // For now, it logs the request so your frontend doesn't crash
+    const { to, subject, body } = req.body;
+    console.log(`Simulating email to ${to}: ${subject}`);
+    res.json({ success: true, message: "Summary logged to server console." });
+});
+
+// --- LEMON SQUEEZY CHECKOUT ---
 app.post('/api/create-checkout', async (req, res) => {
     try {
         const { userEmail } = req.body;
@@ -106,7 +152,7 @@ app.post('/api/create-checkout', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Server is running on port ${PORT}`);
+    console.log(`✅ AI Tutor Server is running on port ${PORT}`);
 });
 
 module.exports = app;
