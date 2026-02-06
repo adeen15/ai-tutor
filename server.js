@@ -20,19 +20,24 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// --- UPDATED FAST IMAGE ROUTE ---
-// --- server.js ---
+// --- FIXED IMAGE ROUTE ---
 app.get('/api/generate-image', (req, res) => {
     const prompt = req.query.prompt;
     const seed = req.query.seed || Math.floor(Math.random() * 1000);
     const apiKey = process.env.POLLINATIONS_API_KEY;
 
-    // We don't need to re-encode here because the browser already did it
-    const encodedPrompt = prompt; 
+    if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+    }
+
+    // FIX: Re-encode the prompt because Express decoded it from the query string.
+    // This ensures spaces like "coloring page" become "coloring%20page" in the URL.
+    const encodedPrompt = encodeURIComponent(prompt); 
     
-    let finalUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true&seed=${seed}`;
+    // FIX: Using the standard 'image.pollinations.ai/prompt/' endpoint
+    let finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}`;
     
-    // Only add the key if it actually exists in your Vercel variables
+    // Only add the key if it actually exists in your .env file
     if (apiKey && apiKey.trim() !== "") {
         finalUrl += `&key=${apiKey}`;
     }
@@ -59,6 +64,7 @@ app.post('/api/chat', async (req, res) => {
         const data = await response.json();
         res.json(data);
     } catch (error) {
+        console.error("Chat API Error:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -93,6 +99,7 @@ app.post('/api/create-checkout', async (req, res) => {
         if (data.data) res.json({ url: data.data.attributes.url });
         else res.status(500).json({ error: "Checkout failed" });
     } catch (error) {
+        console.error("Checkout Error:", error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -101,4 +108,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running on port ${PORT}`);
 });
+
 module.exports = app;
