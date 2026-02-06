@@ -2258,10 +2258,12 @@
                         }
 
                         const queryLower = this.userQuery.toLowerCase();
-                        // This was checking 'onTopic' (undefined) instead of 'isOnTopic'
+                        // 1. Defined here as 'isOnTopic'
                         const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-                        if (!isOnTopic) {
+                        // 2. ERROR WAS HERE: You were checking '!onTopic' (undefined)
+                        // CHANGE THIS LINE:
+                        if (!isOnTopic) { 
                             this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
                             this.speak(this.displayText);
                             this.isThinking = false;
@@ -2273,6 +2275,8 @@
                         this.isDrawing = true;
                         this.artImage = null;
                         this.toggleScroll(true);
+
+                        // ... rest of the function remains the same
 
                         const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
                         const encodedPrompt = encodeURIComponent(prompt);
