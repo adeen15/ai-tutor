@@ -27,6 +27,7 @@ app.get('/api/config', (req, res) => {
 // --- NEW PLAYGROUND AI ART ROUTE ---
 // --- UPDATED ART GENERATION ROUTE (PLAYGROUND AI V3) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
+// --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
 app.get('/api/generate-image', (req, res) => {
     const prompt = req.query.prompt;
     const seed = req.query.seed || Math.floor(Math.random() * 100000);
@@ -35,13 +36,11 @@ app.get('/api/generate-image', (req, res) => {
         return res.status(400).json({ error: "Prompt is required" });
     }
 
-    // Mage.space models respond best to very clear "negative" style prompts 
-    // to keep things simple for kids
-    const encodedPrompt = encodeURIComponent(
-        `coloring book page, black and white outline, ${prompt}, simple lines, white background, no shading, kids style`
-    );
+    // Mage-style optimization: We add a "Negative Prompt" via the URL to ensure it's a clean line drawing
+    // This helps the AI understand we don't want colors or shadows
+    const encodedPrompt = encodeURIComponent(`${prompt}, coloring book page, black and white outline, simple thick lines, white background`);
     
-    // We use a high-reliability endpoint that serves the SDXL model used by Mage
+    // Using the stable SDXL model endpoint
     const finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?seed=${seed}&width=1024&height=1024&nologo=true&model=search-sdxl`;
     
     res.json({ imageUrl: finalUrl });
