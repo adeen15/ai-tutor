@@ -2259,47 +2259,47 @@
                     },
 
                     async generateArt() {
-    if (!this.userQuery) {
-        alert("Tell me what to draw first! (Type in the box)");
-        return;
-    }
+                        if (!this.userQuery) {
+                            alert("Tell me what to draw first! (Type in the box)");
+                            return;
+                        }
 
-    const queryLower = this.userQuery.toLowerCase();
-    
-    // FIX 1: Ensure we check the defined variable
-    const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+                        const queryLower = this.userQuery.toLowerCase();
+                        // 1. Defined here as 'isOnTopic'
+                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-    if (!isOnTopic) {
-        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
-        this.speak(this.displayText);
-        this.isThinking = false;
-        this.currentMoodIcon = '🤔';
-        return; 
-    }
+                        // 2. ERROR WAS HERE: You were checking '!onTopic' (undefined)
+                        // CHANGE THIS LINE:
+                        if (!isOnTopic) { 
+                            this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+                            this.speak(this.displayText);
+                            this.isThinking = false;
+                            this.currentMoodIcon = '🤔';
+                            return; 
+                        }
 
-    this.showArtModal = true;
-    this.isDrawing = true;
-    this.artImage = null;
-    this.toggleScroll(true);
+                        this.showArtModal = true;
+                        this.isDrawing = true;
+                        this.artImage = null;
+                        this.toggleScroll(true);
 
-    // FIX 2: Simplified Prompt
-    const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
-    const encodedPrompt = encodeURIComponent(prompt);
-    
-    // FIX 3: Add a random number to force a NEW image every time
-    const randomSeed = Math.floor(Math.random() * 999999);
-    
-    // FIX 4: Simplified URL (No 'safe' flag, no 'model' flag to avoid errors)
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}&width=1024&height=1024`;
+                        // ... rest of the function remains the same
 
-    // Wait a moment for the 'magic' feeling, then show the image
-    setTimeout(() => {
-        this.artImage = imageUrl;
-        this.isDrawing = false;
-        this.playPing();
-        confetti({ particleCount: 150, spread: 70 });
-    }, 1500);
-},
+                        const prompt = "coloring page for kids, simple black and white outline of " + this.userQuery;
+                        const encodedPrompt = encodeURIComponent(prompt);
+                        const randomSeed = Math.floor(Math.random() * 1000);
+                        
+                        // FIXED: Removed 'model=flux' and 'safe=true' to prevent errors. 
+// We also removed width/height to let the AI decide the fastest size.
+                        const imageUrl = `/api/generate-image?prompt=${encodeURIComponent(prompt)}&seed=${randomSeed}`;
+
+                        setTimeout(() => {
+                            this.artImage = imageUrl;
+                            this.isDrawing = false;
+                            this.playPing();
+                            confetti({ particleCount: 150, spread: 70 });
+                        }, 2000);
+                    },
 
                     async downloadArt() {
                         if (!this.artImage) return;
