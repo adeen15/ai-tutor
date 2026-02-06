@@ -2258,9 +2258,10 @@
                         }
 
                         const queryLower = this.userQuery.toLowerCase();
+                        // This was checking 'onTopic' (undefined) instead of 'isOnTopic'
                         const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-                        if (!onTopic) {
+                        if (!isOnTopic) {
                             this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
                             this.speak(this.displayText);
                             this.isThinking = false;
