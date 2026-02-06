@@ -3,33 +3,48 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
-const crypto = require('crypto');
-const { createClient } = require('@supabase/supabase-js');
+
+// --- DEBUG CHECK STARTS HERE ---
+console.log("-----------------------------------");
+console.log("🔍 Checking Server Configuration...");
+
+// 1. Check Supabase
+if (process.env.SUPABASE_URL) console.log("✅ SUPABASE_URL: Loaded");
+else console.log("❌ SUPABASE_URL: MISSING");
+
+if (process.env.SUPABASE_ANON_KEY) console.log("✅ SUPABASE_ANON_KEY: Loaded");
+else console.log("❌ SUPABASE_ANON_KEY: MISSING");
+
+// 2. Check Lemon Squeezy Keys
+const lemonKey = process.env.LEMONSQUEEZY_API_KEY;
+if (lemonKey) {
+    console.log(`✅ LEMON KEY: Loaded (Length: ${lemonKey.length} chars)`);
+    if (lemonKey.length < 20) console.log("⚠️ WARNING: Your Lemon Key looks too short. Did you paste the Store ID?");
+} else {
+    console.log("❌ LEMON KEY: MISSING");
+}
+
+if (process.env.LEMONSQUEEZY_STORE_ID) console.log("✅ LEMON STORE ID: Loaded");
+else console.log("❌ LEMON STORE ID: MISSING");
+
+if (process.env.LEMONSQUEEZY_VARIANT_ID) console.log("✅ LEMON VARIANT ID: Loaded");
+else console.log("❌ LEMON VARIANT ID: MISSING");
+
+// 3. Check Pollinations AI Key (NEW)
+if (process.env.POLLINATIONS_API_KEY) console.log("✅ POLLINATIONS KEY: Loaded");
+else console.log("❌ POLLINATIONS KEY: MISSING (Images will be generated without premium tracking)");
+
+console.log("-----------------------------------");
+// --- DEBUG CHECK ENDS HERE ---
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
-// Raw body middleware for Webhook Verification
-app.use(express.json({
-    verify: (req, res, buf) => {
-        req.rawBody = buf;
-    }
-}));
-
+// Serve static files
 app.use(express.static(__dirname));
 
-// Initialize Supabase
-// We use a check here to prevent crashing if keys are missing during build
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-let supabase;
-
-if (supabaseUrl && supabaseKey) {
-    supabase = createClient(supabaseUrl, supabaseKey);
-} else {
-    console.log("⚠️ Supabase Keys missing. Database features will not work.");
-}
-
+// Serving the HTML file
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '2nd gemini app.html'));
 });
@@ -39,6 +54,38 @@ app.get('/api/config', (req, res) => {
         supabaseUrl: process.env.SUPABASE_URL,
         supabaseKey: process.env.SUPABASE_ANON_KEY
     });
+});
+
+// --- NEW ROUTE: PROXY FOR POLLINATIONS AI ---
+// This hides your API key from the frontend users
+app.get('/api/generate-image', async (req, res) => {
+    try {
+        const prompt = req.query.prompt;
+        const seed = req.query.seed || Math.floor(Math.random() * 1000);
+        
+        // Get key from environment variable (Server-side only)
+        const apiKey = process.env.POLLINATIONS_API_KEY || '';
+        
+        // Construct the URL with the key
+        const encodedPrompt = encodeURIComponent(prompt);
+        // We add 'model=flux' for better quality and 'key' for your premium account
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&model=flux&key=${apiKey}`;
+
+        // Fetch the image from Pollinations
+        const response = await fetch(imageUrl);
+
+        if (!response.ok) {
+            throw new Error(`Pollinations Error: ${response.statusText}`);
+        }
+
+        // Forward (pipe) the image data directly to the frontend
+        res.setHeader('Content-Type', response.headers.get('content-type'));
+        response.body.pipe(res);
+
+    } catch (error) {
+        console.error("Image Gen Error:", error);
+        res.status(500).send("Failed to generate image");
+    }
 });
 
 app.post('/api/chat', async (req, res) => {
@@ -70,8 +117,10 @@ app.post('/api/create-checkout', async (req, res) => {
         const { userEmail } = req.body;
         console.log("Creating checkout for:", userEmail); 
 
-        // UPDATED: Includes the ?payment=success signal
-        const APP_URL = "https://ai-tutor-murex.vercel.app/?payment=success"; 
+        // Double check key before sending
+        if (!process.env.LEMONSQUEEZY_API_KEY) {
+            throw new Error("API Key is missing on Server!");
+        }
 
         const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
             method: 'POST',
@@ -87,10 +136,6 @@ app.post('/api/create-checkout', async (req, res) => {
                         checkout_data: {
                             email: userEmail,
                             custom: { user_email: userEmail }
-                        },
-                        // The redirect_url is inside product_options
-                        product_options: {
-                            redirect_url: APP_URL
                         }
                     },
                     relationships: {
@@ -104,8 +149,8 @@ app.post('/api/create-checkout', async (req, res) => {
         const data = await response.json();
         
         if (data.errors) {
-            console.error("LS Error:", JSON.stringify(data.errors, null, 2));
-            return res.status(500).json({ error: data.errors[0].detail });
+            console.error("Lemon Squeezy API Error:", JSON.stringify(data.errors, null, 2));
+            return res.status(500).json({ error: data.errors[0].detail, fullError: data.errors });
         }
 
         if (data.data && data.data.attributes) {
@@ -113,63 +158,10 @@ app.post('/api/create-checkout', async (req, res) => {
         } else {
             res.status(500).json({ error: "Failed to create checkout" });
         }
-    } catch (error) {
-        console.error("Checkout Error:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.post('/api/webhook', async (req, res) => {
-    try {
-        console.log("🔔 Webhook received!");
-
-        const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
         
-        if (!secret) {
-            console.error("❌ Webhook Secret is MISSING in Vercel.");
-            return res.status(500).send("Server Configuration Error");
-        }
-
-        const hmac = crypto.createHmac('sha256', secret);
-        const digest = Buffer.from(hmac.update(req.rawBody).digest('hex'), 'utf8');
-        const signature = Buffer.from(req.get('X-Signature') || '', 'utf8');
-
-        if (!crypto.timingSafeEqual(digest, signature)) {
-            console.log("❌ Invalid Webhook Signature.");
-            return res.status(401).send('Invalid signature');
-        }
-
-        const eventName = req.body.meta.event_name;
-        const data = req.body.data;
-        const customData = data.attributes.checkout_data?.custom; 
-        const userEmail = customData?.user_email || data.attributes.user_email;
-
-        console.log(`Event: ${eventName} for ${userEmail}`);
-
-        if (eventName === 'order_created' || eventName === 'subscription_created') {
-            if (!supabase) {
-                console.error("❌ Cannot unlock premium: Supabase client not initialized.");
-                return res.status(500).send("Database Error");
-            }
-
-            console.log(`🔓 Unlocking Premium for: ${userEmail}`);
-            
-            const { error } = await supabase
-                .from('profiles')
-                .update({ 
-                    is_premium: true,
-                    premium_expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).getTime()
-                })
-                .eq('email', userEmail);
-
-            if (error) console.error("Database Update Error:", error);
-            else console.log("✅ User is now PREMIUM!");
-        }
-
-        res.status(200).send('Webhook received');
-    } catch (err) {
-        console.error("Webhook Error:", err);
-        res.status(500).send('Server Error');
+    } catch (error) {
+        console.error("Server Checkout Error:", error);
+        res.status(500).json({ error: error.message });
     }
 });
 
