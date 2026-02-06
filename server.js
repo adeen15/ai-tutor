@@ -26,22 +26,24 @@ app.get('/api/config', (req, res) => {
 // --- UPDATED ART GENERATION ROUTE ---
 // --- NEW PLAYGROUND AI ART ROUTE ---
 // --- UPDATED ART GENERATION ROUTE (PLAYGROUND AI V3) ---
+// --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
 app.get('/api/generate-image', (req, res) => {
     const prompt = req.query.prompt;
-    // Playground v3 seeds are integers
-    const seed = req.query.seed || Math.floor(Math.random() * 65535);
+    const seed = req.query.seed || Math.floor(Math.random() * 100000);
 
     if (!prompt) {
         return res.status(400).json({ error: "Prompt is required" });
     }
 
-    // This automatically formats the prompt for the best "Playground v3" results
-    const kidsPrompt = encodeURIComponent(`simple black and white outline coloring page for kids, ${prompt}, white background, high contrast`);
+    // Mage.space models respond best to very clear "negative" style prompts 
+    // to keep things simple for kids
+    const encodedPrompt = encodeURIComponent(
+        `coloring book page, black and white outline, ${prompt}, simple lines, white background, no shading, kids style`
+    );
     
-    // We use a stable URL-based endpoint that calls the Playground v3 model directly
-    const finalUrl = `https://image.pollinations.ai/prompt/${kidsPrompt}?seed=${seed}&width=1024&height=1024&nologo=true&model=playgroundv3`;
+    // We use a high-reliability endpoint that serves the SDXL model used by Mage
+    const finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?seed=${seed}&width=1024&height=1024&nologo=true&model=search-sdxl`;
     
-    // Send the URL to the frontend so the "Painting..." spinner can handle the loading
     res.json({ imageUrl: finalUrl });
 });
 
