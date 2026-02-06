@@ -2281,31 +2281,29 @@ async generateArt() {
     this.artImage = null;
     this.toggleScroll(true);
 
+    // Simple prompt construction for better AI results
     const drawingPrompt = `coloring page for kids, simple black and white outline of ${this.userQuery}`;
     const randomSeed = Math.floor(Math.random() * 1000);
 
-    // 1. Create the proxy URL that talks to your server
-    const proxyUrl = `/api/generate-image?prompt=${encodeURIComponent(drawingPrompt)}&seed=${randomSeed}`;
-    
-    // 2. Use a standard Image object to "pre-load" the drawing
-    const img = new Image();
-    
-    img.onload = () => {
-        // Once the server finishes "painting" the image, show it!
-        this.artImage = proxyUrl;
-        this.isDrawing = false;
-        this.playPing();
-        confetti({ particleCount: 150, spread: 70 });
-    };
+    try {
+        // We use encodeURIComponent here ONLY once to keep the URL clean
+        const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(drawingPrompt)}&seed=${randomSeed}`);
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
 
-    img.onerror = (err) => {
-        console.error("Magic Brush Error:", err);
+        if (data.imageUrl) {
+            this.artImage = data.imageUrl; 
+            this.isDrawing = false;
+            this.playPing();
+            confetti({ particleCount: 150, spread: 70 });
+        }
+    } catch (e) {
+        console.error("Drawing error:", e);
         this.isDrawing = false;
         this.displayText = "Oh no! The magic brush slipped. Try asking again! 🖌️";
-    };
-
-    // This triggers the server to start the proxy fetch
-    img.src = proxyUrl;
+    }
 },
 
                     async downloadArt() {
