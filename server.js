@@ -21,21 +21,22 @@ app.get('/api/config', (req, res) => {
 });
 
 // --- UPDATED FAST IMAGE ROUTE ---
+// --- server.js ---
 app.get('/api/generate-image', (req, res) => {
     const prompt = req.query.prompt;
     const seed = req.query.seed || Math.floor(Math.random() * 1000);
     const apiKey = process.env.POLLINATIONS_API_KEY;
 
-    const encodedPrompt = encodeURIComponent(prompt);
+    // We don't need to re-encode here because the browser already did it
+    const encodedPrompt = prompt; 
     
-    // Construct the URL directly. gen.pollinations.ai/image/ is the stable 2026 endpoint.
     let finalUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true&seed=${seed}`;
     
-    if (apiKey) {
+    // Only add the key if it actually exists in your Vercel variables
+    if (apiKey && apiKey.trim() !== "") {
         finalUrl += `&key=${apiKey}`;
     }
 
-    // Return the URL as JSON so the browser can load it directly (prevents Vercel timeouts)
     res.json({ imageUrl: finalUrl });
 });
 
