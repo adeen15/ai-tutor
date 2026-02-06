@@ -69,7 +69,7 @@ app.get('/api/generate-image', async (req, res) => {
         // Construct the URL with the key
         const encodedPrompt = encodeURIComponent(prompt);
         // We add 'model=flux' for better quality and 'key' for your premium account
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&model=flux&key=${apiKey}`;
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&key=${apiKey}`;
 
         // Fetch the image from Pollinations
         const response = await fetch(imageUrl);
@@ -170,3 +170,4 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running on port ${PORT}`);
 });
 module.exports = app;
+
