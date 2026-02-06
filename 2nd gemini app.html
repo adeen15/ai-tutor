@@ -2287,7 +2287,7 @@ async generateArt() {
         // Playground AI specific seed range: 0 to 65535
         const randomSeed = Math.floor(Math.random() * 65535);
         
-        // Fetch from your updated server route
+        // Fetch from your updated server route using Playground v3
         const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
         
         if (!response.ok) throw new Error('Magic Studio is busy');
@@ -2319,8 +2319,10 @@ async generateArt() {
     } catch (e) {
         console.error("Drawing error:", e);
         this.isDrawing = false;
-        this.showArtModal = false;
-        alert("The Playground is full right now! 🎨 Let's try again in a moment.");
+        // Keep the UI open but show a friendly error message instead of an alert if possible
+        this.displayText = "The magic brush is out of paint! Let's try one more time. 🖌️";
+        // Optionally auto-close the modal on total failure
+        setTimeout(() => { if(!this.artImage) this.showArtModal = false; }, 3000);
     }
 },
                     async downloadArt() {
