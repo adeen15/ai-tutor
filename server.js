@@ -30,9 +30,9 @@ else console.log("❌ LEMON STORE ID: MISSING");
 if (process.env.LEMONSQUEEZY_VARIANT_ID) console.log("✅ LEMON VARIANT ID: Loaded");
 else console.log("❌ LEMON VARIANT ID: MISSING");
 
-// 3. Check Pollinations AI Key (NEW)
+// 3. Check Pollinations AI Key
 if (process.env.POLLINATIONS_API_KEY) console.log("✅ POLLINATIONS KEY: Loaded");
-else console.log("❌ POLLINATIONS KEY: MISSING (Images will be generated without premium tracking)");
+else console.log("❌ POLLINATIONS KEY: MISSING (Will use Free Tier)");
 
 console.log("-----------------------------------");
 // --- DEBUG CHECK ENDS HERE ---
@@ -56,35 +56,54 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// --- NEW ROUTE: PROXY FOR POLLINATIONS AI ---
-// This hides your API key from the frontend users
+// --- ROBUST PROXY ROUTE FOR IMAGE GENERATION ---
 app.get('/api/generate-image', async (req, res) => {
+    const prompt = req.query.prompt;
+    const seed = req.query.seed || Math.floor(Math.random() * 1000);
+    const apiKey = process.env.POLLINATIONS_API_KEY; // It's okay if this is undefined
+
+    const encodedPrompt = encodeURIComponent(prompt);
+    
+    // 1. Define URLs
+    // Premium URL uses the key. Free URL does not.
+    // Removed '&model=flux' to increase stability and reduce "Bad Gateway" errors.
+    const premiumUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&key=${apiKey}`;
+    const freeUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}`;
+
     try {
-        const prompt = req.query.prompt;
-        const seed = req.query.seed || Math.floor(Math.random() * 1000);
+        let response;
         
-        // Get key from environment variable (Server-side only)
-        const apiKey = process.env.POLLINATIONS_API_KEY || '';
-        
-        // Construct the URL with the key
-        const encodedPrompt = encodeURIComponent(prompt);
-        // We add 'model=flux' for better quality and 'key' for your premium account
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&key=${apiKey}`;
-
-        // Fetch the image from Pollinations
-        const response = await fetch(imageUrl);
-
-        if (!response.ok) {
-            throw new Error(`Pollinations Error: ${response.statusText}`);
+        // 2. Try Premium first (only if key exists)
+        if (apiKey) {
+            console.log(`🎨 Attempting generation with API Key...`);
+            response = await fetch(premiumUrl);
+            
+            // If premium fails (e.g. 502 Bad Gateway), log it and fall back to free
+            if (!response.ok) {
+                console.warn(`⚠️ Premium generation failed (${response.status}: ${response.statusText}). Switching to Free Tier.`);
+                response = await fetch(freeUrl);
+            }
+        } else {
+            // No key found? Just go straight to free
+            console.log(`🎨 No API Key found. Using Free Tier.`);
+            response = await fetch(freeUrl);
         }
 
-        // Forward (pipe) the image data directly to the frontend
-        res.setHeader('Content-Type', response.headers.get('content-type'));
+        // 3. Final Check: Did it work?
+        if (!response.ok) {
+            // If even free tier fails, we have a real problem
+            const errorText = await response.text();
+            throw new Error(`Pollinations Failed: ${response.status} ${response.statusText} - ${errorText}`);
+        }
+
+        // 4. Send Image to Frontend
+        // We pipe the image stream directly to the browser
+        res.setHeader('Content-Type', response.headers.get('content-type') || 'image/jpeg');
         response.body.pipe(res);
 
     } catch (error) {
-        console.error("Image Gen Error:", error);
-        res.status(500).send("Failed to generate image");
+        console.error("❌ Image Gen Critical Error:", error.message);
+        res.status(500).send("Failed to generate image. Please try again.");
     }
 });
 
@@ -170,4 +189,3 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running on port ${PORT}`);
 });
 module.exports = app;
-
