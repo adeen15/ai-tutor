@@ -22,22 +22,28 @@ app.get('/api/config', (req, res) => {
 
 // --- UPDATED FAST IMAGE ROUTE ---
 // --- server.js ---
-app.get('/api/generate-image', (req, res) => {
-    const prompt = req.query.prompt;
-    const seed = req.query.seed || Math.floor(Math.random() * 1000);
-    const apiKey = process.env.POLLINATIONS_API_KEY;
-
-    // We don't need to re-encode here because the browser already did it
-    const encodedPrompt = prompt; 
-    
-    let finalUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true&seed=${seed}`;
-    
-    // Only add the key if it actually exists in your Vercel variables
-    if (apiKey && apiKey.trim() !== "") {
-        finalUrl += `&key=${apiKey}`;
+app.get('/api/generate-image', async (req, res) => {
+    try {
+        const prompt = req.query.prompt;
+        const seed = req.query.seed || Math.floor(Math.random() * 1000);
+        
+        // Use the unified 2026 endpoint
+        const url = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?nologo=true&seed=${seed}`;
+        
+        // Server-side fetch to bypass browser ORB security
+        const response = await fetch(url);
+        
+        if (!response.ok) throw new Error('Pollinations API failed');
+        
+        const buffer = await response.buffer();
+        
+        // Force the browser to treat this as a safe image
+        res.set('Content-Type', 'image/webp');
+        res.send(buffer);
+    } catch (error) {
+        console.error("Proxy Error:", error);
+        res.status(500).send("Error generating image");
     }
-
-    res.json({ imageUrl: finalUrl });
 });
 
 app.post('/api/chat', async (req, res) => {
