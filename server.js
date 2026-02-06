@@ -67,8 +67,8 @@ app.get('/api/generate-image', async (req, res) => {
     // 1. Define URLs
     // Premium URL uses the key. Free URL does not.
     // Removed '&model=flux' to increase stability and reduce "Bad Gateway" errors.
-    const premiumUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&key=${apiKey}`;
-    const freeUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}`;
+    const premiumUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true&seed=${seed}&key=${apiKey}`;
+    const freeUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true&seed=${seed}`;
 
     try {
         let response;
@@ -189,3 +189,4 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running on port ${PORT}`);
 });
 module.exports = app;
+
