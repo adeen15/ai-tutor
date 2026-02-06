@@ -2260,76 +2260,69 @@
 
                     // ✅ Make sure 'async' is right here!
 async generateArt() {
-    if (!this.userQuery) {
+    // 1. Validate Input
+    if (!this.userQuery || this.userQuery.trim() === "") {
         alert("Tell me what to draw first! (Type in the box)");
         return;
     }
 
+    // 2. Topic Check (Keep this to ensure educational focus)
     const queryLower = this.userQuery.toLowerCase();
     const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-    // Keep your safety/topic check
     if (!isOnTopic) { 
         this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try asking for: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
         this.speak(this.displayText);
-        this.isThinking = false;
         this.currentMoodIcon = '🤔';
         return; 
     }
 
-    // Show the modal and start the spinner immediately
-    this.showArtModal = true;
-    this.isDrawing = true;
+    // 3. Reset and Start Loading UI
+    // We set these explicitly to ensure the modal shows the spinner, not the "Tell me..." text
     this.artImage = null;
+    this.isDrawing = true; 
+    this.showArtModal = true;
     this.toggleScroll(true);
 
     try {
-        // We use a much larger seed range for better variety
-        const randomSeed = Math.floor(Math.random() * 9999999);
-        
-        // Call your updated server route
+        const randomSeed = Math.floor(Math.random() * 1000000);
+        // Ensure we are calling the local API route you updated in server.js
         const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
         
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) throw new Error('Server response error');
         
         const data = await response.json();
 
         if (data.imageUrl) {
-            // "Pixel-Ready" Pre-loading: This ensures the user never sees a half-loaded image
+            // 4. Create a specialized loader to handle the transition
             const img = new Image();
-            img.src = data.imageUrl;
             
-            // This event fires ONLY when the full image file is downloaded
             img.onload = () => {
+                // Success! Update image and stop spinner
                 this.artImage = data.imageUrl; 
-                this.isDrawing = false; // Hide the spinner only when pixels are ready
+                this.isDrawing = false; 
                 this.playPing();
-                confetti({ 
-                    particleCount: 150, 
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
+                confetti({ particleCount: 100, spread: 70 });
             };
 
             img.onerror = () => {
-                throw new Error("Magic brush failed to load the image.");
+                this.isDrawing = false;
+                this.displayText = "The magic paint didn't dry! Let's try again.";
+                this.showArtModal = false;
             };
 
-            // Safety timeout: stop spinner after 20s if something goes wrong
-            setTimeout(() => {
-                if (this.isDrawing) {
-                    this.isDrawing = false;
-                    this.displayText = "The magic paint is taking a long time... check the studio!";
-                }
-            }, 20000);
+            // Start the actual download
+            img.src = data.imageUrl;
+        } else {
+            throw new Error('No image URL returned');
         }
     } catch (e) {
         console.error("Drawing error:", e);
         this.isDrawing = false;
-        this.displayText = "Oh no! The magic brush slipped. Let's try one more time! 🖌️";
+        this.showArtModal = false;
+        alert("Magic Studio is busy. Try again in a few seconds!");
     }
 },
-
                     async downloadArt() {
                         if (!this.artImage) return;
                         try {
