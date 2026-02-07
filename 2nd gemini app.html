@@ -2273,18 +2273,23 @@
     this.toggleScroll(true);
 
     try {
-        // We add kid-safe coloring book modifiers to ensure the output is a line drawing
         const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing`;
         
-        // Puter.js call replaces the old fetch/API route
+        // Generate the image using Puter.js
         const imageElement = await puter.ai.txt2img(finalPrompt, { 
             model: 'gpt-image-1', 
             quality: 'medium' 
         });
 
-        // Puter returns an HTMLImageElement; we extract the 'src' which is the image data
         if (imageElement && imageElement.src) {
-            this.artImage = imageElement.src;
+            // --- MOBILE STABILITY FIX ---
+            // Convert the Base64 Data URL into a Blob URL for better mobile performance
+            const response = await fetch(imageElement.src);
+            const blob = await response.blob();
+            
+            // This creates a stable internal URL: blob:https://your-app.vercel.app/...
+            this.artImage = URL.createObjectURL(blob);
+            
             this.isDrawing = false; 
             this.playPing();
             confetti({ particleCount: 150, spread: 70 });
