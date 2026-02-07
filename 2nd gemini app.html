@@ -128,17 +128,9 @@
 
            @media print {
     body * { visibility: hidden; }
-    /* OLD BROKEN LINE: */
-    /* #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area *, #certificate-area, #certificate-area * { visibility: visible; } */
-    
-    /* NEW FIXED LINE (Removed certificate-area): */
     #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area * { visibility: visible; }
-
     #printable-art { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
     #worksheet-print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; background: white; color: black; }
-    
-    /* DELETE THESE LINES BELOW: */
-    /* #certificate-area { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: white; display: flex !important; } */
     .fixed, .absolute, .bg-black, .bg-slate-900, .bg-slate-50 { background: none !important; box-shadow: none !important; }
 }
         </style>
@@ -2258,71 +2250,67 @@
                         alert(this.emailSummaryEnabled ? "Weekly summaries activated! We will email you your child's learning wins." : "Weekly summaries deactivated.");
                     },
 
-                    // ✅ Make sure 'async' is right here!
-async generateArt() {
-    // 1. Validate Input
-    if (!this.userQuery || this.userQuery.trim() === "") {
-        alert("Tell me what to draw first!");
-        return;
-    }
+                    async generateArt() {
+                        if (!this.userQuery || this.userQuery.trim() === "") {
+                            alert("Tell me what to draw first!");
+                            return;
+                        }
 
-    // 2. Topic Check (Educational Safety)
-    const queryLower = this.userQuery.toLowerCase();
-    const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+                        const queryLower = this.userQuery.toLowerCase();
+                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-    if (!isOnTopic) { 
-        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
-        this.speak(this.displayText);
-        this.currentMoodIcon = '🤔';
-        return; 
-    }
+                        if (!isOnTopic) { 
+                            this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+                            this.speak(this.displayText);
+                            this.currentMoodIcon = '🤔';
+                            return; 
+                        }
 
-    // 3. Reset UI and Show Studio
-    this.artImage = null;
-    this.isDrawing = true; 
-    this.showArtModal = true;
-    this.toggleScroll(true);
+                        this.artImage = null;
+                        this.isDrawing = true; 
+                        this.showArtModal = true;
+                        this.toggleScroll(true);
 
-    try {
-        const randomSeed = Math.floor(Math.random() * 99999);
-        const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
-        
-        if (!response.ok) throw new Error('Mage Studio Error');
-        
-        const data = await response.json();
+                        try {
+                            const randomSeed = Math.floor(Math.random() * 99999);
+                            const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
+                            
+                            if (!response.ok) throw new Error('Mage Studio Error');
+                            
+                            const data = await response.json();
 
-        if (data.imageUrl) {
-            const img = new Image();
-            
-            // Set a Safety Timeout so the child isn't stuck on "Painting..." forever
-            const timeout = setTimeout(() => {
-                if (this.isDrawing) {
-                    this.isDrawing = false;
-                    this.displayText = "The magic paint is drying slowly! Try checking back in a second.";
-                }
-            }, 12000);
+                            if (data.imageUrl) {
+                                const img = new Image();
+                                
+                                const timeout = setTimeout(() => {
+                                    if (this.isDrawing) {
+                                        this.isDrawing = false;
+                                        this.displayText = "The magic paint is drying slowly! Try checking back in a second.";
+                                    }
+                                }, 12000);
 
-            img.onload = () => {
-                clearTimeout(timeout); // Image arrived! Cancel the timeout
-                this.artImage = data.imageUrl; 
-                this.isDrawing = false; 
-                this.playPing();
-                confetti({ particleCount: 150, spread: 70 });
-            };
+                                img.onload = () => {
+                                    clearTimeout(timeout);
+                                    this.artImage = data.imageUrl; 
+                                    this.isDrawing = false; 
+                                    this.playPing();
+                                    confetti({ particleCount: 150, spread: 70 });
+                                };
 
-            img.onerror = () => {
-                clearTimeout(timeout);
-                throw new Error("Failed to download image pixels.");
-            };
+                                img.onerror = () => {
+                                    clearTimeout(timeout);
+                                    throw new Error("Failed to download image pixels.");
+                                };
 
-            img.src = data.imageUrl; // Start the download
-        }
-    } catch (e) {
-        console.error("Art Studio Error:", e);
-        this.isDrawing = false;
-        this.displayText = "The Mage's wand is out of mana! Let's try once more. 🪄";
-    }
-},
+                                img.src = data.imageUrl; 
+                            }
+                        } catch (e) {
+                            console.error("Art Studio Error:", e);
+                            this.isDrawing = false;
+                            this.displayText = "The Mage's wand is out of mana! Let's try once more. 🪄";
+                        }
+                    },
+
                     async downloadArt() {
                         if (!this.artImage) return;
                         try {
@@ -2347,7 +2335,6 @@ async generateArt() {
                         const range = this.childProfile.ageRange || '6-7';
                         let priority = this.isPremium ? "PRIORITY MODE: Use even more engaging facts and detailed encouraging feedback." : "";
                         
-                        // Adaptive Logic 2.0: Force extreme simplicity if child is struggling
                         if (this.isVisualMode) {
                             priority += " [ADAPTIVE TRIGGERED]: The child is struggling. Pivot to Visual Simulation Mode. Use vivid imagery, simple analogies, and zero complex terminology. Explain things as if showing a picture book.";
                         }
@@ -2410,7 +2397,7 @@ async generateArt() {
 
                     checkAnswer(index) {
                         if (index === this.quizCorrectIndex) {
-                            this.consecutiveMistakes = 0; // Success resets the streak
+                            this.consecutiveMistakes = 0; 
                             this.isVisualMode = false;
                             this.quizState = 'correct';
                             this.coins += 20; 
@@ -2728,7 +2715,6 @@ async generateArt() {
                         };
                         this.parentLogs.push(entry);
                         
-                        // Update sentiment stats
                         if(this.learningStats.emotions[emotion] !== undefined) {
                             this.learningStats.emotions[emotion]++;
                         } else {
@@ -2823,7 +2809,6 @@ async generateArt() {
                         return !combinedFilters.some(word => word !== "" && lowerQuery.includes(word));
                     },
 
-                    // --- VISION LOGIC ---
                     openVisionModal() {
                         if (!this.isPremium) {
                             this.showPremiumModal = true;
