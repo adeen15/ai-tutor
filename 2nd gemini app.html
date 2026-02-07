@@ -16,6 +16,7 @@
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://js.puter.com/v2/"></script>
         
         <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -2251,65 +2252,52 @@
                     },
 
                     async generateArt() {
-                        if (!this.userQuery || this.userQuery.trim() === "") {
-                            alert("Tell me what to draw first!");
-                            return;
-                        }
+    if (!this.userQuery || this.userQuery.trim() === "") {
+        alert("Tell me what to draw first!");
+        return;
+    }
 
-                        const queryLower = this.userQuery.toLowerCase();
-                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+    const queryLower = this.userQuery.toLowerCase();
+    const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-                        if (!isOnTopic) { 
-                            this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
-                            this.speak(this.displayText);
-                            this.currentMoodIcon = '🤔';
-                            return; 
-                        }
+    if (!isOnTopic) { 
+        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+        this.speak(this.displayText);
+        this.currentMoodIcon = '🤔';
+        return; 
+    }
 
-                        this.artImage = null;
-                        this.isDrawing = true; 
-                        this.showArtModal = true;
-                        this.toggleScroll(true);
+    this.artImage = null;
+    this.isDrawing = true; 
+    this.showArtModal = true;
+    this.toggleScroll(true);
 
-                        try {
-                            const randomSeed = Math.floor(Math.random() * 99999);
-                            const response = await fetch(`/api/generate-image?prompt=${encodeURIComponent(this.userQuery)}&seed=${randomSeed}`);
-                            
-                            if (!response.ok) throw new Error('Mage Studio Error');
-                            
-                            const data = await response.json();
+    try {
+        // We add kid-safe coloring book modifiers to ensure the output is a line drawing
+        const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing`;
+        
+        // Puter.js call replaces the old fetch/API route
+        const imageElement = await puter.ai.txt2img(finalPrompt, { 
+            model: 'gpt-image-1', 
+            quality: 'medium' 
+        });
 
-                            if (data.imageUrl) {
-                                const img = new Image();
-                                
-                                const timeout = setTimeout(() => {
-                                    if (this.isDrawing) {
-                                        this.isDrawing = false;
-                                        this.displayText = "The magic paint is drying slowly! Try checking back in a second.";
-                                    }
-                                }, 12000);
+        // Puter returns an HTMLImageElement; we extract the 'src' which is the image data
+        if (imageElement && imageElement.src) {
+            this.artImage = imageElement.src;
+            this.isDrawing = false; 
+            this.playPing();
+            confetti({ particleCount: 150, spread: 70 });
+        } else {
+            throw new Error("Puter did not return a valid image.");
+        }
 
-                                img.onload = () => {
-                                    clearTimeout(timeout);
-                                    this.artImage = data.imageUrl; 
-                                    this.isDrawing = false; 
-                                    this.playPing();
-                                    confetti({ particleCount: 150, spread: 70 });
-                                };
-
-                                img.onerror = () => {
-                                    clearTimeout(timeout);
-                                    throw new Error("Failed to download image pixels.");
-                                };
-
-                                img.src = data.imageUrl; 
-                            }
-                        } catch (e) {
-                            console.error("Art Studio Error:", e);
-                            this.isDrawing = false;
-                            this.displayText = "The Mage's wand is out of mana! Let's try once more. 🪄";
-                        }
-                    },
+    } catch (e) {
+        console.error("Art Studio Error:", e);
+        this.isDrawing = false;
+        this.displayText = "The magic wand is tired! Let's try again in a moment. 🪄";
+    }
+},
 
                     async downloadArt() {
                         if (!this.artImage) return;
