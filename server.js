@@ -28,22 +28,13 @@ app.get('/api/config', (req, res) => {
 // --- UPDATED ART GENERATION ROUTE (PLAYGROUND AI V3) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
+// --- ART GENERATION ROUTE (MOVED TO CLIENT-SIDE PUTER.JS) ---
 app.get('/api/generate-image', (req, res) => {
-    const prompt = req.query.prompt;
-    const seed = req.query.seed || Math.floor(Math.random() * 100000);
-
-    if (!prompt) {
-        return res.status(400).json({ error: "Prompt is required" });
-    }
-
-    // Mage-style optimization: We add a "Negative Prompt" via the URL to ensure it's a clean line drawing
-    // This helps the AI understand we don't want colors or shadows
-    const encodedPrompt = encodeURIComponent(`${prompt}, coloring book page, black and white outline, simple thick lines, white background`);
-    
-    // Using the stable SDXL model endpoint
-    const finalUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?seed=${seed}&width=1024&height=1024&nologo=true&model=search-sdxl`;
-    
-    res.json({ imageUrl: finalUrl });
+    // This route is no longer used by the frontend. 
+    // Puter.js handles image generation directly in the browser for faster results.
+    res.status(200).json({ 
+        message: "Image generation moved to client-side Puter.js implementation." 
+    });
 });
 
 // --- CHAT API (Standard Questions) ---
