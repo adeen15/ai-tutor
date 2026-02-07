@@ -16,8 +16,6 @@
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-        <script src="https://js.puter.com/v2/"></script>
-        
         <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -2252,68 +2250,63 @@
                     },
 
                     async generateArt() {
-    if (!this.userQuery || this.userQuery.trim() === "") {
-        alert("Tell me what to draw first!");
-        return;
-    }
+                        if (!this.userQuery || this.userQuery.trim() === "") {
+                            alert("Tell me what to draw first!");
+                            return;
+                        }
 
-    const queryLower = this.userQuery.toLowerCase();
-    const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
+                        const queryLower = this.userQuery.toLowerCase();
+                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
 
-    if (!isOnTopic) { 
-        this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
-        this.speak(this.displayText);
-        this.currentMoodIcon = '🤔';
-        return; 
-    }
+                        if (!isOnTopic) { 
+                            this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
+                            this.speak(this.displayText);
+                            this.currentMoodIcon = '🤔';
+                            return; 
+                        }
 
-    this.artImage = null;
-    this.isDrawing = true; 
-    this.showArtModal = true;
-    this.toggleScroll(true);
+                        this.artImage = null;
+                        this.isDrawing = true; 
+                        this.showArtModal = true;
+                        this.toggleScroll(true);
 
-    // SAFETY TIMEOUT: If it takes more than 15 seconds, stop and alert the user
-    const mobileTimeout = setTimeout(() => {
-        if (this.isDrawing) {
-            this.isDrawing = false;
-            this.displayText = "The magic paint is drying slowly! Try again in a moment. 🪄";
-            this.showArtModal = false;
-            this.toggleScroll(false);
-        }
-    }, 15000);
+                        // SAFETY TIMEOUT: If it takes more than 15 seconds, stop and alert the user
+                        const mobileTimeout = setTimeout(() => {
+                            if (this.isDrawing) {
+                                this.isDrawing = false;
+                                this.displayText = "The magic paint is drying slowly! Try again in a moment. 🪄";
+                                this.showArtModal = false;
+                                this.toggleScroll(false);
+                            }
+                        }, 15000);
 
-    try {
-        const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing`;
-        
-        // Mobile Tip: Using 'low' quality makes it 2x faster on phones
-        const imageElement = await puter.ai.txt2img(finalPrompt, { 
-            model: 'gpt-image-1', 
-            quality: 'low' 
-        });
+                        try {
+                            const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing, cartoon style`;
+                            
+                            // REPLACED PUTER.JS WITH POLLINATIONS (No Login Required)
+                            const randomSeed = Math.floor(Math.random() * 10000);
+                            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=512&height=512&nologo=true&seed=${randomSeed}&model=flux`;
 
-        if (imageElement && imageElement.src) {
-            // --- CRITICAL MOBILE FIX: CONVERT TO BLOB ---
-            // This stops the browser from freezing on the long Base64 string
-            const response = await fetch(imageElement.src);
-            const blob = await response.blob();
-            
-            // Clear the timeout since we succeeded
-            clearTimeout(mobileTimeout);
-            
-            // Create a lightweight URL (blob:https://...)
-            this.artImage = URL.createObjectURL(blob);
-            
-            this.isDrawing = false; 
-            this.playPing();
-            confetti({ particleCount: 150, spread: 70 });
-        }
-    } catch (e) {
-        clearTimeout(mobileTimeout);
-        console.error("Art Studio Error:", e);
-        this.isDrawing = false;
-        this.displayText = "The magic wand is tired! Let's try again. 🪄";
-    }
-},
+                            // Fetch as blob to prevent freezing/redirects on mobile
+                            const response = await fetch(imageUrl);
+                            const blob = await response.blob();
+                            
+                            // Clear the timeout since we succeeded
+                            clearTimeout(mobileTimeout);
+                            
+                            // Create a lightweight URL (blob:https://...)
+                            this.artImage = URL.createObjectURL(blob);
+                            
+                            this.isDrawing = false; 
+                            this.playPing();
+                            confetti({ particleCount: 150, spread: 70 });
+                        } catch (e) {
+                            clearTimeout(mobileTimeout);
+                            console.error("Art Studio Error:", e);
+                            this.isDrawing = false;
+                            this.displayText = "The magic wand is tired! Let's try again. 🪄";
+                        }
+                    },
 
                     async downloadArt() {
                         if (!this.artImage) return;
