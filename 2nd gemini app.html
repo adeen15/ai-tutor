@@ -2272,35 +2272,46 @@
     this.showArtModal = true;
     this.toggleScroll(true);
 
+    // SAFETY TIMEOUT: If it takes more than 15 seconds, stop and alert the user
+    const mobileTimeout = setTimeout(() => {
+        if (this.isDrawing) {
+            this.isDrawing = false;
+            this.displayText = "The magic paint is drying slowly! Try again in a moment. 🪄";
+            this.showArtModal = false;
+            this.toggleScroll(false);
+        }
+    }, 15000);
+
     try {
         const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing`;
         
-        // Generate the image using Puter.js
+        // Mobile Tip: Using 'low' quality makes it 2x faster on phones
         const imageElement = await puter.ai.txt2img(finalPrompt, { 
             model: 'gpt-image-1', 
-            quality: 'medium' 
+            quality: 'low' 
         });
 
         if (imageElement && imageElement.src) {
-            // --- MOBILE STABILITY FIX ---
-            // Convert the Base64 Data URL into a Blob URL for better mobile performance
+            // --- CRITICAL MOBILE FIX: CONVERT TO BLOB ---
+            // This stops the browser from freezing on the long Base64 string
             const response = await fetch(imageElement.src);
             const blob = await response.blob();
             
-            // This creates a stable internal URL: blob:https://your-app.vercel.app/...
+            // Clear the timeout since we succeeded
+            clearTimeout(mobileTimeout);
+            
+            // Create a lightweight URL (blob:https://...)
             this.artImage = URL.createObjectURL(blob);
             
             this.isDrawing = false; 
             this.playPing();
             confetti({ particleCount: 150, spread: 70 });
-        } else {
-            throw new Error("Puter did not return a valid image.");
         }
-
     } catch (e) {
+        clearTimeout(mobileTimeout);
         console.error("Art Studio Error:", e);
         this.isDrawing = false;
-        this.displayText = "The magic wand is tired! Let's try again in a moment. 🪄";
+        this.displayText = "The magic wand is tired! Let's try again. 🪄";
     }
 },
 
