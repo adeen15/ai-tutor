@@ -29,33 +29,39 @@ app.post('/api/generate-image', async (req, res) => {
         
         // Check for API Key
         const apiKey = process.env.POLLINATIONS_API_KEY;
-        if (!apiKey) {
-            console.warn("Warning: POLLINATIONS_API_KEY is missing. Using free tier (rate limited).");
+        
+        // DEBUG LOG: Check Vercel logs to see if this says "FOUND" or "MISSING"
+        if (apiKey) {
+            console.log("✅ POLLINATIONS_API_KEY found in environment variables.");
+        } else {
+            console.warn("⚠️ POLLINATIONS_API_KEY is MISSING. Rate limits will apply.");
         }
 
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-        // Construct Pollinations URL with random seed to prevent caching
+        // FIX 1: Random Seed to prevent caching the "Limit Reached" image
         const seed = Math.floor(Math.random() * 1000000);
+        
+        // FIX 2: Use 'turbo' model instead of 'flux'. 
+        // 'flux' is too slow for Vercel Free Tier (10s timeout) and causes 504 errors.
+        // 'turbo' is fast and less likely to hit strict rate limits.
         const encodedPrompt = encodeURIComponent(prompt);
-        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&model=flux&seed=${seed}`;
+        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&model=turbo&seed=${seed}`;
 
         const headers = {
-            'User-Agent': 'AI-Tutor-App/1.0'
+            'User-Agent': 'AI-Tutor-App/1.0',
+            'Referer': 'https://pollinations.ai/'
         };
 
         if (apiKey) {
             headers['Authorization'] = `Bearer ${apiKey}`;
-            console.log("Using provided POLLINATIONS_API_KEY");
-        } else {
-            console.log("No POLLINATIONS_API_KEY provided - using free tier");
         }
 
-        console.log(`[VERCEL-DEBUG] Requesting Pollinations URL: ${url}`);
+        console.log(`[VERCEL-DEBUG] Requesting URL: ${url}`);
         
-        // FIX: Increased timeout from 20s to 60s
+        // Setup timeout (Vercel free tier is strict 10s, but we set 15s just in case)
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 60000); // 60 seconds
+        const timeout = setTimeout(() => controller.abort(), 15000); 
 
         const response = await fetch(url, {
             method: 'GET',
@@ -79,7 +85,6 @@ app.post('/api/generate-image', async (req, res) => {
     } catch (error) {
         console.error("Image Generation Error:", error);
         
-        // Send a friendlier error message if it was a timeout
         if (error.name === 'AbortError' || error.message.includes('aborted')) {
              return res.status(504).json({ error: "The magic paint took too long to dry! Please try again. 🎨" });
         }
