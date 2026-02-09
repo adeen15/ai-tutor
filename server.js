@@ -29,8 +29,30 @@ app.get('/api/config', (req, res) => {
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
 // --- ART GENERATION ROUTE (MOVED TO CLIENT-SIDE PUTER.JS) ---
-// --- ART GENERATION ROUTE (Hugging Face - Free Tier) ---
+// --- ART GENERATION ROUTE (Hugging Face - Free Tier with Retry) ---
 app.post('/api/generate-image', async (req, res) => {
+    const fetchWithRetry = async (url, options, retries = 3) => {
+        for (let i = 0; i < retries; i++) {
+            const response = await fetch(url, options);
+            
+            if (response.status === 503) {
+                const errorData = await response.json();
+                const waitTime = errorData.estimated_time || 20;
+                console.log(`Model loading... waiting ${waitTime}s (Attempt ${i + 1}/${retries})`);
+                await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+                continue;
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Hugging Face API Error: ${response.status} - ${errorText}`);
+            }
+
+            return response;
+        }
+        throw new Error("Model took too long to load. Please try again.");
+    };
+
     try {
         const { prompt } = req.body;
         // Check for Hugging Face API Key
@@ -41,7 +63,7 @@ app.post('/api/generate-image', async (req, res) => {
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
         // Using Hugging Face Inference API (Stable Diffusion XL)
-        const response = await fetch(
+        const response = await fetchWithRetry(
             "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
             {
                 method: "POST",
@@ -53,11 +75,6 @@ app.post('/api/generate-image', async (req, res) => {
             }
         );
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Hugging Face API Error: ${response.status} - ${errorText}`);
-        }
-
         // Hugging Face returns the image directly as a blob/buffer
         const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
@@ -68,7 +85,8 @@ app.post('/api/generate-image', async (req, res) => {
 
     } catch (error) {
         console.error("Image Generation Error:", error);
-        res.status(500).json({ error: "Failed to generate image. Please try again later." });
+        // Return the ACTUAL error message for debugging
+        res.status(500).json({ error: error.message || "Failed to generate image." });
     }
 });
 
