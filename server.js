@@ -29,54 +29,42 @@ app.get('/api/config', (req, res) => {
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
 // --- ART GENERATION ROUTE (MOVED TO CLIENT-SIDE PUTER.JS) ---
-// --- ART GENERATION ROUTE (Hugging Face - Free Tier with Retry) ---
+// --- ART GENERATION ROUTE (POLLINATIONS.AI - with API KEY) ---
 app.post('/api/generate-image', async (req, res) => {
-    const fetchWithRetry = async (url, options, retries = 3) => {
-        for (let i = 0; i < retries; i++) {
-            const response = await fetch(url, options);
-            
-            if (response.status === 503) {
-                const errorData = await response.json();
-                const waitTime = errorData.estimated_time || 20;
-                console.log(`Model loading... waiting ${waitTime}s (Attempt ${i + 1}/${retries})`);
-                await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
-                continue;
-            }
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Hugging Face API Error: ${response.status} - ${errorText}`);
-            }
-
-            return response;
-        }
-        throw new Error("Model took too long to load. Please try again.");
-    };
-
     try {
         const { prompt } = req.body;
-        // Check for Hugging Face API Key
-        if (!process.env.HUGGINGFACE_API_KEY) {
-            console.error("Hugging Face API Key is missing.");
-            return res.status(500).json({ error: "Server Config Error: HUGGINGFACE_API_KEY Missing" });
+        
+        // OPTIONAL: Check for API Key (Recommended for no rate limits)
+        const apiKey = process.env.POLLINATIONS_API_KEY;
+        if (!apiKey) {
+            console.warn("Warning: POLLINATIONS_API_KEY is missing. Using free tier (rate limited).");
         }
+
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-        // Using Hugging Face Inference API (FLUX.1-schnell - Best Free Tier Model)
-        // URL: https://router.huggingface.co/models/black-forest-labs/FLUX.1-schnell
-        const response = await fetchWithRetry(
-            "https://router.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ inputs: prompt }),
-            }
-        );
+        // Construct Pollinations URL
+        // model=flux is generally better quality
+        const encodedPrompt = encodeURIComponent(prompt);
+        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&model=flux`;
 
-        // Hugging Face returns the image directly as a blob/buffer
+        const headers = {};
+        if (apiKey) {
+            headers['Authorization'] = `Bearer ${apiKey}`;
+        }
+
+        console.log(`Generating image via Pollinations: ${url}`);
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Pollinations API Error: ${response.status} - ${errorText}`);
+        }
+
+        // Pollinations returns the image buffer directly
         const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         const base64 = buffer.toString('base64');
@@ -86,7 +74,6 @@ app.post('/api/generate-image', async (req, res) => {
 
     } catch (error) {
         console.error("Image Generation Error:", error);
-        // Return the ACTUAL error message for debugging
         res.status(500).json({ error: error.message || "Failed to generate image." });
     }
 });
