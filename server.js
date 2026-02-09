@@ -6,7 +6,7 @@ const path = require('path');
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '10mb' })); // Increased limit for base64 images
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(__dirname));
 
 // --- VIEW ROUTES ---
@@ -35,13 +35,11 @@ app.post('/api/generate-image', async (req, res) => {
 
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-        // Construct Pollinations URL
-        // FIX: Added random seed to prevent caching of "Limit Reached" errors
+        // Construct Pollinations URL with random seed to prevent caching
         const seed = Math.floor(Math.random() * 1000000);
         const encodedPrompt = encodeURIComponent(prompt);
         const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&model=flux&seed=${seed}`;
 
-        // FIX: Added User-Agent to prevent bot-detection blocking
         const headers = {
             'User-Agent': 'AI-Tutor-App/1.0'
         };
@@ -55,9 +53,9 @@ app.post('/api/generate-image', async (req, res) => {
 
         console.log(`[VERCEL-DEBUG] Requesting Pollinations URL: ${url}`);
         
-        // Add timeout to fetch to prevent hanging indefinitely
+        // FIX: Increased timeout from 20s to 60s
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+        const timeout = setTimeout(() => controller.abort(), 60000); // 60 seconds
 
         const response = await fetch(url, {
             method: 'GET',
@@ -71,7 +69,6 @@ app.post('/api/generate-image', async (req, res) => {
             throw new Error(`Pollinations API Error: ${response.status} - ${errorText}`);
         }
 
-        // Pollinations returns the image buffer directly
         const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         const base64 = buffer.toString('base64');
@@ -81,11 +78,17 @@ app.post('/api/generate-image', async (req, res) => {
 
     } catch (error) {
         console.error("Image Generation Error:", error);
+        
+        // Send a friendlier error message if it was a timeout
+        if (error.name === 'AbortError' || error.message.includes('aborted')) {
+             return res.status(504).json({ error: "The magic paint took too long to dry! Please try again. 🎨" });
+        }
+        
         res.status(500).json({ error: error.message || "Failed to generate image." });
     }
 });
 
-// --- CHAT API (Standard Questions) ---
+// --- CHAT API ---
 app.post('/api/chat', async (req, res) => {
     try {
         const { messages } = req.body;
@@ -110,7 +113,7 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// --- VISION API (Analyze Homework/Drawings) ---
+// --- VISION API ---
 app.post('/api/vision', async (req, res) => {
     try {
         const { prompt, image, systemInstruction } = req.body;
@@ -147,10 +150,8 @@ app.post('/api/vision', async (req, res) => {
     }
 });
 
-// --- EMAIL API (Parent Portal Summaries) ---
+// --- EMAIL API ---
 app.post('/api/send-email', async (req, res) => {
-    // This is a placeholder for your email logic (e.g., SendGrid or Nodemailer)
-    // For now, it logs the request so your frontend doesn't crash
     const { to, subject, body } = req.body;
     console.log(`Simulating email to ${to}: ${subject}`);
     res.json({ success: true, message: "Summary logged to server console." });
