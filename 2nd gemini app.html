@@ -2282,14 +2282,22 @@
 
                         try {
                             const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing, cartoon style`;
-                            const randomSeed = Math.floor(Math.random() * 10000);
-                            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=512&height=512&nologo=true&seed=${randomSeed}&model=flux`;
+                            
+                            const response = await fetch('/api/generate-image', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ prompt: finalPrompt })
+                            });
 
-                            // Preload image to ensure it's ready before displaying
+                            if (!response.ok) throw new Error('Network response was not ok');
+
+                            const data = await response.json();
+                            
+                            // Preload image
                             const img = new Image();
                             img.onload = () => {
                                 clearTimeout(mobileTimeout);
-                                this.artImage = imageUrl;
+                                this.artImage = data.image; // Server returns data URI or URL
                                 this.isDrawing = false;
                                 this.playPing();
                                 confetti({ particleCount: 150, spread: 70 });
@@ -2297,15 +2305,15 @@
                             img.onerror = () => {
                                 clearTimeout(mobileTimeout);
                                 this.isDrawing = false;
-                                this.displayText = "The magic paint is drying slowly! Try again in a moment. 🪄";
+                                this.displayText = "The magic paint spilled! Try again. 🎨";
                             };
-                            img.src = imageUrl;
+                            img.src = data.image;
 
                         } catch (e) {
                             clearTimeout(mobileTimeout);
                             console.error("Art Studio Error:", e);
                             this.isDrawing = false;
-                            this.displayText = "The magic paint is drying slowly! Try again in a moment. 🪄";
+                            this.displayText = "The magic paint run out! Check your API credits. 🎫";
                         }
                     },
 
