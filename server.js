@@ -33,6 +33,10 @@ app.get('/api/config', (req, res) => {
 app.post('/api/generate-image', async (req, res) => {
     try {
         const { prompt } = req.body;
+        if (!process.env.OPENROUTER_API_KEY) {
+            console.error("OpenRouter API Key is missing in server environment.");
+            return res.status(500).json({ error: "Server Error: API Key Missing" });
+        }
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
         // Using OpenRouter's image generation endpoint (OpenAI compatible)
