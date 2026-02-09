@@ -2283,19 +2283,22 @@
                         try {
                             const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing, cartoon style`;
                             
-                            // REPLACED PUTER.JS WITH POLLINATIONS (No Login Required)
-                            const randomSeed = Math.floor(Math.random() * 10000);
-                            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=512&height=512&nologo=true&seed=${randomSeed}&model=flux`;
+                            const response = await fetch('/api/generate-image', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ prompt: finalPrompt })
+                            });
 
-                            // Fetch as blob with no-cache to prevent stale responses
-                            const response = await fetch(imageUrl, { cache: 'no-cache' });
-                            const blob = await response.blob();
+                            if (!response.ok) throw new Error('Network response was not ok');
+
+                            const data = await response.json();
                             
                             // Clear the timeout since we succeeded
                             clearTimeout(mobileTimeout);
                             
-                            // Create a lightweight URL (blob:https://...)
-                            this.artImage = URL.createObjectURL(blob);
+                            this.artImage = data.image;
                             
                             this.isDrawing = false; 
                             this.playPing();
@@ -2304,7 +2307,7 @@
                             clearTimeout(mobileTimeout);
                             console.error("Art Studio Error:", e);
                             this.isDrawing = false;
-                            this.displayText = "The magic wand is tired! Let's try again. 🪄";
+                            this.displayText = "The magic paint is drying slowly! Try again in a moment. 🪄";
                         }
                     },
 
