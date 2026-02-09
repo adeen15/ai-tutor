@@ -29,34 +29,6 @@ app.get('/api/config', (req, res) => {
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
 // --- ART GENERATION ROUTE (MOVED TO CLIENT-SIDE PUTER.JS) ---
-app.post('/api/generate-image', async (req, res) => {
-    try {
-        const { prompt } = req.body;
-        if (!prompt) {
-            return res.status(400).json({ error: "Prompt is required" });
-        }
-
-        const randomSeed = Math.floor(Math.random() * 10000);
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true&seed=${randomSeed}&model=flux`;
-
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch image: ${response.statusText}`);
-        }
-
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const base64 = buffer.toString('base64');
-        const dataUrl = `data:image/jpeg;base64,${base64}`;
-
-        res.json({ image: dataUrl });
-
-    } catch (error) {
-        console.error("Image Generation Error:", error);
-        res.status(500).json({ error: "Failed to generate image" });
-    }
-});
-
 // --- CHAT API (Standard Questions) ---
 app.post('/api/chat', async (req, res) => {
     try {
