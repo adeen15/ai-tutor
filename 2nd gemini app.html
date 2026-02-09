@@ -2270,15 +2270,15 @@
                         this.showArtModal = true;
                         this.toggleScroll(true);
 
-                        // SAFETY TIMEOUT: If it takes more than 15 seconds, stop and alert the user
+                        // SAFETY TIMEOUT: Increased to 60s for mobile
                         const mobileTimeout = setTimeout(() => {
                             if (this.isDrawing) {
                                 this.isDrawing = false;
-                                this.displayText = "The magic paint is drying slowly! Try again in a moment. 🪄";
+                                this.displayText = "The magic paint is taking a while! Please check your internet. 🪄";
                                 this.showArtModal = false;
                                 this.toggleScroll(false);
                             }
-                        }, 15000);
+                        }, 60000);
 
                         try {
                             const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing, cartoon style`;
@@ -2287,8 +2287,8 @@
                             const randomSeed = Math.floor(Math.random() * 10000);
                             const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=512&height=512&nologo=true&seed=${randomSeed}&model=flux`;
 
-                            // Fetch as blob to prevent freezing/redirects on mobile
-                            const response = await fetch(imageUrl);
+                            // Fetch as blob with no-cache to prevent stale responses
+                            const response = await fetch(imageUrl, { cache: 'no-cache' });
                             const blob = await response.blob();
                             
                             // Clear the timeout since we succeeded
