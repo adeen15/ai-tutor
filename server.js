@@ -62,9 +62,10 @@ app.post('/api/generate-image', async (req, res) => {
         }
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-        // Using Hugging Face Inference API (Stable Diffusion XL)
+        // Using Hugging Face Inference API (FLUX.1-schnell - Best Free Tier Model)
+        // URL: https://router.huggingface.co/models/black-forest-labs/FLUX.1-schnell
         const response = await fetchWithRetry(
-            "https://router.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+            "https://router.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
             {
                 method: "POST",
                 headers: {
