@@ -23,18 +23,11 @@ app.get('/api/config', (req, res) => {
 });
 
 // --- ART GENERATION ROUTE ---
-// --- UPDATED ART GENERATION ROUTE ---
-// --- NEW PLAYGROUND AI ART ROUTE ---
-// --- UPDATED ART GENERATION ROUTE (PLAYGROUND AI V3) ---
-// --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
-// --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
-// --- ART GENERATION ROUTE (MOVED TO CLIENT-SIDE PUTER.JS) ---
-// --- ART GENERATION ROUTE (POLLINATIONS.AI - with API KEY) ---
 app.post('/api/generate-image', async (req, res) => {
     try {
         const { prompt } = req.body;
         
-        // OPTIONAL: Check for API Key (Recommended for no rate limits)
+        // Check for API Key
         const apiKey = process.env.POLLINATIONS_API_KEY;
         if (!apiKey) {
             console.warn("Warning: POLLINATIONS_API_KEY is missing. Using free tier (rate limited).");
@@ -43,11 +36,16 @@ app.post('/api/generate-image', async (req, res) => {
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
         // Construct Pollinations URL
-        // model=flux is generally better quality
+        // FIX: Added random seed to prevent caching of "Limit Reached" errors
+        const seed = Math.floor(Math.random() * 1000000);
         const encodedPrompt = encodeURIComponent(prompt);
-        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&model=flux`;
+        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&private=true&enhance=false&model=flux&seed=${seed}`;
 
-        const headers = {};
+        // FIX: Added User-Agent to prevent bot-detection blocking
+        const headers = {
+            'User-Agent': 'AI-Tutor-App/1.0'
+        };
+
         if (apiKey) {
             headers['Authorization'] = `Bearer ${apiKey}`;
             console.log("Using provided POLLINATIONS_API_KEY");
