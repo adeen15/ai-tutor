@@ -844,8 +844,9 @@
                     
                     <img id="printable-art" x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
                     
-                    <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold">
-                        Tell me what to draw first!
+                    <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold px-4">
+                        <span x-text="artError || 'Tell me what to draw first!'"></span>
+                        <button x-show="artError" @click="generateArt()" class="block mx-auto mt-4 px-4 py-2 bg-pink-100 text-pink-600 rounded-xl text-sm hover:bg-pink-200">Try Again 🔄</button>
                     </div>
                 </div>
 
@@ -1417,6 +1418,7 @@
                     savedProfile: null,
                     loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                     registeredEmail: '',
+                    artError: null,
                     
                     legalAccepted: false,
                     showLegalDoc: null,
@@ -2266,6 +2268,7 @@
                         }
 
                         this.artImage = null;
+                        this.artError = null;
                         this.isDrawing = true; 
                         this.showArtModal = true;
                         this.toggleScroll(true);
@@ -2274,7 +2277,7 @@
                         const mobileTimeout = setTimeout(() => {
                             if (this.isDrawing) {
                                 this.isDrawing = false;
-                                this.displayText = "The magic paint is taking a while! Please check your internet. 🪄";
+                                this.artError = "The magic paint is taking a while! Please check your internet. 🪄";
                                 this.showArtModal = false;
                                 this.toggleScroll(false);
                             }
@@ -2289,7 +2292,10 @@
                                 body: JSON.stringify({ prompt: finalPrompt })
                             });
 
-                            if (!response.ok) throw new Error('Network response was not ok');
+                            if (!response.ok) {
+                                const errData = await response.json();
+                                throw new Error(errData.error || 'Network error');
+                            }
 
                             const data = await response.json();
                             
@@ -2305,7 +2311,7 @@
                             img.onerror = () => {
                                 clearTimeout(mobileTimeout);
                                 this.isDrawing = false;
-                                this.displayText = "The magic paint spilled! Try again. 🎨";
+                                this.artError = "The magic paint spilled! Try again. 🎨";
                             };
                             img.src = data.image;
 
@@ -2313,7 +2319,7 @@
                             clearTimeout(mobileTimeout);
                             console.error("Art Studio Error:", e);
                             this.isDrawing = false;
-                            this.displayText = "The magic paint run out! Check your API credits. 🎫";
+                            this.artError = e.message || "The magic paint run out! Check your API credits. 🎫";
                         }
                     },
 
