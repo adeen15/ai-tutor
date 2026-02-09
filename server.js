@@ -50,14 +50,23 @@ app.post('/api/generate-image', async (req, res) => {
         const headers = {};
         if (apiKey) {
             headers['Authorization'] = `Bearer ${apiKey}`;
+            console.log("Using provided POLLINATIONS_API_KEY");
+        } else {
+            console.log("No POLLINATIONS_API_KEY provided - using free tier");
         }
 
-        console.log(`Generating image via Pollinations: ${url}`);
+        console.log(`[VERCEL-DEBUG] Requesting Pollinations URL: ${url}`);
+        
+        // Add timeout to fetch to prevent hanging indefinitely
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
 
         const response = await fetch(url, {
             method: 'GET',
-            headers: headers
+            headers: headers,
+            signal: controller.signal
         });
+        clearTimeout(timeout);
 
         if (!response.ok) {
             const errorText = await response.text();
