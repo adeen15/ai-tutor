@@ -29,51 +29,46 @@ app.get('/api/config', (req, res) => {
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
 // --- ART GENERATION ROUTE (MOVED TO CLIENT-SIDE PUTER.JS) ---
-// --- ART GENERATION ROUTE (OpenRouter) ---
+// --- ART GENERATION ROUTE (Hugging Face - Free Tier) ---
 app.post('/api/generate-image', async (req, res) => {
     try {
         const { prompt } = req.body;
-        if (!process.env.OPENROUTER_API_KEY) {
-            console.error("OpenRouter API Key is missing in server environment.");
-            return res.status(500).json({ error: "Server Error: API Key Missing" });
+        // Check for Hugging Face API Key
+        if (!process.env.HUGGINGFACE_API_KEY) {
+            console.error("Hugging Face API Key is missing.");
+            return res.status(500).json({ error: "Server Config Error: HUGGINGFACE_API_KEY Missing" });
         }
         if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-        // Using OpenRouter's image generation endpoint (OpenAI compatible)
-        const response = await fetch("https://openrouter.ai/api/v1/images/generations", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://github.com/adeen/ai-tutor", // Required by OpenRouter
-                "X-Title": "AI Tutor"
-            },
-            body: JSON.stringify({
-                model: "stabilityai/stable-diffusion-xl-base-1.0",
-                prompt: prompt,
-                n: 1,
-                size: "1024x1024", 
-                response_format: "b64_json"
-            })
-        });
+        // Using Hugging Face Inference API (Stable Diffusion XL)
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ inputs: prompt }),
+            }
+        );
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`OpenRouter API Error: ${response.status} - ${errorText}`);
+            throw new Error(`Hugging Face API Error: ${response.status} - ${errorText}`);
         }
 
-        const data = await response.json();
-        const image = data.data[0].b64_json || data.data[0].url; // Handle both base64 and URL
-        
-        // If it's a URL, we might want to fetch it and convert to base64 to avoid CORS on client
-        // but for now let's hope for b64_json support or return the URL
-        const finalImage = image.startsWith('http') ? image : `data:image/png;base64,${image}`;
+        // Hugging Face returns the image directly as a blob/buffer
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const base64 = buffer.toString('base64');
+        const dataUrl = `data:image/jpeg;base64,${base64}`;
 
-        res.json({ image: finalImage });
+        res.json({ image: dataUrl });
 
     } catch (error) {
         console.error("Image Generation Error:", error);
-        res.status(500).json({ error: "Failed to generate image. Please try again." });
+        res.status(500).json({ error: "Failed to generate image. Please try again later." });
     }
 });
 
