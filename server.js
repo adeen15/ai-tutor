@@ -29,6 +29,50 @@ app.get('/api/config', (req, res) => {
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE OPTIMIZED) ---
 // --- UPDATED ART GENERATION ROUTE (MAGE.SPACE / SDXL OPTIMIZED) ---
 // --- ART GENERATION ROUTE (MOVED TO CLIENT-SIDE PUTER.JS) ---
+// --- ART GENERATION ROUTE (OpenRouter) ---
+app.post('/api/generate-image', async (req, res) => {
+    try {
+        const { prompt } = req.body;
+        if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+
+        // Using OpenRouter's image generation endpoint (OpenAI compatible)
+        const response = await fetch("https://openrouter.ai/api/v1/images/generations", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://github.com/adeen/ai-tutor", // Required by OpenRouter
+                "X-Title": "AI Tutor"
+            },
+            body: JSON.stringify({
+                model: "stabilityai/stable-diffusion-xl-base-1.0",
+                prompt: prompt,
+                n: 1,
+                size: "1024x1024", 
+                response_format: "b64_json"
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`OpenRouter API Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        const image = data.data[0].b64_json || data.data[0].url; // Handle both base64 and URL
+        
+        // If it's a URL, we might want to fetch it and convert to base64 to avoid CORS on client
+        // but for now let's hope for b64_json support or return the URL
+        const finalImage = image.startsWith('http') ? image : `data:image/png;base64,${image}`;
+
+        res.json({ image: finalImage });
+
+    } catch (error) {
+        console.error("Image Generation Error:", error);
+        res.status(500).json({ error: "Failed to generate image. Please try again." });
+    }
+});
+
 // --- CHAT API (Standard Questions) ---
 app.post('/api/chat', async (req, res) => {
     try {
