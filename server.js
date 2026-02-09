@@ -64,7 +64,7 @@ app.post('/api/generate-image', async (req, res) => {
 
         // Using Hugging Face Inference API (Stable Diffusion XL)
         const response = await fetchWithRetry(
-            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+            "https://router.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
             {
                 method: "POST",
                 headers: {
