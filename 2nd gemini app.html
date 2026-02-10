@@ -2114,7 +2114,7 @@
 
                         this.pathProgress = data.learning_stats?.path_progress || {};
                         
-                        const dailyData = data.daily_usage || {};
+                        const dailyData = data.daily_usage || (data.learning_stats && data.learning_stats.daily_usage) || {};
                         const today = new Date().toDateString();
                         if (dailyData.date !== today) {
                             this.dailyQuestionsUsed = 0;
