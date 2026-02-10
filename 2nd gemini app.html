@@ -2086,19 +2086,19 @@
                             ? data.learning_stats.child_profile 
                             : { name: data.name, age: '', grade: '', ageRange: '6-7' }; 
 
-                        this.totalMinutesLearned = data.total_minutes || 0;
-                        this.emailSummaryEnabled = data.email_summary_enabled || false;
-                        this.lastSummaryDate = data.last_summary_date || null;
-                        this.currentLanguage = data.current_language || 'English';
-                        this.currentCurriculumRegion = data.current_curriculum_region || 'Global';
+                        this.totalMinutesLearned = data.total_minutes || (data.learning_stats && data.learning_stats.total_minutes) || 0;
+                        this.emailSummaryEnabled = data.email_summary_enabled || (data.learning_stats && data.learning_stats.email_summary_enabled) || false;
+                        this.lastSummaryDate = data.last_summary_date || (data.learning_stats && data.learning_stats.last_summary_date) || null;
+                        this.currentLanguage = data.current_language || (data.learning_stats && data.learning_stats.current_language) || 'English';
+                        this.currentCurriculumRegion = (data.learning_stats && data.learning_stats.current_curriculum_region) || 'Global';
 
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') !== 'success') {
-                            this.isPremium = data.is_premium || false;
-                            this.premiumExpiry = data.premium_expiry;
+                            this.isPremium = data.is_premium || (data.learning_stats && data.learning_stats.is_premium) || false;
+                            this.premiumExpiry = data.premium_expiry || (data.learning_stats && data.learning_stats.premium_expiry);
                         }
                         
-                        this.inventory = data.inventory || [];
+                        this.inventory = data.inventory || (data.learning_stats && data.learning_stats.inventory) || [];
                         this.equippedItem = data.equipped_item;
                         this.parentLogs = data.parent_logs || [];
                         
@@ -2418,25 +2418,26 @@
                         const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                         const safeStats = JSON.parse(JSON.stringify(this.learningStats));
 
+                        // Embed missing columns into learning_stats to avoid schema errors
+                        safeStats.daily_usage = {
+                            date: new Date().toDateString(),
+                            questions_used: this.dailyQuestionsUsed,
+                            reward_claimed: this.rewardClaimedToday
+                        };
+                        safeStats.inventory = safeInventory;
+                        safeStats.is_premium = this.isPremium;
+                        safeStats.premium_expiry = this.premiumExpiry;
+                        safeStats.total_minutes = this.totalMinutesLearned;
+                        safeStats.email_summary_enabled = this.emailSummaryEnabled;
+                        safeStats.last_summary_date = this.lastSummaryDate;
+                        safeStats.current_language = this.currentLanguage;
+
                         const updateData = {
                             coins: this.coins,
                             xp: this.xp,
-                            total_minutes: this.totalMinutesLearned,
-                            email_summary_enabled: this.emailSummaryEnabled,
-                            last_summary_date: this.lastSummaryDate,
-                            current_language: this.currentLanguage,
-                            // current_curriculum_region: this.currentCurriculumRegion, // Column missing in DB schema
-                            inventory: safeInventory,
-                            equipped_item: this.equippedItem,
                             learning_stats: safeStats,
-                            parent_logs: safeLogs, 
-                            is_premium: this.isPremium,
-                            premium_expiry: this.premiumExpiry,
-                            daily_usage: {
-                                date: new Date().toDateString(),
-                                questions_used: this.dailyQuestionsUsed,
-                                reward_claimed: this.rewardClaimedToday
-                            }
+                            parent_logs: safeLogs,
+                            // Removed top-level columns that are likely missing in DB
                         };
 
                         try {
