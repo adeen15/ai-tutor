@@ -22,76 +22,7 @@ app.get('/api/config', (req, res) => {
     });
 });
 
-// --- ART GENERATION ROUTE ---
-app.post('/api/generate-image', async (req, res) => {
-    try {
-        const { prompt } = req.body;
-        
-        // Check for API Key
-        const apiKey = process.env.POLLINATIONS_API_KEY;
-        
-        // DEBUG LOG: Check Vercel logs to see if this says "FOUND" or "MISSING"
-        if (apiKey) {
-            console.log("✅ POLLINATIONS_API_KEY found in environment variables.");
-        } else {
-            console.warn("⚠️ POLLINATIONS_API_KEY is MISSING. Rate limits will apply.");
-        }
 
-        if (!prompt) return res.status(400).json({ error: "Prompt is required" });
-
-        // FIX 1: Random Seed to prevent caching the "Limit Reached" image
-        const seed = Math.floor(Math.random() * 1000000);
-        
-        // FIX 2: Use 'turbo' model instead of 'flux'. 
-        // 'flux' is too slow for Vercel Free Tier (10s timeout) and causes 504 errors.
-        // 'turbo' is fast and less likely to hit strict rate limits.
-        const encodedPrompt = encodeURIComponent(prompt);
-        const url = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true&private=true&enhance=false&model=turbo&seed=${seed}`;
-
-        const headers = {
-            'User-Agent': 'AI-Tutor-App/1.0',
-            'Referer': 'https://pollinations.ai/'
-        };
-
-        if (apiKey) {
-            headers['Authorization'] = `Bearer ${apiKey}`;
-        }
-
-        console.log(`[VERCEL-DEBUG] Requesting URL: ${url}`);
-        
-        // Setup timeout (Vercel free tier is strict 10s, but we set 15s just in case)
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15000); 
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: headers,
-            signal: controller.signal
-        });
-        clearTimeout(timeout);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Pollinations API Error: ${response.status} - ${errorText}`);
-        }
-
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const base64 = buffer.toString('base64');
-        const dataUrl = `data:image/jpeg;base64,${base64}`;
-
-        res.json({ image: dataUrl });
-
-    } catch (error) {
-        console.error("Image Generation Error:", error);
-        
-        if (error.name === 'AbortError' || error.message.includes('aborted')) {
-             return res.status(504).json({ error: "The magic paint took too long to dry! Please try again. 🎨" });
-        }
-        
-        res.status(500).json({ error: error.message || "Failed to generate image." });
-    }
-});
 
 // --- CHAT API ---
 app.post('/api/chat', async (req, res) => {
