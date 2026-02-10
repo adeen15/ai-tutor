@@ -46,7 +46,7 @@ app.post('/api/generate-image', async (req, res) => {
         // 'flux' is too slow for Vercel Free Tier (10s timeout) and causes 504 errors.
         // 'turbo' is fast and less likely to hit strict rate limits.
         const encodedPrompt = encodeURIComponent(prompt);
-        const url = `https://pollinations.ai/p/${encodedPrompt}?nologo=true&private=true&enhance=false&model=turbo&seed=${seed}`;
+        const url = `https://gen.pollinations.ai/image/${encodedPrompt}?nologo=true&private=true&enhance=false&model=turbo&seed=${seed}`;
 
         const headers = {
             'User-Agent': 'AI-Tutor-App/1.0',
