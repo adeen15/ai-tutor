@@ -2451,7 +2451,7 @@
                         } catch (err) {
                             console.error("Sync Error:", err);
                             // Alerting the user so they know their progress might not be saved
-                            alert("Warning: Could not save progress. Please check your connection or permissions.");
+                            alert("Sync Error: " + (err.message || JSON.stringify(err)));
                         }
                     },
 
