@@ -2359,6 +2359,8 @@
                     },
 
                     startDailyLesson() {
+                        this.currentChar = this.characters[0]; // Force Professor Dino
+                        this.currentMoodIcon = this.currentChar.icon;
                         this.showDailyPath = true;
                         this.toggleScroll(true);
                     },
