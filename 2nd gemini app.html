@@ -2110,7 +2110,7 @@
                         }
                         
                         this.inventory = data.inventory || this.learningStats.inventory || [];
-                        this.equippedItem = data.equipped_item;
+                        this.equippedItem = data.equipped_item || this.learningStats.equipped_item;
                         this.parentLogs = data.parent_logs || [];
                         
                         this.learningStats = data.learning_stats || {
@@ -2444,6 +2444,7 @@
                         safeStats.email_summary_enabled = this.emailSummaryEnabled;
                         safeStats.last_summary_date = this.lastSummaryDate;
                         safeStats.current_language = this.currentLanguage;
+                        safeStats.equipped_item = this.equippedItem; // Save equipped item to JSON blob
 
                         const updateData = {
                             coins: this.coins,
