@@ -2337,7 +2337,7 @@
                                     xp: 0,
                                     learning_stats: initialStats,
                                     parent_logs: [],
-                                    current_curriculum_region: 'Global'
+                                    // current_curriculum_region: 'Global' // Column missing in DB schema
                                 }
                             ]);
 
@@ -2425,7 +2425,7 @@
                             email_summary_enabled: this.emailSummaryEnabled,
                             last_summary_date: this.lastSummaryDate,
                             current_language: this.currentLanguage,
-                            current_curriculum_region: this.currentCurriculumRegion,
+                            // current_curriculum_region: this.currentCurriculumRegion, // Column missing in DB schema
                             inventory: safeInventory,
                             equipped_item: this.equippedItem,
                             learning_stats: safeStats,
