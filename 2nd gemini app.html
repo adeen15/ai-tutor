@@ -2082,23 +2082,34 @@
                         this.coins = Number(data.coins) || 0; 
                         this.xp = data.xp || 0;
                         
-                        this.childProfile = (data.learning_stats && data.learning_stats.child_profile) 
-                            ? data.learning_stats.child_profile 
-                            : { name: data.name, age: '', grade: '', ageRange: '6-7' }; 
+                        // Robustly handle learning_stats (it might be a JSON string or object)
+                        let rawStats = data.learning_stats;
+                        if (typeof rawStats === 'string') {
+                            try { rawStats = JSON.parse(rawStats); } catch(e) { console.error("Parse stats failed", e); rawStats = {}; }
+                        }
+                        this.learningStats = rawStats || {
+                            wordsLearned: 0,
+                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                            child_profile: { name: data.name, ageRange: '6-7' },
+                            recent_mistakes: [],
+                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
+                        };
 
-                        this.totalMinutesLearned = data.total_minutes || (data.learning_stats && data.learning_stats.total_minutes) || 0;
-                        this.emailSummaryEnabled = data.email_summary_enabled || (data.learning_stats && data.learning_stats.email_summary_enabled) || false;
-                        this.lastSummaryDate = data.last_summary_date || (data.learning_stats && data.learning_stats.last_summary_date) || null;
-                        this.currentLanguage = data.current_language || (data.learning_stats && data.learning_stats.current_language) || 'English';
-                        this.currentCurriculumRegion = (data.learning_stats && data.learning_stats.current_curriculum_region) || 'Global';
+                        this.childProfile = this.learningStats.child_profile || { name: data.name, ageRange: '6-7' };
+
+                        this.totalMinutesLearned = data.total_minutes || this.learningStats.total_minutes || 0;
+                        this.emailSummaryEnabled = data.email_summary_enabled || this.learningStats.email_summary_enabled || false;
+                        this.lastSummaryDate = data.last_summary_date || this.learningStats.last_summary_date || null;
+                        this.currentLanguage = data.current_language || this.learningStats.current_language || 'English';
+                        this.currentCurriculumRegion = this.learningStats.current_curriculum_region || 'Global';
 
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') !== 'success') {
-                            this.isPremium = data.is_premium || (data.learning_stats && data.learning_stats.is_premium) || false;
-                            this.premiumExpiry = data.premium_expiry || (data.learning_stats && data.learning_stats.premium_expiry);
+                            this.isPremium = data.is_premium || this.learningStats.is_premium || false;
+                            this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
                         }
                         
-                        this.inventory = data.inventory || (data.learning_stats && data.learning_stats.inventory) || [];
+                        this.inventory = data.inventory || this.learningStats.inventory || [];
                         this.equippedItem = data.equipped_item;
                         this.parentLogs = data.parent_logs || [];
                         
@@ -2112,16 +2123,18 @@
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
                         if(!this.learningStats.emotions) this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
 
-                        this.pathProgress = data.learning_stats?.path_progress || {};
+                        this.pathProgress = this.learningStats.path_progress || {};
                         
-                        const dailyData = data.daily_usage || (data.learning_stats && data.learning_stats.daily_usage) || {};
+                        const dailyData = data.daily_usage || this.learningStats.daily_usage || {};
                         const today = new Date().toDateString();
-                        if (dailyData.date !== today) {
+                        const localLastClaim = localStorage.getItem('last_reward_date_' + this.registeredEmail);
+
+                        if (dailyData.date !== today && localLastClaim !== today) {
                             this.dailyQuestionsUsed = 0;
                             this.rewardClaimedToday = false;
                         } else {
                             this.dailyQuestionsUsed = dailyData.questions_used || 0;
-                            this.rewardClaimedToday = dailyData.reward_claimed || false;
+                            this.rewardClaimedToday = true; // If date matches, it means we have data for today
                         }
                         
                         this.updateLevel();
@@ -2551,6 +2564,7 @@
                             colors: ['#FFD700', '#FF69B4', '#00BFFF']
                         });
                         this.playPing();
+                        localStorage.setItem('last_reward_date_' + this.registeredEmail, new Date().toDateString());
                         await this.syncData(); 
                     },
                     trySetChar(char) {
