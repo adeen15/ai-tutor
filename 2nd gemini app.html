@@ -515,13 +515,7 @@
                             class="flex-1 bg-transparent px-2 py-3 sm:py-4 outline-none text-base sm:text-xl font-bold text-gray-700 min-w-0"
                         >
                         
-                        <button 
-                            @click="generateArt()"
-                            class="ml-2 btn-grad text-white rounded-2xl px-3 py-2 sm:px-6 sm:py-2 font-kids text-xs sm:text-lg shadow-lg transform transition hover:scale-105 active:scale-90 whitespace-nowrap"
-                            style="background: linear-gradient(to right, #ec4899, #8b5cf6)"
-                        >
-                            🎨 <span x-text="t('draw')">Draw</span>
-                        </button>
+
 
                         <button 
                             @click="askTutor()"
@@ -829,38 +823,7 @@
             </div>
         </div>
 
-        <div x-show="showArtModal" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
-            <div @click.away="showArtModal = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__zoomIn text-center border-4 border-pink-200">
-                <button @click="showArtModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
-                
-                <h2 class="text-4xl font-kids text-pink-500 mb-2" x-text="t('art_studio')">Magic Art Studio 🎨</h2>
-                <p class="text-gray-500 font-bold mb-6">Turning your words into coloring pages...</p>
 
-                <div class="min-h-[300px] flex items-center justify-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 mb-6 relative overflow-hidden">
-                    <div x-show="isDrawing" class="flex flex-col items-center">
-                        <div class="spinner border-pink-400 mb-4"></div>
-                        <p class="font-kids text-pink-400 animate-pulse">Painting... 🖌️</p>
-                    </div>
-                    
-                    <img id="printable-art" x-show="artImage && !isDrawing" :src="artImage" class="max-w-full max-h-[400px] rounded-xl shadow-lg animate__animated animate__fadeIn">
-                    
-                    <div x-show="!artImage && !isDrawing" class="text-gray-400 font-bold px-4">
-                        <span x-text="artError || 'Tell me what to draw first!'"></span>
-                        <button x-show="artError" @click="generateArt()" class="block mx-auto mt-4 px-4 py-2 bg-pink-100 text-pink-600 rounded-xl text-sm hover:bg-pink-200">Try Again 🔄</button>
-                    </div>
-                </div>
-
-                <div class="flex justify-center gap-4" x-show="artImage && !isDrawing">
-                    <button @click="window.print()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">
-                        <i class="fas fa-print mr-2"></i> Print
-                    </button>
-                    
-                    <button @click="downloadArt()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform flex items-center">
-                        <i class="fas fa-download mr-2"></i> Save
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
             <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
@@ -1418,7 +1381,7 @@
                     savedProfile: null,
                     loginForm: { name: '', email: '', pin: '', ageRange: '6-7' },
                     registeredEmail: '',
-                    artError: null,
+
                     
                     legalAccepted: false,
                     showLegalDoc: null,
@@ -1500,9 +1463,7 @@
                     quizOptions: [],
                     quizCorrectIndex: 0,
 
-                    showArtModal: false,
-                    isDrawing: false,
-                    artImage: null,
+
 
                     // --- VISION STATE ---
                     showVisionModal: false,
@@ -1558,35 +1519,35 @@
                         { 
                             name: "Professor Dino", 
                             subject: "History", 
-                            drawingTopics: ["dino", "rex", "fossil", "pyramid", "mummy", "king", "castle", "knight", "sword", "shield", "history", "ancient", "egypt", "rome", "greek", "old", "ruin", "temple"],
+
                             suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
                             icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                         },
                         { 
                             name: "Rocket Robot", 
                             subject: "Robots and AI", 
-                            drawingTopics: ["robot", "bot", "computer", "phone", "screen", "wire", "circuit", "drone", "cyborg", "machine", "future", "tech", "ai", "code", "game"],
+
                             suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
                             icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
                         },
                         { 
                             name: "Starry Alien", 
                             subject: "Space Exploration", 
-                            drawingTopics: ["space", "star", "moon", "sun", "planet", "mars", "earth", "galaxy", "comet", "rocket", "ship", "ufo", "alien", "astronaut", "sky"],
+
                             suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
                             icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
                         },
                         { 
                             name: "Magic Cat", 
                             subject: "Science", 
-                            drawingTopics: ["science", "lab", "flask", "atom", "magnet", "microscope", "bacteria", "cell", "germ", "ice", "fire", "smoke", "chemical", "potion", "glass"],
+
                             suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
                             icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
                         },
                         { 
                             name: "Bouncy Bee", 
                             subject: "Nature", 
-                            drawingTopics: ["nature", "animal", "dog", "cat", "bird", "fish", "tree", "flower", "leaf", "forest", "jungle", "ocean", "river", "bee", "bug", "butterfly", "sky", "cloud", "rain", "sun"],
+
                             suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
                             icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
                         }
@@ -1598,9 +1559,9 @@
                             'English': {
                                 adventure_map: 'Adventure Map 🗺️', magic_auras: 'Magic Auras', daily_gift: 'Daily Gift',
                                 parent_portal: 'Parent Dashboard', says: 'says', challenge_me: 'Challenge Me!', listen: 'Listen',
-                                stop: 'Stop', draw: 'Draw', ask: 'ASK!', ask_about: 'Ask about', listening: 'Listening',
+                                stop: 'Stop', ask: 'ASK!', ask_about: 'Ask about', listening: 'Listening',
                                 teacher_of: 'Teacher of', thinking: 'Thinking', correct: 'Correct', awesome: 'Awesome!',
-                                art_studio: 'Magic Art Studio 🎨', daily_rewards: 'Daily Rewards!', claim: 'Claim',
+                                daily_rewards: 'Daily Rewards!', claim: 'Claim',
                                 see_you_tomorrow: 'See You Tomorrow!', active: 'Active', buy_now: 'Buy Now', activate: 'Activate',
                                 personalized_mission: 'Personalized Mission', choose_journey: 'Choose your journey!', complete: 'Complete',
                                 read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here'
@@ -1608,9 +1569,9 @@
                             'Spanish': {
                                 adventure_map: 'Mapa de Aventuras 🗺️', magic_auras: 'Auras Mágicas', daily_gift: 'Regalo Diario',
                                 parent_portal: 'Panel de Padres', says: 'dice', challenge_me: '¡Desafíame!', listen: 'Escuchar',
-                                stop: 'Parar', draw: 'Dibujar', ask: '¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
+                                stop: 'Parar', ask: '¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
                                 teacher_of: 'Profesor de', thinking: 'Pensando', correct: '¡Correcto!', awesome: '¡Genial!',
-                                art_studio: 'Estudio de Arte Mágico 🎨', daily_rewards: '¡Premios Diarios!', claim: 'Reclamar',
+                                daily_rewards: '¡Premios Diarios!', claim: 'Reclamar',
                                 see_you_tomorrow: '¡Hasta Mañana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
                                 personalized_mission: 'Misión Personalizada', choose_journey: '¡Elige tu viaje!', complete: 'Completo',
                                 read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí'
@@ -1618,9 +1579,9 @@
                             'French': {
                                 adventure_map: 'Carte d\'Aventure 🗺️', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
                                 parent_portal: 'Tableau de Bord', says: 'dit', challenge_me: 'Défie-moi!', listen: 'Écouter',
-                                stop: 'Arrêter', draw: 'Dessiner', ask: 'DEMANDER!', ask_about: 'Demander sur', listening: 'Écoute',
+                                stop: 'Arrêter', ask: 'DEMANDER!', ask_about: 'Demander sur', listening: 'Écoute',
                                 teacher_of: 'Professeur de', thinking: 'Réflexion', correct: 'Correct!', awesome: 'Génial!',
-                                art_studio: 'Studio d\'Art Magique 🎨', daily_rewards: 'Récompenses Quotidiennes!', claim: 'Réclamer',
+                                daily_rewards: 'Récompenses Quotidiennes!', claim: 'Réclamer',
                                 see_you_tomorrow: 'À Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
                                 personalized_mission: 'Mission Personnalisée', choose_journey: 'Choisis ton voyage!', complete: 'Terminé',
                                 read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Écris ici'
@@ -1628,9 +1589,9 @@
                             'German': {
                                 adventure_map: 'Abenteuerkarte 🗺️', magic_auras: 'Magische Auren', daily_gift: 'Tägliches Geschenk',
                                 parent_portal: 'Eltern-Dashboard', says: 'sagt', challenge_me: 'Fordere mich heraus!', listen: 'Hören',
-                                stop: 'Stopp', draw: 'Zeichnen', ask: 'FRAGEN!', ask_about: 'Fragen über', listening: 'Hören',
+                                stop: 'Stopp', ask: 'FRAGEN!', ask_about: 'Fragen über', listening: 'Hören',
                                 teacher_of: 'Lehrer für', thinking: 'Nachdenken', correct: 'Richtig!', awesome: 'Super!',
-                                art_studio: 'Magisches Kunstatelier 🎨', daily_rewards: 'Tägliche Belohnungen!', claim: 'Abholen',
+                                daily_rewards: 'Tägliche Belohnungen!', claim: 'Abholen',
                                 see_you_tomorrow: 'Bis morgen!', active: 'Aktiv', buy_now: 'Kaufen', activate: 'Aktivieren',
                                 personalized_mission: 'Personalisierte Mission', choose_journey: 'Wähle deine Reise!', complete: 'Abgeschlossen',
                                 read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!', type_here: 'Hier tippen'
@@ -1638,9 +1599,9 @@
                             'Arabic': {
                                 adventure_map: 'خريطة المغامرة 🗺️', magic_auras: 'الهالات السحرية', daily_gift: 'هدية يومية',
                                 parent_portal: 'لوحة تحكم الوالدين', says: 'يقول', challenge_me: 'تحداني!', listen: 'استمع',
-                                stop: 'توقف', draw: 'ارسم', ask: 'اسأل!', ask_about: 'اسأل عن', listening: 'أسمعك',
+                                stop: 'توقف', ask: 'اسأل!', ask_about: 'اسأل عن', listening: 'أسمعك',
                                 teacher_of: 'مدرس', thinking: 'يفكر', correct: 'صحيح!', awesome: 'رائع!',
-                                art_studio: 'مرسم الفن السحري 🎨', daily_rewards: 'مكافآت يومية!', claim: 'احصل عليها',
+                                daily_rewards: 'مكافآت يومية!', claim: 'احصل عليها',
                                 see_you_tomorrow: 'أراك غداً!', active: 'نشط', buy_now: 'شراء', activate: 'تفعيل',
                                 personalized_mission: 'مهمة مخصصة', choose_journey: 'اختر رحلتك!', complete: 'مكتمل',
                                 read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!', type_here: 'اكتب هنا'
@@ -2251,104 +2212,7 @@
                         alert(this.emailSummaryEnabled ? "Weekly summaries activated! We will email you your child's learning wins." : "Weekly summaries deactivated.");
                     },
 
-                    async generateArt() {
-                        if (!this.userQuery || this.userQuery.trim() === "") {
-                            alert("Tell me what to draw first!");
-                            return;
-                        }
 
-                        const queryLower = this.userQuery.toLowerCase();
-                        const isOnTopic = this.currentChar.drawingTopics.some(topic => queryLower.includes(topic));
-
-                        if (!isOnTopic) { 
-                            this.displayText = `Ooh! I only know how to draw ${this.currentChar.subject} things! 🎨 Try: ${this.currentChar.drawingTopics.slice(0,3).join(", ")}!`;
-                            this.speak(this.displayText);
-                            this.currentMoodIcon = '🤔';
-                            return; 
-                        }
-
-                        this.artImage = null;
-                        this.artError = null;
-                        this.isDrawing = true; 
-                        this.showArtModal = true;
-                        this.toggleScroll(true);
-
-                        // SAFETY TIMEOUT: Increased to 60s for mobile
-                        const mobileTimeout = setTimeout(() => {
-                            if (this.isDrawing) {
-                                this.isDrawing = false;
-                                this.artError = "The magic paint is taking a while! Please check your internet. 🪄";
-                                this.showArtModal = false;
-                                this.toggleScroll(false);
-                            }
-                        }, 60000);
-
-                        try {
-                            const finalPrompt = `${this.userQuery}, coloring book page, black and white outline, simple thick lines, white background, no shading, kid-friendly drawing, cartoon style`;
-                            
-                            const response = await fetch('/api/generate-image', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ prompt: finalPrompt })
-                            });
-
-                            if (!response.ok) {
-                                let errMsg = 'Network error';
-                                try {
-                                    const errData = await response.json();
-                                    errMsg = errData.error || errMsg;
-                                } catch (jsonErr) {
-                                    // If JSON parse fails (e.g. Vercel 504 HTML), use status text
-                                    errMsg = `Server Error (${response.status}): ${response.statusText}`;
-                                }
-                                throw new Error(errMsg);
-                            }
-
-                            const data = await response.json();
-                            
-                            // Preload image
-                            const img = new Image();
-                            img.onload = () => {
-                                clearTimeout(mobileTimeout);
-                                this.artImage = data.image; // Server returns data URI or URL
-                                this.isDrawing = false;
-                                this.playPing();
-                                confetti({ particleCount: 150, spread: 70 });
-                            };
-                            img.onerror = () => {
-                                clearTimeout(mobileTimeout);
-                                this.isDrawing = false;
-                                this.artError = "The magic paint spilled! Try again. 🎨";
-                            };
-                            img.src = data.image;
-
-                        } catch (e) {
-                            clearTimeout(mobileTimeout);
-                            console.error("Art Studio Error:", e);
-                            this.isDrawing = false;
-                            this.artError = e.message || "The magic paint run out! Check your server logs/keys. 🎫";
-                        }
-                    },
-
-                    async downloadArt() {
-                        if (!this.artImage) return;
-                        try {
-                            const response = await fetch(this.artImage);
-                            const blob = await response.blob();
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.style.display = 'none';
-                            a.href = url;
-                            a.download = 'magic-art-' + Date.now() + '.png'; 
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-                        } catch (e) {
-                            console.error("Download failed:", e);
-                            window.open(this.artImage, '_blank');
-                        }
-                    },
 
                     getAgeLogic() {
                         const range = this.childProfile.ageRange || '6-7';
