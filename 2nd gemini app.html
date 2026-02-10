@@ -2413,6 +2413,7 @@
                         this.learningStats.path_progress = this.pathProgress;
                         this.learningStats.child_profile = this.childProfile;
 
+                        // Deep copy to remove reactivity proxies which might confuse Supabase
                         const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                         const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                         const safeStats = JSON.parse(JSON.stringify(this.learningStats));
@@ -2438,10 +2439,20 @@
                             }
                         };
 
-                        await this.supabase
-                            .from('profiles')
-                            .update(updateData)
-                            .eq('email', this.registeredEmail);
+                        try {
+                            const { error } = await this.supabase
+                                .from('profiles')
+                                .update(updateData)
+                                .eq('email', this.registeredEmail);
+
+                            if (error) throw error;
+                            
+                            // console.log("Data synced successfully!"); 
+                        } catch (err) {
+                            console.error("Sync Error:", err);
+                            // Alerting the user so they know their progress might not be saved
+                            alert("Warning: Could not save progress. Please check your connection or permissions.");
+                        }
                     },
 
                     toggleScroll(disable) {
