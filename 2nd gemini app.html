@@ -1641,35 +1641,35 @@
                         { 
                             name: "Professor Dino", 
                             subject: "History", 
-
+                            subjectKey: "history",
                             suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
                             icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                         },
                         { 
                             name: "Rocket Robot", 
                             subject: "Robots and AI", 
-
+                            subjectKey: "robots",
                             suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
                             icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
                         },
                         { 
                             name: "Starry Alien", 
                             subject: "Space Exploration", 
-
+                            subjectKey: "space",
                             suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
                             icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
                         },
                         { 
                             name: "Magic Cat", 
                             subject: "Science", 
-
+                            subjectKey: "science",
                             suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
                             icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
                         },
                         { 
                             name: "Bouncy Bee", 
                             subject: "Nature", 
-
+                            subjectKey: "nature",
                             suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
                             icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
                         }
@@ -2854,9 +2854,18 @@
                         window.speechSynthesis.cancel();
                         this.isSpeaking = false;
                         this.isVoiceNativeMode = false;
+                        this.updateLevel(); // Update level for this specific character
                     },
                     updateLevel() {
-                        this.level = Math.floor(this.xp / 100) + 1;
+                        // Calculate level based on the CURRENT character's subject mastery
+                        // Standard: Level 1 (0-39), Level 2 (40-79), Level 3 (80-119), Level 4 (120+)
+                        const subjectKey = this.currentChar.subjectKey || 'history'; // Fallback to history for Dino
+                        const score = this.learningStats.subjects[subjectKey] || 0;
+                        
+                        if (score >= 120) this.level = 4;
+                        else if (score >= 80) this.level = 3;
+                        else if (score >= 40) this.level = 2;
+                        else this.level = 1;
                     },
                     isQuerySafe(query) {
                         const lowerQuery = query.toLowerCase();
