@@ -450,6 +450,20 @@
                 </div>
 
                 <div class="w-full max-w-2xl order-1 lg:order-2">
+                    <!-- 30-Day Path Banner -->
+                    <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/20 p-3 rounded-2xl text-3xl group-hover:rotate-12 transition-transform">📅</div>
+                            <div>
+                                <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Your Learning Plan</div>
+                                <div class="text-3xl font-kids" x-text="getDailyContent().title">Start Day 1</div>
+                                <div class="text-xs font-bold opacity-90 mt-1 text-blue-100" x-text="getDailyContent().content.substring(0,30) + '...'"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white text-blue-600 px-6 py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors">
+                            START <i class="fas fa-play ml-1"></i>
+                        </div>
+                    </button>
                     <div class="chat-bubble p-6 sm:p-8 md:p-10 mb-8 min-h-[180px] sm:min-h-[220px] flex flex-col justify-between transition-all duration-500"
                         :style="'border-color: ' + currentChar.accent">
                         <div>
@@ -829,7 +843,99 @@
             </div>
         </div>
 
+        <div x-show="showDailyPath" x-cloak class="fixed inset-0 z-[100] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
+            <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <!-- Header -->
+                <div class="p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
+                    <div>
+                        <h2 class="text-3xl font-kids text-slate-800" x-text="getDailyContent().title"></h2>
+                         <p class="text-gray-500 font-bold" x-text="'Current Progress: Day ' + learningPathDay + ' of 30'"></p>
+                    </div>
+                    <button @click="showDailyPath = false; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 overflow-y-auto p-8 bg-slate-50 flex flex-col items-center">
+                    <p class="text-xl sm:text-2xl text-slate-600 font-medium mb-12 text-center max-w-3xl leading-relaxed" x-text="getDailyContent().content"></p>
+                    
+                    <!-- Type: Alphabet -->
+                    <div x-show="getDailyContent().type === 'alphabet'" class="grid grid-cols-2 sm:grid-cols-5 gap-6 w-full max-w-4xl animate__animated animate__fadeInUp">
+                        <template x-for="letter in getDailyContent().letters || []">
+                            <div class="aspect-square bg-white rounded-3xl shadow-lg border-b-8 border-gray-200 flex items-center justify-center text-7xl font-kids text-blue-500 hover:scale-110 hover:-translate-y-2 transition-all cursor-pointer active:scale-95 active:border-b-0" @click="speak(letter); playPing()">
+                                <span x-text="letter"></span>
+                            </div>
+                        </template>
+                    </div>
 
+                    <!-- Type: Words -->
+                    <div x-show="getDailyContent().type === 'words'" class="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-5xl animate__animated animate__fadeInUp">
+                        <template x-for="word in getDailyContent().words || []">
+                            <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border-b-8 border-green-200 flex flex-col items-center hover:-translate-y-2 transition-transform cursor-pointer group" @click="speak(word.word); playPing()">
+                                <div class="text-8xl mb-6 group-hover:scale-125 transition-transform" x-text="word.icon"></div>
+                                <div class="text-4xl font-kids text-slate-800" x-text="word.word"></div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Type: Quiz (Simple Placeholder for now) -->
+                    <div x-show="getDailyContent().type === 'quiz'" class="w-full max-w-3xl bg-white p-10 rounded-[2.5rem] shadow-xl text-center border-4 border-blue-100 animate__animated animate__zoomIn">
+                        <h3 class="text-3xl font-bold mb-8 text-blue-600">Quick Check!</h3>
+                        <template x-for="(q, idx) in getDailyContent().quiz || []">
+                            <div class="mb-10 last:mb-0">
+                                <p class="text-2xl font-bold text-slate-700 mb-6" x-text="q.q"></p>
+                                <div class="flex flex-wrap gap-4 justify-center">
+                                    <template x-for="(opt, optIdx) in q.options">
+                                        <button @click="if(optIdx === q.correct) { playPing(); confetti({particleCount: 50, spread: 50}); alert('Correct! 🎉'); } else { alert('Try again!'); }" 
+                                                class="bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-sm border-2 border-blue-100" x-text="opt"></button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Type: Report -->
+                    <div x-show="getDailyContent().type === 'report'" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
+                        <div class="text-9xl mb-6">🏆</div>
+                        <h3 class="text-5xl font-kids text-yellow-600 mb-4">Super Star!</h3>
+                        <p class="text-2xl text-gray-500 font-bold mb-10">You completed Week 1!</p>
+                        <div class="flex justify-center gap-4">
+                            <div class="bg-blue-50 px-8 py-4 rounded-3xl">
+                                <span class="block text-3xl font-bold text-blue-600">7</span>
+                                <span class="text-xs font-bold text-blue-400 uppercase">Days Streak</span>
+                            </div>
+                            <div class="bg-purple-50 px-8 py-4 rounded-3xl">
+                                <span class="block text-3xl font-bold text-purple-600">A+</span>
+                                <span class="text-xs font-bold text-purple-400 uppercase">Grade</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generic/Fallback -->
+                    <div x-show="!['alphabet','words','quiz','report'].includes(getDailyContent().type)" class="text-center mt-10">
+                        <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center text-8xl shadow-xl mx-auto mb-8 animate-bounce">🚀</div>
+                        <h3 class="text-3xl font-kids text-slate-700 mb-4" x-text="getDailyContent().task"></h3>
+                        <button @click="showDailyPath = false; $nextTick(() => $refs.queryInput.focus())" class="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-5 rounded-full font-bold text-xl shadow-xl hover:scale-105 transition-transform hover:shadow-2xl">
+                            Go to Chat & Ask! <i class="fas fa-comment-dots ml-2"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="p-6 bg-white border-t flex justify-between items-center z-20">
+                     <button @click="if(learningPathDay > 1) learningPathDay--" :disabled="learningPathDay <= 1" class="text-gray-400 font-bold hover:text-blue-500 disabled:opacity-50 transition-colors flex items-center gap-2"><i class="fas fa-chevron-left"></i> Previous</button>
+                     
+                     <div class="w-full max-w-xs mx-4 bg-gray-100 rounded-full h-4 relative">
+                        <div class="absolute inset-0 bg-gray-200 rounded-full"></div>
+                        <div class="absolute left-0 top-0 bottom-0 bg-green-400 rounded-full transition-all duration-1000" :style="'width: ' + ((learningPathDay / 30) * 100) + '%'"></div>
+                     </div>
+
+                     <button @click="if(learningPathDay < 30) learningPathDay++" :disabled="learningPathDay >= 30" class="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-600 transition-transform active:scale-95 flex items-center gap-2">Next <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
 
         <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
             <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
@@ -1478,6 +1584,8 @@
                     visionPreview: null,
 
                     showLearningPath: false,
+                    showDailyPath: false, // Toggle for 30-Day Path
+                    learningPathDay: 1, // Tracks progress 1-30
                     currentPath: null,
                     activeLesson: null,
                     lessonStep: 'learn', 
@@ -1485,6 +1593,13 @@
                     pathProgress: {}, 
                     selectedCertificatePath: null,
                     isGeneratingPath: false,
+
+                    dailyPathData: {
+                        day1: { title: "Day 1: Magic Alphabets", type: "alphabet", content: "Let's learn our ABCs! A is for Apple, B is for Ball.", letters: ['A','B','C','D','E'] },
+                        day2: { title: "Day 2: Wonderful Words", type: "words", content: "Let's build some words!", words: [{word: "CAT", icon: "🐱"}, {word: "DOG", icon: "🐶"}, {word: "SUN", icon: "☀️"}] },
+                        day3: { title: "Day 3: Pop Quiz!", type: "quiz", content: "Show me what you learned!", quiz: [{q: "What starts with A?", options: ["Apple", "Ball", "Cat"], correct: 0}, {q: "Which is an animal?", options: ["Car", "Dog", "Table"], correct: 1}] },
+                        day7: { title: "Day 7: Weekly Report", type: "report", content: "You did great this week!" }
+                    },
 
                     curriculum: [
                         { 
@@ -2230,6 +2345,22 @@
                         this.emailSummaryEnabled = !this.emailSummaryEnabled;
                         await this.syncData();
                         alert(this.emailSummaryEnabled ? "Weekly summaries activated! We will email you your child's learning wins." : "Weekly summaries deactivated.");
+                    },
+
+                    getDailyContent() {
+                        // Fallback for days without specific data
+                        const dayKey = 'day' + this.learningPathDay;
+                        return this.dailyPathData[dayKey] || { 
+                            title: "Day " + this.learningPathDay + ": Daily Adventure", 
+                            type: "generic", 
+                            content: "Keep learning! Today is a great day to ask Professor Dino a question.",
+                            task: "Ask 3 questions to your AI Tutor!"
+                        };
+                    },
+
+                    startDailyLesson() {
+                        this.showDailyPath = true;
+                        this.toggleScroll(true);
                     },
 
 
