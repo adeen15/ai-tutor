@@ -375,7 +375,7 @@
             </div>
 
             <div class="text-center mb-6 sm:mb-10">
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-kids drop-shadow-lg tracking-wider animate__animated animate__bounceInDown"
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-kids drop-shadow-lg tracking-wider animate__animated animate__bounceInDown"
                     :style="'color: ' + currentChar.accent"
                     x-text="currentChar.name">
                 </h1>
@@ -451,16 +451,16 @@
 
                 <div class="w-full max-w-2xl order-1 lg:order-2">
                     <!-- 30-Day Path Banner -->
-                    <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
-                        <div class="flex items-center gap-4">
-                            <div class="bg-white/20 p-3 rounded-2xl text-3xl group-hover:rotate-12 transition-transform">📅</div>
+                    <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">📅</div>
                             <div>
                                 <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Your Learning Plan</div>
-                                <div class="text-3xl font-kids" x-text="getDailyContent().title">Start Day 1</div>
+                                <div class="text-xl sm:text-3xl font-kids" x-text="getDailyContent().title">Start Day 1</div>
                                 <div class="text-xs font-bold opacity-90 mt-1 text-blue-100" x-text="getDailyContent().content.substring(0,30) + '...'"></div>
                             </div>
                         </div>
-                        <div class="bg-white text-blue-600 px-6 py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors">
+                        <div class="bg-white text-blue-600 px-3 py-2 sm:px-6 sm:py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors text-sm sm:text-base">
                             START <i class="fas fa-play ml-1"></i>
                         </div>
                     </button>
