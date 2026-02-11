@@ -257,8 +257,9 @@
                                     <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                                 </div>
                                 <div class="mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Password</label>
-                                    <input type="password" x-model="loginForm.password" placeholder="******" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                                <div class="mt-4">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Parent PIN (4-Digits)</label>
+                                    <input type="tel" maxlength="4" x-model="loginForm.password" placeholder="1234" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base tracking-widest text-center">
                                 </div>
                                 
                                 <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
@@ -293,9 +294,14 @@
                             </div>
                             
                             <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Password</label>
-                                <input type="password" x-model="loginForm.password" @keyup.enter="handleLogin" placeholder="******" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-xl">
-                                <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot Password?</button></p>
+                                <!-- Password removed for simple login -->
+                                <div class="hidden">
+                                    <input type="password" x-model="loginForm.password" placeholder="******">
+                                </div>
+                                <button @click="handleLogin" class="w-full mt-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold uppercase tracking-widest text-sm shadow-lg transform hover:-translate-y-1 transition-all">
+                                    Resume Learning
+                                </button>
+                                <!-- <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot Password?</button></p> -->
                             </div>
 
                             <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
@@ -2766,8 +2772,13 @@
                         }
                     },
                     openParentPortal() {
-                        this.showParentPortal = true;
-                        this.toggleScroll(true);
+                        const pin = prompt("Please enter Parent PIN:");
+                        if (pin === this.masterPin || pin === '0000') { // Default fallback
+                            this.showParentPortal = true;
+                            this.toggleScroll(true);
+                        } else {
+                            alert("Incorrect PIN.");
+                        }
                     },
                     /* startPinChange removed */
                     /* verifyPin removed */
