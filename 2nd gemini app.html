@@ -575,7 +575,8 @@
                 <p class="text-center text-gray-500 font-bold mb-6">Show me your homework or a drawing!</p>
 
                 <div class="flex flex-col items-center gap-6">
-                    <div class="w-full aspect-video bg-gray-50 rounded-2xl border-4 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
+                    <!-- Standard Upload / Preview Area -->
+                    <div x-show="!isCameraActive" class="w-full aspect-video bg-gray-50 rounded-2xl border-4 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
                         <template x-if="visionPreview">
                             <img :src="visionPreview" class="w-full h-full object-contain">
                         </template>
@@ -589,20 +590,45 @@
                         <input type="file" @change="handleVisionUpload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
                     </div>
 
+                    <!-- Live Camera Area -->
+                    <div x-show="isCameraActive" class="w-full aspect-video bg-black rounded-2xl flex items-center justify-center overflow-hidden relative">
+                        <video x-ref="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
+                        <canvas x-ref="cameraCanvas" class="hidden"></canvas>
+                    </div>
+
                     <div x-show="isThinking" class="flex flex-col items-center">
                         <div class="spinner border-blue-500 mb-2"></div>
                         <p class="font-kids text-blue-500 animate-pulse">Analyzing magic...</p>
                     </div>
 
                     <div class="flex flex-col w-full gap-3" x-show="!isThinking">
+                        <!-- Camera Controls -->
+                        <div class="flex gap-2">
+                             <button x-show="!isCameraActive && !visionPreview" @click="startCamera()" class="flex-1 py-3 bg-blue-100 text-blue-600 rounded-xl font-bold hover:bg-blue-200 transition-colors">
+                                <i class="fas fa-camera mr-2"></i> Use Camera
+                            </button>
+                            
+                            <button x-show="isCameraActive" @click="capturePhoto()" class="flex-1 py-3 bg-white border-4 border-blue-500 text-blue-600 rounded-full font-bold hover:bg-blue-50 transition-colors shadow-lg">
+                                <i class="fas fa-circle mr-2"></i> SNAP PHOTO
+                            </button>
+
+                            <button x-show="isCameraActive" @click="stopCamera()" class="px-4 py-3 bg-gray-100 text-gray-500 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons -->
                         <button 
+                            x-show="visionPreview && !isCameraActive"
                             @click="analyzeImage()"
-                            :disabled="!visionFile"
-                            class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:grayscale"
+                            class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
                         >
                             Explain it to me! 🚀
                         </button>
-                        <button @click="visionFile = null; visionPreview = null" class="text-xs font-bold text-gray-400 uppercase tracking-widest">Clear Photo</button>
+
+                        <button x-show="visionPreview && !isCameraActive" @click="visionFile = null; visionPreview = null" class="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                            Clear / Retake
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1582,6 +1608,7 @@
                     showVisionModal: false,
                     visionFile: null,
                     visionPreview: null,
+                    isCameraActive: false,
 
                     showLearningPath: false,
                     showDailyPath: false, // Toggle for 30-Day Path
@@ -2892,10 +2919,60 @@
                         this.toggleScroll(true);
                     },
                     closeVisionModal() {
+                        this.stopCamera();
                         this.showVisionModal = false;
                         this.visionFile = null;
                         this.visionPreview = null;
                         this.toggleScroll(false);
+                    },
+                    
+                    // --- CAMERA METHODS ---
+                    async startCamera() {
+                        this.isCameraActive = true;
+                        this.visionPreview = null;
+                        this.visionFile = null;
+                        try {
+                            const stream = await navigator.mediaDevices.getUserMedia({ 
+                                video: { facingMode: 'environment' } 
+                            });
+                            this.$refs.cameraFeed.srcObject = stream;
+                        } catch (err) {
+                            console.error("Camera Error:", err);
+                            alert("Could not access camera. Please allow permissions.");
+                            this.isCameraActive = false;
+                        }
+                    },
+                    stopCamera() {
+                        this.isCameraActive = false;
+                        const video = this.$refs.cameraFeed;
+                        if (video && video.srcObject) {
+                            const tracks = video.srcObject.getTracks();
+                            tracks.forEach(track => track.stop());
+                            video.srcObject = null;
+                        }
+                    },
+                    capturePhoto() {
+                        const video = this.$refs.cameraFeed;
+                        const canvas = this.$refs.cameraCanvas;
+                        if (!video || !canvas) return;
+
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        const dataUrl = canvas.toDataURL('image/png');
+                        this.visionPreview = dataUrl;
+
+                        // Convert Data URL to File object for analyzeImage compatibility
+                        const byteString = atob(dataUrl.split(',')[1]);
+                        const ab = new ArrayBuffer(byteString.length);
+                        const ia = new Uint8Array(ab);
+                        for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+                        const blob = new Blob([ab], { type: 'image/png' });
+                        this.visionFile = new File([blob], "camera-capture.png", { type: 'image/png' });
+
+                        this.stopCamera();
                     },
                     handleVisionUpload(event) {
                         const file = event.target.files[0];
