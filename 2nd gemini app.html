@@ -863,7 +863,7 @@
                     <!-- Type: Alphabet -->
                     <div x-show="getDailyContent().type === 'alphabet'" class="grid grid-cols-2 sm:grid-cols-5 gap-6 w-full max-w-4xl animate__animated animate__fadeInUp">
                         <template x-for="letter in getDailyContent().letters || []">
-                            <div class="aspect-square bg-white rounded-3xl shadow-lg border-b-8 border-gray-200 flex items-center justify-center text-7xl font-kids text-blue-500 hover:scale-110 hover:-translate-y-2 transition-all cursor-pointer active:scale-95 active:border-b-0" @click="speak(letter, 1.3, 1.1); playPing()">
+                            <div class="aspect-square bg-white rounded-3xl shadow-lg border-b-8 border-gray-200 flex items-center justify-center text-7xl font-kids text-blue-500 hover:scale-110 hover:-translate-y-2 transition-all cursor-pointer active:scale-95 active:border-b-0" @click="speakLetter(letter)">
                                 <span x-text="letter"></span>
                             </div>
                         </template>
@@ -3038,14 +3038,67 @@
                         
                         await this.syncData();
                     },
+                    speakLetter(letter) {
+                        // Dedicated function for ABCs to ensure reliability
+                        console.log("Speaking letter:", letter);
+                        
+                        // 1. Play Ping (Sound Effect)
+                        this.playPing();
+
+                        // 2. Stop any existing speech
+                        window.speechSynthesis.cancel();
+                        this.isSpeaking = false;
+
+                        // 3. Create Utterance
+                        const msg = new SpeechSynthesisUtterance(letter);
+                        const voices = window.speechSynthesis.getVoices();
+                        
+                        // force English for ABCs usually, or current language
+                        const langCodes = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
+                        const targetCode = langCodes[this.currentLanguage] || 'en';
+                        let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
+                        
+                        if (baseVoice) msg.voice = baseVoice;
+                        
+                        // Kid-friendly settings
+                        msg.pitch = 1.3;
+                        msg.rate = 1.1;
+
+                        msg.onend = () => { this.isSpeaking = false; };
+                        msg.onerror = (e) => { console.error("Letter speech error:", e); };
+
+                        window.speechSynthesis.speak(msg);
+                    },
+
                     playPing() {
-                        const context = new (window.AudioContext || window.webkitAudioContext)();
-                        const osc = context.createOscillator();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(440, context.currentTime);
-                        osc.connect(context.destination);
-                        osc.start();
-                        osc.stop(context.currentTime + 0.1);
+                        try {
+                            const AudioContext = window.AudioContext || window.webkitAudioContext;
+                            if (!AudioContext) return;
+                            
+                            const context = new AudioContext();
+                            const osc = context.createOscillator();
+                            const gain = context.createGain();
+
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(523.25, context.currentTime); // C5
+                            osc.frequency.exponentialRampToValueAtTime(880, context.currentTime + 0.1);
+                            
+                            gain.gain.setValueAtTime(0.1, context.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+
+                            osc.connect(gain);
+                            gain.connect(context.destination);
+                            
+                            osc.start();
+                            osc.stop(context.currentTime + 0.1);
+                            
+                            // Critical: Close context to prevent limit errors (Chrome limit ~6)
+                            setTimeout(() => {
+                                if(context.state !== 'closed') context.close();
+                            }, 150);
+                        } catch (e) {
+                            console.error("Audio error:", e);
+                        }
                     },
                     playClickSound() {
                         const context = new (window.AudioContext || window.webkitAudioContext)();
