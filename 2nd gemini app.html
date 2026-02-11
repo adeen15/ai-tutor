@@ -576,7 +576,7 @@
 
                 <div class="flex flex-col items-center gap-6">
                     <!-- Standard Upload / Preview Area -->
-                    <div x-show="!isCameraActive" class="w-full aspect-video bg-gray-50 rounded-2xl border-4 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
+                    <div x-show="!isCameraActive" class="w-full aspect-[3/4] md:aspect-video bg-gray-50 rounded-2xl border-4 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
                         <template x-if="visionPreview">
                             <img :src="visionPreview" class="w-full h-full object-contain">
                         </template>
@@ -591,7 +591,7 @@
                     </div>
 
                     <!-- Live Camera Area -->
-                    <div x-show="isCameraActive" class="w-full aspect-video bg-black rounded-2xl flex items-center justify-center overflow-hidden relative">
+                    <div x-show="isCameraActive" class="w-full aspect-[3/4] md:aspect-video bg-black rounded-2xl flex items-center justify-center overflow-hidden relative">
                         <video x-ref="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
                         <canvas x-ref="cameraCanvas" class="hidden"></canvas>
                     </div>
