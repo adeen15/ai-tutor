@@ -1646,11 +1646,11 @@
                             icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                         },
                         { 
-                            name: "Rocket Robot", 
-                            subject: "Robots and AI", 
+                            name: "Milo Monkey", 
+                            subject: "Maths", 
                             subjectKey: "robots",
-                            suggestions: ["How do robots think? 🤖", "What is computer code? 💻", "Can robots fly? 🚀"],
-                            icon: "🤖", mood_happy: "🤖", mood_think: "⚙️", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0284c7", pitch: 0.5, rate: 1.0, personality: "Robot and AI Teacher", intro_phrase: "Beep boop! ", premium: true 
+                            suggestions: ["What is 2 + 2? 🍌", "Count to 10! 🔟", "What is a circle? 🔵"],
+                            icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #fefce8 0%, #fef08a 100%)", accent: "#ca8a04", pitch: 1.4, rate: 1.1, personality: "Math Teacher", intro_phrase: "Ooh ooh! Let's count bananas! ", premium: true 
                         },
                         { 
                             name: "Starry Alien", 
@@ -2282,7 +2282,7 @@
                         const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
                         const displayNames = {
                             history: 'History',
-                            robots: 'Robots and AI',
+                            robots: 'Maths',
                             space: 'Space Exploration',
                             science: 'Science',
                             nature: 'Nature'
@@ -2304,7 +2304,7 @@
                     getSubjectColor(subject) {
                         const colors = {
                             'History': 'bg-orange-500',
-                            'Robots and AI': 'bg-blue-600',
+                            'Maths': 'bg-yellow-500',
                             'Space Exploration': 'bg-purple-600',
                             'Science': 'bg-pink-500',
                             'Nature': 'bg-green-500'
@@ -2850,7 +2850,7 @@
                         const queryLower = query.toLowerCase();
                         if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 10;
                         if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 10;
-                        if (queryLower.match(/robot|bot|code|computer|ai|tech|future/)) this.learningStats.subjects.robots += 10;
+                        if (queryLower.match(/math|count|number|add|plus|minus|shape|circle|square|triangle|robot|bot|code|computer|ai/)) this.learningStats.subjects.robots += 10;
                         if (queryLower.match(/volcano|science|math|how|experiment|chemistry|physics/)) this.learningStats.subjects.science += 10;
                         if (queryLower.match(/dino|dinosaur|t-rex|fossil|history|old|egypt|pirate|knight|king/)) this.learningStats.subjects.history += 10;
                     },
