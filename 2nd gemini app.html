@@ -1849,33 +1849,42 @@
                     },
 
                     speak(text, customPitch = null, customRate = null) {
-                        if (this.isSpeaking) { 
-                            window.speechSynthesis.cancel(); 
-                            this.isSpeaking = false; 
-                            return; 
-                        }
-                        
+                        // Always cancel current speech to allow rapid re-triggering (no toggle)
+                        window.speechSynthesis.cancel();
+                        this.isSpeaking = false;
+
+                        if (!text) return;
+
                         const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
                         const msg = new SpeechSynthesisUtterance(cleanText);
                         const voices = window.speechSynthesis.getVoices();
-                        
+
                         const langCodes = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
                         const targetCode = langCodes[this.currentLanguage] || 'en';
-                        
+
+                        // robust voice selection
                         let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
-                        msg.voice = baseVoice;
-                        msg.pitch = customPitch !== null ? customPitch : this.currentChar.pitch;
-                        msg.rate = customRate !== null ? customRate : this.currentChar.rate;
+                        if (baseVoice) {
+                            msg.voice = baseVoice;
+                        }
                         
+                        msg.pitch = customPitch !== null ? customPitch : (this.currentChar.pitch || 1.0);
+                        msg.rate = customRate !== null ? customRate : (this.currentChar.rate || 1.0);
+
                         msg.onstart = () => { this.isSpeaking = true; };
-                        
+
                         msg.onend = () => { 
                             this.isSpeaking = false; 
                             if (this.isVoiceNativeMode) {
                                 this.startListening();
                             }
                         };
-                        
+
+                        msg.onerror = (e) => {
+                            console.error("Speech verification error:", e);
+                            this.isSpeaking = false;
+                        };
+
                         window.speechSynthesis.speak(msg);
                     },
 
