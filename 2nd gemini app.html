@@ -146,7 +146,7 @@
         </div>
 
         <div id="certificate-area" class="hidden flex-col items-center justify-center p-12 text-center bg-white certificate-border" style="min-height: 100vh;">
-            <div class="text-6xl mb-4">ðŸŽ“</div>
+            <div class="text-6xl mb-4">🎓</div>
             <h1 class="text-5xl font-kids text-amber-600 mb-2">Certificate of Achievement</h1>
             <p class="text-2xl text-gray-600 mb-8">This award is proudly presented to</p>
             <h2 class="text-6xl font-kids text-slate-800 mb-8 underline" x-text="childProfile.name"></h2>
@@ -164,7 +164,7 @@
                     <p class="font-bold text-gray-400 uppercase">Date</p>
                 </div>
             </div>
-            <div class="mt-12 text-4xl">â­â­â­â­â­</div>
+            <div class="mt-12 text-4xl">⭐⭐⭐⭐⭐</div>
         </div>
 
         <div id="worksheet-print-area" class="hidden">
@@ -184,7 +184,7 @@
                     <div style="border-bottom: 1px solid black; height: 40px; margin-top: 10px;"></div>
                 </div>
                 <div style="margin-top: 40px; text-align: center;">
-                    <p>Great Job! â­ You earned 100 bonus coins!</p>
+                    <p>Great Job! ⭐ You earned 100 bonus coins!</p>
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@
                     <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
 
                     <div class="relative z-10">
-                        <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">ðŸŽ“</div>
+                        <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
                         <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
                         <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
 
@@ -229,25 +229,25 @@
                                         <button @click="loginForm.ageRange = '4-6'" 
                                                 :class="loginForm.ageRange === '4-6' ? 'bg-blue-500 text-white border-blue-600 shadow-md ring-2 ring-blue-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
                                                 class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">ðŸ£</span>
+                                            <span class="text-lg">🐣</span>
                                             <span>4-6 (Basic)</span>
                                         </button>
                                         <button @click="loginForm.ageRange = '7-9'" 
                                                 :class="loginForm.ageRange === '7-9' ? 'bg-green-500 text-white border-green-600 shadow-md ring-2 ring-green-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
                                                 class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">ðŸŽ’</span>
+                                            <span class="text-lg">🎒</span>
                                             <span>7-9 (Logic)</span>
                                         </button>
                                         <button @click="loginForm.ageRange = '10-13'" 
                                                 :class="loginForm.ageRange === '10-13' ? 'bg-purple-500 text-white border-purple-600 shadow-md ring-2 ring-purple-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
                                                 class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">ðŸš€</span>
+                                            <span class="text-lg">🚀</span>
                                             <span>10-13 (Science)</span>
                                         </button>
                                         <button @click="loginForm.ageRange = 'Teen'" 
                                                 :class="loginForm.ageRange === 'Teen' ? 'bg-indigo-500 text-white border-indigo-600 shadow-md ring-2 ring-indigo-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
                                                 class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">ðŸŽ“</span>
+                                            <span class="text-lg">🎓</span>
                                             <span>Teen (Pro)</span>
                                         </button>
                                     </div>
@@ -274,7 +274,7 @@
                                 </div>
 
                                 <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
-                                    Start Learning! ðŸš€
+                                    Start Learning! 🚀
                                 </button>
                                 
                                 <div class="flex items-center justify-center gap-2 mt-4 opacity-80 border-t pt-4">
@@ -299,7 +299,7 @@
                             </div>
 
                             <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                                Unlock App ðŸ”“
+                                Unlock App 🔓
                             </button>
                             
                             <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
@@ -319,7 +319,7 @@
         
         <div class="absolute top-4 left-4 z-40 flex flex-col gap-3">
             <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
-                <span class="text-2xl sm:text-3xl gift-bounce">ðŸŽ</span>
+                <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
                 <span class="text-[10px] font-bold text-pink-500 uppercase" x-text="t('daily_gift')">Daily Gift</span>
             </button>
             <div class="safe-badge animate__animated animate__fadeInLeft">
@@ -338,20 +338,20 @@
             </div>
 
             <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-1 sm:gap-2">
-                <span class="text-xl sm:text-3xl">ðŸ’°</span>
+                <span class="text-xl sm:text-3xl">💰</span>
                 <span class="font-kids text-lg sm:text-2xl text-yellow-700" x-text="coins"></span>
             </div>
 
             <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
-                <span class="text-xl sm:text-3xl">ðŸ—ºï¸</span>
+                <span class="text-xl sm:text-3xl">🗺️</span>
             </button>
 
             <button @click="showShop = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
-                <span class="text-xl sm:text-3xl">ðŸª„</span>
+                <span class="text-xl sm:text-3xl">🪄</span>
             </button>
 
             <button @click="openParentPortal()" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-gray-400">
-                <span class="text-xl sm:text-2xl">ðŸ”’</span>
+                <span class="text-xl sm:text-2xl">🔒</span>
             </button>
         </div>
 
@@ -380,7 +380,7 @@
                     :style="'color: ' + currentChar.accent"
                     x-text="currentChar.name">
                 </h1>
-                <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + currentChar.accent" x-text="t('teacher_of') + ' ' + currentChar.subject + ' âœ¨'"></p>
+                <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + currentChar.accent" x-text="t('teacher_of') + ' ' + currentChar.subject + ' ✨'"></p>
                 <div x-show="isVisualMode" class="mt-4 animate__animated animate__fadeInDown">
                     <span class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-blue-200">
                         <i class="fas fa-eye mr-2"></i> Visual learning mode ON
@@ -400,7 +400,7 @@
                                 <template x-for="i in 6">
                                     <div class="sparkle-particle text-yellow-400 text-4xl"
                                         :style="'top: ' + (Math.random() * 100) + '%; left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's'">
-                                        âœ¨
+                                        ✨
                                     </div>
                                 </template>
                             </div>
@@ -418,9 +418,9 @@
 
                         <template x-if="getEquippedItemData().effectType === 'stars'">
                             <div class="orbit-container pointer-events-none">
-                                <div class="star-item text-4xl text-yellow-300" style="top: 0; left: 50%; transform: translateX(-50%);">â­</div>
-                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; left: 10%;">â­</div>
-                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; right: 10%;">â­</div>
+                                <div class="star-item text-4xl text-yellow-300" style="top: 0; left: 50%; transform: translateX(-50%);">⭐</div>
+                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; left: 10%;">⭐</div>
+                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; right: 10%;">⭐</div>
                             </div>
                         </template>
 
@@ -429,7 +429,7 @@
                             <template x-for="i in 8">
                                 <div class="dust-particle text-blue-300 text-2xl"
                                         :style="'left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's; animation-duration: ' + (2 + Math.random()) + 's'">
-                                        ðŸª„
+                                        🪄
                                 </div>
                             </template>
                             </div>
@@ -454,7 +454,7 @@
                     <!-- 30-Day Path Banner -->
                     <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">ðŸ“…</div>
+                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">📅</div>
                             <div>
                                 <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Your Learning Plan</div>
                                 <div class="text-xl sm:text-3xl font-kids" x-text="getDailyContent().title">Start Day 1</div>
@@ -477,7 +477,7 @@
                                 @click="startQuiz()"
                                 class="flex items-center gap-2 px-5 py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4 bg-yellow-400 border-yellow-600 text-yellow-900 shadow-md"
                             >
-                                <span class="text-xl">ðŸ†</span> <span x-text="t('challenge_me')">Challenge Me!</span>
+                                <span class="text-xl">🏆</span> <span x-text="t('challenge_me')">Challenge Me!</span>
                             </button>
 
                             <button 
@@ -543,7 +543,7 @@
                             class="btn-grad text-white rounded-2xl px-3 py-2 sm:px-6 sm:py-2 font-kids text-xs sm:text-lg shadow-lg transform transition hover:scale-105 active:scale-90 mr-1 sm:mr-0 whitespace-nowrap"
                             :style="'background: linear-gradient(to right, ' + currentChar.accent + ', #ff512f)'"
                         >
-                            <span x-text="t('ask')">ASK!</span> ðŸš€
+                            <span x-text="t('ask')">ASK!</span> 🚀
                         </button>
                         
                         <div class="absolute -bottom-6 left-0 right-0 flex justify-center opacity-70">
@@ -572,7 +572,7 @@
             <div @click.away="!isThinking ? closeVisionModal() : null" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200">
                 <button @click="closeVisionModal()" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
                 
-                <h2 class="text-3xl font-kids text-blue-500 text-center mb-2">Vision Studio ðŸ“¸</h2>
+                <h2 class="text-3xl font-kids text-blue-500 text-center mb-2">Vision Studio 📸</h2>
                 <p class="text-center text-gray-500 font-bold mb-6">Show me your homework or a drawing!</p>
 
                 <div class="flex flex-col items-center gap-6">
@@ -624,7 +624,7 @@
                             @click="analyzeImage()"
                             class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
                         >
-                            Explain it to me! ðŸš€
+                            Explain it to me! 🚀
                         </button>
 
                         <button x-show="visionPreview && !isCameraActive" @click="visionFile = null; visionPreview = null" class="text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -640,7 +640,7 @@
                 
                 <div class="p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
                     <div>
-                        <h2 class="text-3xl font-kids text-slate-800" x-text="t('adventure_map')">Adventure Map ðŸ—ºï¸</h2>
+                        <h2 class="text-3xl font-kids text-slate-800" x-text="t('adventure_map')">Adventure Map 🗺️</h2>
                         <p class="text-gray-500 font-bold" x-show="!currentPath" x-text="t('choose_journey')">Choose your journey!</p>
                         <p class="text-gray-500 font-bold" x-show="currentPath" x-text="currentPath ? currentPath.name : ''"></p>
                     </div>
@@ -657,7 +657,7 @@
                 <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
                     <div x-show="isPremium" class="mb-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 text-white shadow-xl animate__animated animate__fadeIn">
                         <div class="flex items-center gap-4">
-                            <div class="text-4xl bg-white/20 p-3 rounded-2xl">ðŸŽ¯</div>
+                            <div class="text-4xl bg-white/20 p-3 rounded-2xl">🎯</div>
                             <div>
                                 <h3 class="font-kids text-2xl" x-text="t('personalized_mission')">Personalized Mission</h3>
                                 <p class="font-bold opacity-90" x-text="'Goal: Complete ' + (childProfile.ageRange === '4-5' ? '10 simple counts' : '5 Science lessons') + ' this week!'"></p>
@@ -687,7 +687,7 @@
 
                                 <template x-if="isPremium && getPathProgress(path.id) === 100">
                                     <button @click.stop="printCertificate(path)" class="mt-4 bg-amber-400 text-amber-900 px-4 py-2 rounded-xl text-xs font-kids shadow-lg hover:scale-105 transition-transform">
-                                        ðŸŽ“ Claim Certificate
+                                        🎓 Claim Certificate
                                     </button>
                                 </template>
                             </button>
@@ -701,11 +701,11 @@
                                 <p class="font-kids text-purple-600 animate-pulse text-sm">Magic in progress...</p>
                             </div>
                             <div class="w-24 h-24 rounded-full bg-purple-50 flex items-center justify-center text-5xl mb-6 group-hover:rotate-12 transition-transform">
-                            âœ¨
+                            ✨
                             </div>
                             <h3 class="text-2xl font-kids text-purple-600 mb-2">Magic Wand</h3>
                             <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Generate New Quest</p>
-                            <div class="mt-6 text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-full font-bold">Powered by AI ðŸª„</div>
+                            <div class="mt-6 text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-full font-bold">Powered by AI 🪄</div>
                         </button>
                     </div>
                 </div>
@@ -716,7 +716,7 @@
                     </button>
 
                     <div x-show="currentPath && currentPath.premium && !isPremium" class="absolute inset-0 z-30 bg-white/90 flex flex-col items-center justify-center text-center p-8 backdrop-blur-sm">
-                        <div class="text-6xl mb-4">ðŸ‘‘</div>
+                        <div class="text-6xl mb-4">👑</div>
                         <h2 class="text-3xl font-kids text-slate-800 mb-2">Premium Curriculum</h2>
                         <p class="text-slate-500 font-bold max-w-sm mb-6">Unlock all Adventure Paths, Personalized Plans, and Certificates for just $4.99/mo!</p>
                         <button @click="showPremiumModal = true; showLearningPath = false" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600">Upgrade Now</button>
@@ -739,7 +739,7 @@
                                         isLevelComplete(currentPath.id, level.id) ? 'ring-4 ring-green-400 ring-offset-2' : ''
                                     ]"
                                 >
-                                    <span x-show="isLevelComplete(currentPath.id, level.id)" class="text-3xl">ðŸ†</span>
+                                    <span x-show="isLevelComplete(currentPath.id, level.id)" class="text-3xl">🏆</span>
                                     <span x-show="!isLevelComplete(currentPath.id, level.id) && isLevelUnlocked(currentPath.id, level.id)" class="text-2xl font-bold" x-text="level.id"></span>
                                     <i x-show="!isLevelUnlocked(currentPath.id, level.id)" class="fas fa-lock"></i>
                                 </button>
@@ -770,13 +770,13 @@
 
                 <div class="p-8">
                     <div x-show="lessonStep === 'learn'" class="text-center">
-                        <div class="text-6xl mb-6 bounce">ðŸ‘¨â€ðŸ«</div>
+                        <div class="text-6xl mb-6 bounce">👨‍🏫</div>
                         <p class="text-xl sm:text-2xl text-slate-700 font-medium leading-relaxed mb-8" x-text="activeLesson ? activeLesson.content : ''"></p>
                         
                         <button @click="speak(activeLesson.content)" class="mb-8 text-blue-500 font-bold hover:underline"><i class="fas fa-volume-up mr-2"></i> <span x-text="t('read_to_me')">Read to me</span></button>
 
                         <button @click="lessonStep = 'quiz'" class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
-                            <span x-text="t('start_quiz')">Start Quiz!</span> ðŸ“
+                            <span x-text="t('start_quiz')">Start Quiz!</span> 📝
                         </button>
                     </div>
 
@@ -806,21 +806,21 @@
                     </div>
 
                     <div x-show="lessonStep === 'success'" class="text-center py-8">
-                        <div class="text-8xl mb-4 animate__animated animate__tada">ðŸŽ‰</div>
+                        <div class="text-8xl mb-4 animate__animated animate__tada">🎉</div>
                         <h2 class="text-4xl font-kids text-green-500 mb-2">Lesson Complete!</h2>
                         <p class="text-gray-500 font-bold mb-8">You are getting smarter!</p>
                         
                         <div class="flex justify-center gap-4 mb-8">
                             <div class="bg-yellow-50 px-6 py-3 rounded-2xl border border-yellow-200">
-                                <span class="text-2xl">ðŸ’°</span> <span class="font-bold text-yellow-700">+50 Coins</span>
+                                <span class="text-2xl">💰</span> <span class="font-bold text-yellow-700">+50 Coins</span>
                             </div>
                             <div class="bg-purple-50 px-6 py-3 rounded-2xl border border-purple-200">
-                                <span class="text-2xl">â­</span> <span class="font-bold text-purple-700">+100 XP</span>
+                                <span class="text-2xl">⭐</span> <span class="font-bold text-purple-700">+100 XP</span>
                             </div>
                         </div>
 
                         <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
-                            Continue Journey ðŸš€
+                            Continue Journey 🚀
                         </button>
                     </div>
                 </div>
@@ -833,7 +833,7 @@
                 
                 <div class="text-center" x-show="quizState === 'loading'">
                     <div class="spinner mx-auto mb-4 border-yellow-400"></div>
-                    <h2 class="text-2xl font-kids text-yellow-500" x-text="t('thinking') + '... ðŸ¤”'">Thinking up a tricky one... ðŸ¤”</h2>
+                    <h2 class="text-2xl font-kids text-yellow-500" x-text="t('thinking') + '... 🤔'">Thinking up a tricky one... 🤔</h2>
                     <p class="text-xs text-slate-400 font-bold mt-2" x-text="'Adjusting difficulty for ' + (childProfile.ageRange || '6-7') + ' year olds...'"></p>
                 </div>
 
@@ -855,14 +855,14 @@
                 </div>
 
                 <div class="text-center" x-show="quizState === 'correct'">
-                    <div class="text-6xl mb-4 animate__animated animate__tada">ðŸŽ‰</div>
+                    <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
                     <h2 class="text-3xl font-kids text-green-500 mb-2" x-text="t('correct') + '!'">Correct!</h2>
                     <p class="font-bold text-gray-500 mb-6">You earned 20 Coins!</p>
                     <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform" x-text="t('awesome')">Awesome!</button>
                 </div>
 
                 <div class="text-center" x-show="quizState === 'wrong'">
-                    <div class="text-6xl mb-4 animate__animated animate__shakeX">ðŸ˜…</div>
+                    <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
                     <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
                     <p class="font-bold text-gray-500 mb-6" x-text="consecutiveMistakes >= 2 ? 'Let\'s try something easier together!' : 'That wasn\'t quite right. Try again?'"></p>
                     <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
@@ -914,7 +914,7 @@
                                 <p class="text-2xl font-bold text-slate-700 mb-6" x-text="q.q"></p>
                                 <div class="flex flex-wrap gap-4 justify-center">
                                     <template x-for="(opt, optIdx) in q.options">
-                                        <button @click="if(optIdx === q.correct) { playPing(); confetti({particleCount: 50, spread: 50}); alert('Correct! ðŸŽ‰'); } else { alert('Try again!'); }" 
+                                        <button @click="if(optIdx === q.correct) { playPing(); confetti({particleCount: 50, spread: 50}); alert('Correct! 🎉'); } else { alert('Try again!'); }" 
                                                 class="bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-sm border-2 border-blue-100" x-text="opt"></button>
                                     </template>
                                 </div>
@@ -924,7 +924,7 @@
 
                     <!-- Type: Report -->
                     <div x-show="getDailyContent().type === 'report'" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
-                        <div class="text-9xl mb-6">ðŸ†</div>
+                        <div class="text-9xl mb-6">🏆</div>
                         <h3 class="text-5xl font-kids text-yellow-600 mb-4">Super Star!</h3>
                         <p class="text-2xl text-gray-500 font-bold mb-10">You completed Week 1!</p>
                         <div class="flex justify-center gap-4">
@@ -941,7 +941,7 @@
 
                     <!-- Generic/Fallback -->
                     <div x-show="!['alphabet','words','quiz','report'].includes(getDailyContent().type)" class="text-center mt-10">
-                        <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center text-8xl shadow-xl mx-auto mb-8 animate-bounce">ðŸš€</div>
+                        <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center text-8xl shadow-xl mx-auto mb-8 animate-bounce">🚀</div>
                         <h3 class="text-3xl font-kids text-slate-700 mb-4" x-text="getDailyContent().task"></h3>
                         <button @click="showDailyPath = false; $nextTick(() => $refs.queryInput.focus())" class="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-5 rounded-full font-bold text-xl shadow-xl hover:scale-105 transition-transform hover:shadow-2xl">
                             Go to Chat & Ask! <i class="fas fa-comment-dots ml-2"></i>
@@ -1057,7 +1057,7 @@
                             <div class="text-center w-full">
                                 <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
                                 <div x-show="!inventory.includes(item.id)" class="text-yellow-600 font-bold text-xs sm:text-sm bg-yellow-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block">
-                                    <span x-text="item.price"></span> ðŸ’°
+                                    <span x-text="item.price"></span> 💰
                                 </div>
                             </div>
 
@@ -1069,7 +1069,7 @@
                                     : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
                                 :disabled="!inventory.includes(item.id) && coins < item.price"
                             >
-                                <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? t('active') + ' âœ¨' : t('activate')) : t('buy_now')"></span>
+                                <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? t('active') + ' ✨' : t('activate')) : t('buy_now')"></span>
                             </button>
                         </div>
                     </template>
@@ -1077,7 +1077,7 @@
                 
                 <div class="mt-6 sm:mt-8 flex justify-center">
                     <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
-                        <span class="text-xl sm:text-2xl">ðŸ’°</span>
+                        <span class="text-xl sm:text-2xl">💰</span>
                         <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="'You have ' + coins + ' coins'"></span>
                     </div>
                 </div>
@@ -1098,7 +1098,7 @@
                         <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
                             :class="todayIndex === index ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50 opacity-60'">
                             <span class="text-[10px] font-bold uppercase" x-text="day"></span>
-                            <span class="text-xl" x-text="index === 6 ? 'ðŸŽ' : 'ðŸ’°'"></span>
+                            <span class="text-xl" x-text="index === 6 ? '🎁' : '💰'"></span>
                             <span class="text-xs font-bold text-gray-600" x-text="index === 6 ? '100' : '50'"></span>
                         </div>
                     </template>
@@ -1106,7 +1106,7 @@
                 <button @click="claimReward()" :disabled="rewardClaimedToday"
                     class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
                     :class="rewardClaimedToday ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'">
-                    <span x-text="rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' 100 Coins! âœ¨' : t('claim') + ' 50 Coins! âœ¨')"></span>
+                    <span x-text="rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' 100 Coins! ✨' : t('claim') + ' 50 Coins! ✨')"></span>
                 </button>
             </div>
         </div>
@@ -1119,7 +1119,7 @@
                     <i class="fas fa-times-circle"></i>
                 </button>
                 <div class="text-center">
-                    <div class="text-6xl mb-4">ðŸ‘‘</div>
+                    <div class="text-6xl mb-4">👑</div>
                     <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
                     <p class="text-yellow-900 font-bold text-lg mb-6">Unlock the full power of learning!</p>
                     <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
@@ -1258,9 +1258,9 @@
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Regional Curriculum</label>
                                     <select x-model="currentCurriculumRegion" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
-                                        <option value="Global">Global Standards ðŸŒ</option>
-                                        <option value="US">US (Common Core) ðŸ‡ºðŸ‡¸</option>
-                                        <option value="UK">UK (National Curriculum) ðŸ‡¬ðŸ‡§</option>
+                                        <option value="Global">Global Standards 🌍</option>
+                                        <option value="US">US (Common Core) 🇺🇸</option>
+                                        <option value="UK">UK (National Curriculum) 🇬🇧</option>
                                     </select>
                                 </div>
 
@@ -1413,22 +1413,22 @@
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
                             <div class="bg-orange-50 p-4 rounded-2xl border-orange-100 border text-center">
-                                <div class="text-2xl mb-1">â“</div>
+                                <div class="text-2xl mb-1">❓</div>
                                 <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
                                 <div class="text-[10px] text-orange-400 font-bold uppercase">Questions Asked</div>
                             </div>
                             <div class="bg-blue-50 p-4 rounded-2xl border-blue-100 border text-center">
-                                <div class="text-2xl mb-1">ðŸ“–</div>
+                                <div class="text-2xl mb-1">📖</div>
                                 <div class="text-2xl font-bold text-blue-600" x-text="learningStats.wordsLearned"></div>
                                 <div class="text-[10px] text-blue-400 font-bold uppercase">Words Read</div>
                             </div>
                             <div class="bg-yellow-50 p-4 rounded-2xl border-yellow-100 border text-center">
-                                <div class="text-2xl mb-1">ðŸ’°</div>
+                                <div class="text-2xl mb-1">💰</div>
                                 <div class="text-2xl font-bold text-yellow-600" x-text="coins"></div>
                                 <div class="text-[10px] text-yellow-400 font-bold uppercase">Coins Earned</div>
                             </div>
                             <div class="bg-pink-50 p-4 rounded-2xl border-pink-100 border text-center">
-                                <div class="text-2xl mb-1">â­</div>
+                                <div class="text-2xl mb-1">⭐</div>
                                 <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
                                 <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
                             </div>
@@ -1530,13 +1530,13 @@
                     userQuery: '',
                     isKeyboardMode: false,
                     isVoiceNativeMode: false, 
-                    displayText: "Hi friend! ðŸŒŸ I'm Professor Dino. I teach History! What do you want to know about the past?",
+                    displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                     isThinking: false,
                     isSpeaking: false,
                     isListening: false,
                     hasAnswered: false,
-                    currentMoodIcon: 'ðŸ¦–',
-                    suggestions: ["Who built the pyramids? ðŸœï¸", "What is a mummy? ðŸ¤•", "Who was the first king? ðŸ‘‘"],
+                    currentMoodIcon: '🦖',
+                    suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
                     isPremium: false,
                     premiumExpiry: null,
                     showCheckout: false,
@@ -1617,14 +1617,14 @@
 
                     dailyPathData: {
                         day1: { title: "Day 1: Magic Alphabets", type: "alphabet", content: "Let's learn our ABCs! A is for Apple, B is for Ball.", letters: ['A','B','C','D','E'] },
-                        day2: { title: "Day 2: Wonderful Words", type: "words", content: "Let's build some words!", words: [{word: "CAT", icon: "ðŸ±"}, {word: "DOG", icon: "ðŸ¶"}, {word: "SUN", icon: "â˜€ï¸"}] },
+                        day2: { title: "Day 2: Wonderful Words", type: "words", content: "Let's build some words!", words: [{word: "CAT", icon: "🐱"}, {word: "DOG", icon: "🐶"}, {word: "SUN", icon: "☀️"}] },
                         day3: { title: "Day 3: Pop Quiz!", type: "quiz", content: "Show me what you learned!", quiz: [{q: "What starts with A?", options: ["Apple", "Ball", "Cat"], correct: 0}, {q: "Which is an animal?", options: ["Car", "Dog", "Table"], correct: 1}] },
                         day7: { title: "Day 7: Weekly Report", type: "report", content: "You did great this week!" }
                     },
 
                     curriculum: [
                         { 
-                            id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: 'ðŸ§®', color: 'bg-blue-500', premium: false,
+                            id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', premium: false,
                             levels: [
                                 { id: 1, title: 'Counting to 100', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] },
                                 { id: 2, title: 'Simple Adding', content: 'Adding means putting things together. 2 apples plus 2 apples makes 4!', quiz: [{q: '2 + 2 = ?', options:['3', '4', '5'], correct:1}, {q: '5 + 0 = ?', options:['5', '0', '50'], correct:0}, {q: '1 + 2 = ?', options:['2', '3', '4'], correct:1}] },
@@ -1634,7 +1634,7 @@
                             ]
                         },
                         { 
-                            id: 'english', name: 'English ABCs', grade: 'Basics', icon: 'ðŸ“', color: 'bg-green-500', premium: true,
+                            id: 'english', name: 'English ABCs', grade: 'Basics', icon: '📝', color: 'bg-green-500', premium: true,
                             levels: [
                                 { id: 1, title: 'The Vowels', content: 'Vowels are special letters: A, E, I, O, U. Every word needs one!', quiz: [{q: 'Which is a vowel?', options:['B', 'E', 'Z'], correct:1}, {q: 'Is "K" a vowel?', options:['Yes', 'No', 'Maybe'], correct:1}, {q: 'How many vowels?', options:['3', '5', '10'], correct:1}] },
                                 { id: 2, title: 'Rhyme Time', content: 'Rhyming words sound the same at the end. Cat, Hat, Bat!', quiz: [{q: 'Rhymes with Dog?', options:['Cat', 'Log', 'Pig'], correct:1}, {q: 'Rhymes with Sun?', options:['Moon', 'Fun', 'Hot'], correct:1}, {q: 'Do Tree and Bee rhyme?', options:['Yes', 'No', 'Maybe'], correct:0}] },
@@ -1642,7 +1642,7 @@
                             ]
                         },
                         { 
-                            id: 'science', name: 'Science Fun', grade: 'Fun Facts', icon: 'ðŸ”¬', color: 'bg-purple-500', premium: true,
+                            id: 'science', name: 'Science Fun', grade: 'Fun Facts', icon: '🔬', color: 'bg-purple-500', premium: true,
                             levels: [
                                 { id: 1, title: 'Solar System', content: 'We live on Earth! The Sun is a giant hot star in the middle.', quiz: [{q: 'We live on...', options:['Mars', 'Earth', 'Sun'], correct:1}, {q: 'Is the sun hot?', options:['Yes', 'No', 'Cold'], correct:0}, {q: 'The moon is made of cheese?', options:['Yes', 'No', 'Maybe'], correct:1}] },
                                 { id: 2, title: 'Dinosaurs', content: 'Dinosaurs lived long ago. The T-Rex was very big and scary!', quiz: [{q: 'T-Rex was...', options:['Small', 'Big', 'Tiny'], correct:1}, {q: 'Are dinos alive today?', options:['Yes', 'No', 'Birds are!'], correct:2}, {q: 'Did they eat pizza?', options:['Yes', 'No', 'Always'], correct:1}] },
@@ -1652,47 +1652,47 @@
                     ],
 
                     shopItems: [
-                        { id: 'sparkles', name: 'Magic Sparkles', icon: 'âœ¨', price: 100, effectType: 'sparkles' },
-                        { id: 'glow', name: 'Super Glow', icon: 'ðŸŒŸ', price: 250, effectType: 'glow' },
-                        { id: 'fireflies', name: 'Fireflies', icon: 'ðŸ', price: 350, effectType: 'fireflies' },
-                        { id: 'stars', name: 'Star Orbit', icon: 'â­', price: 450, effectType: 'stars' },
-                        { id: 'dust', name: 'Magic Dust', icon: 'ðŸª„', price: 500, effectType: 'dust' }
+                        { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
+                        { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
+                        { id: 'fireflies', name: 'Fireflies', icon: '🐝', price: 350, effectType: 'fireflies' },
+                        { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
+                        { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
                     ],
                     characters: [
                         { 
                             name: "Professor Dino", 
                             subject: "History", 
                             subjectKey: "history",
-                            suggestions: ["Who built the pyramids? ðŸœï¸", "What is a mummy? ðŸ¤•", "Who was the first king? ðŸ‘‘"],
-                            icon: "ðŸ¦–", mood_happy: "ðŸ¦–", mood_think: "ðŸ¦•", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
+                            suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
+                            icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", pitch: 0.7, rate: 0.85, personality: "History Teacher", intro_phrase: "Rawr! ", premium: false 
                         },
                         { 
                             name: "Milo Monkey", 
                             subject: "Maths", 
                             subjectKey: "robots",
-                            suggestions: ["What is 2 + 2? ðŸŒ", "Count to 10! ðŸ”Ÿ", "What is a circle? ðŸ”µ"],
-                            icon: "ðŸµ", mood_happy: "ðŸµ", mood_think: "ðŸ¤”", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", pitch: 1.4, rate: 1.1, personality: "Math Teacher", intro_phrase: "Ooh ooh! Let's count bananas! ", premium: true 
+                            suggestions: ["What is 2 + 2? 🍌", "Count to 10! 🔟", "What is a circle? 🔵"],
+                            icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", pitch: 1.4, rate: 1.1, personality: "Math Teacher", intro_phrase: "Ooh ooh! Let's count bananas! ", premium: true 
                         },
                         { 
                             name: "Starry Alien", 
                             subject: "Space Exploration", 
                             subjectKey: "space",
-                            suggestions: ["How hot is the sun? â˜€ï¸", "What is a black hole? ðŸ•³ï¸", "How many planets are there? ðŸª"],
-                            icon: "ðŸ‘¾", mood_happy: "ðŸ›¸", mood_think: "ðŸ‘ï¸", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
+                            suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
+                            icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", pitch: 1.1, rate: 0.7, personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true 
                         },
                         { 
                             name: "Magic Cat", 
                             subject: "Science", 
                             subjectKey: "science",
-                            suggestions: ["Why does ice melt? ðŸ§Š", "What is gravity? ðŸŽ", "How do magnets work? ðŸ§²"],
-                            icon: "ðŸ±", mood_happy: "ðŸ˜¸", mood_think: "ðŸˆ", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
+                            suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
+                            icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", pitch: 1.4, rate: 0.9, personality: "Science Teacher", intro_phrase: "Meow! ", premium: true 
                         },
                         { 
                             name: "Bouncy Bee", 
                             subject: "Nature", 
                             subjectKey: "nature",
-                            suggestions: ["Why do bees make honey? ðŸ¯", "How do flowers grow? ðŸŒ»", "Why is the sky blue? â˜ï¸"],
-                            icon: "ðŸ", mood_happy: "ðŸŒ»", mood_think: "ðŸ¯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
+                            suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
+                            icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", pitch: 1.3, rate: 1.0, personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true 
                         }
                     ],
                     currentChar: null,
@@ -1700,7 +1700,7 @@
                     t(key) {
                         const dict = {
                             'English': {
-                                adventure_map: 'Adventure Map ðŸ—ºï¸', magic_auras: 'Magic Auras', daily_gift: 'Daily Gift',
+                                adventure_map: 'Adventure Map 🗺️', magic_auras: 'Magic Auras', daily_gift: 'Daily Gift',
                                 parent_portal: 'Parent Dashboard', says: 'says', challenge_me: 'Challenge Me!', listen: 'Listen',
                                 stop: 'Stop', ask: 'ASK!', ask_about: 'Ask about', listening: 'Listening',
                                 teacher_of: 'Teacher of', thinking: 'Thinking', correct: 'Correct', awesome: 'Awesome!',
@@ -1710,44 +1710,44 @@
                                 read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here'
                             },
                             'Spanish': {
-                                adventure_map: 'Mapa de Aventuras ðŸ—ºï¸', magic_auras: 'Auras MÃ¡gicas', daily_gift: 'Regalo Diario',
-                                parent_portal: 'Panel de Padres', says: 'dice', challenge_me: 'Â¡DesafÃ­ame!', listen: 'Escuchar',
-                                stop: 'Parar', ask: 'Â¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
-                                teacher_of: 'Profesor de', thinking: 'Pensando', correct: 'Â¡Correcto!', awesome: 'Â¡Genial!',
-                                daily_rewards: 'Â¡Premios Diarios!', claim: 'Reclamar',
-                                see_you_tomorrow: 'Â¡Hasta MaÃ±ana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
-                                personalized_mission: 'MisiÃ³n Personalizada', choose_journey: 'Â¡Elige tu viaje!', complete: 'Completo',
-                                read_to_me: 'LÃ©eme', start_quiz: 'Â¡Empezar Quiz!', type_here: 'Escribe aquÃ­'
+                                adventure_map: 'Mapa de Aventuras 🗺️', magic_auras: 'Auras Mágicas', daily_gift: 'Regalo Diario',
+                                parent_portal: 'Panel de Padres', says: 'dice', challenge_me: '¡Desafíame!', listen: 'Escuchar',
+                                stop: 'Parar', ask: '¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
+                                teacher_of: 'Profesor de', thinking: 'Pensando', correct: '¡Correcto!', awesome: '¡Genial!',
+                                daily_rewards: '¡Premios Diarios!', claim: 'Reclamar',
+                                see_you_tomorrow: '¡Hasta Mañana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
+                                personalized_mission: 'Misión Personalizada', choose_journey: '¡Elige tu viaje!', complete: 'Completo',
+                                read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí'
                             },
                             'French': {
-                                adventure_map: 'Carte d\'Aventure ðŸ—ºï¸', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
-                                parent_portal: 'Tableau de Bord', says: 'dit', challenge_me: 'DÃ©fie-moi!', listen: 'Ã‰couter',
-                                stop: 'ArrÃªter', ask: 'DEMANDER!', ask_about: 'Demander sur', listening: 'Ã‰coute',
-                                teacher_of: 'Professeur de', thinking: 'RÃ©flexion', correct: 'Correct!', awesome: 'GÃ©nial!',
-                                daily_rewards: 'RÃ©compenses Quotidiennes!', claim: 'RÃ©clamer',
-                                see_you_tomorrow: 'Ã€ Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
-                                personalized_mission: 'Mission PersonnalisÃ©e', choose_journey: 'Choisis ton voyage!', complete: 'TerminÃ©',
-                                read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Ã‰cris ici'
+                                adventure_map: 'Carte d\'Aventure 🗺️', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
+                                parent_portal: 'Tableau de Bord', says: 'dit', challenge_me: 'Défie-moi!', listen: 'Écouter',
+                                stop: 'Arrêter', ask: 'DEMANDER!', ask_about: 'Demander sur', listening: 'Écoute',
+                                teacher_of: 'Professeur de', thinking: 'Réflexion', correct: 'Correct!', awesome: 'Génial!',
+                                daily_rewards: 'Récompenses Quotidiennes!', claim: 'Réclamer',
+                                see_you_tomorrow: 'À Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
+                                personalized_mission: 'Mission Personnalisée', choose_journey: 'Choisis ton voyage!', complete: 'Terminé',
+                                read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Écris ici'
                             },
                             'German': {
-                                adventure_map: 'Abenteuerkarte ðŸ—ºï¸', magic_auras: 'Magische Auren', daily_gift: 'TÃ¤gliches Geschenk',
-                                parent_portal: 'Eltern-Dashboard', says: 'sagt', challenge_me: 'Fordere mich heraus!', listen: 'HÃ¶ren',
-                                stop: 'Stopp', ask: 'FRAGEN!', ask_about: 'Fragen Ã¼ber', listening: 'HÃ¶ren',
-                                teacher_of: 'Lehrer fÃ¼r', thinking: 'Nachdenken', correct: 'Richtig!', awesome: 'Super!',
-                                daily_rewards: 'TÃ¤gliche Belohnungen!', claim: 'Abholen',
+                                adventure_map: 'Abenteuerkarte 🗺️', magic_auras: 'Magische Auren', daily_gift: 'Tägliches Geschenk',
+                                parent_portal: 'Eltern-Dashboard', says: 'sagt', challenge_me: 'Fordere mich heraus!', listen: 'Hören',
+                                stop: 'Stopp', ask: 'FRAGEN!', ask_about: 'Fragen über', listening: 'Hören',
+                                teacher_of: 'Lehrer für', thinking: 'Nachdenken', correct: 'Richtig!', awesome: 'Super!',
+                                daily_rewards: 'Tägliche Belohnungen!', claim: 'Abholen',
                                 see_you_tomorrow: 'Bis morgen!', active: 'Aktiv', buy_now: 'Kaufen', activate: 'Aktivieren',
-                                personalized_mission: 'Personalisierte Mission', choose_journey: 'WÃ¤hle deine Reise!', complete: 'Abgeschlossen',
+                                personalized_mission: 'Personalisierte Mission', choose_journey: 'Wähle deine Reise!', complete: 'Abgeschlossen',
                                 read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!', type_here: 'Hier tippen'
                             },
                             'Arabic': {
-                                adventure_map: 'Ø®Ø±ÙŠØ·Ø© Ø§Ù„Ù…ØºØ§Ù…Ø±Ø© ðŸ—ºï¸', magic_auras: 'Ø§Ù„Ù‡Ø§Ù„Ø§Øª Ø§Ù„Ø³Ø­Ø±ÙŠØ©', daily_gift: 'Ù‡Ø¯ÙŠØ© ÙŠÙˆÙ…ÙŠØ©',
-                                parent_portal: 'Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„ÙˆØ§Ù„Ø¯ÙŠÙ†', says: 'ÙŠÙ‚ÙˆÙ„', challenge_me: 'ØªØ­Ø¯Ø§Ù†ÙŠ!', listen: 'Ø§Ø³ØªÙ…Ø¹',
-                                stop: 'ØªÙˆÙ‚Ù', ask: 'Ø§Ø³Ø£Ù„!', ask_about: 'Ø§Ø³Ø£Ù„ Ø¹Ù†', listening: 'Ø£Ø³Ù…Ø¹Ùƒ',
-                                teacher_of: 'Ù…Ø¯Ø±Ø³', thinking: 'ÙŠÙÙƒØ±', correct: 'ØµØ­ÙŠØ­!', awesome: 'Ø±Ø§Ø¦Ø¹!',
-                                daily_rewards: 'Ù…ÙƒØ§ÙØ¢Øª ÙŠÙˆÙ…ÙŠØ©!', claim: 'Ø§Ø­ØµÙ„ Ø¹Ù„ÙŠÙ‡Ø§',
-                                see_you_tomorrow: 'Ø£Ø±Ø§Ùƒ ØºØ¯Ø§Ù‹!', active: 'Ù†Ø´Ø·', buy_now: 'Ø´Ø±Ø§Ø¡', activate: 'ØªÙØ¹ÙŠÙ„',
-                                personalized_mission: 'Ù…Ù‡Ù…Ø© Ù…Ø®ØµØµØ©', choose_journey: 'Ø§Ø®ØªØ± Ø±Ø­Ù„ØªÙƒ!', complete: 'Ù…ÙƒØªÙ…Ù„',
-                                read_to_me: 'Ø§Ù‚Ø±Ø£ Ù„ÙŠ', start_quiz: 'Ø§Ø¨Ø¯Ø£ Ø§Ù„Ø§Ø®ØªØ¨Ø§Ø±!', type_here: 'Ø§ÙƒØªØ¨ Ù‡Ù†Ø§'
+                                adventure_map: 'خريطة المغامرة 🗺️', magic_auras: 'الهالات السحرية', daily_gift: 'هدية يومية',
+                                parent_portal: 'لوحة تحكم الوالدين', says: 'يقول', challenge_me: 'تحداني!', listen: 'استمع',
+                                stop: 'توقف', ask: 'اسأل!', ask_about: 'اسأل عن', listening: 'أسمعك',
+                                teacher_of: 'مدرس', thinking: 'يفكر', correct: 'صحيح!', awesome: 'رائع!',
+                                daily_rewards: 'مكافآت يومية!', claim: 'احصل عليها',
+                                see_you_tomorrow: 'أراك غداً!', active: 'نشط', buy_now: 'شراء', activate: 'تفعيل',
+                                personalized_mission: 'مهمة مخصصة', choose_journey: 'اختر رحلتك!', complete: 'مكتمل',
+                                read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!', type_here: 'اكتب هنا'
                             }
                         };
                         return dict[this.currentLanguage][key] || dict['English'][key];
@@ -2098,16 +2098,16 @@
                                 Student: ${this.childProfile.name}
                                 Report Date: ${today.toLocaleDateString()}
                                 
-                                ðŸ† LEARNING MILESTONES
+                                🏆 LEARNING MILESTONES
                                 - Active Learning Time: ${this.totalMinutesLearned} minutes
                                 - New Words Mastered: ${this.learningStats.wordsLearned}
                                 - Total XP Gained: ${this.xp}
                                 - Questions Asked: ${this.parentLogs.length}
 
-                                ðŸ“š SUBJECT BREAKDOWN
+                                📚 SUBJECT BREAKDOWN
                                 ${Object.entries(this.getTopSubjects()).map(([k,v]) => `- ${k}: ${v} pts`).join('\n')}
 
-                                ðŸ“ RECENT CURIOSITY
+                                📝 RECENT CURIOSITY
                                 ${this.parentLogs.slice(0, 3).map(l => `- Asked "${l.query}"`).join('\n')}
                                 
                                 This report verifies active engagement with the AI Tutor curriculum.
@@ -2499,42 +2499,6 @@
                         }
                     },
 
-                    async loadUserProfile(email) {
-                        try {
-                            const { data, error } = await this.supabase
-                                .from('profiles')
-                                .select('*')
-                                .eq('email', email)
-                                .single();
-
-                            if (error) throw error;
-
-                            if (data) {
-                                this.childProfile = data.child_profile || { name: '', age: '', grade: '', ageRange: '6-7' };
-                                this.coins = data.coins || 0;
-                                this.xp = data.xp || 0;
-                                this.learningStats = data.learning_stats || this.learningStats;
-                                this.parentLogs = data.parent_logs || [];
-                                
-                                // Restore other state if saved in learning_stats
-                                if(this.learningStats.inventory) this.inventory = this.learningStats.inventory;
-                                if(this.learningStats.is_premium) this.isPremium = this.learningStats.is_premium;
-                                if(this.learningStats.premium_expiry) this.premiumExpiry = this.learningStats.premium_expiry;
-                                if(this.learningStats.total_minutes) this.totalMinutesLearned = this.learningStats.total_minutes;
-                                if(this.learningStats.email_summary_enabled) this.emailSummaryEnabled = this.learningStats.email_summary_enabled;
-                                if(this.learningStats.last_summary_date) this.lastSummaryDate = this.learningStats.last_summary_date;
-                                if(this.learningStats.current_language) this.currentLanguage = this.learningStats.current_language;
-                                if(this.learningStats.equipped_item) this.equippedItem = this.learningStats.equipped_item;
-
-                                // Recalculate level
-                                this.updateLevel();
-                            }
-                        } catch (err) {
-                            console.error("Error loading profile:", err);
-                            // If profile missing (shouldn't happen if signup worked), maybe init default?
-                        }
-                    },
-
                     async handleSignup() {
                         if (!this.loginForm.name || !this.loginForm.email || !this.loginForm.password) {
                             alert("Please fill in all fields.");
@@ -2823,8 +2787,8 @@
                         }
                     },
                     getEmotionIcon(emotion) {
-                        const map = { excited: 'ðŸ¤©', curious: 'ðŸ¤”', frustrated: 'ðŸ˜¤', happy: 'ðŸ˜Š', neutral: 'ðŸ˜' };
-                        return map[emotion] || 'ðŸ˜';
+                        const map = { excited: '🤩', curious: '🤔', frustrated: '😤', happy: '😊', neutral: '😐' };
+                        return map[emotion] || '😐';
                     },
                     getMoodStats() {
                         const total = Object.values(this.learningStats.emotions).reduce((a, b) => a + b, 0) || 1;
@@ -2852,14 +2816,14 @@
                             if (data.frustrated > data.total / 3) {
                                 insights.push({ 
                                     subject: sub, 
-                                    icon: 'ðŸ˜¤', 
+                                    icon: '😤', 
                                     text: `Child seems a bit frustrated with ${sub}. Try a simpler level?`,
                                     color: 'bg-red-50 text-red-700'
                                 });
                             } else if (data.happy > data.total / 2) {
                                 insights.push({ 
                                     subject: sub, 
-                                    icon: 'ðŸš€', 
+                                    icon: '🚀', 
                                     text: `Great news! Child is very excited about ${sub}!`,
                                     color: 'bg-green-50 text-green-700'
                                 });
@@ -3048,9 +3012,9 @@
                             return;
                         }
                         if (!this.isQuerySafe(this.userQuery)) {
-                            this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! ðŸŒˆâœ¨";
+                            this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
                             this.userQuery = '';
-                            this.currentMoodIcon = 'ðŸ¤”';
+                            this.currentMoodIcon = '🤔';
                             return;
                         }
 
@@ -3060,7 +3024,7 @@
                         this.isSpeaking = false;
                         this.isThinking = true;
                         this.hasAnswered = false;
-                        this.displayText = "Thinking... ðŸ§ âœ¨";
+                        this.displayText = "Thinking... 🧠✨";
                         this.currentMoodIcon = this.currentChar.mood_think;
 
                         const ageLogicInstruction = this.getAgeLogic();
@@ -3110,7 +3074,7 @@
                         } catch (error) {
                             console.error("API Error:", error);
                             this.logActivity(savedQuery, 'neutral');
-                            this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? ðŸ”Œ", savedQuery);
+                            this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
                         }
                     },
                     async finishThinking(response, originalQuery) {
