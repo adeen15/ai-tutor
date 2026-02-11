@@ -2499,6 +2499,42 @@
                         }
                     },
 
+                    async loadUserProfile(email) {
+                        try {
+                            const { data, error } = await this.supabase
+                                .from('profiles')
+                                .select('*')
+                                .eq('email', email)
+                                .single();
+
+                            if (error) throw error;
+
+                            if (data) {
+                                this.childProfile = data.child_profile || { name: '', age: '', grade: '', ageRange: '6-7' };
+                                this.coins = data.coins || 0;
+                                this.xp = data.xp || 0;
+                                this.learningStats = data.learning_stats || this.learningStats;
+                                this.parentLogs = data.parent_logs || [];
+                                
+                                // Restore other state if saved in learning_stats
+                                if(this.learningStats.inventory) this.inventory = this.learningStats.inventory;
+                                if(this.learningStats.is_premium) this.isPremium = this.learningStats.is_premium;
+                                if(this.learningStats.premium_expiry) this.premiumExpiry = this.learningStats.premium_expiry;
+                                if(this.learningStats.total_minutes) this.totalMinutesLearned = this.learningStats.total_minutes;
+                                if(this.learningStats.email_summary_enabled) this.emailSummaryEnabled = this.learningStats.email_summary_enabled;
+                                if(this.learningStats.last_summary_date) this.lastSummaryDate = this.learningStats.last_summary_date;
+                                if(this.learningStats.current_language) this.currentLanguage = this.learningStats.current_language;
+                                if(this.learningStats.equipped_item) this.equippedItem = this.learningStats.equipped_item;
+
+                                // Recalculate level
+                                this.updateLevel();
+                            }
+                        } catch (err) {
+                            console.error("Error loading profile:", err);
+                            // If profile missing (shouldn't happen if signup worked), maybe init default?
+                        }
+                    },
+
                     async handleSignup() {
                         if (!this.loginForm.name || !this.loginForm.email || !this.loginForm.password) {
                             alert("Please fill in all fields.");
