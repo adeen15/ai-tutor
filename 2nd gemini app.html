@@ -2902,6 +2902,8 @@
                         if (!file) return;
                         this.visionFile = file;
                         this.visionPreview = URL.createObjectURL(file);
+                        // Clear the input so the same file can be selected again
+                        event.target.value = '';
                     },
                     async analyzeImage() {
                         if (!this.visionFile) return;
