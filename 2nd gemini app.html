@@ -2913,7 +2913,9 @@
                         const reader = new FileReader();
                         
                         reader.onload = async (e) => {
-                            const base64Image = e.target.result.split(',')[1];
+                            // Send the FULL Data URL (including data:image/jpeg;base64,...)
+                            // This ensures the server gets the correct MIME type (png, jpeg, etc.)
+                            const base64Image = e.target.result;
                             
                             try {
                                 const systemPrompt = `You are ${this.currentChar.name}, a helpful AI teacher.
