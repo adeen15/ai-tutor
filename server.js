@@ -53,6 +53,8 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/vision', async (req, res) => {
     try {
         const { prompt, image, systemInstruction } = req.body;
+        // image is now expected to be a full Data URL (e.g., "data:image/jpeg;base64,.....")
+        
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -70,7 +72,7 @@ app.post('/api/vision', async (req, res) => {
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": `data:image/jpeg;base64,${image}`
+                                    "url": image // Pass the full data URL directly
                                 }
                             }
                         ]
@@ -78,11 +80,18 @@ app.post('/api/vision', async (req, res) => {
                 ]
             })
         });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error(`upstream API error: ${response.status} ${response.statusText}`, errText);
+            throw new Error(`Upstream API failed: ${response.status} ${errText}`);
+        }
+
         const data = await response.json();
         res.json({ response: data.choices[0].message.content });
     } catch (error) {
         console.error("Vision API Error:", error);
-        res.status(500).json({ error: "Vision analysis failed" });
+        res.status(500).json({ error: "Vision analysis failed: " + error.message });
     }
 });
 
