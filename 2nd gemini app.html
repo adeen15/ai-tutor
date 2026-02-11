@@ -863,7 +863,7 @@
                     <!-- Type: Alphabet -->
                     <div x-show="getDailyContent().type === 'alphabet'" class="grid grid-cols-2 sm:grid-cols-5 gap-6 w-full max-w-4xl animate__animated animate__fadeInUp">
                         <template x-for="letter in getDailyContent().letters || []">
-                            <div class="aspect-square bg-white rounded-3xl shadow-lg border-b-8 border-gray-200 flex items-center justify-center text-7xl font-kids text-blue-500 hover:scale-110 hover:-translate-y-2 transition-all cursor-pointer active:scale-95 active:border-b-0" @click="speak(letter); playPing()">
+                            <div class="aspect-square bg-white rounded-3xl shadow-lg border-b-8 border-gray-200 flex items-center justify-center text-7xl font-kids text-blue-500 hover:scale-110 hover:-translate-y-2 transition-all cursor-pointer active:scale-95 active:border-b-0" @click="speak(letter, 1.3, 1.1); playPing()">
                                 <span x-text="letter"></span>
                             </div>
                         </template>
@@ -1848,7 +1848,7 @@
                         recognition.start();
                     },
 
-                    speak(text) {
+                    speak(text, customPitch = null, customRate = null) {
                         if (this.isSpeaking) { 
                             window.speechSynthesis.cancel(); 
                             this.isSpeaking = false; 
@@ -1864,8 +1864,8 @@
                         
                         let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
                         msg.voice = baseVoice;
-                        msg.pitch = this.currentChar.pitch; 
-                        msg.rate = this.currentChar.rate;
+                        msg.pitch = customPitch !== null ? customPitch : this.currentChar.pitch;
+                        msg.rate = customRate !== null ? customRate : this.currentChar.rate;
                         
                         msg.onstart = () => { this.isSpeaking = true; };
                         
