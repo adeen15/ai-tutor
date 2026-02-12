@@ -1786,20 +1786,21 @@
                                 this.session = session;
                                 if (session) {
                                     this.registeredEmail = session.user.email;
-                                    await this.loadUserProfile(session.user.email);
+                                    
+                                    // IMMMEDIATE UNBLOCK: Don't wait for profile.
+                                    // We turn off the main loading screen so the user never gets "stuck".
+                                    // Profile data will pop in when ready.
                                     this.isLoggedIn = true;
                                     this.hasAccount = true;
+                                    this.isLoading = false; 
+
+                                    await this.loadUserProfile(session.user.email);
                                     
-                                    // FORCE LOADING OFF: If we have a session and loaded profile/handled it
-                                    // This unblocks the UI even if the handleLogin/handleSignup promise is still hanging
-                                    console.log("Auth State Changed & Valid Session -> Forcing Loading OFF");
-                                    this.isLoading = false;
                                 } else if (event === 'SIGNED_OUT') {
                                     this.isLoggedIn = false;
                                     this.childProfile = { name: '', age: '', grade: '', ageRange: '6-7' };
                                     this.coins = 0;
                                     this.xp = 0;
-                                    // Ensure loading is off on signout too
                                     this.isLoading = false; 
                                 }
                             });
