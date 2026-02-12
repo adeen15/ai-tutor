@@ -2249,11 +2249,13 @@
                             } else {
                                 console.warn("No profile found - Session might be zombie. Logging out.");
                                 // Zombie Detection: Auth thinks we are logged in, but no profile exists.
-                                // We must force logout so user can signup again.
+                                // We explicitly tell the user to re-create their account.
                                 this.isLoggedIn = false;
                                 this.isLoading = false;
                                 await this.supabase.auth.signOut();
-                                alert("Please sign up again to create your profile.");
+                                
+                                alert("We couldn't find your profile data (it may have been deleted). Please create a new account to restore access.");
+                                this.hasAccount = false; // Switch to Signup Mode
                             }
                         } catch (e) {
                             console.error("Sync error:", e);
