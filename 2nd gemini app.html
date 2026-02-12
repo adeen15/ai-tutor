@@ -2591,7 +2591,18 @@
                     },
 
                     async handleLogin() {
+                        console.log("Attempting Login..."); // Log start
                         this.isLoading = true;
+                        
+                        // Safety timeout for Login specifically
+                        const loginTimeout = setTimeout(() => {
+                            if(this.isLoading) {
+                                console.warn("Login timed out - forcing loading off");
+                                this.isLoading = false;
+                                alert("Login is taking longer than expected. Please check your connection.");
+                            }
+                        }, 10000); // 10 seconds
+
                         const email = this.loginForm.email.toLowerCase().trim();
                         const password = this.loginForm.password;
 
@@ -2603,13 +2614,16 @@
 
                             if (error) throw error;
 
+                            console.log("Login successful, session established.");
                             // Profile loading handled by onAuthStateChange
                             this.loginForm.password = '';
 
                         } catch (err) {
-                            console.error(err);
+                            console.error("Login Error:", err);
                             alert("Login failed: " + err.message);
                         } finally {
+                            clearTimeout(loginTimeout); // Clear the safety timer
+                            console.log("Login finally block - turning off loading");
                             this.isLoading = false;
                         }
                     },
