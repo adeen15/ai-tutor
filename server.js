@@ -15,11 +15,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/manifest.json', (req, res) => {
-    res.sendFile(path.join(__dirname, 'manifest.json'));
+    res.sendFile(path.join(process.cwd(), 'manifest.json'));
 });
 
 app.get('/service-worker.js', (req, res) => {
-    res.sendFile(path.join(__dirname, 'service-worker.js'));
+    res.sendFile(path.join(process.cwd(), 'service-worker.js'));
 });
 
 // --- CONFIG ROUTE ---
