@@ -22,6 +22,9 @@ app.get('/service-worker.js', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'service-worker.js'));
 });
 
+// Fix favicon 404
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // --- CONFIG ROUTE ---
 app.get('/api/config', (req, res) => {
     res.json({
