@@ -2249,12 +2249,17 @@
                                     }, 1000);
                                 }
                             } else {
-                                console.warn("No profile found for this user. This might be a new signup or profile was deleted.");
-                                // If no profile, we still consider them 'logged in' via Auth, but maybe we need to create a profile?
-                                // For now, just ensure we don't block.
+                                console.warn("No profile found - Session might be zombie. Logging out.");
+                                // Zombie Detection: Auth thinks we are logged in, but no profile exists.
+                                // We must force logout so user can signup again.
+                                this.isLoggedIn = false;
+                                this.isLoading = false;
+                                await this.supabase.auth.signOut();
+                                alert("Please sign up again to create your profile.");
                             }
                         } catch (e) {
                             console.error("Sync error:", e);
+                            this.isLoading = false;
                         }
                     },
 
