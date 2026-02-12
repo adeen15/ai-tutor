@@ -2229,14 +2229,27 @@
                     },
 
                     async loadUserProfile(email) {
+                        console.log("Loading Profile for:", email);
                         try {
-                            const { data, error } = await this.supabase
+                            // Create a promise for the DB query
+                            const queryPromise = this.supabase
                                 .from('profiles')
                                 .select('*')
                                 .eq('email', email)
                                 .single();
+
+                            // Create a timeout promise
+                            const timeoutPromise = new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error("Profile load timed out")), 5000)
+                            );
+
+                            // Race them
+                            const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
                             
+                            console.log("Profile Data:", data, "Error:", error);
+
                             if (data) {
+                                console.log("Profile found! Populating...");
                                 this.populateUserData(data);
                                 this.isLoggedIn = true;
                                 this.playPing();
@@ -2247,19 +2260,20 @@
                                     }, 1000);
                                 }
                             } else {
-                                console.warn("No profile found - Session might be zombie. Logging out.");
-                                // Zombie Detection: Auth thinks we are logged in, but no profile exists.
-                                // We explicitly tell the user to re-create their account.
+                                console.warn("No profile found - possibly deleted.");
                                 this.isLoggedIn = false;
                                 this.isLoading = false;
                                 await this.supabase.auth.signOut();
-                                
-                                alert("We couldn't find your profile data (it may have been deleted). Please create a new account to restore access.");
-                                this.hasAccount = false; // Switch to Signup Mode
+                                alert("We couldn't find your profile data. Please create a new account.");
+                                this.hasAccount = false; 
                             }
                         } catch (e) {
-                            console.error("Sync error:", e);
+                            console.error("Sync error in loadUserProfile:", e);
                             this.isLoading = false;
+                            
+                            if (e.message === "Profile load timed out") {
+                                alert("Loading your profile timed out. Please check your connection and try again.");
+                            }
                         }
                     },
 
