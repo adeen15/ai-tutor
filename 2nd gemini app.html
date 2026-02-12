@@ -1756,6 +1756,7 @@
                     async init() {
                         // Safety Timeout: Force loading off after 5 seconds if still stuck
                         setTimeout(() => {
+                            console.log("SAFETY TIMEOUT CHECK: isLoading is", this.isLoading);
                             if (this.isLoading) {
                                 console.warn("Forcing loading screen off due to timeout.");
                                 this.isLoading = false;
@@ -1806,6 +1807,7 @@
                         } catch (e) {
                             console.error("Initialization error:", e);
                         } finally {
+                            console.log("INIT FINALLY BLOCK EXECUTED");
                             this.isLoading = false;
                         }
 
