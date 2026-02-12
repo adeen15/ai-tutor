@@ -1787,11 +1787,9 @@
                                 if (session) {
                                     this.registeredEmail = session.user.email;
                                     
-                                    // IMMMEDIATE UNBLOCK: Don't wait for profile.
-                                    // We turn off the main loading screen so the user never gets "stuck".
-                                    // Profile data will pop in when ready.
-                                    this.isLoggedIn = true;
-                                    this.hasAccount = true;
+                                    // STOP LOADING immediately to prevent "stuck" spinner/alerts.
+                                    // BUT keep isLoggedIn = false until we verify the profile exists.
+                                    // This means the Login Screen stays visible until profile data loads.
                                     this.isLoading = false; 
 
                                     await this.loadUserProfile(session.user.email);
