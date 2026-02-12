@@ -1801,6 +1801,14 @@
                             this.isLoading = false;
                         }
 
+                        // Safety Timeout: Force loading off after 5 seconds if still stuck
+                        setTimeout(() => {
+                            if (this.isLoading) {
+                                console.warn("Forcing loading screen off due to timeout.");
+                                this.isLoading = false;
+                            }
+                        }, 5000);
+
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                     },
 
