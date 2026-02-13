@@ -290,23 +290,25 @@
                             <!-- PIN Entry for existing sessions -->
                             <template x-if="session && !isLoggedIn">
                                 <div class="animate__animated animate__fadeIn">
-                                    <div class="bg-amber-50 p-6 rounded-2xl border-2 border-amber-200 text-center">
-                                        <p class="text-sm text-amber-600 font-bold uppercase tracking-wide mb-2">Device is Authorized</p>
-                                        <h3 class="text-xl font-kids text-slate-800 mb-4">Enter PIN to Unlock</h3>
+                                    <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
+                                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Device is Authorized</p>
+                                        <h3 class="text-xl font-kids text-slate-800 my-4">Enter PIN to Unlock</h3>
                                         <input type="password" 
                                                x-model="pinInput" 
                                                @keyup.enter="verifyPin"
                                                maxlength="4"
                                                placeholder="****" 
-                                               class="w-32 p-4 bg-white border-2 border-amber-300 rounded-2xl text-center font-bold text-3xl tracking-widest outline-none focus:border-amber-500 transition-all">
+                                               class="w-full p-4 bg-white border-2 border-blue-200 rounded-2xl text-center font-bold text-3xl tracking-widest outline-none focus:border-blue-500 transition-all">
                                         
-                                        <button @click="verifyPin" class="w-full mt-4 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                                            Open App 🚀
-                                        </button>
+                                        <div class="mt-6 space-y-3">
+                                            <button @click="verifyPin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                                                Unlock App 🔓
+                                            </button>
 
-                                        <button @click="handleLogout" class="mt-6 text-xs text-slate-400 font-bold hover:underline uppercase block mx-auto">
-                                            Sign Out / Change Account
-                                        </button>
+                                            <button @click="handleLogout" class="text-xs text-blue-400 font-bold hover:underline uppercase block mx-auto py-2">
+                                                Sign Out / Change Account
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </template>
@@ -1534,7 +1536,7 @@
             function aiTutor() {
                 return {
                     supabase: null,
-                    isLoading: false,
+                    isLoading: true, // Start in loading state
                     isLoggedIn: false,
                     hasAccount: false,
                     savedProfile: null,
@@ -1806,19 +1808,24 @@
                             const config = await res.json();
                             this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
 
-                            // --- SUPABASE AUTH LISTENER ---
+                            // 1. Check for existing session immediately before showing ANY UI
+                            const { data: { session } } = await this.supabase.auth.getSession();
+                            this.session = session;
+                            
+                            if (session) {
+                                this.registeredEmail = session.user.email;
+                                this.hasAccount = true;
+                                await this.loadUserProfile(session.user.email);
+                            }
+
+                            // 2. Set up the auth listener for future events
                             this.supabase.auth.onAuthStateChange(async (event, session) => {
                                 console.log("Auth Event:", event);
                                 this.session = session;
                                 if (session) {
                                     this.registeredEmail = session.user.email;
-                                    
-                                    // Set hasAccount to true immediately so we show the Login/PIN screen instead of Signup
                                     this.hasAccount = true;
-
-                                    // Keep loading screen active while we fetch the profile
                                     await this.loadUserProfile(session.user.email);
-                                    
                                 } else if (event === 'SIGNED_OUT') {
                                     this.isLoggedIn = false;
                                     this.session = null;
@@ -1829,23 +1836,12 @@
                                 }
                             });
 
-                            // Check for existing session on load
-                            const { data: { session } } = await this.supabase.auth.getSession();
-                            if (session) {
-                                this.session = session;
-                                // onAuthStateChange will handle the rest
-                            }
-
                         } catch (e) {
                             console.error("Initialization error:", e);
-                            this.isLoading = false;
                         } finally {
                             console.log("INIT FINALLY BLOCK EXECUTED");
-                            // Only set isLoading to false if we don't have a session to process.
-                            // If we have a session, loadUserProfile will handle it.
-                            if (!this.session) {
-                                this.isLoading = false;
-                            }
+                            // spinner handled by session state
+                            this.isLoading = false;
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
