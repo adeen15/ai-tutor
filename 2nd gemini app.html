@@ -1226,302 +1226,301 @@
 
                 <div class="flex-1 overflow-y-auto custom-scroll p-6 sm:p-8">
                     
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-id-card text-blue-500 mr-2"></i>Child Profile</h3>
-                                    <button @click="isEditingProfile = !isEditingProfile" class="text-xs font-bold text-blue-500 uppercase hover:underline" x-text="isEditingProfile ? 'Save' : 'Edit'"></button>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-id-card text-blue-500 mr-2"></i>Child Profile</h3>
+                                <button @click="isEditingProfile = !isEditingProfile" class="text-xs font-bold text-blue-500 uppercase hover:underline" x-text="isEditingProfile ? 'Save' : 'Edit'"></button>
+                            </div>
+                            
+                            <div x-show="!isEditingProfile" class="space-y-3">
+                                <div><p class="text-xs text-slate-400 font-bold uppercase">Name</p><p class="text-xl font-kids text-slate-800" x-text="childProfile.name"></p></div>
+                                <div class="flex gap-6">
+                                    <div><p class="text-xs text-slate-400 font-bold uppercase">Age Group</p><p class="text-lg font-bold text-slate-700" x-text="(childProfile.ageRange || '6-7') + ' Years'"></p></div>
+                                    <div><p class="text-xs text-slate-400 font-bold uppercase">Difficulty</p><p class="text-lg font-bold text-slate-700" x-text="['4-6','4-5'].includes(childProfile.ageRange) ? 'Beginner' : (['7-9','6-7','8-9'].includes(childProfile.ageRange) ? 'Intermediate' : (['10-13'].includes(childProfile.ageRange) ? 'Advanced' : 'Pro'))"></p></div>
+                                </div>
+                            </div>
+
+                            <div x-show="isEditingProfile" class="space-y-3 animate__animated animate__fadeIn">
+                                <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Name">
+                                
+                                <div>
+                                    <label class="text-xs text-slate-400 font-bold uppercase">Adjust Age Group</label>
+                                    <select x-model="childProfile.ageRange" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
+                                        <option value="4-6">4-6 Years (Basic)</option>
+                                        <option value="7-9">7-9 Years (Logic)</option>
+                                        <option value="10-13">10-13 Years (Science)</option>
+                                        <option value="Teen">Teen (Pro)</option>
+                                    </select>
                                 </div>
                                 
-                                <div x-show="!isEditingProfile" class="space-y-3">
-                                    <div><p class="text-xs text-slate-400 font-bold uppercase">Name</p><p class="text-xl font-kids text-slate-800" x-text="childProfile.name"></p></div>
-                                    <div class="flex gap-6">
-                                        <div><p class="text-xs text-slate-400 font-bold uppercase">Age Group</p><p class="text-lg font-bold text-slate-700" x-text="(childProfile.ageRange || '6-7') + ' Years'"></p></div>
-                                        <div><p class="text-xs text-slate-400 font-bold uppercase">Difficulty</p><p class="text-lg font-bold text-slate-700" x-text="['4-6','4-5'].includes(childProfile.ageRange) ? 'Beginner' : (['7-9','6-7','8-9'].includes(childProfile.ageRange) ? 'Intermediate' : (['10-13'].includes(childProfile.ageRange) ? 'Advanced' : 'Pro'))"></p></div>
-                                    </div>
-                                </div>
-
-                                <div x-show="isEditingProfile" class="space-y-3 animate__animated animate__fadeIn">
-                                    <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Name">
-                                    
-                                    <div>
-                                        <label class="text-xs text-slate-400 font-bold uppercase">Adjust Age Group</label>
-                                        <select x-model="childProfile.ageRange" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
-                                            <option value="4-6">4-6 Years (Basic)</option>
-                                            <option value="7-9">7-9 Years (Logic)</option>
-                                            <option value="10-13">10-13 Years (Science)</option>
-                                            <option value="Teen">Teen (Pro)</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
-                                </div>
-                            </div>
-
-                            <div class="bg-blue-50 p-6 rounded-3xl shadow-sm border border-blue-100 flex flex-col justify-center">
-                                <h3 class="font-bold text-blue-800 text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-                                    <i class="fas fa-flag-checkered"></i> 30-Day Outcomes
-                                </h3>
-                                <div class="space-y-3">
-                                    <template x-for="outcome in getRegionalOutcomes()">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm" x-text="outcome.id"></div>
-                                            <p class="text-xs font-bold text-blue-700" x-text="outcome.text"></p>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                    <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails Active
-                                </h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">App Language</label>
-                                        <select x-model="currentLanguage" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
-                                            <template x-for="lang in availableLanguages">
-                                                <option :value="lang" x-text="lang"></option>
-                                            </template>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Regional Curriculum</label>
-                                        <select x-model="currentCurriculumRegion" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
-                                            <option value="Global">Global Standards 🌍</option>
-                                            <option value="US">US (Common Core) 🇺🇸</option>
-                                            <option value="UK">UK (National Curriculum) 🇬🇧</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-book"></i></div>
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-700 uppercase">Curriculum Aligned</p>
-                                            <p class="text-[10px] text-slate-500 leading-tight">AI answers are restricted to age-appropriate educational topics only.</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-700 uppercase">Learning Wins Summaries</p>
-                                            <div class="flex items-center gap-2 mt-1">
-                                                <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
-                                                    <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
-                                                </button>
-                                                <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Summaries ON' : 'Weekly Summaries OFF'"></span>
-                                            </div>
-                                            <button @click="sendWeeklySummary(true)" class="mt-2 text-[10px] bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold hover:bg-blue-200 transition-colors" :disabled="!isPremium">
-                                                <i class="fas fa-paper-plane mr-1"></i> Send Report Now
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                    <i class="fas fa-smile-beam text-pink-500"></i> Emotional Insights (New)
-                                </h3>
-                                <div class="space-y-4">
-                                    <template x-for="insight in getEmotionalInsights()">
-                                        <div class="flex items-start gap-3 p-3 rounded-xl" :class="insight.color">
-                                            <div class="text-2xl" x-text="insight.icon"></div>
-                                            <div>
-                                                <p class="text-xs font-bold uppercase" x-text="insight.subject"></p>
-                                                <p class="text-sm font-semibold text-slate-700" x-text="insight.text"></p>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <div x-show="parentLogs.length < 3" class="text-center py-4 text-gray-400 text-xs italic">
-                                        Asking more questions will reveal emotional patterns!
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                    <i class="fas fa-chart-pie text-indigo-500"></i> Learning Mood Trend
-                                </h3>
-                                <div class="h-40 flex items-end justify-between px-4 pb-2 border-b-2 border-slate-50 gap-2">
-                                    <template x-for="mood in getMoodStats()">
-                                        <div class="flex-1 flex flex-col items-center">
-                                            <div class="w-full rounded-t-lg transition-all duration-1000" 
-                                                :class="mood.bg"
-                                                :style="'height: ' + mood.percent + '%'"></div>
-                                            <span class="text-[10px] font-bold text-slate-400 mt-2 uppercase" x-text="mood.label"></span>
-                                        </div>
-                                    </template>
-                                </div>
-                                <p class="text-[10px] text-center text-slate-400 font-bold uppercase mt-4 tracking-widest">Aggregate Sentiment Analysis</p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i>Membership</h3>
-                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" :class="isPremium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'" x-text="isPremium ? 'Premium' : 'Free'"></span>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? 'All teachers and features unlocked.' : 'Limited to 5 questions per day.'"></p>
-                                    
-                                    <template x-if="isPremium && premiumExpiry">
-                                        <p class="text-xs text-gray-400 font-bold mb-3">
-                                            Renews on: <span class="text-slate-600" x-text="new Date(premiumExpiry).toLocaleDateString()"></span>
-                                        </p>
-                                    </template>
-
-                                    <button @click="isPremium ? cancelSubscription() : processPayment()" 
-                                        class="w-full py-3 rounded-xl font-bold text-sm transition-all" 
-                                        :class="isPremium ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg transform hover:-translate-y-1'">
-                                        <span x-text="isPremium ? 'Cancel Subscription' : 'Upgrade Now ($4.99/mo)'"></span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
-                                <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
-                                    <div>
-                                        <i class="fas fa-lock text-gray-400 mb-2"></i>
-                                        <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
-                                        <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
-                                    </div>
-                                </div>
-                                <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                    <i class="fas fa-chart-line text-blue-500"></i> Monthly Report
-                                </h3>
-                                <div class="space-y-4">
-                                    <p class="text-[10px] text-gray-500">A detailed analysis of subjects learned, questions asked, and vocabulary milestones.</p>
-                                    <button @click="downloadMonthlyReport()" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-200 transition-colors">
-                                        <i class="fas fa-file-download mr-2"></i> Download Report (PDF)
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
-                            <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
-                                <i class="fas fa-rocket text-purple-500"></i> Learning Journey
+                        <div class="bg-blue-50 p-6 rounded-3xl shadow-sm border border-blue-100 flex flex-col justify-center">
+                            <h3 class="font-bold text-blue-800 text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <i class="fas fa-flag-checkered"></i> 30-Day Outcomes
                             </h3>
-                            
-                            <div class="relative w-full mt-4 mb-8 px-2 sm:px-10">
-                                <div class="absolute left-4 right-4 top-5 h-1.5 bg-gray-100 rounded-full z-0"></div>
-                                <div class="absolute left-4 top-5 h-1.5 bg-green-400 rounded-full z-0 transition-all duration-1000" :style="'width: ' + journeyProgress + '%'"></div>
-
-                                <div class="relative flex justify-between items-start z-10">
-                                    <div class="flex flex-col items-center gap-2">
-                                        <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
-                                            :class="xp >= 0 ? 'border-green-400 text-green-500' : 'border-gray-200 text-gray-300'">
-                                            <i class="fas fa-egg text-lg"></i>
-                                        </div>
-                                        <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
-                                            :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
+                            <div class="space-y-3">
+                                <template x-for="outcome in getRegionalOutcomes()">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs text-blue-500 font-bold shadow-sm" x-text="outcome.id"></div>
+                                        <p class="text-xs font-bold text-blue-700" x-text="outcome.text"></p>
                                     </div>
-                                    
-                                    <div class="flex flex-col items-center gap-2">
-                                        <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
-                                            :class="xp >= 1000 ? 'border-blue-400 text-blue-500' : 'border-gray-200 text-gray-300'">
-                                            <i class="fas fa-book-reader text-lg"></i>
-                                        </div>
-                                        <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
-                                            :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
-                                    </div>
-
-                                    <div class="flex flex-col items-center gap-2">
-                                        <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
-                                            :class="xp >= 3000 ? 'border-purple-400 text-purple-500' : 'border-gray-200 text-gray-300'">
-                                            <i class="fas fa-graduation-cap text-lg"></i>
-                                        </div>
-                                        <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
-                                            :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
-                                <div class="bg-orange-50 p-4 rounded-2xl border-orange-100 border text-center">
-                                    <div class="text-2xl mb-1">❓</div>
-                                    <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
-                                    <div class="text-[10px] text-orange-400 font-bold uppercase">Questions Asked</div>
-                                </div>
-                                <div class="bg-blue-50 p-4 rounded-2xl border-blue-100 border text-center">
-                                    <div class="text-2xl mb-1">📖</div>
-                                    <div class="text-2xl font-bold text-blue-600" x-text="learningStats.wordsLearned"></div>
-                                    <div class="text-[10px] text-blue-400 font-bold uppercase">Words Read</div>
-                                </div>
-                                <div class="bg-yellow-50 p-4 rounded-2xl border-yellow-100 border text-center">
-                                    <div class="text-2xl mb-1">💰</div>
-                                    <div class="text-2xl font-bold text-yellow-600" x-text="coins"></div>
-                                    <div class="text-[10px] text-yellow-400 font-bold uppercase">Coins Earned</div>
-                                </div>
-                                <div class="bg-pink-50 p-4 rounded-2xl border-pink-100 border text-center">
-                                    <div class="text-2xl mb-1">⭐</div>
-                                    <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
-                                    <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
-                                </div>
+                                </template>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                <h3 class="font-bold text-slate-800 text-lg mb-4">Evidence-Based Mastery Levels</h3>
-                                <div class="space-y-6">
-                                    <template x-for="(score, subject) in getTopSubjects()">
-                                        <div>
-                                            <div class="flex justify-between items-center mb-1">
-                                                <span class="text-xs font-bold text-gray-500 uppercase" x-text="subject"></span>
-                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase shadow-sm" 
-                                                      :class="getMasteryBadge(score).bg" 
-                                                      x-text="getMasteryBadge(score).label"></span>
-                                            </div>
-                                            <div class="flex justify-between text-[9px] font-bold text-gray-400 mb-1">
-                                                <span x-text="currentCurriculumRegion + ' Standard Alignment'"></span>
-                                                <span x-text="score + ' pts'"></span>
-                                            </div>
-                                            <div class="h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
-                                                <div class="h-full rounded-full transition-all duration-1000" 
-                                                    :class="getSubjectColor(subject)" 
-                                                    :style="'width: ' + Math.min((score / 150) * 100, 100) + '%'"></div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <div x-show="Object.values(learningStats.subjects).reduce((a, b) => a + b, 0) === 0" class="text-center text-gray-400 text-sm py-4">
-                                        No mastery data yet. Start asking questions!
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails Active
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">App Language</label>
+                                    <select x-model="currentLanguage" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
+                                        <template x-for="lang in availableLanguages">
+                                            <option :value="lang" x-text="lang"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Regional Curriculum</label>
+                                    <select x-model="currentCurriculumRegion" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
+                                        <option value="Global">Global Standards 🌍</option>
+                                        <option value="US">US (Common Core) 🇺🇸</option>
+                                        <option value="UK">UK (National Curriculum) 🇬🇧</option>
+                                    </select>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-book"></i></div>
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-700 uppercase">Curriculum Aligned</p>
+                                        <p class="text-[10px] text-slate-500 leading-tight">AI answers are restricted to age-appropriate educational topics only.</p>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="font-bold text-slate-800 text-lg">Recent Questions</h3>
-                                    <button @click="clearLogs" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase">Clear History</button>
-                                </div>
-                                <div class="flex-1 overflow-y-auto max-h-[200px] custom-scroll pr-2 space-y-3">
-                                    <template x-for="log in parentLogs.slice().reverse().slice(0, 10)">
-                                        <div class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-400">
-                                            <div class="flex justify-between items-center mb-1">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="text-[10px] text-gray-400 font-bold" x-text="log.time"></span>
-                                                    <span x-show="log.emotion" :title="log.emotion" class="text-xs" x-text="getEmotionIcon(log.emotion)"></span>
-                                                </div>
-                                                <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase whitespace-nowrap ml-2" x-text="'FROM: ' + log.char"></span>
-                                            </div>
-                                            <p class="text-slate-700 text-sm font-semibold" x-text="log.query"></p>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-700 uppercase">Learning Wins Summaries</p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
+                                                <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
+                                            </button>
+                                            <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Summaries ON' : 'Weekly Summaries OFF'"></span>
                                         </div>
-                                    </template>
-                                    <div x-show="parentLogs.length === 0" class="text-center text-gray-400 text-sm py-8">
-                                        No activity recorded yet.
+                                        <button @click="sendWeeklySummary(true)" class="mt-2 text-[10px] bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold hover:bg-blue-200 transition-colors" :disabled="!isPremium">
+                                            <i class="fas fa-paper-plane mr-1"></i> Send Report Now
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-      <div class="mt-8 pt-6 border-t flex flex-wrap justify-between items-center gap-4">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                             <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                <i class="fas fa-smile-beam text-pink-500"></i> Emotional Insights (New)
+                            </h3>
+                            <div class="space-y-4">
+                                <template x-for="insight in getEmotionalInsights()">
+                                    <div class="flex items-start gap-3 p-3 rounded-xl" :class="insight.color">
+                                        <div class="text-2xl" x-text="insight.icon"></div>
+                                        <div>
+                                            <p class="text-xs font-bold uppercase" x-text="insight.subject"></p>
+                                            <p class="text-sm font-semibold text-slate-700" x-text="insight.text"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="parentLogs.length < 3" class="text-center py-4 text-gray-400 text-xs italic">
+                                    Asking more questions will reveal emotional patterns!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                <i class="fas fa-chart-pie text-indigo-500"></i> Learning Mood Trend
+                            </h3>
+                            <div class="h-40 flex items-end justify-between px-4 pb-2 border-b-2 border-slate-50 gap-2">
+                                <template x-for="mood in getMoodStats()">
+                                    <div class="flex-1 flex flex-col items-center">
+                                        <div class="w-full rounded-t-lg transition-all duration-1000" 
+                                            :class="mood.bg"
+                                            :style="'height: ' + mood.percent + '%'"></div>
+                                        <span class="text-[10px] font-bold text-slate-400 mt-2 uppercase" x-text="mood.label"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            <p class="text-[10px] text-center text-slate-400 font-bold uppercase mt-4 tracking-widest">Aggregate Sentiment Analysis</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i>Membership</h3>
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" :class="isPremium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'" x-text="isPremium ? 'Premium' : 'Free'"></span>
+                            </div>
+                            <div class="mt-4">
+                                <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? 'All teachers and features unlocked.' : 'Limited to 5 questions per day.'"></p>
+                                
+                                <template x-if="isPremium && premiumExpiry">
+                                    <p class="text-xs text-gray-400 font-bold mb-3">
+                                        Renews on: <span class="text-slate-600" x-text="new Date(premiumExpiry).toLocaleDateString()"></span>
+                                    </p>
+                                </template>
+
+                                <button @click="isPremium ? cancelSubscription() : processPayment()" 
+                                    class="w-full py-3 rounded-xl font-bold text-sm transition-all" 
+                                    :class="isPremium ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg transform hover:-translate-y-1'">
+                                    <span x-text="isPremium ? 'Cancel Subscription' : 'Upgrade Now ($4.99/mo)'"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                            <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                                <div>
+                                    <i class="fas fa-lock text-gray-400 mb-2"></i>
+                                    <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
+                                    <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                                </div>
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                <i class="fas fa-chart-line text-blue-500"></i> Monthly Report
+                            </h3>
+                            <div class="space-y-4">
+                                <p class="text-[10px] text-gray-500">A detailed analysis of subjects learned, questions asked, and vocabulary milestones.</p>
+                                <button @click="downloadMonthlyReport()" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-200 transition-colors">
+                                    <i class="fas fa-file-download mr-2"></i> Download Report (PDF)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
+                        <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
+                            <i class="fas fa-rocket text-purple-500"></i> Learning Journey
+                        </h3>
+                        
+                        <div class="relative w-full mt-4 mb-8 px-2 sm:px-10">
+                            <div class="absolute left-4 right-4 top-5 h-1.5 bg-gray-100 rounded-full z-0"></div>
+                            <div class="absolute left-4 top-5 h-1.5 bg-green-400 rounded-full z-0 transition-all duration-1000" :style="'width: ' + journeyProgress + '%'"></div>
+
+                            <div class="relative flex justify-between items-start z-10">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                        :class="xp >= 0 ? 'border-green-400 text-green-500' : 'border-gray-200 text-gray-300'">
+                                        <i class="fas fa-egg text-lg"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                        :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
+                                </div>
+                                
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                        :class="xp >= 1000 ? 'border-blue-400 text-blue-500' : 'border-gray-200 text-gray-300'">
+                                        <i class="fas fa-book-reader text-lg"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                        :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
+                                </div>
+
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-white transition-all shadow-md"
+                                        :class="xp >= 3000 ? 'border-purple-400 text-purple-500' : 'border-gray-200 text-gray-300'">
+                                        <i class="fas fa-graduation-cap text-lg"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
+                                        :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                            <div class="bg-orange-50 p-4 rounded-2xl border-orange-100 border text-center">
+                                <div class="text-2xl mb-1">❓</div>
+                                <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
+                                <div class="text-[10px] text-orange-400 font-bold uppercase">Questions Asked</div>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-2xl border-blue-100 border text-center">
+                                <div class="text-2xl mb-1">📖</div>
+                                <div class="text-2xl font-bold text-blue-600" x-text="learningStats.wordsLearned"></div>
+                                <div class="text-[10px] text-blue-400 font-bold uppercase">Words Read</div>
+                            </div>
+                            <div class="bg-yellow-50 p-4 rounded-2xl border-yellow-100 border text-center">
+                                <div class="text-2xl mb-1">💰</div>
+                                <div class="text-2xl font-bold text-yellow-600" x-text="coins"></div>
+                                <div class="text-[10px] text-yellow-400 font-bold uppercase">Coins Earned</div>
+                            </div>
+                            <div class="bg-pink-50 p-4 rounded-2xl border-pink-100 border text-center">
+                                <div class="text-2xl mb-1">⭐</div>
+                                <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
+                                <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-slate-800 text-lg mb-4">Evidence-Based Mastery Levels</h3>
+                            <div class="space-y-6">
+                                <template x-for="(score, subject) in getTopSubjects()">
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-xs font-bold text-gray-500 uppercase" x-text="subject"></span>
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase shadow-sm" 
+                                                  :class="getMasteryBadge(score).bg" 
+                                                  x-text="getMasteryBadge(score).label"></span>
+                                        </div>
+                                        <div class="flex justify-between text-[9px] font-bold text-gray-400 mb-1">
+                                            <span x-text="currentCurriculumRegion + ' Standard Alignment'"></span>
+                                            <span x-text="score + ' pts'"></span>
+                                        </div>
+                                        <div class="h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                                            <div class="h-full rounded-full transition-all duration-1000" 
+                                                :class="getSubjectColor(subject)" 
+                                                :style="'width: ' + Math.min((score / 150) * 100, 100) + '%'"></div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="Object.values(learningStats.subjects).reduce((a, b) => a + b, 0) === 0" class="text-center text-gray-400 text-sm py-4">
+                                    No mastery data yet. Start asking questions!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-800 text-lg">Recent Questions</h3>
+                                <button @click="clearLogs" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase">Clear History</button>
+                            </div>
+                            <div class="flex-1 overflow-y-auto max-h-[200px] custom-scroll pr-2 space-y-3">
+                                <template x-for="log in parentLogs.slice().reverse().slice(0, 10)">
+                                    <div class="bg-gray-50 p-3 rounded-xl border-l-4 border-blue-400">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] text-gray-400 font-bold" x-text="log.time"></span>
+                                                <span x-show="log.emotion" :title="log.emotion" class="text-xs" x-text="getEmotionIcon(log.emotion)"></span>
+                                            </div>
+                                            <span class="text-[9px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase whitespace-nowrap ml-2" x-text="'FROM: ' + log.char"></span>
+                                        </div>
+                                        <p class="text-slate-700 text-sm font-semibold" x-text="log.query"></p>
+                                    </div>
+                                </template>
+                                <div x-show="parentLogs.length === 0" class="text-center text-gray-400 text-sm py-8">
+                                    No activity recorded yet.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t flex flex-wrap justify-between items-center gap-4">
                         <button @click="handleLogout" class="text-red-500 font-bold text-xs hover:underline uppercase tracking-widest">Log Out</button>
                         <button @click="closeParentPortal" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-kids text-sm hover:bg-slate-700 transition-colors">Exit Dashboard</button>
                     </div>
