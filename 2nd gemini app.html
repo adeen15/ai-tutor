@@ -1761,7 +1761,7 @@
                                 console.warn("Forcing loading screen off due to timeout.");
                                 this.isLoading = false;
                             }
-                        }, 5000);
+                        }, 15000); // Increased from 5s to 15s
 
                         this.currentChar = this.characters[0];
                         this.currentMoodIcon = this.currentChar.icon;
@@ -1787,11 +1787,7 @@
                                 if (session) {
                                     this.registeredEmail = session.user.email;
                                     
-                                    // STOP LOADING immediately to prevent "stuck" spinner/alerts.
-                                    // BUT keep isLoggedIn = false until we verify the profile exists.
-                                    // This means the Login Screen stays visible until profile data loads.
-                                    this.isLoading = false; 
-
+                                    // Keep loading screen active while we fetch the profile
                                     await this.loadUserProfile(session.user.email);
                                     
                                 } else if (event === 'SIGNED_OUT') {
@@ -1812,9 +1808,14 @@
 
                         } catch (e) {
                             console.error("Initialization error:", e);
+                            this.isLoading = false;
                         } finally {
                             console.log("INIT FINALLY BLOCK EXECUTED");
-                            this.isLoading = false;
+                            // Only set isLoading to false if we don't have a session to process.
+                            // If we have a session, loadUserProfile will handle it.
+                            if (!this.session) {
+                                this.isLoading = false;
+                            }
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -2240,7 +2241,7 @@
 
                             // Create a timeout promise
                             const timeoutPromise = new Promise((_, reject) => 
-                                setTimeout(() => reject(new Error("Profile load timed out")), 5000)
+                                setTimeout(() => reject(new Error("Profile load timed out")), 10000) // Increased from 5s to 10s
                             );
 
                             // Race them
@@ -2252,6 +2253,7 @@
                                 console.log("Profile found! Populating...");
                                 this.populateUserData(data);
                                 this.isLoggedIn = true;
+                                this.isLoading = false; // Profile loaded, stop loading
                                 this.playPing();
                                 if (!this.rewardClaimedToday) {
                                     setTimeout(() => {
@@ -2272,7 +2274,7 @@
                             this.isLoading = false;
                             
                             if (e.message === "Profile load timed out") {
-                                alert("Loading your profile timed out. Please check your connection and try again.");
+                                console.warn("Profile load timed out. User might need to refresh or check connection.");
                             }
                         }
                     },
