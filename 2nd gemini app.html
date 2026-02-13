@@ -2375,6 +2375,12 @@
                         
                         this.updateLevel();
                         this.checkPremiumExpiration();
+                        
+                        // Manual Fix: Force Magic Sparkles to be owned and active
+                        if (!this.inventory.includes('sparkles')) {
+                            this.inventory.push('sparkles');
+                        }
+                        this.equippedItem = 'sparkles';
                     },
 
                     get journeyProgress() {
