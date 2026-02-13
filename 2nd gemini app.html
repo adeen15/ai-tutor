@@ -1507,12 +1507,12 @@
                     supabase: null,
                     isLoading: false,
                     isLoggedIn: false,
-                    // FIX 1: Check localStorage to see if user has visited before.
-                    hasAccount: localStorage.getItem('tutor_visited') === 'true',
+                    hasAccount: false,
                     savedProfile: null,
                     loginForm: { name: '', email: '', password: '', ageRange: '6-7' },
                     registeredEmail: '',
                     session: null,
+
                     
                     legalAccepted: false,
                     showLegalDoc: null,
@@ -1557,7 +1557,12 @@
                     },
                     
                     showParentPortal: false,
+                    showParentPortal: false,
+                    // parentAuthenticated: false, // Removed
+                    // isChangingPin: false, // Removed
+                    // pinInput: '', // Removed
                     pinInput: '',
+                    // masterPin: '1234', // Removed for Supabase Auth 
                     parentLogs: [],
                     
                     currentLanguage: 'English',
@@ -1591,6 +1596,8 @@
                     quizOptions: [],
                     quizCorrectIndex: 0,
 
+
+
                     // --- VISION STATE ---
                     showVisionModal: false,
                     visionFile: null,
@@ -1598,8 +1605,8 @@
                     isCameraActive: false,
 
                     showLearningPath: false,
-                    showDailyPath: false, 
-                    learningPathDay: 1, 
+                    showDailyPath: false, // Toggle for 30-Day Path
+                    learningPathDay: 1, // Tracks progress 1-30
                     currentPath: null,
                     activeLesson: null,
                     lessonStep: 'learn', 
@@ -1747,17 +1754,14 @@
                     },
                     
                     async init() {
-                        // FIX 2: Remember that the user has visited, so we show Login next time.
-                        localStorage.setItem('tutor_visited', 'true');
-
-                        // FIX 3: Increased timeout to 15 seconds so slow internet doesn't show signup screen
+                        // Safety Timeout: Force loading off after 5 seconds if still stuck
                         setTimeout(() => {
                             console.log("SAFETY TIMEOUT CHECK: isLoading is", this.isLoading);
                             if (this.isLoading) {
                                 console.warn("Forcing loading screen off due to timeout.");
                                 this.isLoading = false;
                             }
-                        }, 15000); 
+                        }, 5000);
 
                         this.currentChar = this.characters[0];
                         this.currentMoodIcon = this.currentChar.icon;
@@ -1803,14 +1807,208 @@
                             const { data: { session } } = await this.supabase.auth.getSession();
                             if (session) {
                                 this.session = session;
+                                // onAuthStateChange will handle the rest
                             }
 
                         } catch (e) {
                             console.error("Initialization error:", e);
+                        } finally {
+                            console.log("INIT FINALLY BLOCK EXECUTED");
                             this.isLoading = false;
                         }
-                        
+
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
+                    },
+
+                    generateGate() {
+                        const num1 = Math.floor(Math.random() * 20) + 10;
+                        const num2 = Math.floor(Math.random() * 15) + 5;
+                        this.gateQuestion = `${num1} + ${num2}`;
+                        this.correctGateResult = num1 + num2;
+                    },
+                    verifyGate() {
+                        if (parseInt(this.gateAnswer) === this.correctGateResult) {
+                            this.gateVerified = true;
+                            this.playPing();
+                        } else {
+                            alert("Incorrect. Please try again or ask an adult for help.");
+                            this.gateAnswer = '';
+                            this.generateGate();
+                        }
+                    },
+
+                    startVoiceMode() {
+                        this.isVoiceNativeMode = true;
+                        this.isKeyboardMode = false;
+                        window.speechSynthesis.cancel();
+                        this.startListening();
+                    },
+
+                    stopVoiceMode() {
+                        this.isVoiceNativeMode = false;
+                        this.isListening = false;
+                        window.speechSynthesis.cancel();
+                        this.isSpeaking = false;
+                    },
+
+                    stopSpeaking() {
+                        window.speechSynthesis.cancel();
+                        this.isSpeaking = false;
+                    },
+
+                    startListening() {
+                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        if (!SpeechRecognition) {
+                            alert("Voice is not supported on this browser.");
+                            return;
+                        }
+                        
+                        const recognition = new SpeechRecognition();
+                        const langCodes = { 'English': 'en-US', 'Spanish': 'es-ES', 'French': 'fr-FR', 'German': 'de-DE', 'Arabic': 'ar-SA' };
+                        recognition.lang = langCodes[this.currentLanguage] || 'en-US';
+                        
+                        recognition.onstart = () => { 
+                            this.isListening = true; 
+                            window.speechSynthesis.cancel(); 
+                            this.isSpeaking = false; 
+                        };
+                        
+                        recognition.onresult = (event) => { 
+                            this.userQuery = event.results[0][0].transcript; 
+                            this.isListening = false; 
+                            this.askTutor(); 
+                        };
+                        
+                        recognition.onerror = (event) => { 
+                            console.error("Mic Error:", event.error);
+                            this.isListening = false;
+                            if (this.isVoiceNativeMode && event.error === 'no-speech') {
+                                this.startListening();
+                            }
+                        };
+                        
+                        recognition.onend = () => { 
+                            this.isListening = false; 
+                        };
+                        
+                        recognition.start();
+                    },
+
+                    speak(text, customPitch = null, customRate = null) {
+                        // Always cancel current speech to allow rapid re-triggering (no toggle)
+                        window.speechSynthesis.cancel();
+                        this.isSpeaking = false;
+
+                        if (!text) return;
+
+                        const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                        const msg = new SpeechSynthesisUtterance(cleanText);
+                        const voices = window.speechSynthesis.getVoices();
+
+                        const langCodes = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
+                        const targetCode = langCodes[this.currentLanguage] || 'en';
+
+                        // robust voice selection
+                        let baseVoice = voices.find(v => v.lang.startsWith(targetCode)) || voices[0];
+                        if (baseVoice) {
+                            msg.voice = baseVoice;
+                        }
+                        
+                        msg.pitch = customPitch !== null ? customPitch : (this.currentChar.pitch || 1.0);
+                        msg.rate = customRate !== null ? customRate : (this.currentChar.rate || 1.0);
+
+                        msg.onstart = () => { this.isSpeaking = true; };
+
+                        msg.onend = () => { 
+                            this.isSpeaking = false; 
+                            if (this.isVoiceNativeMode) {
+                                this.startListening();
+                            }
+                        };
+
+                        msg.onerror = (e) => {
+                            console.error("Speech verification error:", e);
+                            this.isSpeaking = false;
+                        };
+
+                        window.speechSynthesis.speak(msg);
+                    },
+
+                    async generateNewPath() {
+                        if (this.isGeneratingPath) return;
+                        
+                        if (!this.isPremium) {
+                            this.showPremiumModal = true;
+                            return;
+                        }
+
+                        this.isGeneratingPath = true;
+                        const ageRange = this.childProfile.ageRange || '6-7';
+                        const currentTopics = this.curriculum.map(p => p.name).join(", ");
+                        const region = this.currentCurriculumRegion || 'Global';
+
+                        try {
+                            const systemPrompt = `You are a curriculum designer for kids. Create a NEW 3-level learning path for a ${ageRange} year old.
+                            The topic must be educational (Science, Math, History, or Arts) and NOT already in this list: ${currentTopics}.
+                            All content must be in ${this.currentLanguage}.
+                            Strictly follow ${region} educational standards.
+                            
+                            Return ONLY JSON in this format:
+                            {
+                                "id": "unique_string_id",
+                                "name": "Fun Path Name",
+                                "grade": "Level Description",
+                                "icon": "Emoji",
+                                "color": "bg-[color]-500",
+                                "premium": true,
+                                "levels": [
+                                    {
+                                        "id": 1,
+                                        "title": "Level 1 Title",
+                                        "content": "A short teaching paragraph (max 4 sentences) for a ${ageRange} year old.",
+                                        "quiz": [
+                                            {"q": "Q1?", "options": ["A", "B", "C"], "correct": 0},
+                                            {"q": "Q2?", "options": ["A", "B", "C"], "correct": 1},
+                                            {"q": "Q3?", "options": ["A", "B", "C"], "correct": 2}
+                                        ]
+                                    }
+                                ]
+                            }
+                            Create exactly 3 levels. Ensure content is simple and engaging.`;
+
+                            const response = await fetch("/api/chat", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    "messages": [
+                                        { "role": "system", "content": systemPrompt },
+                                        { "role": "user", "content": "Generate a new learning adventure path." }
+                                    ]
+                                })
+                            });
+
+                            const data = await response.json();
+                            let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                            const newPath = JSON.parse(cleanJson);
+                            
+                            newPath.id = 'gen_' + Date.now();
+                            
+                            this.curriculum.push(newPath);
+                            this.playPing();
+                            confetti({
+                                particleCount: 150,
+                                spread: 70,
+                                origin: { y: 0.6 },
+                                colors: ['#A855F7', '#EC4899', '#3B82F6']
+                            });
+                            
+                            await this.syncData();
+                        } catch (e) {
+                            console.error("Generator Error:", e);
+                            alert("The magic wand is recharging! Try again in a minute.");
+                        } finally {
+                            this.isGeneratingPath = false;
+                        }
                     },
 
                     printCertificate(path) {
