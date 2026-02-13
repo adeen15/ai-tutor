@@ -1100,7 +1100,7 @@
                                     : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
                                 :disabled="!inventory.includes(item.id) && coins < item.price"
                             >
-                                <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? 'Active Now' : t('activate')) : t('buy_now')"></span>
+                                <span x-text="(inventory.includes(item.id) || inventory.includes(String(item.id))) ? (equippedItem === item.id ? 'Active Now' : t('activate')) : t('buy_now')"></span>
                             </button>
                         </div>
                     </template>
@@ -2774,7 +2774,7 @@
                     async buyItem(item) {
                         if (this.coins >= item.price) {
                             this.coins -= item.price;
-                            this.inventory.push(item.id);
+                            this.inventory = [...this.inventory, item.id];
                             this.equipItem(item.id);
                             confetti({
                                 particleCount: 100,
