@@ -1100,7 +1100,7 @@
                                     : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
                                 :disabled="!inventory.includes(item.id) && coins < item.price"
                             >
-                                <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? t('active') + ' ✨' : t('activate')) : t('buy_now')"></span>
+                                <span x-text="inventory.includes(item.id) ? (equippedItem === item.id ? 'Active Now' : t('activate')) : t('buy_now')"></span>
                             </button>
                         </div>
                     </template>
@@ -1734,7 +1734,7 @@
                                 stop: 'Stop', ask: 'ASK!', ask_about: 'Ask about', listening: 'Listening',
                                 teacher_of: 'Teacher of', thinking: 'Thinking', correct: 'Correct', awesome: 'Awesome!',
                                 daily_rewards: 'Daily Rewards!', claim: 'Claim',
-                                see_you_tomorrow: 'See You Tomorrow!', active: 'Active', buy_now: 'Buy Now', activate: 'Activate',
+                                see_you_tomorrow: 'See You Tomorrow!', active: 'Active Now', buy_now: 'Buy Now', activate: 'Activate',
                                 personalized_mission: 'Personalized Mission', choose_journey: 'Choose your journey!', complete: 'Complete',
                                 read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here'
                             },
@@ -2774,9 +2774,7 @@
                     async buyItem(item) {
                         if (this.coins >= item.price) {
                             this.coins -= item.price;
-                            // CHANGE THIS LINE: Use spread operator [...] to force UI update
-                            this.inventory = [...this.inventory, item.id]; 
-                            
+                            this.inventory.push(item.id);
                             this.equipItem(item.id);
                             confetti({
                                 particleCount: 100,
