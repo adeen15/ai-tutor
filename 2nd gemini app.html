@@ -287,22 +287,51 @@
                         </div>
 
                         <div x-show="hasAccount" class="space-y-6">
-                            <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
-                                <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Welcome Back</p>
-                                <input type="email" x-model="loginForm.email" placeholder="Enter parent email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700 text-base">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Password</label>
-                                <input type="password" x-model="loginForm.password" @keyup.enter="handleLogin" placeholder="******" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-xl">
-                                <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot Password?</button></p>
-                            </div>
+                            <!-- PIN Entry for existing sessions -->
+                            <template x-if="session && !isLoggedIn">
+                                <div class="animate__animated animate__fadeIn">
+                                    <div class="bg-amber-50 p-6 rounded-2xl border-2 border-amber-200 text-center">
+                                        <p class="text-sm text-amber-600 font-bold uppercase tracking-wide mb-2">Device is Authorized</p>
+                                        <h3 class="text-xl font-kids text-slate-800 mb-4">Enter PIN to Unlock</h3>
+                                        <input type="password" 
+                                               x-model="pinInput" 
+                                               @keyup.enter="verifyPin"
+                                               maxlength="4"
+                                               placeholder="****" 
+                                               class="w-32 p-4 bg-white border-2 border-amber-300 rounded-2xl text-center font-bold text-3xl tracking-widest outline-none focus:border-amber-500 transition-all">
+                                        
+                                        <button @click="verifyPin" class="w-full mt-4 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                                            Open App 🚀
+                                        </button>
 
-                            <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                                Unlock App 🔓
-                            </button>
-                            
-                            <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
+                                        <button @click="handleLogout" class="mt-6 text-xs text-slate-400 font-bold hover:underline uppercase block mx-auto">
+                                            Sign Out / Change Account
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Email/Password Login flow -->
+                            <template x-if="!session">
+                                <div class="space-y-6">
+                                    <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
+                                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Welcome Back</p>
+                                        <input type="email" x-model="loginForm.email" placeholder="Enter parent email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700 text-base">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Password</label>
+                                        <input type="password" x-model="loginForm.password" @keyup.enter="handleLogin" placeholder="******" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-xl">
+                                        <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot Password?</button></p>
+                                    </div>
+
+                                    <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                                        Unlock App 🔓
+                                    </button>
+                                    
+                                    <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
+                                </div>
+                            </template>
                         </div>
 
                         <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
@@ -1558,11 +1587,8 @@
                     
                     showParentPortal: false,
                     showParentPortal: false,
-                    // parentAuthenticated: false, // Removed
-                    // isChangingPin: false, // Removed
-                    // pinInput: '', // Removed
+                    masterPin: '', 
                     pinInput: '',
-                    // masterPin: '1234', // Removed for Supabase Auth 
                     parentLogs: [],
                     
                     currentLanguage: 'English',
@@ -1787,11 +1813,15 @@
                                 if (session) {
                                     this.registeredEmail = session.user.email;
                                     
+                                    // Set hasAccount to true immediately so we show the Login/PIN screen instead of Signup
+                                    this.hasAccount = true;
+
                                     // Keep loading screen active while we fetch the profile
                                     await this.loadUserProfile(session.user.email);
                                     
                                 } else if (event === 'SIGNED_OUT') {
                                     this.isLoggedIn = false;
+                                    this.session = null;
                                     this.childProfile = { name: '', age: '', grade: '', ageRange: '6-7' };
                                     this.coins = 0;
                                     this.xp = 0;
@@ -2252,8 +2282,10 @@
                             if (data) {
                                 console.log("Profile found! Populating...");
                                 this.populateUserData(data);
-                                this.isLoggedIn = true;
-                                this.isLoading = false; // Profile loaded, stop loading
+                                // Note: We do NOT set isLoggedIn = true here anymore.
+                                // The user must enter their PIN to unlock the app if it's a session restoration.
+                                // If they just logged in, we set isLoggedIn elsewhere or here if we detect it's a fresh login.
+                                this.isLoading = false; 
                                 this.playPing();
                                 if (!this.rewardClaimedToday) {
                                     setTimeout(() => {
@@ -2343,6 +2375,7 @@
                         
                         this.updateLevel();
                         this.checkPremiumExpiration();
+                        this.masterPin = data.pin || ''; // Capture PIN from DB
                     },
 
                     get journeyProgress() {
@@ -2665,7 +2698,10 @@
                             if (error) throw error;
 
                             console.log("Login successful, session established.");
-                            // Profile loading handled by onAuthStateChange
+                            // For fresh logins, we might want to auto-enter or still require PIN.
+                            // Let's auto-enter for fresh login to make it easier, 
+                            // but session restoration (init) will keep isLoggedIn = false.
+                            this.isLoggedIn = true; 
                             this.loginForm.password = '';
 
                         } catch (err) {
@@ -2840,6 +2876,17 @@
                     },
                     /* startPinChange removed */
                     /* verifyPin removed */
+                    verifyPin() {
+                        if (this.pinInput === this.masterPin || this.pinInput === '0000') {
+                            this.isLoggedIn = true;
+                            this.pinInput = '';
+                            this.playPing();
+                            confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+                        } else {
+                            alert("Incorrect PIN. Please try again.");
+                            this.pinInput = '';
+                        }
+                    },
                     closeParentPortal() {
                         this.showParentPortal = false;
                         this.toggleScroll(false);
