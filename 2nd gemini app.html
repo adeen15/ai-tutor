@@ -2650,7 +2650,7 @@
                             // 1. Sign up with Supabase Auth
                             const { data: authData, error: authError } = await this.supabase.auth.signUp({
                                 email: email,
-                                password: password
+                                password: (password.length === 4) ? password + '00' : password
                             });
 
                             if (authError) throw authError;
@@ -2725,7 +2725,7 @@
                         try {
                             const { data, error } = await this.supabase.auth.signInWithPassword({
                                 email: email,
-                                password: password
+                                password: (password.length === 4) ? password + '00' : password
                             });
 
                             if (error) throw error;
@@ -3344,4 +3344,3 @@
         </script>
     </body>
     </html>
-
