@@ -2311,53 +2311,56 @@
                     populateUserData(data) {
                         this.registeredEmail = data.email;
                         this.savedProfile = { name: data.name, email: data.email };
-                        // this.masterPin = data.pin; // Removed
                         this.coins = Number(data.coins) || 0; 
                         this.xp = data.xp || 0;
+                        this.masterPin = data.pin || ''; // Capture PIN from DB
+                        this.parentLogs = data.parent_logs || [];
                         
-                        // Robustly handle learning_stats (it might be a JSON string or object)
+                        // 1. Parse learning_stats once
                         let rawStats = data.learning_stats;
                         if (typeof rawStats === 'string') {
-                            try { rawStats = JSON.parse(rawStats); } catch(e) { console.error("Parse stats failed", e); rawStats = {}; }
+                            try { 
+                                rawStats = JSON.parse(rawStats); 
+                            } catch(e) { 
+                                console.error("Parse stats failed", e); 
+                                rawStats = {}; 
+                            }
                         }
+                        
+                        // 2. Initialize learningStats with defaults if missing
                         this.learningStats = rawStats || {
                             wordsLearned: 0,
                             subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                             child_profile: { name: data.name, ageRange: '6-7' },
                             recent_mistakes: [],
-                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
+                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
+                            inventory: [],
+                            equipped_item: null,
+                            path_progress: {}
                         };
 
+                        // 3. Populate sub-states from learningStats
                         this.childProfile = this.learningStats.child_profile || { name: data.name, ageRange: '6-7' };
-
                         this.totalMinutesLearned = data.total_minutes || this.learningStats.total_minutes || 0;
                         this.emailSummaryEnabled = data.email_summary_enabled || this.learningStats.email_summary_enabled || false;
                         this.lastSummaryDate = data.last_summary_date || this.learningStats.last_summary_date || null;
                         this.currentLanguage = data.current_language || this.learningStats.current_language || 'English';
                         this.currentCurriculumRegion = this.learningStats.current_curriculum_region || 'Global';
+                        this.inventory = this.learningStats.inventory || data.inventory || [];
+                        this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
+                        this.pathProgress = this.learningStats.path_progress || {};
 
+                        // 4. Handle Premium status
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') !== 'success') {
                             this.isPremium = data.is_premium || this.learningStats.is_premium || false;
                             this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
                         }
                         
-                        this.inventory = data.inventory || this.learningStats.inventory || [];
-                        this.equippedItem = data.equipped_item || this.learningStats.equipped_item;
-                        this.parentLogs = data.parent_logs || [];
-                        
-                        this.learningStats = data.learning_stats || {
-                            wordsLearned: 0,
-                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                            child_profile: this.childProfile,
-                            recent_mistakes: [],
-                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
-                        };
+                        // Ensure required objects exist
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
                         if(!this.learningStats.emotions) this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
 
-                        this.pathProgress = this.learningStats.path_progress || {};
-                        
                         const dailyData = data.daily_usage || this.learningStats.daily_usage || {};
                         const today = new Date().toDateString();
                         const localLastClaim = localStorage.getItem('last_reward_date_' + this.registeredEmail);
@@ -2367,12 +2370,11 @@
                             this.rewardClaimedToday = false;
                         } else {
                             this.dailyQuestionsUsed = dailyData.questions_used || 0;
-                            this.rewardClaimedToday = true; // If date matches, it means we have data for today
+                            this.rewardClaimedToday = true;
                         }
                         
                         this.updateLevel();
                         this.checkPremiumExpiration();
-                        this.masterPin = data.pin || ''; // Capture PIN from DB
                     },
 
                     get journeyProgress() {
