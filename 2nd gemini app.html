@@ -324,7 +324,7 @@
                                     <div>
                                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Password</label>
                                         <input type="password" x-model="loginForm.password" @keyup.enter="handleLogin" placeholder="******" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-xl">
-                                        <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot Password?</button></p>
+                                        <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-sm text-blue-500 font-bold hover:underline">Forgot PIN or Password?</button></p>
                                     </div>
 
                                     <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
@@ -2633,6 +2633,16 @@
                         const email = this.loginForm.email.toLowerCase().trim();
                         const password = this.loginForm.password.trim();
 
+                        let finalPassword = password;
+                        if (password.length === 4) {
+                            finalPassword = password + '00';
+                        } else if (password.length < 6) {
+                            alert("Please enter a 4-digit PIN or a password with at least 6 characters.");
+                            this.isLoading = false;
+                            clearTimeout(signupTimeout);
+                            return;
+                        }
+
                         const initialChildProfile = { 
                             name: this.loginForm.name, 
                             age: '', 
@@ -2650,8 +2660,21 @@
                             // 1. Sign up with Supabase Auth
                             const { data: authData, error: authError } = await this.supabase.auth.signUp({
                                 email: email,
-                                password: (password.length < 6) ? password + '00' : password
+                                password: finalPassword
                             });
+
+                            if (authError) {
+                                if (authError.message.includes("already registered")) {
+                                    if(confirm("This email is already registered. Would you like to reset your password to recover your account?")) {
+                                        this.loginForm.email = email; // Ensure email is set/preserved
+                                        await this.handlePasswordReset();
+                                        this.isLoading = false;
+                                        clearTimeout(signupTimeout);
+                                        return; 
+                                    }
+                                }
+                                throw authError;
+                            }
 
                             if (authError) throw authError;
 
@@ -2717,15 +2740,23 @@
                                 this.isLoading = false;
                                 alert("Login is taking longer than expected. Please check your connection.");
                             }
-                        }, 10000); // 10 seconds
-
                         const email = this.loginForm.email.toLowerCase().trim();
                         const password = this.loginForm.password.trim();
+
+                        let finalPassword = password;
+                        if (password.length === 4) {
+                            finalPassword = password + '00';
+                        } else if (password.length < 6) {
+                            alert("Please enter a 4-digit PIN or a password with at least 6 characters.");
+                            this.isLoading = false;
+                            clearTimeout(loginTimeout);
+                            return;
+                        }
 
                         try {
                             const { data, error } = await this.supabase.auth.signInWithPassword({
                                 email: email,
-                                password: (password.length < 6) ? password + '00' : password
+                                password: finalPassword
                             });
 
                             if (error) throw error;
