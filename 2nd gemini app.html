@@ -2631,7 +2631,7 @@
                         }, 10000); // 10 seconds
 
                         const email = this.loginForm.email.toLowerCase().trim();
-                        const password = this.loginForm.password;
+                        const password = this.loginForm.password.trim();
 
                         const initialChildProfile = { 
                             name: this.loginForm.name, 
@@ -2650,7 +2650,7 @@
                             // 1. Sign up with Supabase Auth
                             const { data: authData, error: authError } = await this.supabase.auth.signUp({
                                 email: email,
-                                password: (password.length === 4) ? password + '00' : password
+                                password: (password.length < 6) ? password + '00' : password
                             });
 
                             if (authError) throw authError;
@@ -2720,12 +2720,12 @@
                         }, 10000); // 10 seconds
 
                         const email = this.loginForm.email.toLowerCase().trim();
-                        const password = this.loginForm.password;
+                        const password = this.loginForm.password.trim();
 
                         try {
                             const { data, error } = await this.supabase.auth.signInWithPassword({
                                 email: email,
-                                password: (password.length === 4) ? password + '00' : password
+                                password: (password.length < 6) ? password + '00' : password
                             });
 
                             if (error) throw error;
