@@ -2774,7 +2774,9 @@
                     async buyItem(item) {
                         if (this.coins >= item.price) {
                             this.coins -= item.price;
-                            this.inventory.push(item.id);
+                            // CHANGE THIS LINE: Use spread operator [...] to force UI update
+                            this.inventory = [...this.inventory, item.id]; 
+                            
                             this.equipItem(item.id);
                             confetti({
                                 particleCount: 100,
