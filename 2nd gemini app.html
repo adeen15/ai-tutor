@@ -1845,7 +1845,7 @@
                             if (session) {
                                 this.registeredEmail = session.user.email;
                                 this.hasAccount = true;
-                                await this.loadUserProfile(session.user.email);
+                                // No longer calling loadUserProfile here to avoid duplication with onAuthStateChange
                             }
 
                             // 2. Set up the auth listener for future events
@@ -2299,7 +2299,7 @@
 
                             // Create a timeout promise
                             const timeoutPromise = new Promise((_, reject) => 
-                                setTimeout(() => reject(new Error("Profile load timed out")), 15000)
+                                setTimeout(() => reject(new Error("Profile load timed out")), 20000)
                             );
 
                             // Race them
