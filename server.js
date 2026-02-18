@@ -170,7 +170,7 @@ app.post('/api/create-checkout', async (req, res) => {
                 data: {
                     type: "checkouts",
                     attributes: {
-                        checkout_options: {
+                        product_options: {
                             redirect_url: req.get('origin') || `${req.protocol}://${req.get('host')}`
                         },
                         checkout_data: {
