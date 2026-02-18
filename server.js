@@ -3,6 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
+const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
+
+// Initialize Supabase client with service role key to bypass RLS
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 const app = express();
 app.use(cors());
@@ -146,6 +154,45 @@ app.post('/api/create-checkout', async (req, res) => {
     } catch (error) {
         console.error("Checkout Error:", error);
         res.status(500).json({ error: error.message });
+    }
+});
+
+// --- LEMON SQUEEZY WEBHOOK ---
+app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    try {
+        const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+        const hmac = crypto.createHmac('sha256', secret);
+        const digest = Buffer.from(hmac.update(req.body).digest('hex'), 'utf8');
+        const signature = Buffer.from(req.get('x-signature') || '', 'utf8');
+
+        if (!crypto.timingSafeEqual(digest, signature)) {
+            console.error('Invalid signature');
+            return res.status(401).send('Invalid signature');
+        }
+
+        const payload = JSON.parse(req.body.toString());
+        const eventName = payload.meta.event_name;
+        const userEmail = payload.meta.custom_data.user_email;
+
+        console.log(`Webhook received: ${eventName} for ${userEmail}`);
+
+        if (eventName === 'order_created' || eventName === 'subscription_created') {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ is_premium: true })
+                .eq('email', userEmail);
+
+            if (error) {
+                console.error('Error updating Supabase:', error);
+                return res.status(500).send('Database update failed');
+            }
+            console.log(`Successfully upgraded user ${userEmail} to premium`);
+        }
+
+        res.status(200).send('OK');
+    } catch (error) {
+        console.error('Webhook Error:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
