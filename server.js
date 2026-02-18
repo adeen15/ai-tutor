@@ -144,8 +144,20 @@ app.post('/api/create-checkout', async (req, res) => {
         const { userEmail } = req.body;
         console.log(`Creating checkout for: ${userEmail}`);
         
-        if (!process.env.LEMONSQUEEZY_API_KEY || !process.env.LEMONSQUEEZY_STORE_ID) {
-            throw new Error("LemonSqueezy configuration missing on server");
+        const requiredVars = [
+            'LEMONSQUEEZY_API_KEY',
+            'LEMONSQUEEZY_STORE_ID',
+            'LEMONSQUEEZY_VARIANT_ID'
+        ];
+        
+        const missingVars = requiredVars.filter(v => !process.env[v]);
+        if (missingVars.length > 0) {
+            console.error(`Missing LemonSqueezy configuration: ${missingVars.join(', ')}`);
+            return res.status(500).json({ error: "Server configuration missing", missing: missingVars });
+        }
+
+        if (!userEmail) {
+            return res.status(400).json({ error: "userEmail is required" });
         }
         const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
             method: 'POST',
@@ -171,9 +183,16 @@ app.post('/api/create-checkout', async (req, res) => {
                 }
             })
         });
+
         const data = await response.json();
+        console.log("LemonSqueezy Response Status:", response.status);
+        if (!response.ok) {
+            console.error("LemonSqueezy Error Body:", JSON.stringify(data, null, 2));
+            return res.status(response.status).json({ error: "LemonSqueezy API error", details: data });
+        }
+
         if (data.data) res.json({ url: data.data.attributes.url });
-        else res.status(500).json({ error: "Checkout failed" });
+        else res.status(500).json({ error: "Checkout failed, no URL returned" });
     } catch (error) {
         console.error("Checkout Error:", error);
         res.status(500).json({ error: error.message });
