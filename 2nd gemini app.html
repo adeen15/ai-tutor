@@ -1063,9 +1063,9 @@
         </div>
 
         <div x-show="showShop" x-cloak
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70"
+            class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black bg-opacity-70 sm:overflow-y-auto overflow-hidden"
             x-transition.opacity>
-            <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200 max-h-[85vh] overflow-y-auto">
+            <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-blue-200 sm:overflow-y-auto overflow-hidden flex flex-col">
                 <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
                     <i class="fas fa-times-circle"></i>
                 </button>
