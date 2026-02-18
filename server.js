@@ -160,7 +160,8 @@ app.post('/api/create-checkout', async (req, res) => {
                     attributes: {
                         checkout_data: {
                             email: userEmail,
-                            custom: { user_email: userEmail }
+                            custom: { user_email: userEmail },
+                            redirect_url: req.get('origin') || `${req.protocol}://${req.get('host')}`
                         }
                     },
                     relationships: {
