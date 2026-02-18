@@ -79,7 +79,12 @@ app.post('/api/chat', async (req, res) => {
             })
         });
         const data = await response.json();
-        res.json(data);
+        if (data.choices && data.choices[0]) {
+            res.json({ response: data.choices[0].message.content });
+        } else {
+            console.error("OpenRouter Unexpected Response:", data);
+            res.status(500).json({ error: "Invalid response from AI provider" });
+        }
     } catch (error) {
         console.error("Chat API Error:", error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -126,7 +131,12 @@ app.post('/api/vision', async (req, res) => {
         }
 
         const data = await response.json();
-        res.json({ response: data.choices[0].message.content });
+        if (data.choices && data.choices[0]) {
+            res.json({ response: data.choices[0].message.content });
+        } else {
+            console.error("OpenRouter Vision Unexpected Response:", data);
+            res.status(500).json({ error: "Invalid vision response from AI provider" });
+        }
     } catch (error) {
         console.error("Vision API Error:", error);
         res.status(500).json({ error: "Vision analysis failed: " + error.message });
