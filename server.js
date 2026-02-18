@@ -141,29 +141,131 @@ app.post('/api/send-email', async (req, res) => {
             return res.status(500).json({ error: "Email configuration missing" });
         }
 
-        // Split body lines for cleaner HTML list
-        const bodyLines = body.split('\n').filter(line => line.trim() !== '');
-        const formattedLines = bodyLines.map(line => `<li>${line.replace(/^- /, '')}</li>`).join('');
+        // --- Robust Report Parser ---
+        const sections = {
+            intro: [],
+            milestones: [],
+            subjects: [],
+            curiosity: [],
+            conclusion: []
+        };
+
+        const lines = body.split('\n').map(l => l.trim()).filter(l => l !== '' && !l.startsWith('---'));
+        let currentSection = 'intro';
+
+        lines.forEach(line => {
+            if (line.includes('🏆 LEARNING MILESTONES')) currentSection = 'milestones';
+            else if (line.includes('📚 SUBJECT BREAKDOWN')) currentSection = 'subjects';
+            else if (line.includes('📝 RECENT CURIOSITY')) currentSection = 'curiosity';
+            else if (line.includes('This report verifies active engagement')) currentSection = 'conclusion';
+            else {
+                sections[currentSection].push(line.replace(/^- /, ''));
+            }
+        });
+
+        // --- Milestone Styling (Cards) ---
+        const milestoneHtml = sections.milestones.map(m => {
+            const [label, value] = m.split(':');
+            return `
+                <div style="background-color: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <div style="color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">${label || ''}</div>
+                    <div style="color: #4f46e5; font-size: 20px; font-weight: 700; margin-top: 4px;">${value || ''}</div>
+                </div>
+            `;
+        }).join('');
+
+        // --- Subject Styling (List) ---
+        const subjectsHtml = sections.subjects.map(s => {
+            const [name, score] = s.split(':');
+            return `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9;">
+                    <span style="color: #334155; font-weight: 500;">${name || ''}</span>
+                    <span style="color: #6366f1; font-weight: 700;">${score || ''}</span>
+                </div>
+            `;
+        }).join('');
 
         const htmlContent = `
-            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <span style="font-size: 40px;">🎓</span>
-                    <h1 style="color: #1e293b; margin-top: 10px;">AI Tutor Progress Report</h1>
-                </div>
-                
-                <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; color: #334155;">
-                    <h2 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0;">${subject}</h2>
-                    <ul style="list-style-type: none; padding: 0;">
-                        ${formattedLines}
-                    </ul>
-                </div>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    @media only screen and (max-width: 600px) {
+                        .container { width: 100% !important; border-radius: 0 !important; }
+                    }
+                </style>
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding: 24px 0;">
+                            <div class="container" style="max-width: 600px; width: 95%; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+                                <!-- Header Hero -->
+                                <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 48px 32px; text-align: center;">
+                                    <div style="background-color: rgba(255,255,255,0.2); width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: center; font-size: 44px;">
+                                        🎓
+                                    </div>
+                                    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800;">Learning Journey</h1>
+                                    <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0 0; font-size: 16px;">Verified Progress Report</p>
+                                </div>
 
-                <div style="margin-top: 30px; text-align: center; font-size: 14px; color: #64748b;">
-                    <p>Keeping you connected to your child's learning journey.</p>
-                    <p style="margin-top: 10px;">&copy; ${new Date().getFullYear()} AI Tutor App. All rights reserved.</p>
-                </div>
-            </div>
+                                <!-- Content area -->
+                                <div style="padding: 32px;">
+                                    <!-- Intro -->
+                                    <div style="margin-bottom: 32px; border-left: 4px solid #4f46e5; padding-left: 16px;">
+                                        <div style="color: #64748b; font-size: 14px;">${sections.intro[1] || ''}</div>
+                                        <div style="color: #0f172a; font-size: 24px; font-weight: 800; margin-top: 4px;">${sections.intro[0] || ''}</div>
+                                    </div>
+
+                                    <!-- Milestones Section -->
+                                    <h3 style="color: #0f172a; font-size: 18px; font-weight: 700; margin-bottom: 16px;">🏆 Key Achievements</h3>
+                                    <div style="display: block;">
+                                        ${milestoneHtml}
+                                    </div>
+
+                                    <!-- Subjects Section -->
+                                    <div style="margin-top: 32px; background-color: #f8fafc; border-radius: 16px; padding: 24px;">
+                                        <h3 style="color: #0f172a; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;">📚 Subject Mastery</h3>
+                                        ${subjectsHtml}
+                                    </div>
+
+                                    <!-- Curiosity Section -->
+                                    <div style="margin-top: 32px;">
+                                        <h3 style="color: #0f172a; font-size: 18px; font-weight: 700; margin-bottom: 16px;">📝 Recent Curiosity</h3>
+                                        <div style="background-color: #eff6ff; border-radius: 16px; padding: 20px; position: relative;">
+                                            <div style="color: #1d4ed8; font-size: 15px; font-style: italic; line-height: 1.6;">
+                                                "${sections.curiosity[0] || ''}"
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Verification Footer -->
+                                    <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #f1f5f9; text-align: center;">
+                                        <div style="color: #10b981; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center;">
+                                            <span style="margin-right: 6px;">✅</span> VERIFIED BY AI TUTOR
+                                        </div>
+                                        <p style="color: #64748b; font-size: 12px; margin-top: 12px; line-height: 1.5;">
+                                            ${sections.conclusion[0] || ''}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Final Footer -->
+                                <div style="background-color: #f1f5f9; padding: 32px; text-align: center;">
+                                    <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                                        &copy; ${new Date().getFullYear()} AI Tutor. Dedicated to your child's success.
+                                    </p>
+                                    <div style="margin-top: 12px; color: #cbd5e1; font-size: 12px;">
+                                        Premium Parent Portal &bull; Weekly Analytics &bull; Educational Guidance
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
         `;
 
         const response = await fetch('https://api.resend.com/emails', {
