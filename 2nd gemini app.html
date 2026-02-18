@@ -1143,9 +1143,9 @@
         </div>
 
         <div x-show="showPremiumModal" x-cloak
-            class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black bg-opacity-70 overflow-y-auto"
             x-transition.opacity>
-            <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-[3rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-yellow-100">
+            <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-[3rem] max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-yellow-100 max-h-[90vh] overflow-y-auto my-auto">
                 <button @click="showPremiumModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-yellow-800 hover:text-white">
                     <i class="fas fa-times-circle"></i>
                 </button>
