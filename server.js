@@ -170,15 +170,13 @@ app.post('/api/create-checkout', async (req, res) => {
                 data: {
                     type: "checkouts",
                     attributes: {
+                        store_id: parseInt(process.env.LEMONSQUEEZY_STORE_ID),
+                        variant_id: parseInt(process.env.LEMONSQUEEZY_VARIANT_ID),
                         checkout_data: {
                             email: userEmail,
                             custom: { user_email: userEmail },
                             redirect_url: req.get('origin') || `${req.protocol}://${req.get('host')}`
                         }
-                    },
-                    relationships: {
-                        store: { data: { type: "stores", id: process.env.LEMONSQUEEZY_STORE_ID } },
-                        variant: { data: { type: "variants", id: process.env.LEMONSQUEEZY_VARIANT_ID } }
                     }
                 }
             })
