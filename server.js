@@ -133,9 +133,66 @@ app.post('/api/vision', async (req, res) => {
 
 // --- EMAIL API ---
 app.post('/api/send-email', async (req, res) => {
-    const { to, subject, body } = req.body;
-    console.log(`Simulating email to ${to}: ${subject}`);
-    res.json({ success: true, message: "Summary logged to server console." });
+    try {
+        const { to, subject, body } = req.body;
+        
+        if (!process.env.RESEND_API_KEY) {
+            console.error("RESEND_API_KEY missing");
+            return res.status(500).json({ error: "Email configuration missing" });
+        }
+
+        // Split body lines for cleaner HTML list
+        const bodyLines = body.split('\n').filter(line => line.trim() !== '');
+        const formattedLines = bodyLines.map(line => `<li>${line.replace(/^- /, '')}</li>`).join('');
+
+        const htmlContent = `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 40px;">🎓</span>
+                    <h1 style="color: #1e293b; margin-top: 10px;">AI Tutor Progress Report</h1>
+                </div>
+                
+                <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; color: #334155;">
+                    <h2 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0;">${subject}</h2>
+                    <ul style="list-style-type: none; padding: 0;">
+                        ${formattedLines}
+                    </ul>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center; font-size: 14px; color: #64748b;">
+                    <p>Keeping you connected to your child's learning journey.</p>
+                    <p style="margin-top: 10px;">&copy; ${new Date().getFullYear()} AI Tutor App. All rights reserved.</p>
+                </div>
+            </div>
+        `;
+
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
+            },
+            body: JSON.stringify({
+                from: 'AI Tutor <onboarding@resend.dev>',
+                to: [to],
+                subject: subject,
+                html: htmlContent
+            })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            console.log(`Email sent successfully to ${to}: ${data.id}`);
+            res.json({ success: true, message: "Email sent successfully!", id: data.id });
+        } else {
+            console.error("Resend API Error:", data);
+            res.status(response.status).json({ error: "Failed to send email", details: data });
+        }
+    } catch (error) {
+        console.error("Email API Error:", error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // --- LEMON SQUEEZY CHECKOUT ---
