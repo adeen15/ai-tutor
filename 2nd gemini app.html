@@ -2045,7 +2045,7 @@
                             });
 
                             const data = await response.json();
-                            const newPath = JSON.parse(data.choices[0].message.content);
+                            const newPath = JSON.parse(data.response);
                             
                             newPath.id = 'gen_' + Date.now();
                             
@@ -3154,7 +3154,7 @@
                                 });
 
                                 const data = await response.json();
-                                const parsed = JSON.parse(data.choices[0].message.content || data.response);
+                                const parsed = JSON.parse(data.response);
                                 const aiResponse = parsed.response;
                                 
                                 this.closeVisionModal();
@@ -3226,7 +3226,7 @@
                             });
 
                             const data = await response.json();
-                            const parsed = JSON.parse(data.choices[0].message.content);
+                            const parsed = JSON.parse(data.response);
                             
                             this.logActivity(savedQuery, parsed.emotion);
 
