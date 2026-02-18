@@ -74,7 +74,8 @@ app.post('/api/chat', async (req, res) => {
                 "model": "google/gemini-2.0-flash-001",
                 "messages": messages,
                 "max_tokens": 150,
-                "temperature": 0.6
+                "temperature": 0.6,
+                "response_format": { "type": "json_object" }
             })
         });
         const data = await response.json();
@@ -113,7 +114,8 @@ app.post('/api/vision', async (req, res) => {
                             }
                         ]
                     }
-                ]
+                ],
+                "response_format": { "type": "json_object" }
             })
         });
 
