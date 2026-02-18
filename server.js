@@ -6,15 +6,32 @@ const path = require('path');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 
-// Initialize Supabase client with service role key to bypass RLS
-const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Initialize Supabase client safely
+let supabase;
+try {
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+        );
+        console.log("✅ Supabase client initialized");
+    } else {
+        console.warn("⚠️ Supabase credentials missing (SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)");
+    }
+} catch (error) {
+    console.error("❌ Supabase initialization failed:", error);
+}
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ 
+    limit: '10mb',
+    verify: (req, res, buf) => {
+        if (req.originalUrl === '/api/webhook') {
+            req.rawBody = buf;
+        }
+    }
+}));
 app.use(express.static(path.join(process.cwd())));
 
 // --- VIEW ROUTES ---
@@ -125,6 +142,11 @@ app.post('/api/send-email', async (req, res) => {
 app.post('/api/create-checkout', async (req, res) => {
     try {
         const { userEmail } = req.body;
+        console.log(`Creating checkout for: ${userEmail}`);
+        
+        if (!process.env.LEMONSQUEEZY_API_KEY || !process.env.LEMONSQUEEZY_STORE_ID) {
+            throw new Error("LemonSqueezy configuration missing on server");
+        }
         const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
             method: 'POST',
             headers: {
@@ -158,11 +180,21 @@ app.post('/api/create-checkout', async (req, res) => {
 });
 
 // --- LEMON SQUEEZY WEBHOOK ---
-app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+app.post('/api/webhook', async (req, res) => {
     try {
         const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+        if (!secret) {
+            console.error('Webhook secret missing');
+            return res.status(500).send('Webhook secret missing');
+        }
+
+        if (!req.rawBody) {
+            console.error('Raw body missing for webhook verification');
+            return res.status(400).send('Raw body missing');
+        }
+
         const hmac = crypto.createHmac('sha256', secret);
-        const digest = Buffer.from(hmac.update(req.body).digest('hex'), 'utf8');
+        const digest = Buffer.from(hmac.update(req.rawBody).digest('hex'), 'utf8');
         const signature = Buffer.from(req.get('x-signature') || '', 'utf8');
 
         if (!crypto.timingSafeEqual(digest, signature)) {
@@ -170,13 +202,13 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, 
             return res.status(401).send('Invalid signature');
         }
 
-        const payload = JSON.parse(req.body.toString());
+        const payload = req.body; // express.json has already parsed this
         const eventName = payload.meta.event_name;
         const userEmail = payload.meta.custom_data.user_email;
 
         console.log(`Webhook received: ${eventName} for ${userEmail}`);
 
-        if (eventName === 'order_created' || eventName === 'subscription_created') {
+        if ((eventName === 'order_created' || eventName === 'subscription_created') && supabase) {
             const { error } = await supabase
                 .from('profiles')
                 .update({ is_premium: true })
