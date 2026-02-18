@@ -257,8 +257,8 @@
                                     <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                                 </div>
                                 <div class="mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create Password</label>
-                                    <input type="password" x-model="loginForm.password" placeholder="******" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create PIN</label>
+                                    <input type="password" x-model="loginForm.password" placeholder="****" maxlength="4" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                                 </div>
                                 
                                 <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
@@ -322,9 +322,9 @@
                                     </div>
                                     
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter Password</label>
-                                        <input type="password" x-model="loginForm.password" @keyup.enter="handleLogin" placeholder="******" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-xl">
-                                        <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot Password?</button></p>
+                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter PIN</label>
+                                        <input type="password" x-model="loginForm.password" @keyup.enter="handleLogin" placeholder="****" maxlength="4" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-xl">
+                                        <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot PIN?</button></p>
                                     </div>
 
                                     <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
