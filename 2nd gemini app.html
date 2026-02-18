@@ -2045,8 +2045,7 @@
                             });
 
                             const data = await response.json();
-                            let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-                            const newPath = JSON.parse(cleanJson);
+                            const newPath = JSON.parse(data.choices[0].message.content);
                             
                             newPath.id = 'gen_' + Date.now();
                             
@@ -3139,7 +3138,10 @@
                                 Look at the image and explain what you see in a way that helps the child learn.
                                 - If it is homework, explain the steps to solve it (don't just give the answer).
                                 - If it is a drawing, praise their creativity and tell them a fun fact about the subject.
-                                Max 3 sentences. Character Intro: ${this.currentChar.intro_phrase}`;
+                                Max 3 sentences. Character Intro: ${this.currentChar.intro_phrase}
+                                
+                                Return ONLY JSON:
+                                { "response": "Your teaching explanation here..." }`;
 
                                 const response = await fetch("/api/vision", {
                                     method: "POST",
@@ -3152,7 +3154,8 @@
                                 });
 
                                 const data = await response.json();
-                                const aiResponse = data.response;
+                                const parsed = JSON.parse(data.choices[0].message.content || data.response);
+                                const aiResponse = parsed.response;
                                 
                                 this.closeVisionModal();
                                 this.finishThinking(aiResponse, "Looked at a photo!");
@@ -3223,8 +3226,7 @@
                             });
 
                             const data = await response.json();
-                            let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-                            const parsed = JSON.parse(cleanJson);
+                            const parsed = JSON.parse(data.choices[0].message.content);
                             
                             this.logActivity(savedQuery, parsed.emotion);
 
