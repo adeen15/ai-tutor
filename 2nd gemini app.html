@@ -1810,6 +1810,7 @@
                         return dict[this.currentLanguage][key] || dict['English'][key];
                     },
                     
+                    isProfileLoading: false,
                     async init() {
                         // Safety Timeout: Force loading off after 5 seconds if still stuck
                         setTimeout(() => {
@@ -2285,6 +2286,8 @@
                     },
 
                     async loadUserProfile(email) {
+                        if (this.isProfileLoading) return;
+                        this.isProfileLoading = true;
                         console.log("Loading Profile for:", email);
                         try {
                             // Create a promise for the DB query
@@ -2296,7 +2299,7 @@
 
                             // Create a timeout promise
                             const timeoutPromise = new Promise((_, reject) => 
-                                setTimeout(() => reject(new Error("Profile load timed out")), 10000) // Increased from 5s to 10s
+                                setTimeout(() => reject(new Error("Profile load timed out")), 15000)
                             );
 
                             // Race them
@@ -2333,6 +2336,8 @@
                             if (e.message === "Profile load timed out") {
                                 console.warn("Profile load timed out. User might need to refresh or check connection.");
                             }
+                        } finally {
+                            this.isProfileLoading = false;
                         }
                     },
 
@@ -3344,4 +3349,3 @@
         </script>
     </body>
     </html>
-
