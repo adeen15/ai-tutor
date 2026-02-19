@@ -99,15 +99,16 @@ app.post('/api/tts', async (req, res) => {
         const rawKey = process.env.ELEVEN_LABS_API_KEY;
         const apiKey = rawKey ? rawKey.trim() : null;
 
-        console.log(`🎙️ TTS Request. Text length: ${text.length}. Voice: ${vId}`);
+        // Use console.error to force visibility in filtered Vercel logs
+        console.error(`DEBUG: TTS Request. Text: ${text.substring(0, 20)}... Voice: ${vId}`);
 
         if (!apiKey || apiKey === 'your_elevenlabs_key_here') {
-            const errorMsg = "❌ ElevenLabs API key is missing or set to placeholder in environment variables.";
+            const errorMsg = "❌ ElevenLabs API key is missing or set to placeholder.";
             console.error(errorMsg);
             return res.status(500).json({ error: errorMsg });
         }
         
-        console.log(`🔑 Key check: Prefix: ${apiKey.substring(0, 4)}... Length: ${apiKey.length}`);
+        console.error(`DEBUG: Key Length: ${apiKey.length}. Prefix: ${apiKey.substring(0, 4)}...`);
 
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
             method: 'POST',
@@ -125,6 +126,7 @@ app.post('/api/tts', async (req, res) => {
                 }
             })
         });
+
 
 
         if (!response.ok) {
