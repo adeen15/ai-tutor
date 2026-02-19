@@ -99,23 +99,19 @@ app.post('/api/tts', async (req, res) => {
         const rawKey = process.env.ELEVEN_LABS_API_KEY;
         const apiKey = rawKey ? rawKey.trim() : null;
 
-        // Use console.error to force visibility in filtered Vercel logs
-        console.error(`DEBUG: TTS Request. Text: ${text.substring(0, 20)}... Voice: ${vId}`);
-
         if (!apiKey || apiKey === 'your_elevenlabs_key_here') {
-            const errorMsg = "❌ ElevenLabs API key is missing or set to placeholder.";
-            console.error(errorMsg);
-            return res.status(500).json({ error: errorMsg });
+            return res.status(500).json({ 
+                error: "ElevenLabs API key is missing or set to placeholder.",
+                diagnostics: { keyFound: !!rawKey, isPlaceholder: apiKey === 'your_elevenlabs_key_here' }
+            });
         }
         
-        console.error(`DEBUG: Key Length: ${apiKey.length}. Prefix: ${apiKey.substring(0, 4)}...`);
-
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
             method: 'POST',
             headers: {
-                'Xi-Api-Key': apiKey,
+                'xi-api-key': apiKey,
                 'Content-Type': 'application/json',
-                'Accept': 'audio/mpeg'
+                'accept': 'audio/mpeg'
             },
             body: JSON.stringify({
                 text,
@@ -127,14 +123,16 @@ app.post('/api/tts', async (req, res) => {
             })
         });
 
-
-
         if (!response.ok) {
             const errorData = await response.json();
             console.error("❌ ElevenLabs API Error:", JSON.stringify(errorData, null, 2));
             return res.status(response.status).json({ 
-                error: "ElevenLabs API failed", 
-                details: errorData.detail || errorData 
+                error: "ElevenLabs API failed (401 Unauthorized)", 
+                diagnostics: {
+                    keyLength: apiKey.length,
+                    keyPrefix: apiKey.substring(0, 4) + "...",
+                    elevenLabsError: errorData.detail || errorData 
+                }
             });
         }
 
@@ -146,6 +144,7 @@ app.post('/api/tts', async (req, res) => {
         res.status(500).json({ error: "TTS processing failed", message: error.message });
     }
 });
+
 
 app.post('/api/stt', async (req, res) => {
     try {
