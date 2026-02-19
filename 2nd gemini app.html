@@ -2000,7 +2000,11 @@
                                     voiceId: this.currentChar.voiceId || "pNInz6obpgDQGcFmaJgB"
                                 })
                             });
-                            if (!response.ok) throw new Error("TTS Failed");
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                alert(`❌ Voice Error: ${errorData.error}\n\n${errorData.details || ''}`);
+                                throw new Error("TTS Failed");
+                            }
 
 
                             const blob = await response.blob();
