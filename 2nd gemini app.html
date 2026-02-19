@@ -2001,7 +2001,9 @@
                                 })
                             });
                             if (!response.ok) {
-                                console.error("TTS Failed");
+                                const errorData = await response.json();
+                                alert(`🎙️ Voice Error (${this.currentChar.name}): ${JSON.stringify(errorData.details || errorData)}`);
+                                console.error("TTS Failed", errorData);
                                 throw new Error("TTS Failed");
                             }
 
