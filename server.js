@@ -95,23 +95,26 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/tts', async (req, res) => {
     try {
         const { text, voiceId } = req.body;
+        const vId = voiceId ? voiceId.trim() : "pNInz6obpgDQGcFmaJgB";
         const rawKey = process.env.ELEVEN_LABS_API_KEY;
         const apiKey = rawKey ? rawKey.trim() : null;
 
+        console.log(`🎙️ TTS Request. Text length: ${text.length}. Voice: ${vId}`);
+
         if (!apiKey || apiKey === 'your_elevenlabs_key_here') {
-            console.error("❌ ElevenLabs API key is missing or placeholder");
-            return res.status(500).json({ error: "ElevenLabs API key not configured" });
+            const errorMsg = "❌ ElevenLabs API key is missing or set to placeholder in environment variables.";
+            console.error(errorMsg);
+            return res.status(500).json({ error: errorMsg });
         }
         
-        // Log key prefix for verification (safe for debugging)
-        console.log(`🎙️ TTS Request. Key prefix: ${apiKey.substring(0, 4)}... Voice: ${voiceId}`);
+        console.log(`🔑 Key check: Prefix: ${apiKey.substring(0, 4)}... Length: ${apiKey.length}`);
 
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
             method: 'POST',
             headers: {
-                'xi-api-key': apiKey,
+                'Xi-Api-Key': apiKey,
                 'Content-Type': 'application/json',
-                'accept': 'audio/mpeg'
+                'Accept': 'audio/mpeg'
             },
             body: JSON.stringify({
                 text,
@@ -122,6 +125,7 @@ app.post('/api/tts', async (req, res) => {
                 }
             })
         });
+
 
         if (!response.ok) {
             const errorData = await response.json();
