@@ -1730,7 +1730,7 @@
                             subjectKey: "robots",
                             suggestions: ["What is 2 + 2? 🍌", "Count to 10! 🔟", "What is a circle? 🔵"],
                             icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", personality: "Math Teacher", intro_phrase: "Ooh ooh! Let's count bananas! ", premium: true,
-                            voiceId: "Lcf7NABeoUht6S03OEDV"
+                            voiceId: "ErXw9S1aaPOfv9K8M2CA"
                         },
                         { 
                             name: "Starry Alien", 
@@ -1738,7 +1738,7 @@
                             subjectKey: "space",
                             suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
                             icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true,
-                            voiceId: "VR6Aewr9K9lCid76VeyG"
+                            voiceId: "EXAVITQu4vr4xnSDxMaL"
                         },
                         { 
                             name: "Magic Cat", 
@@ -1746,7 +1746,7 @@
                             subjectKey: "science",
                             suggestions: ["Why does ice melt? 🧊", "What is gravity? 🍎", "How do magnets work? 🧲"],
                             icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", personality: "Science Teacher", intro_phrase: "Meow! ", premium: true,
-                            voiceId: "MF3mGyEYCl7XYW7LscSj"
+                            voiceId: "21m00Tcm4TlvDq8ikWAM"
                         },
                         { 
                             name: "Bouncy Bee", 
@@ -2001,9 +2001,7 @@
                                 })
                             });
                             if (!response.ok) {
-                                const errorData = await response.json();
-                                alert(`🎙️ Voice Error (${this.currentChar.name}): ${JSON.stringify(errorData.details || errorData)}`);
-                                console.error("TTS Failed", errorData);
+                                console.error("TTS Failed");
                                 throw new Error("TTS Failed");
                             }
 
