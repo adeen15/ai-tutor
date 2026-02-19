@@ -40,6 +40,90 @@ function normalizeKey(key) {
     return clean;
 }
 
+// =============================================
+// SERVER-SIDE CONTENT MODERATION
+// Two-layer defense for child safety:
+//   Layer 1 — OpenAI Moderation API (free, optional — set OPENAI_API_KEY in Vercel)
+//   Layer 2 — Keyword filter (always active, no key required)
+// =============================================
+
+const BLOCKED_TERMS = [
+    // Violence & weapons
+    'kill', 'murder', 'shoot', 'stab', 'gun', 'knife', 'bomb', 'explode', 'attack', 'weapon',
+    'assassin', 'sniper', 'grenade', 'suicide', 'hang myself', 'hurt myself', 'cut myself',
+    // Adult / sexual content
+    'sex', 'porn', 'naked', 'nude', 'boobs', 'penis', 'vagina', 'condom', 'orgasm',
+    'rape', 'molest', 'prostitute', 'escort', 'stripper', 'masturbat',
+    // Drugs & alcohol
+    'cocaine', 'heroin', 'meth', 'drug dealer', 'weed', 'marijuana', 'ecstasy', 'lsd',
+    'overdose', 'get high', 'get drunk', 'alcohol', 'cigarette', 'vape', 'smoke weed',
+    // Hate & discrimination
+    'racist', 'nigger', 'faggot', 'slur', 'white supremacy', 'neo nazi', 'terrorist',
+    // Horror / disturbing
+    'demon', 'satanic', '666', 'possessed', 'torture', 'gore', 'bloody corpse',
+    // Self-harm
+    'self harm', 'self-harm', 'want to die', 'end my life', 'kill myself',
+    // Bypassing the AI
+    'ignore your instructions', 'ignore previous', 'jailbreak', 'act as dan',
+    'you are now', 'pretend you have no', 'disregard all prior'
+];
+
+async function moderateText(text) {
+    if (!text || typeof text !== 'string') return { blocked: false };
+    const lower = text.toLowerCase();
+
+    // --- LAYER 1: OpenAI Moderation API (free, optional) ---
+    const openAiKey = normalizeKey(process.env.OPENAI_API_KEY);
+    if (openAiKey) {
+        try {
+            const modRes = await fetch('https://api.openai.com/v1/moderations', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${openAiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ input: text })
+            });
+            if (modRes.ok) {
+                const modData = await modRes.json();
+                const result = modData.results && modData.results[0];
+                if (result && result.flagged) {
+                    const flaggedCats = Object.entries(result.categories)
+                        .filter(([, v]) => v)
+                        .map(([k]) => k)
+                        .join(', ');
+                    console.warn(`🚫 [Moderation-L1] Blocked by OpenAI. Categories: ${flaggedCats}`);
+                    return { blocked: true, layer: 'openai', categories: flaggedCats };
+                }
+            }
+        } catch (err) {
+            // Non-fatal — fall through to Layer 2 if OpenAI call fails
+            console.warn('⚠️ [Moderation-L1] OpenAI check failed, falling back to keyword filter:', err.message);
+        }
+    }
+
+    // --- LAYER 2: Keyword Filter (always runs) ---
+    for (const term of BLOCKED_TERMS) {
+        // Use word-boundary check to avoid false positives (e.g. "class" won't match "ass")
+        const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = new RegExp(`(^|\\s|\\b)${escaped}(\\s|\\b|$)`, 'i');
+        if (pattern.test(lower)) {
+            console.warn(`🚫 [Moderation-L2] Blocked keyword: "${term}"`);
+            return { blocked: true, layer: 'keyword', term };
+        }
+    }
+
+    return { blocked: false };
+}
+
+const BLOCKED_RESPONSE = {
+    blocked: true,
+    response: JSON.stringify({
+        response: "Oops! That's not something I can help with. Let's talk about something fun like dinosaurs, space, or math instead! 🌟🦕",
+        emotion: "neutral"
+    })
+};
+
 const app = express();
 app.use(cors());
 app.use(express.json({ 
@@ -92,6 +176,17 @@ app.post('/api/chat', async (req, res) => {
         if (!apiKey || apiKey === 'your_openrouter_key_here') {
             console.error("❌ OpenRouter API key is missing or placeholder value.");
             return res.status(500).json({ error: "OpenRouter API key is missing or invalid." });
+        }
+
+        // --- SERVER-SIDE MODERATION ---
+        // Extract the last user message to check (system prompts are trusted, skip them)
+        const userMessages = (messages || []).filter(m => m.role === 'user');
+        const lastUserText = userMessages.length > 0 ? userMessages[userMessages.length - 1].content : '';
+        if (lastUserText) {
+            const modResult = await moderateText(lastUserText);
+            if (modResult.blocked) {
+                return res.status(451).json(BLOCKED_RESPONSE);
+            }
         }
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
