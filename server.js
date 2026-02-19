@@ -103,7 +103,7 @@ app.post('/api/chat', async (req, res) => {
                 "X-Title": "AI Tutor"
             },
             body: JSON.stringify({
-                "model": "google/gemini-2.0-flash",
+                "model": "google/gemini-2.0-flash-001",
                 "messages": messages,
                 "max_tokens": 500,
                 "temperature": 0.6,
@@ -240,7 +240,7 @@ app.post('/api/vision', async (req, res) => {
                 "X-Title": "AI Tutor"
             },
             body: JSON.stringify({
-                "model": "google/gemini-2.0-flash",
+                "model": "google/gemini-2.0-flash-001",
                 "messages": [
                     { "role": "system", "content": systemInstruction },
                     {
