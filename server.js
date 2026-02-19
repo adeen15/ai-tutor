@@ -118,7 +118,9 @@ app.post('/api/tts', async (req, res) => {
             return res.status(500).json({ error: "ElevenLabs API key is missing or invalid." });
         }
         
-        console.log(`🎙️ ElevenLabs TTS Request. Key Length: ${apiKey.length}. Voice: ${vId}`);
+        // Log the key format for debugging (masked)
+        console.error(`🎙️ ElevenLabs TTS. Key: ${apiKey.substring(0, 10)}...${apiKey.slice(-5)} (Total: ${apiKey.length}). Voice: ${vId}`);
+
 
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
             method: 'POST',
