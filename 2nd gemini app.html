@@ -2615,7 +2615,7 @@
                             });
 
                             const data = await response.json();
-                            let cleanJson = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+                            let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
                             const quizData = JSON.parse(cleanJson);
 
                             this.quizQuestion = quizData.question;
