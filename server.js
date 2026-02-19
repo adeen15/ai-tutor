@@ -32,7 +32,9 @@ function normalizeKey(key) {
     clean = clean.replace(/\s+/g, '');
     
     // Fix common copy-paste issue where sk_ becomes sk (space)
-    if (clean.startsWith('sk') && !clean.startsWith('sk_')) {
+    // ONLY apply this to legacy keys that are purely alphanumeric after 'sk'
+    // OpenRouter keys (sk-or-v1-...) should NOT be touched if they already have the prefix
+    if (clean.startsWith('sk') && !clean.startsWith('sk_') && !clean.startsWith('sk-')) {
         clean = 'sk_' + clean.substring(2);
     }
     return clean;
@@ -88,6 +90,7 @@ app.post('/api/chat', async (req, res) => {
         const apiKey = normalizeKey(process.env.OPENROUTER_API_KEY);
 
         if (!apiKey || apiKey === 'your_openrouter_key_here') {
+            console.error("❌ OpenRouter API key is missing or placeholder value.");
             return res.status(500).json({ error: "OpenRouter API key is missing or invalid." });
         }
 
@@ -95,26 +98,35 @@ app.post('/api/chat', async (req, res) => {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://ai-tutor-animated.vercel.app", // Optional for OpenRouter rankings
+                "X-Title": "AI Tutor"
             },
             body: JSON.stringify({
-                "model": "google/gemini-2.0-flash-001",
+                "model": "google/gemini-2.0-flash",
                 "messages": messages,
-                "max_tokens": 150,
+                "max_tokens": 500,
                 "temperature": 0.6,
                 "response_format": { "type": "json_object" }
             })
         });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`❌ OpenRouter API Error (${response.status}):`, errorText);
+            return res.status(response.status).json({ error: "AI Provider Error", details: errorText });
+        }
+
         const data = await response.json();
         if (data.choices && data.choices[0]) {
             res.json({ response: data.choices[0].message.content });
         } else {
-            console.error("OpenRouter Unexpected Response:", data);
-            res.status(500).json({ error: "Invalid response from AI provider" });
+            console.error("❌ OpenRouter Unexpected JSON Response:", data);
+            res.status(500).json({ error: "Invalid response structure from AI provider" });
         }
     } catch (error) {
-        console.error("Chat API Error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("❌ Chat API Exception:", error);
+        res.status(500).json({ error: "Internal Server Error", message: error.message });
     }
 });
 
@@ -212,16 +224,23 @@ app.post('/api/stt', async (req, res) => {
 app.post('/api/vision', async (req, res) => {
     try {
         const { prompt, image, systemInstruction } = req.body;
-        // image is now expected to be a full Data URL (e.g., "data:image/jpeg;base64,.....")
-        
+        const apiKey = normalizeKey(process.env.OPENROUTER_API_KEY);
+
+        if (!apiKey || apiKey === 'your_openrouter_key_here') {
+            console.error("❌ OpenRouter API key missing for vision endpoint.");
+            return res.status(500).json({ error: "AI configuration missing." });
+        }
+
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                "Content-Type": "application/json"
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://ai-tutor-animated.vercel.app",
+                "X-Title": "AI Tutor"
             },
             body: JSON.stringify({
-                "model": "google/gemini-2.0-flash-001",
+                "model": "google/gemini-2.0-flash",
                 "messages": [
                     { "role": "system", "content": systemInstruction },
                     {
