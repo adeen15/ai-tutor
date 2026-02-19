@@ -95,14 +95,19 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/tts', async (req, res) => {
     try {
         const { text, voiceId } = req.body;
-        if (!process.env.ELEVEN_LABS_API_KEY) {
-            return res.status(500).json({ error: "ElevenLabs API key missing" });
+        const apiKey = process.env.ELEVEN_LABS_API_KEY;
+
+        if (!apiKey || apiKey === 'your_elevenlabs_key_here') {
+            console.error("❌ ElevenLabs API key is missing or placeholder");
+            return res.status(500).json({ error: "ElevenLabs API key not configured" });
         }
         
+        console.log(`🎙️ TTS Request: "${text.substring(0, 30)}..." using voice ${voiceId}`);
+
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
             method: 'POST',
             headers: {
-                'xi-api-key': process.env.ELEVEN_LABS_API_KEY,
+                'xi-api-key': apiKey,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -116,32 +121,38 @@ app.post('/api/tts', async (req, res) => {
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            console.error("ElevenLabs Error:", error);
-            return res.status(response.status).json({ error: "ElevenLabs API failed" });
+            const errorData = await response.json();
+            console.error("❌ ElevenLabs API Error:", JSON.stringify(errorData, null, 2));
+            return res.status(response.status).json({ 
+                error: "ElevenLabs API failed", 
+                details: errorData.detail || errorData 
+            });
         }
 
         const audioBuffer = await response.arrayBuffer();
         res.set('Content-Type', 'audio/mpeg');
         res.send(Buffer.from(audioBuffer));
     } catch (error) {
-        console.error("TTS Error:", error);
-        res.status(500).json({ error: "TTS processing failed" });
+        console.error("❌ TTS Endpoint Error:", error);
+        res.status(500).json({ error: "TTS processing failed", message: error.message });
     }
 });
 
 app.post('/api/stt', async (req, res) => {
     try {
-        const { audio } = req.body; // Expected base64 wav/webm
-        if (!process.env.DEEPGRAM_API_KEY) {
-            return res.status(500).json({ error: "Deepgram API key missing" });
+        const { audio } = req.body;
+        const apiKey = process.env.DEEPGRAM_API_KEY;
+
+        if (!apiKey || apiKey === 'your_deepgram_key_here') {
+            console.error("❌ Deepgram API key is missing or placeholder");
+            return res.status(500).json({ error: "Deepgram API key not configured" });
         }
 
         const buffer = Buffer.from(audio, 'base64');
         const response = await fetch("https://api.deepgram.com/v1/listen?smart_format=true&model=nova-2&language=en", {
             method: "POST",
             headers: {
-                "Authorization": `Token ${process.env.DEEPGRAM_API_KEY}`,
+                "Authorization": `Token ${apiKey}`,
                 "Content-Type": "audio/wav"
             },
             body: buffer
@@ -149,17 +160,19 @@ app.post('/api/stt', async (req, res) => {
 
         const data = await response.json();
         if (!response.ok) {
-            console.error("Deepgram Error:", data);
-            return res.status(response.status).json({ error: "Deepgram API failed" });
+            console.error("❌ Deepgram API Error:", JSON.stringify(data, null, 2));
+            return res.status(response.status).json({ error: "Deepgram API failed", details: data });
         }
 
         const transcript = data.results?.channels[0]?.alternatives[0]?.transcript || "";
+        console.log(`🎤 STT Success: "${transcript}"`);
         res.json({ transcript });
     } catch (error) {
-        console.error("STT Error:", error);
-        res.status(500).json({ error: "STT processing failed" });
+        console.error("❌ STT Endpoint Error:", error);
+        res.status(500).json({ error: "STT processing failed", message: error.message });
     }
 });
+
 
 
 // --- VISION API ---
