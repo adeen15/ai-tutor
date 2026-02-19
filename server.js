@@ -95,20 +95,23 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/tts', async (req, res) => {
     try {
         const { text, voiceId } = req.body;
-        const apiKey = process.env.ELEVEN_LABS_API_KEY;
+        const rawKey = process.env.ELEVEN_LABS_API_KEY;
+        const apiKey = rawKey ? rawKey.trim() : null;
 
         if (!apiKey || apiKey === 'your_elevenlabs_key_here') {
             console.error("❌ ElevenLabs API key is missing or placeholder");
             return res.status(500).json({ error: "ElevenLabs API key not configured" });
         }
         
-        console.log(`🎙️ TTS Request: "${text.substring(0, 30)}..." using voice ${voiceId}`);
+        // Log key prefix for verification (safe for debugging)
+        console.log(`🎙️ TTS Request. Key prefix: ${apiKey.substring(0, 4)}... Voice: ${voiceId}`);
 
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
             method: 'POST',
             headers: {
                 'xi-api-key': apiKey,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'accept': 'audio/mpeg'
             },
             body: JSON.stringify({
                 text,
@@ -141,7 +144,8 @@ app.post('/api/tts', async (req, res) => {
 app.post('/api/stt', async (req, res) => {
     try {
         const { audio } = req.body;
-        const apiKey = process.env.DEEPGRAM_API_KEY;
+        const rawKey = process.env.DEEPGRAM_API_KEY;
+        const apiKey = rawKey ? rawKey.trim() : null;
 
         if (!apiKey || apiKey === 'your_deepgram_key_here') {
             console.error("❌ Deepgram API key is missing or placeholder");
@@ -172,6 +176,7 @@ app.post('/api/stt', async (req, res) => {
         res.status(500).json({ error: "STT processing failed", message: error.message });
     }
 });
+
 
 
 
