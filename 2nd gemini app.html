@@ -2002,7 +2002,8 @@
                             });
                             if (!response.ok) {
                                 const errorData = await response.json();
-                                alert(`❌ Voice Error: ${errorData.error}\n\n${errorData.details || ''}`);
+                                const fullError = JSON.stringify(errorData, null, 2);
+                                alert(`❌ Voice Error: ElevenLabs Failed\n\nFull Details:\n${fullError}`);
                                 throw new Error("TTS Failed");
                             }
 
