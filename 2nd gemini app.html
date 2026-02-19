@@ -1730,7 +1730,7 @@
                             subjectKey: "robots",
                             suggestions: ["What is 2 + 2? 🍌", "Count to 10! 🔟", "What is a circle? 🔵"],
                             icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", personality: "Math Teacher", intro_phrase: "Ooh ooh! Let's count bananas! ", premium: true,
-                            voiceId: "TxGEqnHW4m3q98nuB96S"
+                            voiceId: "yoZ06psX69xc3pxjy77S"
                         },
                         { 
                             name: "Starry Alien", 
@@ -1754,7 +1754,7 @@
                             subjectKey: "nature",
                             suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
                             icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true,
-                            voiceId: "MF3mGyEYCl7XYW7LscSj"
+                            voiceId: "onw6qcDkh8mGOn9HsyA1"
                         }
                     ],
                     currentChar: null,
@@ -3196,6 +3196,10 @@
                                         systemInstruction: systemPrompt
                                     })
                                 });
+                                if (!response.ok) {
+                                    console.error("Vision API request failed");
+                                    throw new Error("Vision API request failed");
+                                }
 
                                 const data = await response.json();
                                 const parsed = JSON.parse(data.response);
