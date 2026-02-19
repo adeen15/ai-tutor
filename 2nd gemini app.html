@@ -2000,8 +2000,14 @@
                                     voiceId: this.currentChar.voiceId || "pNInz6obpgDQGcFmaJgB"
                                 })
                             });
-
-                            if (!response.ok) throw new Error("TTS Failed");
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                if (response.status === 401 || response.status === 403) {
+                                    const diag = errorData.diagnostics || {};
+                                    alert(`❌ Voice API key is invalid!\n\nDetails:\n- Length: ${diag.keyLength}\n- Starts with: ${diag.keyPrefix}\n- Ends with: ${diag.keySuffix}\n\nPlease check your Vercel Environment variables.`);
+                                }
+                                throw new Error("TTS Failed");
+                            }
 
                             const blob = await response.blob();
                             const url = URL.createObjectURL(blob);
