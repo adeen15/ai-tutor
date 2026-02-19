@@ -111,6 +111,10 @@ app.post('/api/tts', async (req, res) => {
             });
         }
         
+        // Detailed logging for the user to verify in Vercel
+        const keyInfo = `Length: ${apiKey.length}, Starts with: ${apiKey.substring(0, 10)}..., Ends with: ...${apiKey.slice(-5)}`;
+        console.error(`🎙️ TTS Request. ${keyInfo}`);
+
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
             method: 'POST',
             headers: {
@@ -135,11 +139,13 @@ app.post('/api/tts', async (req, res) => {
                 error: "ElevenLabs API failed (401 Unauthorized)", 
                 diagnostics: {
                     keyLength: apiKey.length,
-                    keyPrefix: apiKey.substring(0, 4) + "...",
+                    keyPrefix: apiKey.substring(0, 10),
+                    keySuffix: apiKey.slice(-5),
                     elevenLabsError: errorData.detail || errorData 
                 }
             });
         }
+
 
         const audioBuffer = await response.arrayBuffer();
         res.set('Content-Type', 'audio/mpeg');
