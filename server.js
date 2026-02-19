@@ -22,6 +22,22 @@ try {
     console.error("❌ Supabase initialization failed:", error);
 }
 
+// Utility to clean and normalize API keys
+function normalizeKey(key) {
+    if (!key) return null;
+    let clean = key.trim();
+    // Remove surrounding quotes if the user accidentally pasted them
+    clean = clean.replace(/^["']|["']$/g, '');
+    // Remove ALL spaces (helpful if copy-pasted with weird formatting)
+    clean = clean.replace(/\s+/g, '');
+    
+    // Fix common copy-paste issue where sk_ becomes sk (space)
+    if (clean.startsWith('sk') && !clean.startsWith('sk_')) {
+        clean = 'sk_' + clean.substring(2);
+    }
+    return clean;
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json({ 
@@ -69,10 +85,16 @@ app.get('/api/health', (req, res) => {
 app.post('/api/chat', async (req, res) => {
     try {
         const { messages } = req.body;
+        const apiKey = normalizeKey(process.env.OPENROUTER_API_KEY);
+
+        if (!apiKey || apiKey === 'your_openrouter_key_here') {
+            return res.status(500).json({ error: "OpenRouter API key is missing or invalid." });
+        }
+
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                "Authorization": `Bearer ${apiKey}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -97,21 +119,6 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // --- CLOUD VOICE APIs (ElevenLabs & Deepgram) ---
-// Utility to clean and normalize ElevenLabs/Deepgram API keys
-function normalizeKey(key) {
-    if (!key) return null;
-    let clean = key.trim();
-    // Remove surrounding quotes if the user accidentally pasted them
-    clean = clean.replace(/^["']|["']$/g, '');
-    // Remove ALL spaces (helpful if copy-pasted with weird formatting)
-    clean = clean.replace(/\s+/g, '');
-    
-    // Fix common copy-paste issue where sk_ becomes sk (space)
-    if (clean.startsWith('sk') && !clean.startsWith('sk_')) {
-        clean = 'sk_' + clean.substring(2);
-    }
-    return clean;
-}
 
 app.post('/api/tts', async (req, res) => {
     try {
