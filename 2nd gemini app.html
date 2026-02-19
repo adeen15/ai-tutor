@@ -3274,6 +3274,12 @@
 
                             if (!response.ok) {
                                 const errData = await response.json().catch(() => ({}));
+                                // 451 = content moderation block — show the kid-friendly message
+                                if (response.status === 451 && errData.blocked && errData.response) {
+                                    const blocked = JSON.parse(errData.response);
+                                    this.finishThinking(blocked.response, savedQuery);
+                                    return;
+                                }
                                 throw new Error(errData.error || "Brain is fuzzy! (HTTP " + response.status + ")");
                             }
 
