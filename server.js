@@ -97,38 +97,52 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // --- CLOUD VOICE APIs (ElevenLabs & Deepgram) ---
+// Utility to clean and normalize ElevenLabs/Deepgram API keys
+function normalizeKey(key) {
+    if (!key) return null;
+    let clean = key.trim();
+    // Fix common copy-paste issue where sk_ becomes sk (space)
+    if (clean.startsWith('sk ')) {
+        clean = 'sk_' + clean.substring(3);
+    }
+    return clean;
+}
+
 app.post('/api/tts', async (req, res) => {
     try {
         const { text, voiceId } = req.body;
-        // The user's OpenAI key is stored in ELEVEN_LABS_API_KEY in Vercel
-        const apiKey = process.env.ELEVEN_LABS_API_KEY || process.env.OPENAI_API_KEY;
-        const cleanKey = apiKey ? apiKey.trim() : null;
+        const vId = voiceId ? voiceId.trim() : "pNInz6obpgDQGcFmaJgB";
+        const apiKey = normalizeKey(process.env.ELEVEN_LABS_API_KEY);
 
-        if (!cleanKey || cleanKey === 'your_elevenlabs_key_here') {
-            return res.status(500).json({ error: "OpenAI API key not configured in Vercel." });
+        if (!apiKey || apiKey === 'your_elevenlabs_key_here') {
+            return res.status(500).json({ error: "ElevenLabs API key is missing or invalid." });
         }
+        
+        console.log(`🎙️ ElevenLabs TTS Request. Key Length: ${apiKey.length}. Voice: ${vId}`);
 
-        console.log(`🎙️ OpenAI TTS Request. Voice: ${voiceId}`);
-
-        const response = await fetch("https://api.openai.com/v1/audio/speech", {
-            method: "POST",
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
+            method: 'POST',
             headers: {
-                "Authorization": `Bearer ${cleanKey}`,
-                "Content-Type": "application/json"
+                'xi-api-key': apiKey,
+                'Content-Type': 'application/json',
+                'accept': 'audio/mpeg'
             },
             body: JSON.stringify({
-                model: "tts-1",
-                input: text,
-                voice: voiceId || "alloy"
+                text,
+                model_id: "eleven_monolingual_v1",
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.75
+                }
             })
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("❌ OpenAI TTS Error:", JSON.stringify(errorData, null, 2));
+            console.error("❌ ElevenLabs API Error:", JSON.stringify(errorData, null, 2));
             return res.status(response.status).json({ 
-                error: "OpenAI API failed", 
-                details: errorData.error?.message || errorData 
+                error: "ElevenLabs API failed", 
+                details: errorData.detail || errorData 
             });
         }
 
@@ -141,43 +155,32 @@ app.post('/api/tts', async (req, res) => {
     }
 });
 
-
-
 app.post('/api/stt', async (req, res) => {
     try {
         const { audio } = req.body;
-        const apiKey = process.env.ELEVEN_LABS_API_KEY || process.env.OPENAI_API_KEY;
-        const cleanKey = apiKey ? apiKey.trim() : null;
+        const apiKey = normalizeKey(process.env.DEEPGRAM_API_KEY || process.env.ELEVEN_LABS_API_KEY);
 
-        if (!cleanKey || cleanKey === 'your_deepgram_key_here' || cleanKey === 'your_elevenlabs_key_here') {
-            return res.status(500).json({ error: "OpenAI API key not configured for STT." });
+        if (!apiKey || apiKey === 'your_deepgram_key_here') {
+            return res.status(500).json({ error: "STT API key not configured." });
         }
 
         const buffer = Buffer.from(audio, 'base64');
-        
-        // Use standard Node 20 FormData and File
-        const formData = new FormData();
-        const blob = new Blob([buffer], { type: 'audio/wav' });
-        formData.append('file', blob, 'recording.wav');
-        formData.append('model', 'whisper-1');
-
-        console.log("🎤 Sending audio to OpenAI Whisper...");
-
-        const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+        const response = await fetch("https://api.deepgram.com/v1/listen?smart_format=true&model=nova-2&language=en", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${cleanKey}`
+                "Authorization": `Token ${apiKey}`,
+                "Content-Type": "audio/wav"
             },
-            body: formData
+            body: buffer
         });
 
         const data = await response.json();
         if (!response.ok) {
-            console.error("❌ OpenAI STT Error:", JSON.stringify(data, null, 2));
-            return res.status(response.status).json({ error: "OpenAI STT failed", details: data });
+            console.error("❌ Deepgram API Error:", JSON.stringify(data, null, 2));
+            return res.status(response.status).json({ error: "Deepgram API failed", details: data });
         }
 
-        const transcript = data.text || "";
+        const transcript = data.results?.channels[0]?.alternatives[0]?.transcript || "";
         console.log(`🎤 STT Success: "${transcript}"`);
         res.json({ transcript });
     } catch (error) {
@@ -185,6 +188,7 @@ app.post('/api/stt', async (req, res) => {
         res.status(500).json({ error: "STT processing failed", message: error.message });
     }
 });
+
 
 
 
