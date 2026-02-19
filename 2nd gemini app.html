@@ -1616,7 +1616,6 @@
                     },
                     
                     showParentPortal: false,
-                    showParentPortal: false,
                     parentVerified: false,
                     masterPin: '', 
                     pinInput: '',
@@ -1728,7 +1727,7 @@
                             name: "Milo Monkey", 
                             subject: "Maths", 
                             subjectKey: "robots",
-                            suggestions: ["What is 2 + 2?  banana", "Count to 10! 🔟", "What is a circle? 🔵"],
+                            suggestions: ["What is 2 + 2? 🍌", "Count to 10! 🔟", "What is a circle? 🔵"],
                             icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", personality: "Math Teacher", intro_phrase: "Ooh ooh! Let's count bananas! ", premium: true,
                             voiceId: "TX3LPaxmHKxFdv7VOQHJ"
                         },
@@ -2001,8 +2000,7 @@
                                 })
                             });
                             if (!response.ok) {
-                                console.error("TTS Failed");
-                                alert("My voice box is resting! Check your API key or connection.");
+                                console.warn("TTS Failed - Check API key or connection");
                                 throw new Error("TTS Failed");
                             }
 
@@ -3275,7 +3273,13 @@
                             });
 
                             const data = await response.json();
-                            const parsed = JSON.parse(data.response);
+                            let parsed;
+                            try {
+                                parsed = typeof data.response === 'string' ? JSON.parse(data.response) : data.response;
+                            } catch (e) {
+                                console.error("Parse error:", e, data.response);
+                                parsed = { response: data.response, emotion: 'neutral' };
+                            }
                             
                             this.logActivity(savedQuery, parsed.emotion);
 
