@@ -58,6 +58,11 @@ app.get('/api/config', (req, res) => {
     });
 });
 
+app.get('/api/health', (req, res) => {
+    res.json({ status: "ok", version: "voice-debug-v1", time: new Date().toISOString() });
+});
+
+
 
 
 // --- CHAT API ---
