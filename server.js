@@ -101,9 +101,14 @@ app.post('/api/chat', async (req, res) => {
 function normalizeKey(key) {
     if (!key) return null;
     let clean = key.trim();
+    // Remove surrounding quotes if the user accidentally pasted them
+    clean = clean.replace(/^["']|["']$/g, '');
+    // Remove ALL spaces (helpful if copy-pasted with weird formatting)
+    clean = clean.replace(/\s+/g, '');
+    
     // Fix common copy-paste issue where sk_ becomes sk (space)
-    if (clean.startsWith('sk ')) {
-        clean = 'sk_' + clean.substring(3);
+    if (clean.startsWith('sk') && !clean.startsWith('sk_')) {
+        clean = 'sk_' + clean.substring(2);
     }
     return clean;
 }
