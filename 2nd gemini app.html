@@ -1593,7 +1593,7 @@
                     isThinking: false,
                     isSpeaking: false,
                     isListening: false,
-                    hasAnswered: false,
+                    hasAnswered: true,
                     currentMoodIcon: '🦖',
                     suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
                     isPremium: false,
@@ -2944,6 +2944,7 @@
                         await this.syncData(); 
                     },
                     trySetChar(char) {
+                        this.stopSpeaking();
                         if (char.premium && !this.isPremium) {
                             this.showPremiumModal = true;
                             this.toggleScroll(true);
@@ -3064,9 +3065,8 @@
                         this.currentMoodIcon = char.icon;
                         this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
                         this.suggestions = char.suggestions;
-                        this.hasAnswered = false;
-                        window.speechSynthesis.cancel();
-                        this.isSpeaking = false;
+                        this.hasAnswered = true; // Allow listening to the intro
+                        this.stopSpeaking();
                         this.isVoiceNativeMode = false;
                         this.updateLevel(); // Update level for this specific character
                     },
@@ -3227,10 +3227,10 @@
                             return;
                         }
 
+                        const activeCharName = this.currentChar.name;
                         const savedQuery = this.userQuery;
                         
-                        window.speechSynthesis.cancel();
-                        this.isSpeaking = false;
+                        this.stopSpeaking();
                         this.isThinking = true;
                         this.hasAnswered = false;
                         this.displayText = "Thinking... 🧠✨";
@@ -3278,11 +3278,21 @@
                                 this.dailyQuestionsUsed++;
                             }
 
-                            this.finishThinking(this.currentChar.intro_phrase + parsed.response, savedQuery);
+                            // Only proceed if we haven't switched characters
+                            if (this.currentChar.name === activeCharName) {
+                                this.finishThinking(this.currentChar.intro_phrase + parsed.response, savedQuery);
+                            } else {
+                                console.log("Aborting response: Character switched.");
+                                this.isThinking = false;
+                            }
                         } catch (error) {
                             console.error("API Error:", error);
                             this.logActivity(savedQuery, 'neutral');
-                            this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
+                            if (this.currentChar.name === activeCharName) {
+                                this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
+                            } else {
+                                this.isThinking = false;
+                            }
                         }
                     },
                     async finishThinking(response, originalQuery) {
