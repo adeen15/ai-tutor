@@ -3272,6 +3272,11 @@
                                 })
                             });
 
+                            if (!response.ok) {
+                                const errData = await response.json().catch(() => ({}));
+                                throw new Error(errData.error || "Brain is fuzzy! (HTTP " + response.status + ")");
+                            }
+
                             const data = await response.json();
                             let parsed;
                             try {
