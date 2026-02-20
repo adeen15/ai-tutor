@@ -2490,14 +2490,15 @@
                         }
 
                         // Special Case: Reset reward CLAIM status if returning from successful payment
+                        // We do this here AND sync it immediately to prevent state revert
                         if (urlParams.get('payment') === 'success') {
                             this.rewardClaimedToday = false;
                             localStorage.removeItem('last_reward_date_' + this.registeredEmail);
+                            this.syncData(); // Proactive sync to update database
                         }
                         
                         this.updateLevel();
                         this.checkPremiumExpiration();
-                        
                     },
 
                     get journeyProgress() {
