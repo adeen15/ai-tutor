@@ -2472,10 +2472,13 @@
 
                         // 4. Handle Premium status
                         const urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.get('payment') !== 'success') {
-                            this.isPremium = data.is_premium || this.learningStats.is_premium || false;
-                            this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
+                        if (urlParams.get('payment') === 'success') {
+                            this.isPremium = true;
+                        } else {
+                            // Priority: top-level column, then internal JSON stat (fallback)
+                            this.isPremium = (data.is_premium === true) || (this.learningStats.is_premium === true);
                         }
+                        this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
                         
                         // Ensure required objects exist
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
@@ -2868,9 +2871,10 @@
                         const updateData = {
                             coins: this.coins,
                             xp: this.xp,
+                            is_premium: this.isPremium,
+                            premium_expiry: this.premiumExpiry,
                             learning_stats: safeStats,
-                            parent_logs: safeLogs,
-                            // Removed top-level columns that are likely missing in DB
+                            parent_logs: safeLogs
                         };
 
                         try {
