@@ -358,6 +358,15 @@
             <div class="safe-badge animate__animated animate__fadeInLeft">
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
+
+            <!-- Web Version: Under Daily Gift -->
+            <div x-show="!isPremium" class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex-col items-center min-w-[80px]">
+                <p class="text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">Free Questions</p>
+                <p class="text-[12px] font-kids text-orange-500 leading-none mt-0.5" x-text="dailyQuestionsUsed + '/' + maxFreeQuestions"></p>
+                <div class="w-full h-1 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                    <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
+                </div>
+            </div>
         </div>
 
         <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
@@ -400,14 +409,14 @@
                 </template>
             </div>
             
-            <!-- Center-Aligned Question Limit -->
-            <div x-show="!isPremium" class="flex justify-center mb-8 animate__animated animate__fadeIn">
-                <div class="bg-white/90 backdrop-blur-sm px-6 py-2 rounded-2xl border-2 border-orange-300 shadow-lg flex items-center gap-4">
+            <!-- Mobile Version: Smaller & Centered -->
+            <div x-show="!isPremium" class="flex md:hidden justify-center mb-6 animate__animated animate__fadeIn">
+                <div class="bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-xl border-2 border-orange-300 shadow-md flex items-center gap-3 transform scale-90">
                     <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-orange-600 uppercase tracking-widest leading-none">Free Questions</span>
-                        <span class="font-kids text-xl text-orange-500 mt-1" x-text="dailyQuestionsUsed + '/' + maxFreeQuestions"></span>
+                        <span class="text-[8px] font-bold text-orange-600 uppercase tracking-widest leading-none">Free Questions</span>
+                        <span class="font-kids text-base text-orange-500 mt-0.5" x-text="dailyQuestionsUsed + '/' + maxFreeQuestions"></span>
                     </div>
-                    <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden border border-orange-100">
+                    <div class="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden border border-orange-100">
                         <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
                     </div>
                 </div>
