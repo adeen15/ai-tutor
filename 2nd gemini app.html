@@ -355,10 +355,6 @@
             </button>
 
 
-            <div class="safe-badge animate__animated animate__fadeInLeft">
-                <i class="fas fa-shield-alt"></i> Kid-Safe AI
-            </div>
-
             <!-- Web Version: Under Daily Gift -->
             <div x-show="!isPremium" class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex-col items-center min-w-[80px]">
                 <p class="text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">Free Questions</p>
@@ -366,6 +362,10 @@
                 <div class="w-full h-1 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
                     <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
                 </div>
+            </div>
+
+            <div class="safe-badge animate__animated animate__fadeInLeft">
+                <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
         </div>
 
