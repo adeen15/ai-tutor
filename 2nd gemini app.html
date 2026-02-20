@@ -348,25 +348,29 @@
             </div>
         </div>
         
-        <div class="absolute top-4 left-4 z-40 flex flex-col gap-3">
+        <div class="absolute top-4 left-4 z-40 flex flex-col gap-2">
             <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
                 <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
                 <span class="text-[10px] font-bold text-pink-500 uppercase" x-text="t('daily_gift')">Daily Gift</span>
             </button>
+
+            <!-- Question Limit Moved Here -->
+            <div x-show="!isPremium" class="bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex flex-col items-center min-w-[80px]">
+                <p class="text-[7px] sm:text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">
+                    Free Questions
+                </p>
+                <p class="text-[10px] sm:text-[12px] font-kids text-orange-500 leading-none mt-0.5" x-text="dailyQuestionsUsed + '/' + maxFreeQuestions"></p>
+                <div class="w-full h-1 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                    <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
+                </div>
+            </div>
+
             <div class="safe-badge animate__animated animate__fadeInLeft">
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
         </div>
 
         <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
-            <div x-show="!isPremium" class="bg-white px-3 py-1 sm:px-4 sm:py-2 rounded-xl shadow-lg border-2 border-orange-400">
-                <p class="text-[8px] sm:text-[10px] font-bold text-orange-600 uppercase text-center">
-                    Free Questions <span x-text="'(' + dailyQuestionsUsed + '/' + maxFreeQuestions + ')'"></span>
-                </p>
-                <div class="w-16 sm:w-20 h-1.5 sm:h-2 bg-gray-100 rounded-full mt-1 overflow-hidden">
-                    <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
-                </div>
-            </div>
 
             <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-1 sm:gap-2">
                 <span class="text-xl sm:text-3xl">💰</span>
