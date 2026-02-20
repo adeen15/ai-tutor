@@ -1979,10 +1979,34 @@
 
 
                     currentAudio: null,
+                    audioContext: null,
+
+                    // Helper to unlock audio on first interaction
+                    unlockAudio() {
+                        if (!this.audioContext) {
+                            const AudioContext = window.AudioContext || window.webkitAudioContext;
+                            if (AudioContext) {
+                                this.audioContext = new AudioContext();
+                            }
+                        }
+                        
+                        // Create a dummy audio object to 'unlock' playback if it doesn't exist
+                        if (!this.currentAudio) {
+                            this.currentAudio = new Audio();
+                        }
+                        
+                        // Play a silent buffer if possible
+                        if (this.audioContext && this.audioContext.state === 'suspended') {
+                            this.audioContext.resume();
+                        }
+                    },
+
                     async speak(text) {
+                        this.unlockAudio();
+
                         if (this.currentAudio) {
                             this.currentAudio.pause();
-                            this.currentAudio = null;
+                            this.currentAudio.src = "";
                         }
                         this.isSpeaking = false;
 
@@ -1999,15 +2023,18 @@
                                     voiceId: this.currentChar.voiceId || "pNInz6obpgDQGcFmaJgB"
                                 })
                             });
+                            
                             if (!response.ok) {
-                                console.warn("TTS Failed - Check API key or connection");
+                                const errData = await response.json().catch(() => ({}));
+                                console.warn("TTS Failed:", errData);
                                 throw new Error("TTS Failed");
                             }
 
-
                             const blob = await response.blob();
                             const url = URL.createObjectURL(blob);
-                            this.currentAudio = new Audio(url);
+                            
+                            // Reuse the existing audio object
+                            this.currentAudio.src = url;
                             
                             this.currentAudio.onplay = () => { this.isSpeaking = true; };
                             this.currentAudio.onended = () => { 
@@ -2015,10 +2042,15 @@
                                 if (this.isVoiceNativeMode) {
                                     this.startListening();
                                 }
+                                URL.revokeObjectURL(url);
                             };
-                            this.currentAudio.onerror = () => { this.isSpeaking = false; };
+                            this.currentAudio.onerror = (e) => { 
+                                console.error("Audio playback error:", e);
+                                this.isSpeaking = false; 
+                                URL.revokeObjectURL(url);
+                            };
                             
-                            this.currentAudio.play();
+                            await this.currentAudio.play();
                         } catch (e) {
                             console.error("Cloud TTS Error:", e);
                             this.isSpeaking = false;
@@ -3233,6 +3265,7 @@
                         const activeCharName = this.currentChar.name;
                         const savedQuery = this.userQuery;
                         
+                        this.unlockAudio();
                         this.stopSpeaking();
                         this.isThinking = true;
                         this.hasAnswered = false;
