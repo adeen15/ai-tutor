@@ -2488,6 +2488,12 @@
                             this.dailyQuestionsUsed = dailyData.questions_used || 0;
                             this.rewardClaimedToday = true;
                         }
+
+                        // Special Case: Reset reward CLAIM status if returning from successful payment
+                        if (urlParams.get('payment') === 'success') {
+                            this.rewardClaimedToday = false;
+                            localStorage.removeItem('last_reward_date_' + this.registeredEmail);
+                        }
                         
                         this.updateLevel();
                         this.checkPremiumExpiration();
