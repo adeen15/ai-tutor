@@ -2927,6 +2927,9 @@
                             if (now > this.premiumExpiry) {
                                 this.isPremium = false;
                                 this.premiumExpiry = null;
+                                this.coins = 0;
+                                this.inventory = [];
+                                this.equippedItem = null;
                                 alert("Your monthly premium subscription has expired. Please renew to access all features!");
                                 this.setChar(this.characters[0]);
                                 this.syncData();
@@ -2960,6 +2963,9 @@
                         if(confirm("Are you sure you want to cancel? You will lose access to premium features immediately.")) {
                             this.isPremium = false;
                             this.premiumExpiry = null;
+                            this.coins = 0;
+                            this.inventory = [];
+                            this.equippedItem = null;
                             this.setChar(this.characters[0]);
                             await this.syncData();
                         }
