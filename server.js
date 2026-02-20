@@ -259,8 +259,14 @@ app.post('/api/tts', async (req, res) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error("❌ ElevenLabs API Error:", JSON.stringify(errorData, null, 2));
+            const errorData = await response.json().catch(() => ({}));
+            console.error(`❌ ElevenLabs API Error (${response.status}):`, JSON.stringify(errorData, null, 2));
+            
+            // If it's a 401, provide a clearer hint in the logs
+            if (response.status === 401) {
+                console.error("💡 HINT: Your ElevenLabs API key might be invalid or expired.");
+            }
+            
             return res.status(response.status).json({ 
                 error: "ElevenLabs API failed", 
                 details: errorData.detail || errorData 
