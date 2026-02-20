@@ -230,45 +230,39 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/tts', async (req, res) => {
     try {
         const { text, voiceId } = req.body;
-        const vId = voiceId ? voiceId.trim() : "pNInz6obpgDQGcFmaJgB";
-        const apiKey = normalizeKey(process.env.ELEVEN_LABS_API_KEY);
+        const vId = voiceId ? voiceId.trim() : "voice_placeholder_id"; // Default Voice.ai ID
+        const apiKey = normalizeKey(process.env.VOICE_AI_API_KEY);
 
-        if (!apiKey || apiKey === 'your_elevenlabs_key_here') {
-            return res.status(500).json({ error: "ElevenLabs API key is missing or invalid." });
+        if (!apiKey || apiKey === 'your_voiceai_key_here') {
+            return res.status(500).json({ error: "Voice.ai API key is missing or invalid." });
         }
         
-        // Log the key format for debugging (masked)
-        console.error(`🎙️ ElevenLabs TTS. Key: ${apiKey.substring(0, 10)}...${apiKey.slice(-5)} (Total: ${apiKey.length}). Voice: ${vId}`);
+        console.error(`🎙️ Voice.ai TTS. Voice: ${vId}`);
 
-
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
+        const response = await fetch(`https://dev.voice.ai/api/v1/tts/speech`, {
             method: 'POST',
             headers: {
-                'xi-api-key': apiKey,
+                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
                 'accept': 'audio/mpeg'
             },
             body: JSON.stringify({
                 text,
-                model_id: "eleven_multilingual_v2",
-                voice_settings: {
-                    stability: 0.5,
-                    similarity_boost: 0.75
-                }
+                voice_id: vId,
+                model_id: "v1-standard" 
             })
         });
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            console.error(`❌ ElevenLabs API Error (${response.status}):`, JSON.stringify(errorData, null, 2));
+            console.error(`❌ Voice.ai API Error (${response.status}):`, JSON.stringify(errorData, null, 2));
             
-            // If it's a 401, provide a clearer hint in the logs
             if (response.status === 401) {
-                console.error("💡 HINT: Your ElevenLabs API key might be invalid or expired.");
+                console.error("💡 HINT: Your Voice.ai API key might be invalid or expired.");
             }
             
             return res.status(response.status).json({ 
-                error: "ElevenLabs API failed", 
+                error: "Voice.ai API failed", 
                 details: errorData.detail || errorData 
             });
         }
@@ -285,7 +279,7 @@ app.post('/api/tts', async (req, res) => {
 app.post('/api/stt', async (req, res) => {
     try {
         const { audio } = req.body;
-        const apiKey = normalizeKey(process.env.DEEPGRAM_API_KEY || process.env.ELEVEN_LABS_API_KEY);
+        const apiKey = normalizeKey(process.env.DEEPGRAM_API_KEY || process.env.VOICE_AI_API_KEY);
 
         if (!apiKey || apiKey === 'your_deepgram_key_here') {
             return res.status(500).json({ error: "STT API key not configured." });
