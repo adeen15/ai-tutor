@@ -353,8 +353,6 @@
                 <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
                 <span class="text-[10px] font-bold text-pink-500 uppercase" x-text="t('daily_gift')">Daily Gift</span>
             </button>
-
-
             <!-- Web Version: Under Daily Gift -->
             <div x-show="!isPremium" class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex-col items-center min-w-[80px]">
                 <p class="text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">Free Questions</p>
@@ -363,7 +361,6 @@
                     <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
                 </div>
             </div>
-
             <div class="safe-badge animate__animated animate__fadeInLeft">
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
