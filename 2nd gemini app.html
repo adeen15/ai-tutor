@@ -2492,11 +2492,6 @@
                         this.updateLevel();
                         this.checkPremiumExpiration();
                         
-                        // Manual Fix: Force Magic Sparkles to be owned and active
-                        if (!this.inventory.includes('sparkles')) {
-                            this.inventory.push('sparkles');
-                        }
-                        this.equippedItem = 'sparkles';
                     },
 
                     get journeyProgress() {
@@ -2930,6 +2925,7 @@
                                 this.coins = 0;
                                 this.inventory = [];
                                 this.equippedItem = null;
+                                this.rewardClaimedToday = false;
                                 alert("Your monthly premium subscription has expired. Please renew to access all features!");
                                 this.setChar(this.characters[0]);
                                 this.syncData();
@@ -2966,6 +2962,7 @@
                             this.coins = 0;
                             this.inventory = [];
                             this.equippedItem = null;
+                            this.rewardClaimedToday = false;
                             this.setChar(this.characters[0]);
                             await this.syncData();
                         }
