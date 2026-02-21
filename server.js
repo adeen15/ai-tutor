@@ -230,48 +230,91 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/tts', async (req, res) => {
     try {
         const { text, voiceId } = req.body;
-        const vId = voiceId ? voiceId.trim() : "voice_placeholder_id"; // Default Voice.ai ID
-        const apiKey = normalizeKey(process.env.VOICE_AI_API_KEY);
+        const vId = voiceId ? voiceId.trim() : "voice_placeholder_id";
 
-        if (!apiKey || apiKey === 'your_voiceai_key_here') {
-            return res.status(500).json({ error: "Voice.ai API key is missing or invalid." });
-        }
-        
-        console.error(`🎙️ Voice.ai TTS. Voice: ${vId}`);
+        // --- Provider 1: OpenAI TTS (Preferred if Key exists) ---
+        const openAiKey = normalizeKey(process.env.OPENAI_API_KEY);
+        if (openAiKey && openAiKey !== 'your_openai_key_here') {
+            try {
+                // Map Voice.ai IDs to OpenAI voices
+                // Dino (Deep/Friendly) -> Alloy
+                // Monkey (High/Energetic) -> Shimmer
+                // Alien (Ethereal) -> Nova
+                // Cat (Soft) -> Fable
+                // Bee (Playful) -> Onyx (or Shimmer)
+                const voiceMap = {
+                    "9740af7a-9674-4be1-967b-cf6daba06596": "alloy",   // Professor Dino
+                    "79005bb6-7ae3-4768-b2a0-efc774a3c7a9": "shimmer", // Milo Monkey
+                    "0062153d-dd11-4330-a6b1-87cd29187ed7": "nova",    // Starry Alien
+                    "2c96d996-4e88-44e8-944a-303d5b063775": "fable",   // Magic Cat
+                    "a09a1325-058b-4bc7-9105-b96b1cce27c5": "shimmer"  // Bouncy Bee
+                };
+                const openAiVoice = voiceMap[vId] || "alloy";
 
-        const response = await fetch(`https://dev.voice.ai/api/v1/tts/speech`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-                'accept': 'audio/mpeg'
-            },
-            body: JSON.stringify({
-                text,
-                voice_id: vId,
-                model_id: "v1-standard" 
-            })
-        });
+                console.log(`🎙️ OpenAI TTS. Voice: ${openAiVoice}`);
+                const response = await fetch('https://api.openai.com/v1/audio/speech', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${openAiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "tts-1",
+                        input: text,
+                        voice: openAiVoice
+                    })
+                });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error(`❌ Voice.ai API Error (${response.status}):`, JSON.stringify(errorData, null, 2));
-            
-            if (response.status === 401) {
-                console.error("💡 HINT: Your Voice.ai API key might be invalid or expired.");
+                if (response.ok) {
+                    const audioBuffer = await response.arrayBuffer();
+                    res.set('Content-Type', 'audio/mpeg');
+                    return res.send(Buffer.from(audioBuffer));
+                } else {
+                    console.warn(`⚠️ OpenAI TTS failed (Status ${response.status}), falling back to Voice.ai...`);
+                }
+            } catch (err) {
+                console.warn("⚠️ OpenAI TTS Error, falling back:", err.message);
             }
-            
-            return res.status(response.status).json({ 
-                error: "Voice.ai API failed", 
-                details: errorData.detail || errorData 
-            });
         }
 
-        const audioBuffer = await response.arrayBuffer();
-        res.set('Content-Type', 'audio/mpeg');
-        res.send(Buffer.from(audioBuffer));
+        // --- Provider 2: Voice.ai (Current/Fallback) ---
+        const voiceAiKey = normalizeKey(process.env.VOICE_AI_API_KEY);
+        if (voiceAiKey && voiceAiKey !== 'your_voiceai_key_here') {
+            console.log(`🎙️ Voice.ai TTS. Voice: ${vId}`);
+            const response = await fetch(`https://dev.voice.ai/api/v1/tts/speech`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${voiceAiKey}`,
+                    'Content-Type': 'application/json',
+                    'accept': 'audio/mpeg'
+                },
+                body: JSON.stringify({
+                    text,
+                    voice_id: vId,
+                    model_id: "v1-standard" 
+                })
+            });
+
+            if (response.ok) {
+                const audioBuffer = await response.arrayBuffer();
+                res.set('Content-Type', 'audio/mpeg');
+                return res.send(Buffer.from(audioBuffer));
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                console.error(`❌ Voice.ai API Error (${response.status}):`, JSON.stringify(errorData, null, 2));
+                return res.status(response.status).json({ 
+                    error: "Voice.ai API failed", 
+                    details: errorData.detail || errorData 
+                });
+            }
+        }
+
+        // --- No Providers Available ---
+        console.error("❌ No TTS providers configured or all failed.");
+        res.status(503).json({ error: "No TTS providers available. Please check API keys." });
+
     } catch (error) {
-        console.error("❌ TTS Endpoint Error:", error);
+        console.error("❌ TTS Endpoint Exception:", error);
         res.status(500).json({ error: "TTS processing failed", message: error.message });
     }
 });
