@@ -1919,10 +1919,7 @@
                         this.isSpeaking = false;
                     },
 
-                    stopSpeaking() {
-                        window.speechSynthesis.cancel();
-                        this.isSpeaking = false;
-                    },
+
 
                     mediaRecorder: null,
                     audioChunks: [],
@@ -2104,10 +2101,14 @@
                     },
 
                     stopSpeaking() {
+                        // 1. Stop MP3 Audio (API)
                         if (this.currentAudio) {
                             this.currentAudio.pause();
-                            this.currentAudio = null;
+                            this.currentAudio.src = "";
                         }
+                        // 2. Stop Speech Synthesis (Fallback/Native)
+                        window.speechSynthesis.cancel();
+                        
                         this.isSpeaking = false;
                     },
 
