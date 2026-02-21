@@ -2970,6 +2970,7 @@
                             this.inventory = [];
                             this.equippedItem = null;
                             this.rewardClaimedToday = false;
+                            localStorage.removeItem('last_reward_date_' + this.registeredEmail);
                             this.setChar(this.characters[0]);
                             await this.syncData();
                         }
