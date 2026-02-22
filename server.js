@@ -243,13 +243,13 @@ app.post('/api/tts', async (req, res) => {
                 // Cat (Soft) -> Fable
                 // Bee (Playful) -> Onyx (or Shimmer)
                 const voiceMap = {
-                    "9740af7a-9674-4be1-967b-cf6daba06596": "alloy",   // Professor Dino
-                    "79005bb6-7ae3-4768-b2a0-efc774a3c7a9": "shimmer", // Milo Monkey
-                    "0062153d-dd11-4330-a6b1-87cd29187ed7": "nova",    // Starry Alien
-                    "2c96d996-4e88-44e8-944a-303d5b063775": "fable",   // Magic Cat
-                    "a09a1325-058b-4bc7-9105-b96b1cce27c5": "shimmer"  // Bouncy Bee
+                    "9740af7a-9674-4be1-967b-cf6daba06596": "fable",   // Professor Dino (Sweet/Friendly)
+                    "79005bb6-7ae3-4768-b2a0-efc774a3c7a9": "shimmer", // Milo Monkey (Playful/Sweet)
+                    "0062153d-dd11-4330-a6b1-87cd29187ed7": "fable",   // Starry Alien (Sweet/Ethereal)
+                    "2c96d996-4e88-44e8-944a-303d5b063775": "shimmer", // Magic Cat (Sweet/Soft)
+                    "a09a1325-058b-4bc7-9105-b96b1cce27c5": "shimmer"  // Bouncy Bee (Playful/Sweet)
                 };
-                const openAiVoice = voiceMap[vId] || "alloy";
+                const openAiVoice = voiceMap[vId] || "shimmer";
 
                 console.log(`🎙️ OpenAI TTS. Voice: ${openAiVoice}`);
                 const response = await fetch('https://api.openai.com/v1/audio/speech', {
