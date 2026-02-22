@@ -2073,13 +2073,13 @@
                         
                         if (baseVoice) msg.voice = baseVoice;
 
-                        // Personality-based settings for fallback
+                        // Personality-based settings for extra "sweetness" and friendliness
                         const voiceSettings = {
-                            "Professor Dino": { pitch: 0.8, rate: 0.9 },
-                            "Milo Monkey": { pitch: 1.4, rate: 1.2 },
-                            "Starry Alien": { pitch: 0.6, rate: 0.8 },
-                            "Magic Cat": { pitch: 1.2, rate: 1.0 },
-                            "Bouncy Bee": { pitch: 1.6, rate: 1.3 }
+                            "Professor Dino": { pitch: 1.1, rate: 0.95 }, // Gently higher pitch, calm rate
+                            "Milo Monkey": { pitch: 1.6, rate: 1.25 },   // High, energetic, and sweet
+                            "Starry Alien": { pitch: 1.3, rate: 0.85 },  // Dreamy, sweet, and slow
+                            "Magic Cat": { pitch: 1.5, rate: 1.1 },      // Soft, playful, and sweet
+                            "Bouncy Bee": { pitch: 1.8, rate: 1.4 }      // Very high, bubbly, and sweet
                         };
 
                         const settings = voiceSettings[this.currentChar.name] || { pitch: 1.0, rate: 1.0 };
