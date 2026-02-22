@@ -269,43 +269,9 @@ app.post('/api/tts', async (req, res) => {
                     const audioBuffer = await response.arrayBuffer();
                     res.set('Content-Type', 'audio/mpeg');
                     return res.send(Buffer.from(audioBuffer));
-                } else {
-                    console.warn(`⚠️ OpenAI TTS failed (Status ${response.status}), falling back to Voice.ai...`);
                 }
             } catch (err) {
-                console.warn("⚠️ OpenAI TTS Error, falling back:", err.message);
-            }
-        }
-
-        // --- Provider 2: Voice.ai (Current/Fallback) ---
-        const voiceAiKey = normalizeKey(process.env.VOICE_AI_API_KEY);
-        if (voiceAiKey && voiceAiKey !== 'your_voiceai_key_here') {
-            console.log(`🎙️ Voice.ai TTS. Voice: ${vId}`);
-            const response = await fetch(`https://dev.voice.ai/api/v1/tts/speech`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${voiceAiKey}`,
-                    'Content-Type': 'application/json',
-                    'accept': 'audio/mpeg'
-                },
-                body: JSON.stringify({
-                    text,
-                    voice_id: vId,
-                    model_id: "v1-standard" 
-                })
-            });
-
-            if (response.ok) {
-                const audioBuffer = await response.arrayBuffer();
-                res.set('Content-Type', 'audio/mpeg');
-                return res.send(Buffer.from(audioBuffer));
-            } else {
-                const errorData = await response.json().catch(() => ({}));
-                console.error(`❌ Voice.ai API Error (${response.status}):`, JSON.stringify(errorData, null, 2));
-                return res.status(response.status).json({ 
-                    error: "Voice.ai API failed", 
-                    details: errorData.detail || errorData 
-                });
+                console.warn("⚠️ OpenAI TTS Error:", err.message);
             }
         }
 
@@ -322,7 +288,7 @@ app.post('/api/tts', async (req, res) => {
 app.post('/api/stt', async (req, res) => {
     try {
         const { audio } = req.body;
-        const apiKey = normalizeKey(process.env.DEEPGRAM_API_KEY || process.env.VOICE_AI_API_KEY);
+        const apiKey = normalizeKey(process.env.DEEPGRAM_API_KEY);
 
         if (!apiKey || apiKey === 'your_deepgram_key_here') {
             return res.status(500).json({ error: "STT API key not configured." });
