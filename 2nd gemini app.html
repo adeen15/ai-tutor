@@ -2077,8 +2077,8 @@
                             const profiles = {
                                 "Professor Dino": () => {
                                     osc.type = 'sine';
-                                    osc.frequency.setValueAtTime(110, time);
-                                    osc.frequency.exponentialRampToValueAtTime(165, time + 0.3);
+                                    osc.frequency.setValueAtTime(220, time);
+                                    osc.frequency.exponentialRampToValueAtTime(330, time + 0.3);
                                     gain.gain.setValueAtTime(0.3, time);
                                     gain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
                                     osc.start(time); osc.stop(time + 0.5);
