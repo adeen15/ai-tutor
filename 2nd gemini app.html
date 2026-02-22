@@ -2063,10 +2063,76 @@
                         }
                     },
 
+                    playCharIntro(name) {
+                        try {
+                            const AudioContext = window.AudioContext || window.webkitAudioContext;
+                            const context = new AudioContext();
+                            const osc = context.createOscillator();
+                            const gain = context.createGain();
+                            const time = context.currentTime;
+                            
+                            gain.connect(context.destination);
+                            osc.connect(gain);
+
+                            const profiles = {
+                                "Professor Dino": () => {
+                                    osc.type = 'sine';
+                                    osc.frequency.setValueAtTime(110, time);
+                                    osc.frequency.exponentialRampToValueAtTime(165, time + 0.3);
+                                    gain.gain.setValueAtTime(0.3, time);
+                                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+                                    osc.start(time); osc.stop(time + 0.5);
+                                },
+                                "Milo Monkey": () => {
+                                    osc.type = 'square';
+                                    osc.frequency.setValueAtTime(440, time);
+                                    osc.frequency.exponentialRampToValueAtTime(880, time + 0.1);
+                                    osc.frequency.exponentialRampToValueAtTime(440, time + 0.2);
+                                    gain.gain.setValueAtTime(0.05, time);
+                                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
+                                    osc.start(time); osc.stop(time + 0.3);
+                                },
+                                "Starry Alien": () => {
+                                    osc.type = 'triangle';
+                                    osc.frequency.setValueAtTime(660, time);
+                                    osc.frequency.sineCurveToValueAtTime = (v, t) => osc.frequency.setValueAtTime(v, t); // helper
+                                    for(let i=0; i<10; i++) osc.frequency.exponentialRampToValueAtTime(660 + (i%2?100:-100), time + (i*0.05));
+                                    gain.gain.setValueAtTime(0.1, time);
+                                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.6);
+                                    osc.start(time); osc.stop(time + 0.6);
+                                },
+                                "Magic Cat": () => {
+                                    osc.type = 'sine';
+                                    osc.frequency.setValueAtTime(880, time);
+                                    gain.gain.setValueAtTime(0, time);
+                                    gain.gain.linearRampToValueAtTime(0.1, time + 0.1);
+                                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.6);
+                                    // Sparkle effect using multiple oscillators isn't possible with one var, so we just do a nice swipe
+                                    osc.frequency.exponentialRampToValueAtTime(1760, time + 0.4);
+                                    osc.start(time); osc.stop(time + 0.6);
+                                },
+                                "Bouncy Bee": () => {
+                                    osc.type = 'sawtooth';
+                                    osc.frequency.setValueAtTime(220, time);
+                                    for(let i=0; i<15; i++) osc.frequency.setValueAtTime(220 + (i%2?50:0), time + (i*0.02));
+                                    gain.gain.setValueAtTime(0.05, time);
+                                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.4);
+                                    osc.start(time); osc.stop(time + 0.4);
+                                }
+                            };
+
+                            const play = profiles[name] || profiles["Magic Cat"];
+                            play();
+                            setTimeout(() => context.close(), 1000);
+                        } catch (e) { console.error("Intro sound error", e); }
+                    },
+
                     speakNative(text) {
                         console.log("📢 Using Browser Native Speech Synthesis Fallback");
                         this.stopSpeaking();
                         this.isSpeaking = true;
+                        
+                        this.playCharIntro(this.currentChar.name);
 
                         const msg = new SpeechSynthesisUtterance(text);
                         const voices = window.speechSynthesis.getVoices();
@@ -2086,13 +2152,13 @@
                         
                         if (targetVoice) msg.voice = targetVoice;
 
-                        // Personality-based settings (Moderated for high-quality voices)
+                        // Natural settings for high-quality voices + Intro sounds
                         const voiceSettings = {
                             "Professor Dino": { pitch: 1.0, rate: 0.95 },
-                            "Milo Monkey": { pitch: 1.1, rate: 1.1 },
-                            "Starry Alien": { pitch: 1.0, rate: 0.8 },
+                            "Milo Monkey": { pitch: 1.05, rate: 1.05 },
+                            "Starry Alien": { pitch: 1.0, rate: 0.85 },
                             "Magic Cat": { pitch: 1.05, rate: 1.0 },
-                            "Bouncy Bee": { pitch: 1.1, rate: 1.15 } // Ana is already a child voice
+                            "Bouncy Bee": { pitch: 1.05, rate: 1.1 }
                         };
 
                         const settings = voiceSettings[this.currentChar.name] || { pitch: 1.0, rate: 1.0 };
@@ -3177,6 +3243,9 @@
                         this.stopSpeaking();
                         this.isVoiceNativeMode = false;
                         this.updateLevel(); // Update level for this specific character
+                        
+                        // Play the magical intro sound!
+                        setTimeout(() => this.playCharIntro(char.name), 100);
                     },
                     updateLevel() {
                         // Calculate level based on the CURRENT character's subject mastery
