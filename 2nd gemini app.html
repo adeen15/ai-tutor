@@ -118,6 +118,11 @@
 
             .certificate-border { border: 20px solid #f59e0b; border-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M20 0l5 15h15l-12 9 4 16-12-9-12 9 4-16-12-9h15z' fill='%23f59e0b'/%3E%3C/svg%3E") 30; }
 
+            .badge-slot { transition: all 0.3s; }
+            .badge-slot:hover { transform: scale(1.1); }
+            .badge-earned { animation: badgePop 0.5s ease-out; }
+            @keyframes badgePop { 0% { transform: scale(0) rotate(-180deg); } 60% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); } }
+
             @media (max-width: 640px) {
                 .daily-reward-btn { padding: 0.5rem !important; width: 52px; height: 52px; }
                 .daily-reward-btn span.gift-bounce { font-size: 1.25rem !important; }
@@ -373,6 +378,10 @@
 
             <button @click="showShop = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
                 <span class="text-xl sm:text-3xl">🪄</span>
+            </button>
+
+            <button @click="showBadges = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-purple-400" title="Sticker Book">
+                <span class="text-xl sm:text-3xl">🏆</span>
             </button>
 
             <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-orange-400" title="Switch Child">
@@ -1151,6 +1160,43 @@
                     :disabled="rewardClaimedToday">
                     <span x-text="!isPremium ? 'Join Premium to Claim! 👑' : (rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' 100 Coins! ✨' : t('claim') + ' 50 Coins! ✨'))"></span>
                 </button>
+            </div>
+        </div>
+
+        <!-- Badge/Sticker Book Modal -->
+        <div x-show="showBadges" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70" x-transition.opacity>
+            <div @click.away="showBadges = false; toggleScroll(false)" class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-[3rem] max-w-4xl w-full max-h-[90vh] p-8 shadow-2xl relative animate__animated animate__zoomIn overflow-y-auto">
+                <button @click="showBadges = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+                
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4">🏆</div>
+                    <h2 class="text-4xl font-kids text-purple-600 mb-2">My Sticker Book</h2>
+                    <p class="text-gray-600 font-bold">Collect badges by learning and exploring!</p>
+                    <div class="mt-4 bg-white rounded-full px-6 py-2 inline-block shadow-md">
+                        <span class="text-2xl font-kids text-purple-600" x-text="badges.length + '/' + badgeDefinitions.length"></span>
+                        <span class="text-sm text-gray-500 ml-2">Badges Earned</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <template x-for="def in badgeDefinitions">
+                        <div class="badge-slot bg-white rounded-2xl p-6 shadow-lg border-4 text-center relative"
+                            :class="badges.includes(def.id) ? 'border-purple-400 badge-earned' : 'border-gray-200 opacity-50'">
+                            <div class="text-5xl mb-3" :class="badges.includes(def.id) ? '' : 'grayscale'" x-text="def.icon"></div>
+                            <h3 class="font-bold text-sm text-slate-800 mb-1" x-text="def.name"></h3>
+                            <p class="text-xs text-gray-500 leading-tight" x-text="def.desc"></p>
+                            <div x-show="!badges.includes(def.id)" class="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl">
+                                <i class="fas fa-lock text-3xl text-gray-300"></i>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <p class="text-sm text-gray-500 italic">Keep learning to unlock more badges!</p>
+                </div>
             </div>
         </div>
 
@@ -2040,7 +2086,9 @@
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                         child_profile: null,
                         recent_mistakes: [],
-                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
+                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
+                        quizzesCompleted: 0,
+                        daysActive: 0
                     },
                     xp: 0,
                     level: 1,
@@ -2048,6 +2096,23 @@
                     showShop: false,
                     inventory: [],
                     equippedItem: null,
+                    
+                    showBadges: false,
+                    badges: [],
+                    badgeDefinitions: [
+                        { id: 'first_question', name: 'First Steps', icon: '🌟', desc: 'Asked your first question!', requirement: 1, type: 'questions' },
+                        { id: 'curious_mind', name: 'Curious Mind', icon: '🤔', desc: 'Asked 10 questions', requirement: 10, type: 'questions' },
+                        { id: 'knowledge_seeker', name: 'Knowledge Seeker', icon: '📚', desc: 'Asked 50 questions', requirement: 50, type: 'questions' },
+                        { id: 'quiz_master', name: 'Quiz Master', icon: '🎯', desc: 'Completed 5 quizzes', requirement: 5, type: 'quizzes' },
+                        { id: 'coin_collector', name: 'Coin Collector', icon: '💰', desc: 'Earned 500 coins', requirement: 500, type: 'coins' },
+                        { id: 'daily_learner', name: 'Daily Learner', icon: '📅', desc: 'Learned for 7 days', requirement: 7, type: 'days' },
+                        { id: 'path_explorer', name: 'Path Explorer', icon: '🗺️', desc: 'Completed 1 learning path', requirement: 1, type: 'paths' },
+                        { id: 'super_star', name: 'Super Star', icon: '⭐', desc: 'Reached 1000 XP', requirement: 1000, type: 'xp' },
+                        { id: 'math_genius', name: 'Math Genius', icon: '🧮', desc: 'Mastered Math subject', requirement: 100, type: 'subject', subject: 'robots' },
+                        { id: 'history_buff', name: 'History Buff', icon: '🦖', desc: 'Mastered History subject', requirement: 100, type: 'subject', subject: 'history' },
+                        { id: 'space_explorer', name: 'Space Explorer', icon: '🚀', desc: 'Mastered Space subject', requirement: 100, type: 'subject', subject: 'space' },
+                        { id: 'science_wizard', name: 'Science Wizard', icon: '🔬', desc: 'Mastered Science subject', requirement: 100, type: 'subject', subject: 'science' }
+                    ],
                     
                     showQuiz: false,
                     quizState: 'loading',
@@ -2254,6 +2319,13 @@
                             this.totalMinutesLearned++;
                             this.syncData();
                         }, 60000);
+                        
+                        const today = new Date().toDateString();
+                        const lastActive = localStorage.getItem('lastActiveDate');
+                        if (lastActive !== today) {
+                            this.learningStats.daysActive = (this.learningStats.daysActive || 0) + 1;
+                            localStorage.setItem('lastActiveDate', today);
+                        }
 
                         try {
                             const res = await fetch('/api/config');
@@ -4265,3 +4337,63 @@
     </body>
     </html>
 
+                    checkBadges() {
+                        const newBadges = [];
+                        this.badgeDefinitions.forEach(def => {
+                            if (this.badges.includes(def.id)) return;
+                            
+                            let earned = false;
+                            switch(def.type) {
+                                case 'questions':
+                                    earned = this.parentLogs.length >= def.requirement;
+                                    break;
+                                case 'quizzes':
+                                    earned = (this.learningStats.quizzesCompleted || 0) >= def.requirement;
+                                    break;
+                                case 'coins':
+                                    earned = this.coins >= def.requirement;
+                                    break;
+                                case 'xp':
+                                    earned = this.xp >= def.requirement;
+                                    break;
+                                case 'days':
+                                    earned = (this.learningStats.daysActive || 0) >= def.requirement;
+                                    break;
+                                case 'paths':
+                                    const completed = Object.values(this.pathProgress).filter(p => p === 100).length;
+                                    earned = completed >= def.requirement;
+                                    break;
+                                case 'subject':
+                                    earned = (this.learningStats.subjects[def.subject] || 0) >= def.requirement;
+                                    break;
+                            }
+                            
+                            if (earned) {
+                                this.badges.push(def.id);
+                                newBadges.push(def);
+                            }
+                        });
+                        
+                        if (newBadges.length > 0) {
+                            this.showBadgeNotification(newBadges[0]);
+                            this.syncData();
+                        }
+                    },
+                    
+                    showBadgeNotification(badge) {
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                        this.playPing();
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[200] bg-white rounded-3xl p-8 shadow-2xl text-center animate__animated animate__bounceIn';
+                        notification.innerHTML = `
+                            <div class="text-6xl mb-4">${badge.icon}</div>
+                            <h3 class="text-2xl font-kids text-slate-800 mb-2">New Badge Unlocked!</h3>
+                            <p class="text-xl font-bold text-purple-600 mb-2">${badge.name}</p>
+                            <p class="text-sm text-gray-500">${badge.desc}</p>
+                        `;
+                        document.body.appendChild(notification);
+                        setTimeout(() => {
+                            notification.classList.add('animate__fadeOut');
+                            setTimeout(() => notification.remove(), 500);
+                        }, 3000);
+                    },
