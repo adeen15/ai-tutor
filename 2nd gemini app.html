@@ -2590,6 +2590,11 @@
                         this.inventory = this.learningStats.inventory || data.inventory || [];
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
+                        
+                        // 3.5 Load Curriculum (Persisted quests)
+                        if (this.learningStats.curriculum) {
+                            this.curriculum = this.learningStats.curriculum;
+                        }
 
                         // 4. Handle Premium status
                         const urlParams = new URLSearchParams(window.location.search);
@@ -2987,6 +2992,7 @@
                         safeStats.last_summary_date = this.lastSummaryDate;
                         safeStats.current_language = this.currentLanguage;
                         safeStats.equipped_item = this.equippedItem; // Save equipped item to JSON blob
+                        safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum)); // Persist newly generated quests
 
                         const updateData = {
                             coins: this.coins,
