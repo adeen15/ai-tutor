@@ -2077,6 +2077,9 @@
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
+                        this.$watch('isTimeUp', value => {
+                            if (value) this.parentVerified = false;
+                        });
                     },
 
                     generateGate() {
@@ -2809,6 +2812,7 @@
                                 // Check limit
                                 if (this.dailyTimeLimit > 0 && this.timeUsedToday >= this.dailyTimeLimit) {
                                     this.isTimeUp = true;
+                                    this.parentVerified = false;
                                     this.playPing();
                                 }
                                 
@@ -2947,6 +2951,7 @@
                         this.timeUsedToday = (lastDailyDate === today) ? (this.learningStats.time_used_today || 0) : 0;
                         this.dailyTimeLimit = this.learningStats.daily_time_limit || 0;
                         this.isTimeUp = (this.dailyTimeLimit > 0 && this.timeUsedToday >= this.dailyTimeLimit);
+                        if (this.isTimeUp) this.parentVerified = false;
                         this.lastTimeUpdate = Date.now();
                         
                         // --- Multi-Child Load ---
