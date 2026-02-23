@@ -1611,6 +1611,11 @@
                     dailyQuestionsUsed: 0,
                     lastUsageDate: new Date().toDateString(),
                     
+                    // Monthly Quest Quotas
+                    monthlyQuestsUsed: 0,
+                    maxMonthlyQuests: 1,
+                    lastQuestMonth: new Date().getMonth(), // 0-11
+                    
                     coins: 0, 
                     
                     showRewards: false,
@@ -2201,6 +2206,18 @@
                             return;
                         }
 
+                        // --- Usage Quota Check ---
+                        const currentMonth = new Date().getMonth();
+                        if (this.lastQuestMonth !== currentMonth) {
+                            this.monthlyQuestsUsed = 0;
+                            this.lastQuestMonth = currentMonth;
+                        }
+
+                        if (this.monthlyQuestsUsed >= this.maxMonthlyQuests) {
+                            alert(`🌟 You've reached your monthly limit of ${this.maxMonthlyQuests} AI quests! This helps us keep the app running for everyone. Try again next month!`);
+                            return;
+                        }
+
                         this.isGeneratingPath = true;
                         const ageRange = this.childProfile.ageRange || '6-7';
                         const currentTopics = this.curriculum.map(p => p.name).join(", ");
@@ -2259,6 +2276,7 @@
                             newPath.id = 'gen_' + Date.now();
                             
                             this.curriculum.push(newPath);
+                            this.monthlyQuestsUsed++; // Increment monthly usage
                             this.playPing();
                             confetti({
                                 particleCount: 150,
@@ -2590,6 +2608,10 @@
                         this.inventory = this.learningStats.inventory || data.inventory || [];
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
+                        
+                        // Load Monthly Quotas
+                        this.monthlyQuestsUsed = this.learningStats.monthly_quests_used || 0;
+                        this.lastQuestMonth = (this.learningStats.last_quest_month !== undefined) ? this.learningStats.last_quest_month : new Date().getMonth();
                         
                         // 3.5 Load Curriculum (Persisted quests)
                         if (this.learningStats.curriculum) {
@@ -2993,6 +3015,10 @@
                         safeStats.current_language = this.currentLanguage;
                         safeStats.equipped_item = this.equippedItem; // Save equipped item to JSON blob
                         safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum)); // Persist newly generated quests
+                        
+                        // Persist Monthly Quotas
+                        safeStats.monthly_quests_used = this.monthlyQuestsUsed;
+                        safeStats.last_quest_month = this.lastQuestMonth;
 
                         const updateData = {
                             coins: this.coins,
