@@ -421,11 +421,7 @@
             </div>
 
             <div class="text-center mb-6 sm:mb-10">
-                <div class="flex items-center gap-3 sm:gap-4 p-2 sm:p-3 bg-white/20 rounded-full backdrop-blur-md shadow-xl border border-white/30"
-                    :style="'color: ' + (currentChar?.accent || '#3b82f6')">
-                    <span class="text-xl sm:text-2xl" x-text="currentChar?.icon || '🦉'"></span>
-                    <p class="font-kids text-sm sm:text-base md:text-lg lg:text-xl tracking-wide" x-text="(currentChar?.name || 'Owl') + ' ' + t('says') + '...'"></p>
-                </div>
+
                 <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + (currentChar?.accent || '#3b82f6')" x-text="t('teacher_of') + ' ' + (currentChar?.subject || 'Learning') + ' ✨'"></p>
                 <div x-show="isVisualMode" class="mt-4 animate__animated animate__fadeInDown">
                     <span class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-blue-200">
@@ -1418,7 +1414,13 @@
                                             </select>
                                         </div>
                                         
-                                        <div>
+
+                                        
+                                        <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
+                                    </div>
+                                    
+                                    <div class="mt-4 pt-4 border-t border-slate-50">
+                                        <div class="mb-4">
                                             <label class="text-xs text-slate-400 font-bold uppercase">Daily Screen Time</label>
                                             <select x-model="dailyTimeLimit" @change="syncData()" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
                                                 <option value="0">Unlimited ♾️</option>
@@ -1429,11 +1431,6 @@
                                                 <option value="120">2 Hours</option>
                                             </select>
                                         </div>
-                                        
-                                        <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
-                                    </div>
-                                    
-                                    <div class="mt-4 pt-4 border-t border-slate-50">
                                         <button @click="showManageChildren = true" class="w-full py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold uppercase hover:bg-slate-200 transition-colors">
                                             <i class="fas fa-users-cog mr-2"></i>Manage All Children
                                         </button>
@@ -3365,7 +3362,8 @@
                             is_premium: this.isPremium,
                             premium_expiry: this.premiumExpiry,
                             learning_stats: safeStats,
-                            parent_logs: safeLogs
+                            parent_logs: safeLogs,
+                            daily_usage: safeStats.daily_usage
                         };
 
                         try {
