@@ -1450,6 +1450,9 @@
                                         <button @click="showManageChildren = true" class="w-full py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold uppercase hover:bg-slate-200 transition-colors">
                                             <i class="fas fa-users-cog mr-2"></i>Manage All Children
                                         </button>
+                                        <button @click="hasCompletedOnboarding = false; localStorage.removeItem('onboarding_completed'); showOnboarding = true; onboardingStep = 0; showParentPortal = false" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold uppercase hover:bg-blue-200 transition-colors mt-2">
+                                            <i class="fas fa-redo mr-2"></i>Restart Tutorial
+                                        </button>
                                     </div>
                                 </div>
 
@@ -1725,6 +1728,214 @@
             </div>
         </div>
 
+        <!-- Interactive Onboarding Modal -->
+        <div x-show="showOnboarding" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-90 flex items-center justify-center p-4" x-transition.opacity>
+            <div class="bg-white rounded-[3rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__zoomIn overflow-hidden">
+                
+                <!-- Progress Bar -->
+                <div class="absolute top-0 left-0 right-0 h-2 bg-gray-100">
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500" :style="'width: ' + ((onboardingStep + 1) / 5 * 100) + '%'"></div>
+                </div>
+
+                <!-- Skip Button -->
+                <button @click="skipOnboarding()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-sm font-bold uppercase tracking-widest">
+                    Skip Tour
+                </button>
+
+                <!-- Step 0: Welcome -->
+                <div x-show="onboardingStep === 0" class="text-center py-8 animate__animated animate__fadeIn">
+                    <div class="text-8xl mb-6 animate-bounce">🦖</div>
+                    <h2 class="text-4xl font-kids text-slate-800 mb-4">Welcome to AI Tutor!</h2>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">Hi there! I'm Professor Dino, and I'll be your guide today! Let me show you around this amazing learning adventure!</p>
+                    <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-200 mb-8">
+                        <p class="text-blue-800 font-bold text-lg">🎯 What You'll Learn:</p>
+                        <ul class="text-left text-blue-700 mt-4 space-y-2">
+                            <li>✨ How to ask questions and learn</li>
+                            <li>🎨 Meet your fun teacher friends</li>
+                            <li>💰 Earn coins and unlock rewards</li>
+                            <li>👑 Discover Premium features</li>
+                        </ul>
+                    </div>
+                    <button @click="nextOnboardingStep()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-12 py-4 rounded-2xl font-kids text-2xl shadow-lg hover:scale-105 transition-transform">
+                        Let's Start! 🚀
+                    </button>
+                </div>
+
+                <!-- Step 1: Meet Your Teachers -->
+                <div x-show="onboardingStep === 1" class="py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-6">
+                        <div class="text-6xl mb-4">👨‍🏫</div>
+                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Meet Your Teachers!</h2>
+                        <p class="text-gray-600">Each teacher is an expert in their subject. Click on them to switch!</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+                        <template x-for="char in characters.slice(0, 3)">
+                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-2xl border-2 border-gray-200 hover:border-blue-400 transition-all cursor-pointer text-center" @click="playCharIntro(char.name)">
+                                <div class="text-5xl mb-3" x-text="char.icon"></div>
+                                <p class="font-bold text-slate-800" x-text="char.name"></p>
+                                <p class="text-xs text-gray-500" x-text="char.subject"></p>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-xl border-2 border-yellow-200 mb-6">
+                        <p class="text-yellow-800 font-bold text-sm">💡 Tip: Some teachers are locked! Upgrade to Premium to unlock them all!</p>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                            ← Back
+                        </button>
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors">
+                            Next →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: How to Ask Questions -->
+                <div x-show="onboardingStep === 2" class="py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-6">
+                        <div class="text-6xl mb-4">💬</div>
+                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Ask Me Anything!</h2>
+                        <p class="text-gray-600">You can type or use your voice to ask questions!</p>
+                    </div>
+                    
+                    <div class="bg-white border-4 border-blue-300 rounded-3xl p-6 mb-6 shadow-lg">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">⌨️</div>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800">Type Your Question</p>
+                                <p class="text-sm text-gray-500">Click the keyboard icon and type!</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-2xl">🎤</div>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800">Use Your Voice</p>
+                                <p class="text-sm text-gray-500">Click the microphone and speak!</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-xl border-2 border-green-200 mb-6">
+                        <p class="text-green-800 font-bold text-sm">🛡️ Safe Learning: All answers are kid-friendly and educational!</p>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                            ← Back
+                        </button>
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors">
+                            Next →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Earn Coins & Rewards -->
+                <div x-show="onboardingStep === 3" class="py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-6">
+                        <div class="text-6xl mb-4">💰</div>
+                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Earn Coins & Rewards!</h2>
+                        <p class="text-gray-600">Learning is fun AND rewarding!</p>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="bg-yellow-50 p-5 rounded-2xl border-2 border-yellow-200 flex items-center gap-4">
+                            <div class="text-4xl">❓</div>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800">Ask Questions</p>
+                                <p class="text-sm text-gray-600">Earn 10 coins for every question!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-5 rounded-2xl border-2 border-green-200 flex items-center gap-4">
+                            <div class="text-4xl">🏆</div>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800">Complete Quizzes</p>
+                                <p class="text-sm text-gray-600">Earn 20 coins for correct answers!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-5 rounded-2xl border-2 border-purple-200 flex items-center gap-4">
+                            <div class="text-4xl">🪄</div>
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-800">Buy Magic Auras</p>
+                                <p class="text-sm text-gray-600">Spend coins on cool effects!</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                            ← Back
+                        </button>
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors">
+                            Next →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Premium Benefits -->
+                <div x-show="onboardingStep === 4" class="py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-6">
+                        <div class="text-6xl mb-4">👑</div>
+                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Unlock Premium!</h2>
+                        <p class="text-gray-600">Get the full learning experience for just $4.99/month</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 p-6 rounded-2xl border-4 border-yellow-300 mb-6">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
+                                <p class="font-bold text-slate-800">Unlock ALL 5 Teachers</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
+                                <p class="font-bold text-slate-800">Unlimited Questions Daily</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
+                                <p class="font-bold text-slate-800">Daily Coin Rewards</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
+                                <p class="font-bold text-slate-800">Personalized Learning Paths</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
+                                <p class="font-bold text-slate-800">Progress Reports for Parents</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
+                                <p class="font-bold text-slate-800">Official Certificates</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-200 mb-6 text-center">
+                        <p class="text-blue-800 font-bold">🎁 Special Offer: Get 50 bonus coins just for completing this tour!</p>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                            ← Back
+                        </button>
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">
+                            Finish Tour! 🎉
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step Indicator -->
+                <div class="flex justify-center gap-2 mt-6">
+                    <template x-for="i in 5">
+                        <div class="w-2 h-2 rounded-full transition-all" :class="onboardingStep === (i - 1) ? 'bg-blue-500 w-8' : 'bg-gray-300'"></div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
         <script>
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js");
@@ -1811,6 +2022,11 @@
                     activeProfileId: null,
                     showProfileSwitcher: false,
                     showManageChildren: false,
+
+                    // Onboarding State
+                    showOnboarding: false,
+                    onboardingStep: 0,
+                    hasCompletedOnboarding: false,
 
                     // Time Tracking State
                     timeUsedToday: 0,
@@ -2015,6 +2231,10 @@
                     async init() {
                         this.initializeCurrentChar();
                         this.startTimeTracking();
+                        
+                        // Check if user has completed onboarding
+                        const onboardingCompleted = localStorage.getItem('onboarding_completed');
+                        this.hasCompletedOnboarding = onboardingCompleted === 'true';
                         // Safety Timeout: Force loading off after 5 seconds if still stuck
                         setTimeout(() => {
                             console.log("SAFETY TIMEOUT CHECK: isLoading is", this.isLoading);
@@ -2074,6 +2294,14 @@
                             console.log("INIT FINALLY BLOCK EXECUTED");
                             // spinner handled by session state
                             this.isLoading = false;
+                            
+                            // Show onboarding for first-time users after login
+                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
+                                setTimeout(() => {
+                                    this.showOnboarding = true;
+                                    this.toggleScroll(true);
+                                }, 1000);
+                            }
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -3937,6 +4165,40 @@
                         msg.onerror = (e) => { console.error("Letter speech error:", e); };
 
                         window.speechSynthesis.speak(msg);
+                    },
+
+                    // Onboarding Methods
+                    nextOnboardingStep() {
+                        if (this.onboardingStep < 4) {
+                            this.onboardingStep++;
+                            this.playPing();
+                        } else {
+                            this.completeOnboarding();
+                        }
+                    },
+                    
+                    prevOnboardingStep() {
+                        if (this.onboardingStep > 0) {
+                            this.onboardingStep--;
+                            this.playPing();
+                        }
+                    },
+                    
+                    completeOnboarding() {
+                        this.hasCompletedOnboarding = true;
+                        localStorage.setItem('onboarding_completed', 'true');
+                        this.showOnboarding = false;
+                        this.toggleScroll(false);
+                        this.coins += 50;
+                        this.syncData();
+                        confetti({ particleCount: 200, spread: 100 });
+                        this.speak("Congratulations! You're all set to start learning! Let's have fun together!");
+                    },
+                    
+                    skipOnboarding() {
+                        if (confirm("Are you sure you want to skip the tour? You can always restart it from settings.")) {
+                            this.completeOnboarding();
+                        }
                     },
 
                     playPing() {
