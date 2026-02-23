@@ -375,6 +375,13 @@
                 <span class="text-xl sm:text-3xl">🪄</span>
             </button>
 
+            <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-orange-400" title="Switch Child">
+                <div class="flex flex-col items-center">
+                    <span class="text-xl sm:text-2xl">👤</span>
+                    <span class="text-[9px] font-bold text-slate-400 mt-1 uppercase" x-text="childProfile.name"></span>
+                </div>
+            </button>
+
             <button @click="openParentPortal()" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-gray-400">
                 <span class="text-xl sm:text-2xl">🔒</span>
             </button>
@@ -1150,6 +1157,104 @@
             </div>
         </div>
 
+        <!-- Profile Switcher Modal -->
+        <div x-show="showProfileSwitcher" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate__animated animate__fadeIn">
+            <div class="bg-white rounded-[40px] w-full max-w-md overflow-hidden shadow-2xl border-4 border-white transform animate__animated animate__zoomIn">
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-kids text-slate-800">Switch Explorer 🗺️</h2>
+                        <button @click="showProfileSwitcher = false" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <template x-for="profile in allProfiles">
+                            <button @click="switchProfile(profile.id)" 
+                                    class="p-4 rounded-3xl border-4 transition-all flex flex-col items-center gap-2 group"
+                                    :class="activeProfileId === profile.id ? 'border-blue-400 bg-blue-50' : 'border-slate-100 hover:border-blue-200 bg-white'">
+                                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                                    👤
+                                </div>
+                                <span class="font-kids text-slate-800" x-text="profile.name"></span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase" x-text="profile.xp + ' XP'"></span>
+                            </button>
+                        </template>
+                    </div>
+
+                    <button @click="showProfileSwitcher = false; openParentPortal()" class="w-full mt-6 py-3 bg-slate-100 text-slate-500 rounded-2xl font-bold text-sm hover:bg-slate-200 transition-colors uppercase tracking-widest">
+                        Manage Children in Portal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Children Modal (Parent Only) -->
+        <div x-show="showManageChildren" x-cloak class="fixed inset-0 z-[101] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate__animated animate__fadeIn">
+            <div class="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border-4 border-white transform animate__animated animate__zoomIn">
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h2 class="text-3xl font-kids text-slate-800">Family Management 👨‍👩‍👧‍👦</h2>
+                            <p class="text-slate-400 text-sm">Add or remove explorers from your account.</p>
+                        </div>
+                        <button @click="showManageChildren = false" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-2xl"></i></button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Current Profiles -->
+                        <div class="space-y-4">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active Explorers</h3>
+                            <div class="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scroll">
+                                <template x-for="profile in allProfiles">
+                                    <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 flex justify-between items-center group hover:border-blue-200 transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">👤</div>
+                                            <div>
+                                                <p class="font-kids text-slate-800 leading-none" x-text="profile.name"></p>
+                                                <p class="text-[10px] font-bold text-slate-400 uppercase mt-1" x-text="profile.ageRange + ' Years'"></p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button @click="switchProfile(profile.id); showManageChildren = false" class="p-2 text-blue-500 hover:bg-blue-100 rounded-lg transition-colors" title="Switch to this profile">
+                                                <i class="fas fa-sign-in-alt"></i>
+                                            </button>
+                                            <button @click="deleteProfile(profile.id)" class="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors" title="Delete Profile">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Add New Profile -->
+                        <div class="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
+                            <h3 class="font-bold text-blue-700 mb-4 flex items-center gap-2">
+                                <i class="fas fa-user-plus"></i> Add New Explorer
+                            </h3>
+                            <div class="space-y-4" x-data="{ newChild: { name: '', age: '6-7' } }">
+                                <div>
+                                    <label class="text-[10px] font-bold text-blue-400 uppercase ml-1">Explorer Name</label>
+                                    <input type="text" x-model="newChild.name" class="w-full mt-1 p-3 rounded-xl border-2 border-white bg-white shadow-sm font-bold text-slate-700" placeholder="e.g. Sami">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-blue-400 uppercase ml-1">Age Range</label>
+                                    <select x-model="newChild.age" class="w-full mt-1 p-3 rounded-xl border-2 border-white bg-white shadow-sm font-bold text-slate-700">
+                                        <option value="4-6">4-6 Years</option>
+                                        <option value="7-9">7-9 Years</option>
+                                        <option value="10-13">10-13 Years</option>
+                                    </select>
+                                </div>
+                                <button @click="if(newChild.name) { addNewProfile(newChild.name, newChild.age); newChild.name = ''; }" 
+                                        class="w-full py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 shadow-lg shadow-blue-200 transition-all transform active:scale-95">
+                                    Create Profile 🚀
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div x-show="showPremiumModal" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black bg-opacity-70 sm:overflow-y-auto overflow-hidden"
             x-transition.opacity>
@@ -1289,6 +1394,13 @@
                                         
                                         <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
                                     </div>
+                                    
+                                    <div class="mt-4 pt-4 border-t border-slate-50">
+                                        <button @click="showManageChildren = true" class="w-full py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold uppercase hover:bg-slate-200 transition-colors">
+                                            <i class="fas fa-users-cog mr-2"></i>Manage All Children
+                                        </button>
+                                    </div>
+                                </div>
                                 </div>
 
                                 <div class="bg-blue-50 p-6 rounded-3xl shadow-sm border border-blue-100 flex flex-col justify-center">
@@ -1613,7 +1725,7 @@
                     
                     // Monthly Quest Quotas
                     monthlyQuestsUsed: 0,
-                    maxMonthlyQuests: 1,
+                    maxMonthlyQuests: 20,
                     lastQuestMonth: new Date().getMonth(), // 0-11
                     
                     coins: 0, 
@@ -1643,6 +1755,12 @@
                     sessionStartTime: null,
                     emailSummaryEnabled: false,
                     lastSummaryDate: null,
+
+                    // Multi-Child State
+                    allProfiles: [], 
+                    activeProfileId: null,
+                    showProfileSwitcher: false,
+                    showManageChildren: false,
 
                     learningStats: {
                         wordsLearned: 0,
@@ -2511,6 +2629,97 @@
                         }
                     },
 
+                    // --- MULTI-CHILD MANAGEMENT ---
+                    async addNewProfile(name, ageRange = '6-7') {
+                        const newId = 'child_' + Date.now();
+                        const newProfile = {
+                            id: newId,
+                            name: name,
+                            ageRange: ageRange,
+                            coins: 0,
+                            xp: 0,
+                            inventory: [],
+                            equippedItem: null,
+                            pathProgress: {},
+                            monthlyQuestsUsed: 0,
+                            lastQuestMonth: new Date().getMonth(),
+                            curriculum: [
+                                { 
+                                    id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', premium: false,
+                                    levels: [
+                                        { id: 1, title: 'Counting to 100', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] }
+                                    ]
+                                }
+                            ]
+                        };
+                        this.allProfiles.push(newProfile);
+                        if (!this.activeProfileId) {
+                            await this.switchProfile(newId);
+                        } else {
+                            await this.syncData();
+                        }
+                        this.playPing();
+                    },
+
+                    saveCurrentProfileToCollection() {
+                        if (!this.activeProfileId) return;
+                        const index = this.allProfiles.findIndex(p => p.id === this.activeProfileId);
+                        if (index === -1) return;
+
+                        this.allProfiles[index] = {
+                            ...this.allProfiles[index],
+                            name: this.childProfile.name,
+                            ageRange: this.childProfile.ageRange,
+                            coins: this.coins,
+                            xp: this.xp,
+                            inventory: JSON.parse(JSON.stringify(this.inventory)),
+                            equippedItem: this.equippedItem,
+                            pathProgress: JSON.parse(JSON.stringify(this.pathProgress)),
+                            monthlyQuestsUsed: this.monthlyQuestsUsed,
+                            lastQuestMonth: this.lastQuestMonth,
+                            curriculum: JSON.parse(JSON.stringify(this.curriculum))
+                        };
+                    },
+
+                    async switchProfile(profileId) {
+                        this.isLoading = true;
+                        this.saveCurrentProfileToCollection();
+                        
+                        const profile = this.allProfiles.find(p => p.id === profileId);
+                        if (profile) {
+                            this.activeProfileId = profileId;
+                            this.childProfile = { name: profile.name, ageRange: profile.ageRange };
+                            this.coins = profile.coins || 0;
+                            this.xp = profile.xp || 0;
+                            this.inventory = profile.inventory || [];
+                            this.equippedItem = profile.equippedItem || null;
+                            this.pathProgress = profile.pathProgress || {};
+                            this.monthlyQuestsUsed = profile.monthlyQuestsUsed || 0;
+                            this.lastQuestMonth = profile.lastQuestMonth;
+                            this.curriculum = profile.curriculum || [];
+                        }
+                        
+                        await this.syncData();
+                        this.isLoading = false;
+                        this.showProfileSwitcher = false;
+                        this.playPing();
+                    },
+
+                    async deleteProfile(profileId) {
+                        if (this.allProfiles.length <= 1) {
+                            alert("You must have at least one child profile!");
+                            return;
+                        }
+                        if (confirm("Are you sure you want to delete this profile? All progress will be lost.")) {
+                            this.allProfiles = this.allProfiles.filter(p => p.id !== profileId);
+                            if (this.activeProfileId === profileId) {
+                                await this.switchProfile(this.allProfiles[0].id);
+                            } else {
+                                await this.syncData();
+                            }
+                        }
+                    },
+
                     async loadUserProfile(email) {
                         if (this.isProfileLoading) return;
                         this.isProfileLoading = true;
@@ -2628,6 +2837,42 @@
                         }
                         this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
                         
+                        // --- Multi-Child Load ---
+                        this.allProfiles = this.learningStats.all_profiles || [];
+                        this.activeProfileId = this.learningStats.active_profile_id;
+
+                        if (this.allProfiles.length > 0) {
+                            // Load the active profile's specific data
+                            const active = this.allProfiles.find(p => p.id === this.activeProfileId) || this.allProfiles[0];
+                            this.activeProfileId = active.id;
+                            this.childProfile = { name: active.name, ageRange: active.ageRange };
+                            this.coins = active.coins || 0;
+                            this.xp = active.xp || 0;
+                            this.inventory = active.inventory || [];
+                            this.equippedItem = active.equippedItem || null;
+                            this.pathProgress = active.pathProgress || {};
+                            this.monthlyQuestsUsed = active.monthlyQuestsUsed || 0;
+                            this.lastQuestMonth = active.lastQuestMonth;
+                            this.curriculum = active.curriculum || [];
+                        } else {
+                            // Migration/Starter: Create initial profile from existing data
+                            const initialId = 'child_init';
+                            this.allProfiles = [{
+                                id: initialId,
+                                name: data.name || 'Explorer',
+                                ageRange: this.learningStats.child_profile?.ageRange || '6-7',
+                                coins: this.coins,
+                                xp: this.xp,
+                                inventory: this.inventory,
+                                equippedItem: this.equippedItem,
+                                pathProgress: this.pathProgress,
+                                monthlyQuestsUsed: this.monthlyQuestsUsed,
+                                lastQuestMonth: this.lastQuestMonth,
+                                curriculum: this.curriculum
+                            }];
+                            this.activeProfileId = initialId;
+                        }
+
                         // Ensure required objects exist
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
                         if(!this.learningStats.emotions) this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
@@ -3019,6 +3264,11 @@
                         // Persist Monthly Quotas
                         safeStats.monthly_quests_used = this.monthlyQuestsUsed;
                         safeStats.last_quest_month = this.lastQuestMonth;
+
+                        // Persist Multi-Child Data
+                        this.saveCurrentProfileToCollection(); // Ensure latest state is in the array
+                        safeStats.all_profiles = JSON.parse(JSON.stringify(this.allProfiles));
+                        safeStats.active_profile_id = this.activeProfileId;
 
                         const updateData = {
                             coins: this.coins,
