@@ -200,7 +200,7 @@ app.post('/api/chat', async (req, res) => {
             body: JSON.stringify({
                 "model": "google/gemini-2.0-flash-001",
                 "messages": messages,
-                "max_tokens": 500,
+                "max_tokens": 2000,
                 "temperature": 0.6,
                 "response_format": { "type": "json_object" }
             })
