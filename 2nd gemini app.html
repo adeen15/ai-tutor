@@ -1255,6 +1255,31 @@
             </div>
         </div>
 
+        <!-- Time's Up Lock Screen -->
+        <div x-show="isTimeUp" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900 animate__animated animate__fadeIn">
+            <div class="bg-white rounded-[50px] w-full max-w-xl overflow-hidden shadow-2xl border-8 border-blue-400 transform animate__animated animate__bounceIn text-center p-12 relative">
+                <div class="text-8xl mb-8 animate-bounce">🦉</div>
+                <h2 class="text-4xl font-kids text-slate-800 mb-4">Time for a Break!</h2>
+                <p class="text-xl text-slate-500 mb-8 font-semibold">You've done an amazing job learning today! Time to rest your eyes and play outside. 🏠🌳</p>
+                
+                <div class="space-y-4">
+                    <button @click="openParentPortal()" class="w-full py-4 bg-orange-400 text-white rounded-2xl font-kids text-2xl shadow-lg border-b-4 border-orange-600 hover:scale-105 transition-transform">
+                        Parent Secret Unlock 🔒
+                    </button>
+                    <p class="text-slate-400 text-sm">See you tomorrow for more adventures!</p>
+                </div>
+
+                <!-- Bonus Time Logic in Parent Portal PIN check -->
+                <div x-show="parentVerified" class="mt-8 pt-8 border-t border-slate-100 animate__animated animate__fadeIn">
+                    <p class="font-bold text-slate-700 mb-4">Add Bonus Time?</p>
+                    <div class="flex justify-center gap-4">
+                        <button @click="timeUsedToday -= 15; isTimeUp = false; syncData()" class="px-6 py-2 bg-green-500 text-white rounded-xl font-bold text-sm">+15 Mins</button>
+                        <button @click="timeUsedToday -= 30; isTimeUp = false; syncData()" class="px-6 py-2 bg-blue-500 text-white rounded-xl font-bold text-sm">+30 Mins</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div x-show="showPremiumModal" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black bg-opacity-70 sm:overflow-y-auto overflow-hidden"
             x-transition.opacity>
@@ -1389,6 +1414,18 @@
                                                 <option value="4-6">4-6 Years (Basic)</option>
                                                 <option value="7-9">7-9 Years (Logic)</option>
                                                 <option value="10-13">10-13 Years (Science)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="text-xs text-slate-400 font-bold uppercase">Daily Screen Time</label>
+                                            <select x-model="dailyTimeLimit" @change="syncData()" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
+                                                <option value="0">Unlimited ♾️</option>
+                                                <option value="15">15 Minutes</option>
+                                                <option value="30">30 Minutes</option>
+                                                <option value="45">45 Minutes</option>
+                                                <option value="60">60 Minutes</option>
+                                                <option value="120">2 Hours</option>
                                             </select>
                                         </div>
                                         
@@ -1760,6 +1797,13 @@
                     activeProfileId: null,
                     showProfileSwitcher: false,
                     showManageChildren: false,
+
+                    // Time Tracking State
+                    timeUsedToday: 0,
+                    dailyTimeLimit: 0, // 0 = Unlimited
+                    isTimeUp: false,
+                    lastTimeUpdate: Date.now(),
+                    timeCheckInterval: null,
 
                     learningStats: {
                         wordsLearned: 0,
@@ -2642,6 +2686,8 @@
                             pathProgress: {},
                             monthlyQuestsUsed: 0,
                             lastQuestMonth: new Date().getMonth(),
+                            dailyTimeLimit: 0,
+                            timeUsedToday: 0,
                             curriculum: [
                                 { 
                                     id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', premium: false,
@@ -2676,6 +2722,8 @@
                             pathProgress: JSON.parse(JSON.stringify(this.pathProgress)),
                             monthlyQuestsUsed: this.monthlyQuestsUsed,
                             lastQuestMonth: this.lastQuestMonth,
+                            dailyTimeLimit: this.dailyTimeLimit,
+                            timeUsedToday: this.timeUsedToday,
                             curriculum: JSON.parse(JSON.stringify(this.curriculum))
                         };
                     },
@@ -2695,6 +2743,10 @@
                             this.pathProgress = profile.pathProgress || {};
                             this.monthlyQuestsUsed = profile.monthlyQuestsUsed || 0;
                             this.lastQuestMonth = profile.lastQuestMonth;
+                            this.dailyTimeLimit = profile.dailyTimeLimit || 0;
+                            this.timeUsedToday = profile.timeUsedToday || 0;
+                            this.isTimeUp = (this.dailyTimeLimit > 0 && this.timeUsedToday >= this.dailyTimeLimit);
+                            this.lastTimeUpdate = Date.now();
                             this.curriculum = profile.curriculum || [];
                         }
                         
@@ -2717,6 +2769,37 @@
                                 await this.syncData();
                             }
                         }
+                    },
+
+                    init() {
+                        this.startTimeTracking();
+                    },
+
+                    startTimeTracking() {
+                        if (this.timeCheckInterval) clearInterval(this.timeCheckInterval);
+                        
+                        this.timeCheckInterval = setInterval(() => {
+                            if (!this.registeredEmail || !this.activeProfileId || this.isTimeUp) return;
+                            
+                            const now = Date.now();
+                            const diffMinutes = Math.floor((now - this.lastTimeUpdate) / 60000);
+                            
+                            if (diffMinutes >= 1) {
+                                this.timeUsedToday += diffMinutes;
+                                this.lastTimeUpdate = now;
+                                
+                                // Check limit
+                                if (this.dailyTimeLimit > 0 && this.timeUsedToday >= this.dailyTimeLimit) {
+                                    this.isTimeUp = true;
+                                    this.playPing();
+                                }
+                                
+                                // Sync occasionally (every 5 mins of usage)
+                                if (this.timeUsedToday % 5 === 0) {
+                                    this.syncData();
+                                }
+                            }
+                        }, 30000); // Check every 30 seconds
                     },
 
                     async loadUserProfile(email) {
@@ -2835,6 +2918,18 @@
                             this.isPremium = (data.is_premium === true) || (this.learningStats.is_premium === true);
                         }
                         this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
+
+                        // Load Daily Usage & Time Tracking
+                        const dailyData = data.daily_usage || this.learningStats.daily_usage || {};
+                        const lastDailyDate = dailyData.date;
+                        const today = new Date().toDateString();
+
+                        this.dailyQuestionsUsed = (lastDailyDate === today) ? (dailyData.questions_used || 0) : 0;
+                        this.rewardClaimedToday = (lastDailyDate === today && dailyData.reward_claimed);
+                        this.timeUsedToday = (lastDailyDate === today) ? (this.learningStats.time_used_today || 0) : 0;
+                        this.dailyTimeLimit = this.learningStats.daily_time_limit || 0;
+                        this.isTimeUp = (this.dailyTimeLimit > 0 && this.timeUsedToday >= this.dailyTimeLimit);
+                        this.lastTimeUpdate = Date.now();
                         
                         // --- Multi-Child Load ---
                         this.allProfiles = this.learningStats.all_profiles || [];
@@ -2875,18 +2970,6 @@
                         // Ensure required objects exist
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
                         if(!this.learningStats.emotions) this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
-
-                        const dailyData = data.daily_usage || this.learningStats.daily_usage || {};
-                        const today = new Date().toDateString();
-                        const localLastClaim = localStorage.getItem('last_reward_date_' + this.registeredEmail);
-
-                        if (dailyData.date !== today && localLastClaim !== today) {
-                            this.dailyQuestionsUsed = 0;
-                            this.rewardClaimedToday = false;
-                        } else {
-                            this.dailyQuestionsUsed = dailyData.questions_used || 0;
-                            this.rewardClaimedToday = true;
-                        }
 
                         // Special Case: Reset reward CLAIM status if returning from successful payment
                         // We do this here AND sync it immediately to prevent state revert
@@ -3268,6 +3351,8 @@
                         this.saveCurrentProfileToCollection(); // Ensure latest state is in the array
                         safeStats.all_profiles = JSON.parse(JSON.stringify(this.allProfiles));
                         safeStats.active_profile_id = this.activeProfileId;
+                        safeStats.time_used_today = this.timeUsedToday;
+                        safeStats.daily_time_limit = this.dailyTimeLimit;
 
                         const updateData = {
                             coins: this.coins,
