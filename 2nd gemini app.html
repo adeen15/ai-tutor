@@ -2000,6 +2000,8 @@
                     
                     isProfileLoading: false,
                     async init() {
+                        this.initializeCurrentChar();
+                        this.startTimeTracking();
                         // Safety Timeout: Force loading off after 5 seconds if still stuck
                         setTimeout(() => {
                             console.log("SAFETY TIMEOUT CHECK: isLoading is", this.isLoading);
@@ -2009,8 +2011,7 @@
                             }
                         }, 15000); // Increased from 5s to 15s
 
-                        this.currentChar = this.characters[0];
-                        this.currentMoodIcon = this.currentChar.icon;
+                        this.currentMoodIcon = this.currentChar?.icon || '🦖';
                         this.isLoading = true;
 
                         this.generateGate();
@@ -2777,10 +2778,7 @@
                         }
                     },
 
-                    init() {
-                        this.initializeCurrentChar();
-                        this.startTimeTracking();
-                    },
+
 
                     startTimeTracking() {
                         if (this.timeCheckInterval) clearInterval(this.timeCheckInterval);
