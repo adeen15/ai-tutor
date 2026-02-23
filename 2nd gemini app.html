@@ -2247,7 +2247,14 @@
                             });
 
                             const data = await response.json();
-                            const newPath = JSON.parse(data.response);
+                            
+                            // Support potential markdown wrapping in the response
+                            let rawResponse = data.response;
+                            if (typeof rawResponse === 'string') {
+                                rawResponse = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                            }
+                            
+                            const newPath = JSON.parse(rawResponse);
                             
                             newPath.id = 'gen_' + Date.now();
                             
