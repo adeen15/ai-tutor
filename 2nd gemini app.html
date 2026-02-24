@@ -715,6 +715,12 @@
                                     <p class="text-[8px] sm:text-xs font-bold text-slate-400 leading-tight uppercase tracking-wider" x-text="badge.desc"></p>
                                     
                                     <template x-if="learningStats.achievements.includes(badge.id)">
+                                        <button @click.stop="shareAchievement(badge.id)" class="absolute -bottom-2 -left-2 bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95 z-20" title="Share Proud Moment">
+                                            <i class="fas fa-share-alt text-sm"></i>
+                                        </button>
+                                    </template>
+                                    
+                                    <template x-if="learningStats.achievements.includes(badge.id)">
                                         <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 w-8 h-8 rounded-full flex items-center justify-center shadow-lg animate__animated animate__bounceIn">
                                             <i class="fas fa-check text-sm"></i>
                                         </div>
@@ -2946,6 +2952,31 @@
                             await this.syncData();
                         } catch (e) {
                             console.error("Failed to send automated daily report:", e);
+                        }
+                    },
+
+                    async shareAchievement(badgeId) {
+                        const badge = this.availableBadges.find(b => b.id === badgeId);
+                        if (!badge) return;
+
+                        const shareData = {
+                            title: 'Proud Parent Moment! 🏆',
+                            text: `I'm so proud! ${this.childProfile.name} just earned the "${badge.name}" badge on AI Tutor! ✨ Keep up the great work!`,
+                            url: window.location.origin
+                        };
+
+                        try {
+                            if (navigator.share) {
+                                await navigator.share(shareData);
+                                console.log('Achievement shared successfully');
+                            } else {
+                                // Fallback: Copy to clipboard
+                                const shareText = `${shareData.text} \nCheck it out here: ${shareData.url}`;
+                                await navigator.clipboard.writeText(shareText);
+                                alert('Proud parent message copied to clipboard! You can now paste it anywhere to share! 📋✨');
+                            }
+                        } catch (err) {
+                            console.error('Error sharing achievement:', err);
                         }
                     },
 
