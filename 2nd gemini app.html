@@ -1729,8 +1729,8 @@
         </div>
 
         <!-- Interactive Onboarding Modal -->
-        <div x-show="showOnboarding" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-90 flex items-center justify-center p-4" x-transition.opacity>
-            <div class="bg-white rounded-[3rem] max-w-2xl w-full p-8 shadow-2xl relative animate__animated animate__zoomIn overflow-hidden">
+        <div x-show="showOnboarding" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-90 flex items-center justify-center p-2 sm:p-4" x-transition.opacity>
+            <div class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-2xl w-full p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn overflow-y-auto max-h-[95vh]">
                 
                 <!-- Progress Bar -->
                 <div class="absolute top-0 left-0 right-0 h-2 bg-gray-100">
@@ -1743,185 +1743,185 @@
                 </button>
 
                 <!-- Step 0: Welcome -->
-                <div x-show="onboardingStep === 0" class="text-center py-8 animate__animated animate__fadeIn">
-                    <div class="text-8xl mb-6 animate-bounce">🦖</div>
-                    <h2 class="text-4xl font-kids text-slate-800 mb-4">Welcome to AI Tutor!</h2>
-                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">Hi there! I'm Professor Dino, and I'll be your guide today! Let me show you around this amazing learning adventure!</p>
-                    <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-200 mb-8">
-                        <p class="text-blue-800 font-bold text-lg">🎯 What You'll Learn:</p>
-                        <ul class="text-left text-blue-700 mt-4 space-y-2">
+                <div x-show="onboardingStep === 0" class="text-center py-4 sm:py-8 animate__animated animate__fadeIn">
+                    <div class="text-5xl sm:text-8xl mb-3 sm:mb-6 animate-bounce">🦖</div>
+                    <h2 class="text-2xl sm:text-4xl font-kids text-slate-800 mb-2 sm:mb-4">Welcome to AI Tutor!</h2>
+                    <p class="text-base sm:text-xl text-gray-600 mb-4 sm:mb-8 leading-relaxed">Hi there! I'm Professor Dino, and I'll be your guide today! Let me show you around this amazing learning adventure!</p>
+                    <div class="bg-blue-50 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 mb-4 sm:mb-8">
+                        <p class="text-blue-800 font-bold text-base sm:text-lg">🎯 What You'll Learn:</p>
+                        <ul class="text-left text-blue-700 mt-3 space-y-1.5 sm:space-y-2 text-sm sm:text-base">
                             <li>✨ How to ask questions and learn</li>
                             <li>🎨 Meet your fun teacher friends</li>
                             <li>💰 Earn coins and unlock rewards</li>
                             <li>👑 Discover Premium features</li>
                         </ul>
                     </div>
-                    <button @click="nextOnboardingStep()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-12 py-4 rounded-2xl font-kids text-2xl shadow-lg hover:scale-105 transition-transform">
+                    <button @click="nextOnboardingStep()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-2xl font-kids text-xl sm:text-2xl shadow-lg hover:scale-105 transition-transform">
                         Let's Start! 🚀
                     </button>
                 </div>
 
                 <!-- Step 1: Meet Your Teachers -->
-                <div x-show="onboardingStep === 1" class="py-8 animate__animated animate__fadeIn">
-                    <div class="text-center mb-6">
-                        <div class="text-6xl mb-4">👨‍🏫</div>
-                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Meet Your Teachers!</h2>
-                        <p class="text-gray-600">Each teacher is an expert in their subject. Click on them to switch!</p>
+                <div x-show="onboardingStep === 1" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-4 sm:mb-6">
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">👨‍🏫</div>
+                        <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Meet Your Teachers!</h2>
+                        <p class="text-sm sm:text-base text-gray-600">Each teacher is an expert in their subject. Click on them to switch!</p>
                     </div>
                     
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+                    <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8">
                         <template x-for="char in characters.slice(0, 3)">
-                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-2xl border-2 border-gray-200 hover:border-blue-400 transition-all cursor-pointer text-center" @click="playCharIntro(char.name)">
-                                <div class="text-5xl mb-3" x-text="char.icon"></div>
-                                <p class="font-bold text-slate-800" x-text="char.name"></p>
-                                <p class="text-xs text-gray-500" x-text="char.subject"></p>
+                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-3 sm:p-6 rounded-2xl border-2 border-gray-200 hover:border-blue-400 transition-all cursor-pointer text-center" @click="playCharIntro(char.name)">
+                                <div class="text-3xl sm:text-5xl mb-1 sm:mb-3" x-text="char.icon"></div>
+                                <p class="font-bold text-slate-800 text-xs sm:text-base" x-text="char.name"></p>
+                                <p class="text-[10px] sm:text-xs text-gray-500" x-text="char.subject"></p>
                             </div>
                         </template>
                     </div>
                     
-                    <div class="bg-yellow-50 p-4 rounded-xl border-2 border-yellow-200 mb-6">
-                        <p class="text-yellow-800 font-bold text-sm">💡 Tip: Some teachers are locked! Upgrade to Premium to unlock them all!</p>
+                    <div class="bg-yellow-50 p-3 sm:p-4 rounded-xl border-2 border-yellow-200 mb-4 sm:mb-6">
+                        <p class="text-yellow-800 font-bold text-xs sm:text-sm">💡 Tip: Some teachers are locked! Upgrade to Premium to unlock them all!</p>
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors">
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
                             Next →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 2: How to Ask Questions -->
-                <div x-show="onboardingStep === 2" class="py-8 animate__animated animate__fadeIn">
-                    <div class="text-center mb-6">
-                        <div class="text-6xl mb-4">💬</div>
-                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Ask Me Anything!</h2>
-                        <p class="text-gray-600">You can type or use your voice to ask questions!</p>
+                <div x-show="onboardingStep === 2" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-4 sm:mb-6">
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">💬</div>
+                        <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Ask Me Anything!</h2>
+                        <p class="text-sm sm:text-base text-gray-600">You can type or use your voice to ask questions!</p>
                     </div>
                     
-                    <div class="bg-white border-4 border-blue-300 rounded-3xl p-6 mb-6 shadow-lg">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">⌨️</div>
+                    <div class="bg-white border-4 border-blue-300 rounded-3xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-lg">
+                        <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">⌨️</div>
                             <div class="flex-1">
-                                <p class="font-bold text-slate-800">Type Your Question</p>
-                                <p class="text-sm text-gray-500">Click the keyboard icon and type!</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Type Your Question</p>
+                                <p class="text-xs sm:text-sm text-gray-500">Click the keyboard icon and type!</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-2xl">🎤</div>
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">🎤</div>
                             <div class="flex-1">
-                                <p class="font-bold text-slate-800">Use Your Voice</p>
-                                <p class="text-sm text-gray-500">Click the microphone and speak!</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Use Your Voice</p>
+                                <p class="text-xs sm:text-sm text-gray-500">Click the microphone and speak!</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-green-50 p-4 rounded-xl border-2 border-green-200 mb-6">
-                        <p class="text-green-800 font-bold text-sm">🛡️ Safe Learning: All answers are kid-friendly and educational!</p>
+                    <div class="bg-green-50 p-3 sm:p-4 rounded-xl border-2 border-green-200 mb-4 sm:mb-6">
+                        <p class="text-green-800 font-bold text-xs sm:text-sm">🛡️ Safe Learning: All answers are kid-friendly and educational!</p>
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors">
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
                             Next →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 3: Earn Coins & Rewards -->
-                <div x-show="onboardingStep === 3" class="py-8 animate__animated animate__fadeIn">
-                    <div class="text-center mb-6">
-                        <div class="text-6xl mb-4">💰</div>
-                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Earn Coins & Rewards!</h2>
-                        <p class="text-gray-600">Learning is fun AND rewarding!</p>
+                <div x-show="onboardingStep === 3" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-4 sm:mb-6">
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">💰</div>
+                        <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Earn Coins & Rewards!</h2>
+                        <p class="text-sm sm:text-base text-gray-600">Learning is fun AND rewarding!</p>
                     </div>
                     
-                    <div class="space-y-4 mb-6">
-                        <div class="bg-yellow-50 p-5 rounded-2xl border-2 border-yellow-200 flex items-center gap-4">
-                            <div class="text-4xl">❓</div>
+                    <div class="space-y-2 sm:space-y-4 mb-4 sm:mb-6">
+                        <div class="bg-yellow-50 p-3 sm:p-5 rounded-2xl border-2 border-yellow-200 flex items-center gap-3 sm:gap-4">
+                            <div class="text-2xl sm:text-4xl">❓</div>
                             <div class="flex-1">
-                                <p class="font-bold text-slate-800">Ask Questions</p>
-                                <p class="text-sm text-gray-600">Earn 10 coins for every question!</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Ask Questions</p>
+                                <p class="text-xs sm:text-sm text-gray-600">Earn 10 coins for every question!</p>
                             </div>
                         </div>
                         
-                        <div class="bg-green-50 p-5 rounded-2xl border-2 border-green-200 flex items-center gap-4">
-                            <div class="text-4xl">🏆</div>
+                        <div class="bg-green-50 p-3 sm:p-5 rounded-2xl border-2 border-green-200 flex items-center gap-3 sm:gap-4">
+                            <div class="text-2xl sm:text-4xl">🏆</div>
                             <div class="flex-1">
-                                <p class="font-bold text-slate-800">Complete Quizzes</p>
-                                <p class="text-sm text-gray-600">Earn 20 coins for correct answers!</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Complete Quizzes</p>
+                                <p class="text-xs sm:text-sm text-gray-600">Earn 20 coins for correct answers!</p>
                             </div>
                         </div>
                         
-                        <div class="bg-purple-50 p-5 rounded-2xl border-2 border-purple-200 flex items-center gap-4">
-                            <div class="text-4xl">🪄</div>
+                        <div class="bg-purple-50 p-3 sm:p-5 rounded-2xl border-2 border-purple-200 flex items-center gap-3 sm:gap-4">
+                            <div class="text-2xl sm:text-4xl">🪄</div>
                             <div class="flex-1">
-                                <p class="font-bold text-slate-800">Buy Magic Auras</p>
-                                <p class="text-sm text-gray-600">Spend coins on cool effects!</p>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Buy Magic Auras</p>
+                                <p class="text-xs sm:text-sm text-gray-600">Spend coins on cool effects!</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors">
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
                             Next →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 4: Premium Benefits -->
-                <div x-show="onboardingStep === 4" class="py-8 animate__animated animate__fadeIn">
-                    <div class="text-center mb-6">
-                        <div class="text-6xl mb-4">👑</div>
-                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Unlock Premium!</h2>
-                        <p class="text-gray-600">Get the full learning experience for just $4.99/month</p>
+                <div x-show="onboardingStep === 4" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                    <div class="text-center mb-4 sm:mb-6">
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">👑</div>
+                        <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Unlock Premium!</h2>
+                        <p class="text-sm sm:text-base text-gray-600">Get the full learning experience for just $4.99/month</p>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 p-6 rounded-2xl border-4 border-yellow-300 mb-6">
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
-                                <p class="font-bold text-slate-800">Unlock ALL 5 Teachers</p>
+                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 p-4 sm:p-6 rounded-2xl border-4 border-yellow-300 mb-4 sm:mb-6">
+                        <div class="space-y-2 sm:space-y-3">
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Unlock ALL 5 Teachers</p>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
-                                <p class="font-bold text-slate-800">Unlimited Questions Daily</p>
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Unlimited Questions Daily</p>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
-                                <p class="font-bold text-slate-800">Daily Coin Rewards</p>
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Daily Coin Rewards</p>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
-                                <p class="font-bold text-slate-800">Personalized Learning Paths</p>
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Personalized Learning Paths</p>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
-                                <p class="font-bold text-slate-800">Progress Reports for Parents</p>
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Progress Reports for Parents</p>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
-                                <p class="font-bold text-slate-800">Official Certificates</p>
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
+                                <p class="font-bold text-slate-800 text-sm sm:text-base">Official Certificates</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-200 mb-6 text-center">
-                        <p class="text-blue-800 font-bold">🎁 Special Offer: Get 50 bonus coins just for completing this tour!</p>
+                    <div class="bg-blue-50 p-3 sm:p-4 rounded-xl border-2 border-blue-200 mb-4 sm:mb-6 text-center">
+                        <p class="text-blue-800 font-bold text-xs sm:text-base">🎁 Special Offer: Get 50 bonus coins just for completing this tour!</p>
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">
+                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">
+                        <button @click="nextOnboardingStep()" class="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg text-sm sm:text-base">
                             Finish Tour! 🎉
                         </button>
                     </div>
