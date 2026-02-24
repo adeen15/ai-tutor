@@ -342,11 +342,18 @@
             </div>
         </div>
         
-        <div class="absolute top-4 left-4 z-40 flex flex-col gap-2">
+        <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
             <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
                 <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
                 <span class="text-[10px] font-bold text-pink-500 uppercase" x-text="t('daily_gift')">Daily Gift</span>
             </button>
+
+            <!-- Coins Display: Moved to left side to balance the UI -->
+            <div class="bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-1 sm:gap-2 animate__animated animate__fadeInLeft">
+                <span class="text-base sm:text-2xl">💰</span>
+                <span class="font-kids text-sm sm:text-xl text-yellow-700" x-text="coins"></span>
+            </div>
+
             <!-- Web Version: Under Daily Gift -->
             <div x-show="!isPremium" class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex-col items-center min-w-[80px]">
                 <p class="text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">Free Questions</p>
@@ -360,12 +367,7 @@
             </div>
         </div>
 
-        <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-1 sm:gap-4 z-40">
-
-            <div class="bg-white px-2 py-1.5 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-1 sm:gap-2">
-                <span class="text-base sm:text-3xl">💰</span>
-                <span class="font-kids text-sm sm:text-2xl text-yellow-700" x-text="coins"></span>
-            </div>
+        <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-1.5 sm:gap-4 z-40">
 
             <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                 <span class="text-xl sm:text-3xl">🗺️</span>
@@ -391,7 +393,7 @@
             </button>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-28 sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-48 sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
