@@ -362,10 +362,10 @@
                     <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
                 </div>
             </div>
-            <div class="safe-badge animate__animated animate__fadeInLeft" :class="isOffline ? 'bg-orange-500 shadow-orange-200' : 'bg-green-500 shadow-green-200'">
-                <i class="fas" :class="isOffline ? 'fa-cloud-meatball' : 'fa-shield-alt'"></i> 
-                <span x-text="isOffline ? 'Offline Mode' : 'Kid-Safe AI'"></span>
+            <div class="safe-badge animate__animated animate__fadeInLeft">
+                <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
+
 
         </div>
 
@@ -2067,7 +2067,7 @@
                     loginForm: { name: '', email: '', password: '', ageRange: '6-7' },
                     registeredEmail: '',
                     session: null,
-                    isOffline: false,
+
 
 
                     
@@ -2462,33 +2462,10 @@
                                 }
                             });
 
-                            // Cache config for offline use
-                            localStorage.setItem('supabase_config', JSON.stringify(config));
-
                         } catch (e) {
                             console.error("Initialization error:", e);
-                            this.isOffline = true;
-                            
-                            // Try to initialize from cached config if it exists
-                            const cachedConfig = localStorage.getItem('supabase_config');
-                            if (cachedConfig) {
-                                try {
-                                    const config = JSON.parse(cachedConfig);
-                                    this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
-                                    
-                                    // Try to restore session from Supabase's internal storage (which works offline)
-                                    const { data: { session } } = await this.supabase.auth.getSession();
-                                    if (session) {
-                                        this.session = session;
-                                        this.registeredEmail = session.user.email;
-                                        this.hasAccount = true;
-                                        await this.loadUserProfile(session.user.email);
-                                    }
-                                } catch (innerE) {
-                                    console.error("Cached init failed:", innerE);
-                                }
-                            }
                         } finally {
+
 
                             console.log("INIT FINALLY BLOCK EXECUTED");
                             // spinner handled by session state
@@ -3335,8 +3312,10 @@
 
                             if (data) {
                                 console.log("Profile found! Populating...");
-                                this.isOffline = false;
                                 this.populateUserData(data);
+                                // Note: We do NOT set isLoggedIn = true here anymore.
+                                // The user must enter their PIN to unlock the app if it's a session restoration.
+                                // If they just logged in, we set isLoggedIn elsewhere or here if we detect it's a fresh login.
                                 this.isLoading = false; 
                                 this.playPing();
                                 if (!this.rewardClaimedToday) {
@@ -3346,34 +3325,25 @@
                                     }, 1000);
                                 }
                             } else {
-                                throw new Error(error?.message || "No profile found");
+                                console.warn("No profile found - possibly deleted.");
+                                this.isLoggedIn = false;
+                                this.isLoading = false;
+                                await this.supabase.auth.signOut();
+                                alert("We couldn't find your profile data. Please create a new account.");
+                                this.hasAccount = false; 
                             }
                         } catch (e) {
                             console.error("Sync error in loadUserProfile:", e);
+                            this.isLoading = false;
                             
-                            // FALLBACK: Load from local cache
-                            const cachedData = localStorage.getItem('ai_tutor_cache_' + email);
-                            if (cachedData) {
-                                console.log("Loading from LOCAL CACHE fallback...");
-                                this.isOffline = true;
-                                const parsed = JSON.parse(cachedData);
-                                this.populateUserData(parsed);
-                                this.isLoading = false;
-                                this.playPing();
-                            } else {
-                                this.isLoading = false;
-                                if (e.message !== "Profile load timed out") {
-                                    console.warn("No profile found and no cache - possibly deleted.");
-                                    this.isLoggedIn = false;
-                                    await this.supabase.auth.signOut();
-                                    alert("We couldn't connect to the server and no local data was found.");
-                                    this.hasAccount = false; 
-                                }
+                            if (e.message === "Profile load timed out") {
+                                console.warn("Profile load timed out. User might need to refresh or check connection.");
                             }
                         } finally {
                             this.isProfileLoading = false;
                         }
                     },
+
 
 
                     populateUserData(data) {
@@ -3501,12 +3471,8 @@
                         
                         this.updateLevel();
                         this.checkPremiumExpiration();
-
-                        // Update Local Cache whenever we populate data
-                        if (this.registeredEmail) {
-                            localStorage.setItem('ai_tutor_cache_' + this.registeredEmail, JSON.stringify(data));
-                        }
                     },
+
 
 
                     get journeyProgress() {
@@ -3878,8 +3844,6 @@
                         safeStats.daily_time_limit = this.dailyTimeLimit;
 
                         const updateData = {
-                            email: this.registeredEmail,
-                            name: this.childProfile.name,
                             coins: this.coins,
                             xp: this.xp,
                             is_premium: this.isPremium,
@@ -3890,6 +3854,7 @@
                         };
 
 
+
                         try {
                             const { error } = await this.supabase
                                 .from('profiles')
@@ -3898,26 +3863,14 @@
 
                             if (error) throw error;
                             
-                            this.isOffline = false;
-                            
-                            // Also update local cache on successful sync
-                            localStorage.setItem('ai_tutor_cache_' + this.registeredEmail, JSON.stringify(updateData));
-                            
                             // console.log("Data synced successfully!"); 
                         } catch (err) {
                             console.error("Sync Error:", err);
-                            
-                            this.isOffline = true;
-                            // Update local cache even if server sync fails so progress is saved locally
-                            localStorage.setItem('ai_tutor_cache_' + this.registeredEmail, JSON.stringify(updateData));
-                            
-                            // Optional: Alert less frequently or just show UI indicator
-                            if (!window.offlineAlertShown) {
-                                console.warn("Working in offline mode. Progress saved locally.");
-                                window.offlineAlertShown = true;
-                            }
+                            // Alerting the user so they know their progress might not be saved
+                            alert("Sync Error: " + (err.message || JSON.stringify(err)));
                         }
                     },
+
 
 
                     toggleScroll(disable) {
