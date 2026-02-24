@@ -343,13 +343,13 @@
         </div>
         
         <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
-            <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
+            <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-16 h-16 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
                 <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
-                <span class="text-[10px] font-bold text-pink-500 uppercase" x-text="t('daily_gift')">Daily Gift</span>
+                <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
             </button>
 
             <!-- Coins Display: Exactly matching Daily Gift button size -->
-            <div class="daily-reward-btn bg-white p-3 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
+            <div class="daily-reward-btn bg-white w-16 h-16 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
                 <span class="text-2xl sm:text-3xl">💰</span>
                 <span class="font-kids text-[10px] sm:text-base text-yellow-700 leading-none mt-1" x-text="coins"></span>
             </div>
