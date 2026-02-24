@@ -1505,14 +1505,9 @@
                                             <div>
                                                 <p class="text-xs font-bold text-slate-700 uppercase">Learning Wins Summaries</p>
                                                 <div class="flex items-center gap-2 mt-1">
-                                                    <button @click="toggleEmailSummary()" class="relative inline-flex h-5 w-10 items-center rounded-full transition-colors" :class="emailSummaryEnabled ? 'bg-green-500' : 'bg-gray-200'">
-                                                        <span class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform" :class="emailSummaryEnabled ? 'translate-x-6' : 'translate-x-1'"></span>
-                                                    </button>
-                                                    <span class="text-[10px] font-bold" :class="emailSummaryEnabled ? 'text-green-600' : 'text-gray-400'" x-text="emailSummaryEnabled ? 'Weekly Summaries ON' : 'Weekly Summaries OFF'"></span>
+                                                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                                    <span class="text-[10px] font-bold text-green-600">Daily Automated Reports Active</span>
                                                 </div>
-                                                <button @click="sendWeeklySummary(true)" class="mt-2 text-[10px] bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold hover:bg-blue-200 transition-colors" :disabled="!isPremium">
-                                                    <i class="fas fa-paper-plane mr-1"></i> Send Report Now
-                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -2784,18 +2779,14 @@
                         doc.save(`Report_${this.childProfile.name}.pdf`);
                     },
 
-                    async sendWeeklySummary(force = false) {
-                        if (!this.isPremium) {
-                            if (force) alert("Please upgrade to Premium to unlock detailed reports.");
-                            return;
-                        }
+                     async sendDailyReport(force = false) {
+                        if (!this.isPremium) return;
                         
-                        if (!this.emailSummaryEnabled && !force) return;
-
                         const today = new Date();
                         const lastSent = this.lastSummaryDate ? new Date(this.lastSummaryDate) : null;
 
-                        if (!force && lastSent && (today - lastSent) < (7 * 24 * 60 * 60 * 1000)) return;
+                        // Check if it's been at least 24 hours since the last report
+                        if (!force && lastSent && (today - lastSent) < (24 * 60 * 60 * 1000)) return;
 
                         try {
                             const topSubjects = Object.entries(this.getTopSubjects())
@@ -2804,7 +2795,7 @@
                                 .join(", ");
 
                             const summaryContent = `
-                                VERIFIED PROGRESS REPORT
+                                VERIFIED DAILY PROGRESS REPORT
                                 --------------------------------------------------
                                 Student: ${this.childProfile.name}
                                 Report Date: ${today.toLocaleDateString()}
@@ -2813,38 +2804,35 @@
                                 - Active Learning Time: ${this.totalMinutesLearned} minutes
                                 - New Words Mastered: ${this.learningStats.wordsLearned}
                                 - Total XP Gained: ${this.xp}
-                                - Questions Asked: ${this.parentLogs.length}
+                                - Questions Asked Today: ${this.parentLogs.length}
 
                                 📚 SUBJECT BREAKDOWN
                                 ${Object.entries(this.getTopSubjects()).map(([k,v]) => `- ${k}: ${v} pts`).join('\n')}
 
                                 📝 RECENT CURIOSITY
-                                ${this.parentLogs.slice(0, 3).map(l => `- Asked "${l.query}"`).join('\n')}
+                                ${this.parentLogs.slice(-5).reverse().map(l => `- Asked "${l.query}"`).join('\n')}
                                 
-                                This report verifies active engagement with the AI Tutor curriculum.
+                                This report verifies daily engagement with the AI Tutor curriculum.
                             `;
 
-                            console.log("SENDING WEEKLY SUMMARY TO: " + this.registeredEmail);
+                            console.log("AUTOMATED: SENDING DAILY REPORT TO: " + this.registeredEmail);
 
                             const response = await fetch("/api/send-email", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
                                     to: this.registeredEmail,
-                                    subject: `Verified Progress Report: ${this.childProfile.name}`,
+                                    subject: `Daily Progress Report: ${this.childProfile.name}`,
                                     body: summaryContent
                                 })
                             });
 
+                            if (!response.ok) throw new Error("Email service error");
+
                             this.lastSummaryDate = today.toISOString();
                             await this.syncData();
-                            
-                            if (force) {
-                                alert(`Verified Report sent to ${this.registeredEmail}!`);
-                            }
                         } catch (e) {
-                            console.error("Failed to send summary:", e);
-                            if (force) alert("Failed to send report. Please try again later.");
+                            console.error("Failed to send automated daily report:", e);
                         }
                     },
 
@@ -3313,11 +3301,7 @@
                         this.loginForm.name = this.childProfile.name;
                     },
 
-                    async toggleEmailSummary() {
-                        this.emailSummaryEnabled = !this.emailSummaryEnabled;
-                        await this.syncData();
-                        alert(this.emailSummaryEnabled ? "Weekly summaries activated! We will email you your child's learning wins." : "Weekly summaries deactivated.");
-                    },
+
 
                     getDailyContent() {
                         // Fallback for days without specific data
@@ -4132,10 +4116,9 @@
                         this.updateLevel();
                         this.playPing();
                         this.updateProgress(originalQuery, response);
-                        
                         this.speak(response);
-                        
                         await this.syncData();
+                        this.sendDailyReport(); // Automated report attempt
                     },
                     speakLetter(letter) {
                         // Dedicated function for ABCs to ensure reliability
