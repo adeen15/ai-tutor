@@ -742,6 +742,64 @@
             </div>
         </div>
 
+        <!-- Advanced Share Menu -->
+        <div x-show="showShareMenu" x-cloak class="fixed inset-0 z-[75] bg-slate-900 bg-opacity-80 flex items-center justify-center p-6" x-transition.opacity>
+            <div @click.away="showShareMenu = false" class="bg-white rounded-[2rem] w-full max-w-sm p-8 shadow-2xl animate__animated animate__bounceIn text-center relative">
+                <button @click="showShareMenu = false" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors">
+                    <i class="fas fa-times-circle text-xl"></i>
+                </button>
+                
+                <div class="text-4xl mb-4" x-text="sharingBadge?.icon"></div>
+                <h3 class="text-2xl font-kids text-slate-800 mb-1">Share Proud Moment!</h3>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 px-4 leading-tight">Choose how to share <span class="text-pink-500" x-text="childProfile.name"></span>'s <br> <span x-text="sharingBadge?.name"></span> badge</p>
+
+                <div class="grid grid-cols-1 gap-3">
+                    <a :href="'https://wa.me/?text=' + encodeURIComponent('I\'m so proud! ' + childProfile.name + ' just earned the \"' + sharingBadge?.name + '\" badge on AI Tutor! ✨ Check it out here: ' + window.location.origin)" 
+                       target="_blank" 
+                       class="flex items-center gap-4 p-4 bg-green-500 text-white rounded-2xl hover:bg-green-600 transition-all transform hover:scale-105 shadow-lg shadow-green-100 font-bold justify-center">
+                        <i class="fab fa-whatsapp text-2xl"></i>
+                        <span>WhatsApp</span>
+                    </a>
+
+                    <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.origin) + '&quote=' + encodeURIComponent('I\'m so proud! ' + childProfile.name + ' just earned the \"' + sharingBadge?.name + '\" badge on AI Tutor! ✨')" 
+                       target="_blank" 
+                       class="flex items-center gap-4 p-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg shadow-blue-100 font-bold justify-center">
+                        <i class="fab fa-facebook text-2xl"></i>
+                        <span>Facebook</span>
+                    </a>
+
+                    <button @click="
+                        const shareData = {
+                            title: 'Proud Parent Moment! 🏆',
+                            text: 'I\'m so proud! ' + childProfile.name + ' just earned the \"' + sharingBadge?.name + '\" badge on AI Tutor! ✨ Check it out here: ' + window.location.origin
+                        };
+                        try {
+                            if (navigator.share) {
+                                navigator.share(shareData);
+                            } else {
+                                throw new Error('Native share not available');
+                            }
+                        } catch (err) {
+                            navigator.clipboard.writeText(shareData.text);
+                            alert('Link copied to clipboard! Paste it anywhere to share! 📋');
+                        }
+                    " class="flex items-center gap-4 p-4 bg-slate-800 text-white rounded-2xl hover:bg-slate-900 transition-all transform hover:scale-105 shadow-lg shadow-slate-100 font-bold justify-center">
+                        <i class="fas fa-share-alt text-2xl"></i>
+                        <span>More Apps</span>
+                    </button>
+
+                    <button @click="
+                        const text = 'I\'m so proud! ' + childProfile.name + ' just earned the \"' + sharingBadge?.name + '\" badge on AI Tutor! ✨ \n\nCheck it out here: ' + window.location.origin;
+                        navigator.clipboard.writeText(text);
+                        alert('Proud message copied to clipboard! 📋✨');
+                    " class="flex items-center gap-4 p-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-all transform hover:scale-105 font-bold justify-center">
+                        <i class="fas fa-link text-xl"></i>
+                        <span>Copy Link</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[65] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
             <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
                 
@@ -2082,6 +2140,8 @@
                     activeProfileId: null,
                     showProfileSwitcher: false,
                     showManageChildren: false,
+                    showShareMenu: false,
+                    sharingBadge: null,
 
                     // Onboarding State
                     showOnboarding: false,
@@ -2959,24 +3019,8 @@
                         const badge = this.availableBadges.find(b => b.id === badgeId);
                         if (!badge) return;
 
-                        const shareData = {
-                            title: 'Proud Parent Moment! 🏆',
-                            text: `I'm so proud! ${this.childProfile.name} just earned the "${badge.name}" badge on AI Tutor! ✨ Keep up the great work! \n\nCheck it out here: ${window.location.origin}`
-                        };
-
-                        try {
-                            if (navigator.share) {
-                                await navigator.share(shareData);
-                                console.log('Achievement shared successfully');
-                            } else {
-                                // Fallback: Copy to clipboard
-                                const shareText = `${shareData.text} \nCheck it out here: ${shareData.url}`;
-                                await navigator.clipboard.writeText(shareText);
-                                alert('Proud parent message copied to clipboard! You can now paste it anywhere to share! 📋✨');
-                            }
-                        } catch (err) {
-                            console.error('Error sharing achievement:', err);
-                        }
+                        this.sharingBadge = badge;
+                        this.showShareMenu = true;
                     },
 
                     getPathProgress(pathId) {
