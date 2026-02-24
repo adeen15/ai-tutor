@@ -375,6 +375,10 @@
                 <span class="text-xl sm:text-3xl">🪄</span>
             </button>
 
+            <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
+                <span class="text-xl sm:text-3xl">📕</span>
+            </button>
+
             <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-orange-400" title="Switch Child">
                 <div class="flex flex-col items-center">
                     <span class="text-xl sm:text-2xl">👤</span>
@@ -672,6 +676,54 @@
                         <button x-show="visionPreview && !isCameraActive" @click="visionFile = null; visionPreview = null" class="text-xs font-bold text-gray-400 uppercase tracking-widest">
                             Clear / Retake
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="showStickerBook" x-cloak class="fixed inset-0 z-[65] bg-slate-900 bg-opacity-95 flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
+            <div class="bg-white rounded-[2.5rem] w-full max-w-4xl h-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
+                <div class="p-6 sm:p-8 border-b-4 border-gray-100 flex justify-between items-center bg-white z-10">
+                    <div>
+                        <h2 class="text-3xl font-kids text-slate-800">Sticker Book 📕</h2>
+                        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Collect them all, <span x-text="childProfile.name"></span>!</p>
+                    </div>
+                    <button @click="showStickerBook = false; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-6 sm:p-10 bg-slate-50">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+                        <template x-for="badge in availableBadges" :key="badge.id">
+                            <div class="relative group">
+                                <div class="bg-white rounded-3xl p-6 shadow-lg flex flex-col items-center text-center transition-all transform hover:scale-105"
+                                     :class="learningStats.achievements.includes(badge.id) ? 'border-4 border-yellow-400 opacity-100' : 'border-4 border-dashed border-gray-200 opacity-50 grayscale'">
+                                    
+                                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate-50 flex items-center justify-center text-4xl sm:text-5xl mb-4 shadow-inner">
+                                        <span x-text="learningStats.achievements.includes(badge.id) ? badge.icon : '❓'"></span>
+                                    </div>
+                                    
+                                    <h3 class="font-kids text-lg sm:text-xl text-slate-800 mb-1" x-text="learningStats.achievements.includes(badge.id) ? badge.name : 'Unknown'"></h3>
+                                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 leading-tight uppercase tracking-wider" x-text="badge.desc"></p>
+                                    
+                                    <template x-if="learningStats.achievements.includes(badge.id)">
+                                        <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 w-8 h-8 rounded-full flex items-center justify-center shadow-lg animate__animated animate__bounceIn">
+                                            <i class="fas fa-check text-sm"></i>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="mt-12 bg-white/50 rounded-3xl p-6 border-2 border-dashed border-gray-200 flex flex-col items-center">
+                        <p class="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">Progress</p>
+                        <div class="w-full max-w-xs bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+                            <div class="h-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-1000" 
+                                 :style="'width: ' + (learningStats.achievements.length / availableBadges.length * 100) + '%'"></div>
+                        </div>
+                        <p class="mt-3 font-kids text-slate-600" x-text="learningStats.achievements.length + ' / ' + availableBadges.length + ' Badges Earned'"></p>
                     </div>
                 </div>
             </div>
@@ -2035,7 +2087,9 @@
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                         child_profile: null,
                         recent_mistakes: [],
-                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
+                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
+                        achievements: [],
+                        quizzesCompleted: 0
                     },
                     xp: 0,
                     level: 1,
@@ -2059,6 +2113,7 @@
                     isCameraActive: false,
 
                     showLearningPath: false,
+                    showStickerBook: false,
                     showDailyPath: false, // Toggle for 30-Day Path
                     learningPathDay: 1, // Tracks progress 1-30
                     currentPath: null,
@@ -2068,6 +2123,57 @@
                     pathProgress: {}, 
                     selectedCertificatePath: null,
                     isGeneratingPath: false,
+
+                    availableBadges: [
+                        { id: 'first_question', name: 'Curious Explorer', icon: '🔍', desc: 'Asked your first question!' },
+                        { id: 'quiz_wizard', name: 'Quiz Wizard', icon: '🪄', desc: 'Completed your first lesson quiz!' },
+                        { id: 'word_smith', name: 'Word Smith', icon: '📚', desc: 'Learned at least 10 words!' },
+                        { id: 'coin_collector', name: 'Coin Collector', icon: '💰', desc: 'Saved up 200 coins!' },
+                        { id: 'path_finder', name: 'Path Finder', icon: '🗺️', desc: 'Completed a full adventure path!' },
+                        { id: 'super_star', name: 'Super Star', icon: '⭐', desc: 'Reached Level 5!' }
+                    ],
+
+                    checkAchievements() {
+                        if (!this.learningStats.achievements) this.learningStats.achievements = [];
+                        
+                        const badges = [
+                            { id: 'first_question', condition: () => this.parentLogs.length >= 1 },
+                            { id: 'quiz_wizard', condition: () => this.learningStats.quizzesCompleted >= 1 },
+                            { id: 'word_smith', condition: () => this.learningStats.wordsLearned >= 10 },
+                            { id: 'coin_collector', condition: () => this.coins >= 200 },
+                            { id: 'path_finder', condition: () => Object.values(this.pathProgress).some(v => v >= 3) },
+                            { id: 'super_star', condition: () => this.level >= 5 }
+                        ];
+
+                        badges.forEach(badge => {
+                            if (!this.learningStats.achievements.includes(badge.id) && badge.condition()) {
+                                this.awardBadge(badge.id);
+                            }
+                        });
+                    },
+
+                    awardBadge(badgeId) {
+                        const badge = this.availableBadges.find(b => b.id === badgeId);
+                        if (!badge) return;
+
+                        this.learningStats.achievements.push(badgeId);
+                        this.playPing();
+                        
+                        // Small delay for the confetti to feel linked to the award
+                        setTimeout(() => {
+                            confetti({
+                                particleCount: 150,
+                                spread: 70,
+                                origin: { y: 0.6 },
+                                colors: ['#FFD700', '#FFA500', '#FF4500']
+                            });
+                        }, 200);
+
+                        // Toast-like notification logic could go here if we had one, 
+                        // for now we'll just let the sticker book reflect it.
+                        console.log("🏆 Achievement Unlocked: " + badge.name);
+                        this.syncData();
+                    },
 
                     dailyPathData: {
                         day1: { title: "Day 1: Magic Alphabets", type: "alphabet", content: "Let's learn our ABCs! A is for Apple, B is for Ball.", letters: ['A','B','C','D','E'] },
@@ -2898,7 +3004,10 @@
                         
                         this.coins += 50;
                         this.xp += 100;
+                        if (!this.learningStats.quizzesCompleted) this.learningStats.quizzesCompleted = 0;
+                        this.learningStats.quizzesCompleted++;
                         this.updateLevel();
+                        this.checkAchievements();
                         await this.syncData();
                         this.closeLesson();
                     },
@@ -2934,7 +3043,9 @@
                                         { id: 1, title: 'Counting to 100', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] }
                                     ]
                                 }
-                            ]
+                            ],
+                            achievements: [],
+                            quizzesCompleted: 0
                         };
                         this.allProfiles.push(newProfile);
                         if (!this.activeProfileId) {
@@ -2959,11 +3070,11 @@
                             inventory: JSON.parse(JSON.stringify(this.inventory)),
                             equippedItem: this.equippedItem,
                             pathProgress: JSON.parse(JSON.stringify(this.pathProgress)),
-                            monthlyQuestsUsed: this.monthlyQuestsUsed,
-                            lastQuestMonth: this.lastQuestMonth,
                             dailyTimeLimit: this.dailyTimeLimit,
                             timeUsedToday: this.timeUsedToday,
-                            curriculum: JSON.parse(JSON.stringify(this.curriculum))
+                            curriculum: JSON.parse(JSON.stringify(this.curriculum)),
+                            achievements: JSON.parse(JSON.stringify(this.learningStats.achievements || [])),
+                            quizzesCompleted: this.learningStats.quizzesCompleted || 0
                         };
                     },
 
@@ -2987,6 +3098,8 @@
                             this.isTimeUp = (this.dailyTimeLimit > 0 && this.timeUsedToday >= this.dailyTimeLimit);
                             this.lastTimeUpdate = Date.now();
                             this.curriculum = profile.curriculum || [];
+                            this.learningStats.achievements = profile.achievements || [];
+                            this.learningStats.quizzesCompleted = profile.quizzesCompleted || 0;
                         }
                         
                         await this.syncData();
@@ -4119,6 +4232,7 @@
                         this.updateLevel();
                         this.playPing();
                         this.updateProgress(originalQuery, response);
+                        this.checkAchievements();
                         this.speak(response);
                         await this.syncData();
                         this.sendDailyReport(); // Automated report attempt
@@ -4181,6 +4295,7 @@
                         if (isFirstTime) {
                             this.coins += 50;
                         }
+                        this.checkAchievements();
                         this.syncData();
                         confetti({ particleCount: 200, spread: 100 });
                         this.speak("Congratulations! You're all set to start learning! Let's have fun together!");
