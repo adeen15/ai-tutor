@@ -683,31 +683,36 @@
             </div>
         </div>
 
-        <div x-show="showStickerBook" x-cloak class="fixed inset-0 z-[65] bg-slate-900 bg-opacity-95 flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
-            <div class="bg-white rounded-[2.5rem] w-full max-w-4xl h-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
+        <div x-show="showStickerBook" x-cloak class="fixed inset-0 z-[65] bg-slate-900 bg-opacity-95 flex items-center justify-center p-0 sm:p-6" x-transition.opacity>
+            <div class="bg-white rounded-none sm:rounded-[2.5rem] w-full h-full sm:h-auto sm:max-h-[90vh] max-w-4xl flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
                 <div class="p-6 sm:p-8 border-b-4 border-gray-100 flex justify-between items-center bg-white z-10">
                     <div>
                         <h2 class="text-3xl font-kids text-slate-800">Sticker Book 📕</h2>
                         <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Collect them all, <span x-text="childProfile.name"></span>!</p>
                     </div>
-                    <button @click="showStickerBook = false; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <button @click="if(confirm('Are you sure you want to restart your collection?')){ learningStats.achievements = []; syncData(); playPing(); }" class="bg-gray-100 p-3 rounded-full hover:bg-orange-100 text-gray-500 hover:text-orange-500 transition-colors" title="Restart Collection">
+                            <i class="fas fa-undo-alt text-2xl"></i>
+                        </button>
+                        <button @click="showStickerBook = false; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex-1 overflow-y-auto p-6 sm:p-10 bg-slate-50">
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
                         <template x-for="badge in availableBadges" :key="badge.id">
                             <div class="relative group">
-                                <div class="bg-white rounded-3xl p-6 shadow-lg flex flex-col items-center text-center transition-all transform hover:scale-105"
+                                <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-md sm:shadow-lg flex flex-col items-center text-center transition-all transform hover:scale-105"
                                      :class="learningStats.achievements.includes(badge.id) ? 'border-4 border-yellow-400 opacity-100' : 'border-4 border-dashed border-gray-200 opacity-50 grayscale'">
                                     
-                                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate-50 flex items-center justify-center text-4xl sm:text-5xl mb-4 shadow-inner">
+                                    <div class="w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-slate-50 flex items-center justify-center text-3xl sm:text-5xl mb-2 sm:mb-4 shadow-inner">
                                         <span x-text="learningStats.achievements.includes(badge.id) ? badge.icon : '❓'"></span>
                                     </div>
                                     
-                                    <h3 class="font-kids text-lg sm:text-xl text-slate-800 mb-1" x-text="learningStats.achievements.includes(badge.id) ? badge.name : 'Unknown'"></h3>
-                                    <p class="text-[10px] sm:text-xs font-bold text-slate-400 leading-tight uppercase tracking-wider" x-text="badge.desc"></p>
+                                    <h3 class="font-kids text-base sm:text-xl text-slate-800 mb-0.5 sm:mb-1" x-text="learningStats.achievements.includes(badge.id) ? badge.name : 'Unknown'"></h3>
+                                    <p class="text-[9px] sm:text-xs font-bold text-slate-400 leading-tight uppercase tracking-wider" x-text="badge.desc"></p>
                                     
                                     <template x-if="learningStats.achievements.includes(badge.id)">
                                         <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 w-8 h-8 rounded-full flex items-center justify-center shadow-lg animate__animated animate__bounceIn">
