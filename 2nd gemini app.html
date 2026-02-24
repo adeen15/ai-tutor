@@ -2453,12 +2453,7 @@
                                     this.hasAccount = true;
                                     await this.loadUserProfile(session.user.email);
                                 } else if (event === 'SIGNED_OUT') {
-                                    this.isLoggedIn = false;
-                                    this.session = null;
-                                    this.childProfile = { name: '', age: '', grade: '', ageRange: '6-7' };
-                                    this.coins = 0;
-                                    this.xp = 0;
-                                    this.isLoading = false; 
+                                    this.refreshAppState();
                                 }
                             });
 
@@ -3159,6 +3154,44 @@
                         }
                     },
 
+                    refreshAppState() {
+                        // Resets ALL user-specific data to defaults
+                        this.isLoggedIn = false;
+                        this.session = null;
+                        this.registeredEmail = '';
+                        this.savedProfile = null;
+                        this.isPremium = false;
+                        this.premiumExpiry = null;
+                        this.coins = 0;
+                        this.xp = 0;
+                        this.level = 1;
+                        this.parentLogs = [];
+                        this.inventory = [];
+                        this.equippedItem = null;
+                        this.pathProgress = {};
+                        this.activeProfileId = null;
+                        this.allProfiles = [];
+                        this.childProfile = { name: '', age: '', grade: '', ageRange: '6-7' };
+                        this.learningStats = {
+                            wordsLearned: 0,
+                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                            child_profile: null,
+                            recent_mistakes: [],
+                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
+                            achievements: [],
+                            quizzesCompleted: 0,
+                            quizHistory: []
+                        };
+                        this.dailyQuestionsUsed = 0;
+                        this.rewardClaimedToday = false;
+                        this.timeUsedToday = 0;
+                        this.isTimeUp = false;
+                        this.isLoading = false;
+                        this.parentVerified = false;
+                        this.currentChar = this.characters[0];
+                        this.displayText = `Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?`;
+                    },
+
                     // --- MULTI-CHILD MANAGEMENT ---
                     async addNewProfile(name, ageRange = '6-7') {
                         const newId = 'child_' + Date.now();
@@ -3732,9 +3765,14 @@
                         };
 
                         const initialStats = {
-                            ...this.learningStats,
+                            wordsLearned: 0,
+                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                             child_profile: initialChildProfile,
-                            recent_mistakes: []
+                            recent_mistakes: [],
+                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
+                            achievements: [],
+                            quizzesCompleted: 0,
+                            quizHistory: []
                         };
 
                         try {
@@ -3794,6 +3832,7 @@
 
                     async handleLogout() {
                         await this.supabase.auth.signOut();
+                        this.refreshAppState();
                         this.closeParentPortal();
                     },
 
