@@ -3825,15 +3825,18 @@
                         return insights.slice(0, 2);
                     },
                     async clearLogs() {
-                        if(confirm("Clear search history? (This will NOT delete your Coins, XP, or Adventure Map progress)")) {
+                        if(confirm("Clear history? This will reset recent questions, subject scores, XP, and Learning Journey progress. (Coins and items are kept)")) {
                             this.parentLogs.splice(0, this.parentLogs.length);
                             
                             this.learningStats.wordsLearned = 0;
                             this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                             this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
                             
+                            this.xp = 0;
+                            this.level = 1;
+
                             await this.syncData(); 
-                            alert("Search history cleared.");
+                            alert("History and journey progress cleared.");
                         }
                     },
                     updateProgress(query, response) {
