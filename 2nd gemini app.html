@@ -360,7 +360,7 @@
             </div>
         </div>
 
-        <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-2 sm:gap-4 z-40">
+        <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-1.5 sm:gap-4 z-40">
 
             <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-1 sm:gap-2">
                 <span class="text-xl sm:text-3xl">💰</span>
@@ -375,10 +375,10 @@
                 <span class="text-xl sm:text-3xl">🪄</span>
             </button>
 
-            <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-orange-400" title="Switch Child">
+            <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-orange-400" title="Switch Child">
                 <div class="flex flex-col items-center">
                     <span class="text-xl sm:text-2xl">👤</span>
-                    <span class="text-[9px] font-bold text-slate-400 mt-1 uppercase" x-text="childProfile.name"></span>
+                    <span class="hidden sm:block text-[9px] font-bold text-slate-400 mt-1 uppercase" x-text="childProfile.name"></span>
                 </div>
             </button>
 
@@ -4264,5 +4264,3 @@
         </script>
     </body>
     </html>
-
-
