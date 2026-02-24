@@ -3107,6 +3107,10 @@
                     checkLessonAnswer(index) {
                         const currentQ = this.getCurrentLessonQuestion();
                         if(index === currentQ.correct) {
+                            if (!this.learningStats.quizHistory) this.learningStats.quizHistory = [];
+                            this.learningStats.quizHistory.push(true);
+                            if (this.learningStats.quizHistory.length > 10) this.learningStats.quizHistory.shift();
+
                             this.consecutiveMistakes = 0; // Reset mistakes on success
                             this.isVisualMode = false;
                             this.playPing();
@@ -3180,7 +3184,8 @@
                                 }
                             ],
                             achievements: [],
-                            quizzesCompleted: 0
+                            quizzesCompleted: 0,
+                            quizHistory: []
                         };
                         this.allProfiles.push(newProfile);
                         if (!this.activeProfileId) {
@@ -3374,7 +3379,8 @@
                             emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
                             inventory: [],
                             equipped_item: null,
-                            path_progress: {}
+                            path_progress: {},
+                            quizHistory: []
                         };
 
                         // 3. Populate sub-states from learningStats
@@ -3583,6 +3589,11 @@
                             priority += " [ADAPTIVE TRIGGERED]: The child is struggling. Pivot to Visual Simulation Mode. Use vivid imagery, simple analogies, and zero complex terminology. Explain things as if showing a picture book.";
                         }
 
+                        // Dynamic Difficulty Calibration
+                        const calibration = this.getPerformanceCalibration();
+                        console.log(`[AI Calibration]: ${calibration}`);
+                        priority += ` [CALIBRATION]: ${calibration}`;
+
                         if (range === '4-6' || range === '4-5') {
                             return `${priority} TARGET AUDIENCE: Age 4-6 (Preschool). Focus on Colors, Shapes, and Basic English. Use extremely simple words. Max sentence length: 5 words. Tone: Very playful, like a cartoon character.`;
                         }
@@ -3593,6 +3604,21 @@
                             return `${priority} TARGET AUDIENCE: Age 10-13 (Middle School). Focus on Science, Problem-Solving, and Critical Thinking. Use clear, mature language. Tone: Helpful mentor, engaging and knowledgeable.`;
                         }
                         return `${priority} TARGET AUDIENCE: Age 6-7 (Early Elementary). Use simple vocabulary. Clear sentences. Tone: Friendly and helpful.`;
+                    },
+
+                    getPerformanceCalibration() {
+                        const history = this.learningStats.quizHistory || [];
+                        if (history.length < 3) return "Standard Mode - Initializing baseline.";
+                        
+                        const recent = history.slice(-5);
+                        const successRate = recent.filter(r => r).length / recent.length;
+
+                        if (successRate >= 0.8) {
+                            return "ENHANCED CHALLENGE MODE: The child is doing great! Complicate your tone slightly. Use more advanced vocabulary words (and briefly explain them). Introduce deeper connections and encourage more critical thinking.";
+                        } else if (successRate <= 0.4) {
+                            return "SIMPLIFIED ENCOURAGEMENT MODE: The child is struggling. Simplify your tone. Use very basic analogies, repeat key concepts in different ways, and be extremely encouraging and patient.";
+                        }
+                        return "OPTIMAL LEARNING MODE: The child is in the sweet spot. Maintain a balance of clear explanation and gentle challenge.";
                     },
 
                     async startQuiz() {
@@ -3644,6 +3670,10 @@
 
                     checkAnswer(index) {
                         if (index === this.quizCorrectIndex) {
+                            if (!this.learningStats.quizHistory) this.learningStats.quizHistory = [];
+                            this.learningStats.quizHistory.push(true);
+                            if (this.learningStats.quizHistory.length > 10) this.learningStats.quizHistory.shift();
+
                             this.consecutiveMistakes = 0; 
                             this.isVisualMode = false;
                             this.quizState = 'correct';
@@ -3652,6 +3682,10 @@
                             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                             this.syncData();
                         } else {
+                            if (!this.learningStats.quizHistory) this.learningStats.quizHistory = [];
+                            this.learningStats.quizHistory.push(false);
+                            if (this.learningStats.quizHistory.length > 10) this.learningStats.quizHistory.shift();
+
                             this.handleMistake();
                             this.quizState = 'wrong';
                             
@@ -4087,6 +4121,7 @@
                             this.learningStats.wordsLearned = 0;
                             this.learningStats.subjects = { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                             this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
+                            this.learningStats.quizHistory = [];
                             
                             this.xp = 0;
                             this.level = 1;
