@@ -3149,6 +3149,7 @@
                         this.inventory = this.learningStats.inventory || data.inventory || [];
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
+                        this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
                         
                         // Load Monthly Quotas
                         this.monthlyQuestsUsed = this.learningStats.monthly_quests_used || 0;
@@ -3593,6 +3594,7 @@
                         safeStats.current_language = this.currentLanguage;
                         safeStats.equipped_item = this.equippedItem; // Save equipped item to JSON blob
                         safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum)); // Persist newly generated quests
+                        safeStats.has_completed_onboarding = this.hasCompletedOnboarding;
                         
                         // Persist Monthly Quotas
                         safeStats.monthly_quests_used = this.monthlyQuestsUsed;
@@ -4185,11 +4187,14 @@
                     },
                     
                     completeOnboarding() {
+                        const isFirstTime = !this.hasCompletedOnboarding;
                         this.hasCompletedOnboarding = true;
                         localStorage.setItem('onboarding_completed', 'true');
                         this.showOnboarding = false;
                         this.toggleScroll(false);
-                        this.coins += 50;
+                        if (isFirstTime) {
+                            this.coins += 50;
+                        }
                         this.syncData();
                         confetti({ particleCount: 200, spread: 100 });
                         this.speak("Congratulations! You're all set to start learning! Let's have fun together!");
