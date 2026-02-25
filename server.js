@@ -216,9 +216,8 @@ app.post('/api/save-subscription', async (req, res) => {
 // Vercel Cron endpoint - fires once daily
 app.get('/api/cron/daily-reminders', async (req, res) => {
     try {
-        // Simple security check (optional, Vercel adds headers)
-        // if (req.headers['x-vercel-cron'] !== 'true') return res.status(401).end();
-
+        const { force, test_email } = req.query; // Added for testing
+        
         if (!supabase) throw new Error("Database not initialized");
 
         const todayString = new Date().toDateString();
@@ -236,8 +235,11 @@ app.get('/api/cron/daily-reminders', async (req, res) => {
             const sub = stats.push_subscription;
             const lastStreakDate = stats.last_streak_date;
 
-            // Only notify if they have a subscription AND haven't practiced today
-            if (sub && lastStreakDate !== todayString) {
+            // Optional: Filter by test email if provided
+            if (test_email && profile.email !== test_email) continue;
+
+            // Only notify if they have a subscription AND (force mode OR haven't practiced today)
+            if (sub && (force === 'true' || lastStreakDate !== todayString)) {
                 const payload = JSON.stringify({
                     title: "Don't break your streak! 🔥",
                     body: "Professor Dino is waiting for you to learn something new today!",
