@@ -3437,9 +3437,9 @@
                         this.pathProgress = this.learningStats.path_progress || {};
                         this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
                         
-                        // Hydrate Streak Data
-                        this.streak = data.streak || this.learningStats.streak || 0;
-                        this.lastStreakDate = data.last_streak_date || this.learningStats.last_streak_date || null;
+                        // Hydrate Streak Data (Favor learning_stats for consistency)
+                        this.streak = this.learningStats.streak || data.streak || 0;
+                        this.lastStreakDate = this.learningStats.last_streak_date || data.last_streak_date || null;
                         this.streakFreezeUsed = this.learningStats.streak_freeze_used || false;
                         
                         // Load Monthly Quotas
@@ -3930,13 +3930,16 @@
                         safeStats.time_used_today = this.timeUsedToday;
                         safeStats.daily_time_limit = this.dailyTimeLimit;
 
+                        // Persist Streak Data in JSON blob
+                        safeStats.streak = this.streak;
+                        safeStats.last_streak_date = this.lastStreakDate;
+                        safeStats.streak_freeze_used = this.streakFreezeUsed;
+
                         const updateData = {
                             coins: this.coins,
                             xp: this.xp,
                             is_premium: this.isPremium,
                             premium_expiry: this.premiumExpiry,
-                            streak: this.streak,
-                            last_streak_date: this.lastStreakDate,
                             learning_stats: safeStats,
                             parent_logs: safeLogs,
                             daily_usage: safeStats.daily_usage
