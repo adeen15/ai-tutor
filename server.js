@@ -5,6 +5,7 @@ const fetch = require('node-fetch');
 const path = require('path');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+const webpush = require('web-push');
 
 // Initialize Supabase client safely
 let supabase;
@@ -20,6 +21,21 @@ try {
     }
 } catch (error) {
     console.error("❌ Supabase initialization failed:", error);
+}
+
+// Push Notification Configuration
+const publicVapidKey = process.env.VAPID_PUBLIC_KEY;
+const privateVapidKey = process.env.VAPID_PRIVATE_KEY;
+
+if (publicVapidKey && privateVapidKey) {
+    webpush.setVapidDetails(
+        'mailto:support@ai-tutor.example', // Replace with actual contact
+        publicVapidKey,
+        privateVapidKey
+    );
+    console.log("✅ Web-Push VAPID keys configured");
+} else {
+    console.warn("⚠️ Web-Push VAPID keys missing (VAPID_PUBLIC_KEY or VAPID_PRIVATE_KEY)");
 }
 
 // Utility to clean and normalize API keys
@@ -162,6 +178,87 @@ app.get('/api/config', (req, res) => {
 
 app.get('/api/health', (req, res) => {
     res.json({ status: "ok", version: "voice-debug-v1", time: new Date().toISOString() });
+});
+
+// --- PUSH NOTIFICATION ROUTES ---
+
+app.get('/api/config/vapid', (req, res) => {
+    res.json({ publicKey: publicVapidKey });
+});
+
+app.post('/api/save-subscription', async (req, res) => {
+    try {
+        const { email, subscription } = req.body;
+        if (!email || !subscription) return res.status(400).json({ error: "Missing data" });
+
+        if (!supabase) return res.status(503).json({ error: "Database not available" });
+
+        // Get existing stats
+        const { data: profile } = await supabase.from('profiles').select('learning_stats').eq('email', email).single();
+        const stats = profile?.learning_stats || {};
+
+        // Update with subscription
+        stats.push_subscription = subscription;
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ learning_stats: stats })
+            .eq('email', email);
+
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Save subscription error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Vercel Cron endpoint - fires once daily
+app.get('/api/cron/daily-reminders', async (req, res) => {
+    try {
+        // Simple security check (optional, Vercel adds headers)
+        // if (req.headers['x-vercel-cron'] !== 'true') return res.status(401).end();
+
+        if (!supabase) throw new Error("Database not initialized");
+
+        const todayString = new Date().toDateString();
+
+        // Fetch all profiles with subscriptions who haven't used the app today
+        const { data: profiles, error } = await supabase
+            .from('profiles')
+            .select('email, learning_stats');
+
+        if (error) throw error;
+
+        const results = [];
+        for (const profile of profiles) {
+            const stats = profile.learning_stats || {};
+            const sub = stats.push_subscription;
+            const lastStreakDate = stats.last_streak_date;
+
+            // Only notify if they have a subscription AND haven't practiced today
+            if (sub && lastStreakDate !== todayString) {
+                const payload = JSON.stringify({
+                    title: "Don't break your streak! 🔥",
+                    body: "Professor Dino is waiting for you to learn something new today!",
+                    url: "/"
+                });
+
+                try {
+                    await webpush.sendNotification(sub, payload);
+                    results.push({ email: profile.email, status: 'sent' });
+                } catch (sendErr) {
+                    console.error(`Failed to send push to ${profile.email}:`, sendErr.message);
+                    results.push({ email: profile.email, status: 'failed', error: sendErr.message });
+                }
+            }
+        }
+
+        res.json({ processed: profiles.length, details: results });
+    } catch (err) {
+        console.error("Cron failed:", err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 
