@@ -2461,9 +2461,9 @@
                                 console.log("Auth Event:", event);
                                 this.session = session;
                                 if (session) {
-                                    this.registeredEmail = session.user.email;
                                     this.hasAccount = true;
                                     await this.loadUserProfile(session.user.email);
+                                    this.setupPushNotifications(); // Ask for push permission on login
                                 } else if (event === 'SIGNED_OUT') {
                                     this.refreshAppState();
                                 }
@@ -2491,6 +2491,57 @@
                         this.$watch('isTimeUp', value => {
                             if (value) this.parentVerified = false;
                         });
+                    },
+
+                    urlBase64ToUint8Array(base64String) {
+                        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                        const rawData = window.atob(base64);
+                        const outputArray = new Uint8Array(rawData.length);
+                        for (let i = 0; i < rawData.length; ++i) {
+                            outputArray[i] = rawData.charCodeAt(i);
+                        }
+                        return outputArray;
+                    },
+
+                    async setupPushNotifications() {
+                        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                            console.warn("Push notifications not supported");
+                            return;
+                        }
+
+                        try {
+                            const permission = await Notification.requestPermission();
+                            if (permission !== 'granted') return;
+
+                            const registration = await navigator.serviceWorker.ready;
+                            
+                            // Get public key from server
+                            const keysRes = await fetch('/api/config/vapid');
+                            const { publicKey } = await keysRes.json();
+                            
+                            if (!publicKey) return;
+
+                            const subscription = await registration.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: this.urlBase64ToUint8Array(publicKey)
+                            });
+
+                            console.log("✅ Push Subscription successful:", subscription);
+
+                            // Save to Supabase via backend
+                            await fetch('/api/save-subscription', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    email: this.registeredEmail,
+                                    subscription: subscription
+                                })
+                            });
+
+                        } catch (err) {
+                            console.error("❌ Push subscription failed:", err);
+                        }
                     },
 
                     generateGate() {
