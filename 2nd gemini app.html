@@ -354,6 +354,12 @@
                 <span class="font-kids text-[10px] sm:text-base text-yellow-700 leading-none mt-1" x-text="coins"></span>
             </div>
 
+            <!-- Streak Display: Same size as coins -->
+            <div x-show="streak > 0" class="daily-reward-btn bg-white w-16 h-16 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
+                <span class="text-2xl sm:text-3xl">🔥</span>
+                <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
+            </div>
+
             <!-- Web Version: Under Daily Gift -->
             <div x-show="!isPremium" class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex-col items-center min-w-[80px]">
                 <p class="text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">Free Questions</p>
@@ -2108,6 +2114,9 @@
                     lastQuestMonth: new Date().getMonth(), // 0-11
                     
                     coins: 0, 
+                    streak: 0,
+                    lastStreakDate: null,
+                    streakFreezeUsed: false,
                     
                     showRewards: false,
                     rewardClaimedToday: false,
@@ -3428,6 +3437,11 @@
                         this.pathProgress = this.learningStats.path_progress || {};
                         this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
                         
+                        // Hydrate Streak Data
+                        this.streak = data.streak || this.learningStats.streak || 0;
+                        this.lastStreakDate = data.last_streak_date || this.learningStats.last_streak_date || null;
+                        this.streakFreezeUsed = this.learningStats.streak_freeze_used || false;
+                        
                         // Load Monthly Quotas
                         this.monthlyQuestsUsed = this.learningStats.monthly_quests_used || 0;
                         this.lastQuestMonth = (this.learningStats.last_quest_month !== undefined) ? this.learningStats.last_quest_month : new Date().getMonth();
@@ -3921,6 +3935,8 @@
                             xp: this.xp,
                             is_premium: this.isPremium,
                             premium_expiry: this.premiumExpiry,
+                            streak: this.streak,
+                            last_streak_date: this.lastStreakDate,
                             learning_stats: safeStats,
                             parent_logs: safeLogs,
                             daily_usage: safeStats.daily_usage
@@ -4341,6 +4357,41 @@
 
                     async askTutor() {
                         if (!this.userQuery.trim()) return;
+
+                        // --- DAILY STREAK LOGIC ---
+                        const today = new Date().toDateString();
+                        if (this.lastStreakDate !== today) {
+                            if (!this.lastStreakDate) {
+                                // First time ever
+                                this.streak = 1;
+                            } else {
+                                const lastDate = new Date(this.lastStreakDate);
+                                const yesterday = new Date();
+                                yesterday.setDate(yesterday.getDate() - 1);
+                                
+                                if (this.lastStreakDate === yesterday.toDateString()) {
+                                    // Consecutive day
+                                    this.streak++;
+                                    this.streakFreezeUsed = false; // Reset freeze for the new day
+                                } else {
+                                    // Gap of more than 1 day
+                                    if (this.isPremium && !this.streakFreezeUsed) {
+                                        // Auto-activate Streak Freeze for Premium users
+                                        console.log("Streak Freeze activated! Streak maintained.");
+                                        this.streakFreezeUsed = true;
+                                        // Streak remains the same
+                                    } else {
+                                        this.streak = 1; // Reset to 1 since they are active today
+                                    }
+                                }
+                            }
+                            this.lastStreakDate = today;
+                            // Update learning_stats too just in case
+                            this.learningStats.streak = this.streak;
+                            this.learningStats.last_streak_date = this.lastStreakDate;
+                            this.learningStats.streak_freeze_used = this.streakFreezeUsed;
+                        }
+
                         if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
                             this.showPremiumModal = true;
                             this.toggleScroll(true);
