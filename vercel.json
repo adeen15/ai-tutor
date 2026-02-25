@@ -5,6 +5,13 @@
       "source": "/(.*)",
       "destination": "/server.js"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/daily-reminders",
+      "schedule": "0 18 * * *"
+    }
   ]
 }
+
 
