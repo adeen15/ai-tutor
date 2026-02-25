@@ -1003,65 +1003,95 @@
             <div @click.away="showQuiz = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
                 <button @click="showQuiz = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
                 
-                <div class="text-center" x-show="quizState === 'loading'">
-                    <div class="spinner mx-auto mb-4 border-yellow-400"></div>
+                <!-- Loading State -->
+                <div class="text-center py-10" x-show="quizState === 'loading'">
+                    <div class="spinner mx-auto mb-6 border-yellow-400 scale-125"></div>
                     <h2 class="text-2xl font-kids text-yellow-500" x-text="t('thinking') + '... 🤔'">Thinking up a tricky one... 🤔</h2>
-                    <p class="text-xs text-slate-400 font-bold mt-2" x-text="'Adjusting difficulty for ' + (childProfile.ageRange || '6-7') + ' year olds...'"></p>
+                    <p class="text-xs text-slate-400 font-bold mt-2" x-text="'Building a fun challenge for ' + (childProfile.name || 'you') + '!'"></p>
+                </div>
+
+                <!-- Progress Header -->
+                <div class="mb-6" x-show="quizState === 'active'">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" x-text="'Question ' + (currentQuizIndex + 1) + ' of ' + quizQuestions.length"></span>
+                        <span class="text-xs font-bold text-yellow-600" x-text="quizCoinsEarned + ' Coins'"><i class="fas fa-coins mr-1"></i></span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                        <div class="bg-blue-400 h-full transition-all duration-500" :style="'width: ' + (((currentQuizIndex + 1) / (quizQuestions.length || 1)) * 100) + '%'"></div>
+                    </div>
                 </div>
 
                 <div x-show="quizState === 'active'">
-                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide" x-text="quizType === 'matching' ? 'Match Pairs!' : 'Pop Quiz!'">Pop Quiz!</span>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-4 mb-6 leading-tight" x-text="quizQuestion"></h2>
+                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" 
+                        x-text="quizType === 'matching' ? 'Match Pairs!' : (quizType === 'scramble' ? 'Build the Sentence!' : (quizType === 'listen' ? 'Listen & Answer' : 'Pop Quiz!'))">Pop Quiz!</span>
+                    <h2 class="text-xl font-bold text-gray-800 mt-4 mb-6 leading-tight" x-text="quizQuestion"></h2>
                     
                     <!-- Multiple Choice & Listen UI -->
-                    <div x-show="quizType === 'multiple_choice' || quizType === 'listen'" class="space-y-3">
+                    <div x-show="quizType === 'multiple_choice' || quizType === 'listen' || quizType === 'true_false'" class="space-y-3">
                         <template x-for="(option, index) in quizOptions">
                             <button 
                                 @click="checkAnswer(index)"
                                 class="w-full text-left p-4 rounded-2xl border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold text-gray-700 flex items-center gap-3"
                             >
-                                <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold" x-text="['A','B','C'][index]"></span>
+                                <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold" x-text="['A','B','C'][index] || (index+1)"></span>
                                 <span x-text="option"></span>
                             </button>
                         </template>
                     </div>
 
                     <!-- Fill in the Blank UI -->
-                    <div x-show="quizType === 'fill_blank'" class="space-y-4">
-                        <template x-for="(option, index) in quizOptions">
-                            <button 
-                                @click="checkAnswer(index)"
-                                class="w-full text-center p-4 rounded-2xl border-2 border-gray-100 hover:border-green-400 hover:bg-green-50 transition-all font-bold text-gray-700"
-                            >
-                                <span x-text="option"></span>
-                            </button>
-                        </template>
+                    <div x-show="quizType === 'fill_blank'" class="space-y-4 text-center">
+                        <div class="flex flex-wrap gap-3 justify-center">
+                            <template x-for="(option, index) in quizOptions">
+                                <button 
+                                    @click="checkAnswer(index)"
+                                    class="px-6 py-4 rounded-2xl border-2 border-gray-100 hover:border-green-400 hover:bg-green-50 transition-all font-bold text-slate-700 text-lg shadow-sm"
+                                >
+                                    <span x-text="option"></span>
+                                </button>
+                            </template>
+                        </div>
                     </div>
 
-                    <!-- Matching UI -->
-                    <div x-show="quizType === 'matching'" class="grid grid-cols-2 gap-4">
-                        <!-- Words Column -->
-                        <div class="space-y-3">
-                            <template x-for="word in matchingPairs.words">
-                                <button 
-                                    @click="selectWord(word)"
-                                    class="w-full p-3 rounded-xl border-2 font-bold text-sm transition-all"
-                                    :class="matchedPairs.includes(word.id) ? 'bg-green-100 border-green-500 text-green-700 opacity-50 cursor-default' : (selectedWord && selectedWord.id === word.id ? 'bg-blue-500 border-blue-700 text-white' : 'bg-white border-gray-100')"
-                                    :disabled="matchedPairs.includes(word.id)"
-                                >
+                    <!-- Scramble UI -->
+                    <div x-show="quizType === 'scramble'" class="space-y-6">
+                        <div class="min-h-[4rem] p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-wrap gap-2 items-center justify-center">
+                            <template x-for="(word, index) in scrambledSelected">
+                                <button @click="removeScrambledWord(index)" 
+                                    class="bg-blue-500 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-md animate__animated animate__bounceIn">
+                                    <span x-text="word.text"></span>
+                                </button>
+                            </template>
+                            <p x-show="scrambledSelected.length === 0" class="text-slate-300 text-sm italic">Tap the words below to build the sentence!</p>
+                        </div>
+                        <div class="flex flex-wrap gap-3 justify-center">
+                            <template x-for="(word, index) in scrambledWords">
+                                <button @click="selectScrambledWord(word, index)" 
+                                    class="bg-white border-2 border-gray-100 px-4 py-2 rounded-xl font-bold text-sm hover:border-blue-400 hover:bg-blue-50 transition-all shadow-sm">
                                     <span x-text="word.text"></span>
                                 </button>
                             </template>
                         </div>
-                        <!-- Definitions Column -->
+                    </div>
+
+                    <!-- Matching UI -->
+                    <div x-show="quizType === 'matching'" class="grid grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <template x-for="word in matchingPairs.words">
+                                <button @click="selectWord(word)"
+                                    class="w-full p-3 rounded-xl border-2 font-bold text-sm transition-all shadow-sm"
+                                    :class="matchedPairs.includes(word.id) ? 'bg-green-100 border-green-500 text-green-700 opacity-50 cursor-default' : (selectedWord && selectedWord.id === word.id ? 'bg-blue-500 border-blue-700 text-white' : 'bg-white border-gray-100')"
+                                    :disabled="matchedPairs.includes(word.id)">
+                                    <span x-text="word.text"></span>
+                                </button>
+                            </template>
+                        </div>
                         <div class="space-y-3">
                             <template x-for="def in matchingPairs.definitions">
-                                <button 
-                                    @click="selectDefinition(def)"
-                                    class="w-full p-3 rounded-xl border-2 font-bold text-xs transition-all leading-tight"
+                                <button @click="selectDefinition(def)"
+                                    class="w-full p-3 rounded-xl border-2 font-bold text-xs transition-all leading-tight shadow-sm"
                                     :class="matchedPairs.includes(def.id) ? 'bg-green-100 border-green-500 text-green-700 opacity-50 cursor-default' : (selectedDefinition && selectedDefinition.id === def.id ? 'bg-blue-500 border-blue-700 text-white' : 'bg-white border-gray-100')"
-                                    :disabled="matchedPairs.includes(def.id)"
-                                >
+                                    :disabled="matchedPairs.includes(def.id)">
                                     <span x-text="def.text"></span>
                                 </button>
                             </template>
@@ -1071,9 +1101,9 @@
 
                 <div class="text-center" x-show="quizState === 'correct'">
                     <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
-                    <h2 class="text-3xl font-kids text-green-500 mb-2" x-text="t('correct') + '!'">Correct!</h2>
-                    <p class="font-bold text-gray-500 mb-6">You earned 20 Coins!</p>
-                    <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform" x-text="t('awesome')">Awesome!</button>
+                    <h2 class="text-3xl font-kids text-green-500 mb-2" x-text="t('awesome')">Awesome!</h2>
+                    <p class="font-bold text-gray-500 mb-6" x-text="'You completed the quiz and earned ' + quizCoinsEarned + ' Coins!'"></p>
+                    <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Collect Reward! 💰</button>
                 </div>
 
                 <div class="text-center" x-show="quizState === 'wrong'">
@@ -2231,12 +2261,18 @@
                     quizQuestion: '',
                     quizOptions: [],
                     quizCorrectIndex: 0,
-                    quizType: 'multiple_choice', // 'multiple_choice', 'matching', 'fill_blank', 'listen'
-                    matchingPairs: [], // { word: '', definition: '', id: 0 }
+                    quizType: 'multiple_choice', 
+                    quizQuestions: [],
+                    currentQuizIndex: 0,
+                    quizTotalQuestions: 5,
+                    matchingPairs: [], 
                     selectedWord: null,
                     selectedDefinition: null,
                     matchedPairs: [],
                     audioText: '',
+                    scrambledWords: [],
+                    scrambledSelected: [],
+                    quizCoinsEarned: 0,
 
 
 
@@ -3776,10 +3812,9 @@
                         this.quizState = 'loading';
                         this.toggleScroll(true);
                         
-                        // Reset matching state
-                        this.selectedWord = null;
-                        this.selectedDefinition = null;
-                        this.matchedPairs = [];
+                        this.currentQuizIndex = 0;
+                        this.quizQuestions = [];
+                        this.quizCoinsEarned = 0;
 
                         const ageRange = this.childProfile.ageRange || '6-7';
                         const region = this.currentCurriculumRegion || 'Global';
@@ -3789,10 +3824,9 @@
                             TARGET AGE: ${ageRange}.
                             You MUST generate the quiz in ${this.currentLanguage}.
                             Strictly follow ${region} educational standards.
-                            ${this.isVisualMode ? "CRITICAL: CHILD IS STRUGGLING. Make this question extremely simple and visual." : ""}
                             
-                            Based on the following text: "${this.displayText}", create ONE quiz question.
-                            Randomly choose ONE of these four types:
+                            Based on the following text: "${this.displayText}", create a sequence of 5 DIFFERENT quiz questions.
+                            Vary the types among these SIX options:
                             
                             1. "multiple_choice": Standard 3-option question.
                                Format: {"type": "multiple_choice", "question": "...", "options": ["A", "B", "C"], "correctIndex": 0}
@@ -3804,9 +3838,15 @@
                                Format: {"type": "fill_blank", "question": "The ___ is blue.", "options": ["sky", "grass", "sun"], "correctIndex": 0}
                             
                             4. "listen": Audio-first question.
-                               Format: {"type": "listen", "audioText": "The elephant is the largest land animal.", "question": "Which animal is the largest on land?", "options": ["Lion", "Elephant", "Ant"], "correctIndex": 1}
+                               Format: {"type": "listen", "audioText": "Sentence to hear.", "question": "Question about it?", "options": ["A", "B", "C"], "correctIndex": 0}
                             
-                            Return strictly JSON.`;
+                            5. "scramble": A sentence to build.
+                               Format: {"type": "scramble", "question": "Put the words in order!", "sentence": "The cat sat on the mat."}
+                            
+                            6. "true_false": Simple T/F.
+                               Format: {"type": "true_false", "question": "Is the sun cold?", "answer": false}
+                            
+                            Return strictly JSON in this format: {"questions": [ {question1}, {question2}, ... ]}`;
 
                             const response = await fetch("/api/chat", {
                                 method: "POST",
@@ -3814,7 +3854,7 @@
                                 body: JSON.stringify({
                                     "messages": [
                                         { "role": "system", "content": systemPrompt },
-                                        { "role": "user", "content": "Generate random quiz type" }
+                                        { "role": "user", "content": "Generate 5 random quiz questions" }
                                     ]
                                 })
                             });
@@ -3823,49 +3863,58 @@
                             let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
                             const quizData = JSON.parse(cleanJson);
 
-                            this.quizType = quizData.type || 'multiple_choice';
-                            this.quizQuestion = quizData.question;
-                            
-                            if (this.quizType === 'matching') {
-                                // Prepare shuffling for matching
-                                const words = quizData.pairs.map((p, i) => ({ text: p.word, id: i }));
-                                const defs = quizData.pairs.map((p, i) => ({ text: p.definition, id: i }));
-                                
-                                // Fisher-Yates shuffle
-                                const shuffle = (array) => {
-                                    for (let i = array.length - 1; i > 0; i--) {
-                                        const j = Math.floor(Math.random() * (i + 1));
-                                        [array[i], array[array.length - 1]] = [array[array.length - 1], array[i]]; // Mistake in shuffle? Fixing it.
-                                    }
-                                };
-                                
-                                // Proper shuffle
-                                const s = (arr) => arr.sort(() => Math.random() - 0.5);
-                                
-                                this.matchingPairs = {
-                                    words: s([...words]),
-                                    definitions: s([...defs])
-                                };
-                            } else {
-                                this.quizOptions = quizData.options;
-                                this.quizCorrectIndex = quizData.correctIndex;
-                            }
-
-                            if (this.quizType === 'listen') {
-                                this.audioText = quizData.audioText;
-                                // Wait a bit for modal to open
-                                setTimeout(() => this.speak(this.audioText), 800);
-                            }
-
-                            this.quizState = 'active';
+                            this.quizQuestions = quizData.questions || [];
+                            this.loadQuizQuestion();
 
                         } catch (e) {
                             console.error("Quiz Error", e);
-                            this.quizType = 'multiple_choice';
-                            this.quizQuestion = "Did you like learning about that?";
-                            this.quizOptions = ["Yes!", "It was okay", "No"];
-                            this.quizCorrectIndex = 0;
-                            this.quizState = 'active';
+                            this.quizQuestions = [{
+                                type: 'multiple_choice',
+                                question: "Did you like learning about that?",
+                                options: ["Yes!", "It was okay", "No"],
+                                correctIndex: 0
+                            }];
+                            this.loadQuizQuestion();
+                        }
+                    },
+
+                    loadQuizQuestion() {
+                        const q = this.quizQuestions[this.currentQuizIndex];
+                        if (!q) {
+                            this.showQuiz = false;
+                            this.toggleScroll(false);
+                            return;
+                        }
+
+                        this.quizType = q.type;
+                        this.quizQuestion = q.question;
+                        this.quizState = 'active';
+
+                        // Reset internal states
+                        this.selectedWord = null;
+                        this.selectedDefinition = null;
+                        this.matchedPairs = [];
+                        this.scrambledSelected = [];
+                        
+                        if (this.quizType === 'matching') {
+                            const words = q.pairs.map((p, i) => ({ text: p.word, id: i }));
+                            const defs = q.pairs.map((p, i) => ({ text: p.definition, id: i }));
+                            const s = (arr) => arr.sort(() => Math.random() - 0.5);
+                            this.matchingPairs = { words: s([...words]), definitions: s([...defs]) };
+                        } else if (this.quizType === 'scramble') {
+                            const words = q.sentence.split(' ');
+                            this.scrambledWords = words.sort(() => Math.random() - 0.5).map((w, i) => ({ text: w, originalIndex: i }));
+                        } else if (this.quizType === 'true_false') {
+                            this.quizOptions = ["True", "False"];
+                            this.quizCorrectIndex = q.answer ? 0 : 1;
+                        } else {
+                            this.quizOptions = q.options;
+                            this.quizCorrectIndex = q.correctIndex;
+                        }
+
+                        if (this.quizType === 'listen') {
+                            this.audioText = q.audioText;
+                            setTimeout(() => this.speak(this.audioText), 800);
                         }
                     },
 
@@ -3892,12 +3941,7 @@
                                 
                                 // Check if all matched
                                 if (this.matchedPairs.length === 4) {
-                                    setTimeout(() => {
-                                        this.quizState = 'correct';
-                                        this.coins += 30; // Bonus for matching
-                                        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                                        this.syncData();
-                                    }, 800);
+                                    this.handleCorrect();
                                 }
                             } else {
                                 // Wrong match
@@ -3909,34 +3953,80 @@
                         }
                     },
 
+                    selectScrambledWord(word, index) {
+                        this.scrambledSelected.push(word);
+                        this.scrambledWords.splice(index, 1);
+                        
+                        // Check if complete
+                        const currentSentence = this.scrambledSelected.map(w => w.text).join(' ');
+                        const targetSentence = this.quizQuestions[this.currentQuizIndex].sentence;
+                        
+                        if (this.scrambledWords.length === 0) {
+                            if (currentSentence === targetSentence) {
+                                this.playPing();
+                                this.handleCorrect();
+                            } else {
+                                // Wrong order, reset
+                                setTimeout(() => {
+                                    this.scrambledWords = [...this.scrambledSelected, ...this.scrambledWords].sort(() => Math.random() - 0.5);
+                                    this.scrambledSelected = [];
+                                }, 1000);
+                            }
+                        }
+                    },
+
+                    removeScrambledWord(index) {
+                        const word = this.scrambledSelected.splice(index, 1)[0];
+                        this.scrambledWords.push(word);
+                    },
+
+                    handleCorrect() {
+                        this.quizCoinsEarned += 20;
+                        if (this.quizType === 'matching') this.quizCoinsEarned += 10;
+                        
+                        if (this.currentQuizIndex < this.quizQuestions.length - 1) {
+                            this.currentQuizIndex++;
+                            setTimeout(() => this.loadQuizQuestion(), 1500);
+                            // Show a brief success animation? 
+                            confetti({ particleCount: 40, spread: 40, origin: { y: 0.7 } });
+                        } else {
+                            this.quizState = 'correct';
+                            this.coins += this.quizCoinsEarned;
+                            this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
+                            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                            this.syncData();
+                        }
+                    },
+
+                    handleMistake() {
+                        this.consecutiveMistakes++;
+                        if (this.consecutiveMistakes >= 2) this.isVisualMode = true;
+                        
+                        if (!this.learningStats.quizHistory) this.learningStats.quizHistory = [];
+                        this.learningStats.quizHistory.push(false);
+                        if (this.learningStats.quizHistory.length > 10) this.learningStats.quizHistory.shift();
+                        
+                        if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
+                        this.learningStats.recent_mistakes.push(this.quizQuestion);
+                        if(this.learningStats.recent_mistakes.length > 5) this.learningStats.recent_mistakes.shift();
+                        
+                        this.syncData();
+                    },
+
                     checkAnswer(index) {
                         if (index === this.quizCorrectIndex) {
+                            this.playPing();
+                            this.consecutiveMistakes = 0;
+                            this.isVisualMode = false;
+                            
                             if (!this.learningStats.quizHistory) this.learningStats.quizHistory = [];
                             this.learningStats.quizHistory.push(true);
                             if (this.learningStats.quizHistory.length > 10) this.learningStats.quizHistory.shift();
-
-                            this.consecutiveMistakes = 0; 
-                            this.isVisualMode = false;
-                            this.quizState = 'correct';
-                            this.coins += 20; 
-                            this.playPing();
-                            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                            this.syncData();
+                            
+                            this.handleCorrect();
                         } else {
-                            if (!this.learningStats.quizHistory) this.learningStats.quizHistory = [];
-                            this.learningStats.quizHistory.push(false);
-                            if (this.learningStats.quizHistory.length > 10) this.learningStats.quizHistory.shift();
-
                             this.handleMistake();
                             this.quizState = 'wrong';
-                            
-                            if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
-                            this.learningStats.recent_mistakes.push(this.quizQuestion);
-                            
-                            if(this.learningStats.recent_mistakes.length > 5) {
-                                this.learningStats.recent_mistakes.shift();
-                            }
-                            this.syncData();
                         }
                     },
 
