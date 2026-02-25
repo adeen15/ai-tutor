@@ -1632,12 +1632,16 @@
                                         </div>
                                         <div class="flex items-start gap-3">
                                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
-                                            <div>
+                                            <div class="flex-grow">
                                                 <p class="text-xs font-bold text-slate-700 uppercase">Learning Wins Summaries</p>
                                                 <div class="flex items-center gap-2 mt-1">
                                                     <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                                                     <span class="text-[10px] font-bold text-green-600">Daily Automated Reports Active</span>
                                                 </div>
+                                                <!-- Test Notification Button -->
+                                                <button @click="sendTestNotification()" class="mt-3 px-4 py-1.5 bg-orange-100 text-orange-600 rounded-lg text-[10px] font-bold uppercase hover:bg-orange-200 transition-colors flex items-center gap-2">
+                                                    <i class="fas fa-paper-plane"></i> Send Test Notification
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -2541,6 +2545,22 @@
 
                         } catch (err) {
                             console.error("❌ Push subscription failed:", err);
+                        }
+                    },
+
+                    async sendTestNotification() {
+                        if (!this.registeredEmail) return;
+                        try {
+                            const res = await fetch(`/api/cron/daily-reminders?force=true&test_email=${encodeURIComponent(this.registeredEmail)}`);
+                            const data = await res.json();
+                            if (data.processed > 0) {
+                                alert("🚀 Test Notification sent! It should appear on your device in a few seconds.");
+                            } else {
+                                alert("⚠️ Could not send. Make sure you clicked 'Allow' for notifications on this device first!");
+                            }
+                        } catch (err) {
+                            console.error("Test push error:", err);
+                            alert("Error sending test notification.");
                         }
                     },
 
