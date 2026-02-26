@@ -510,6 +510,23 @@
                 </div>
 
                 <div class="w-full max-w-2xl order-1 lg:order-2">
+                    <!-- Spaced Repetition Banner -->
+                    <template x-if="showReviewBanner">
+                        <button @click="startReviewQuiz()" class="w-full bg-gradient-to-r from-orange-400 to-red-500 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-orange-300">
+                            <div class="flex items-center gap-3 sm:gap-4">
+                                <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">🧠</div>
+                                <div>
+                                    <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Mastery Challenge</div>
+                                    <div class="text-xl sm:text-3xl font-kids">Let's practice something you found hard yesterday!</div>
+                                    <div class="text-xs font-bold opacity-90 mt-1 text-orange-100">Quick 3-question review to become a master!</div>
+                                </div>
+                            </div>
+                            <div class="bg-white text-orange-600 px-3 py-2 sm:px-6 sm:py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors text-sm sm:text-base">
+                                REVIEW <i class="fas fa-bolt ml-1"></i>
+                            </div>
+                        </button>
+                    </template>
+
                     <!-- 30-Day Path Banner -->
                     <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
                         <div class="flex items-center gap-3 sm:gap-4">
@@ -2241,11 +2258,17 @@
                     lastTimeUpdate: Date.now(),
                     timeCheckInterval: null,
 
+                    // Spaced Repetition State
+                    reviewQuestions: [],
+                    showReviewBanner: false,
+                    isReviewMode: false,
+
                     learningStats: {
                         wordsLearned: 0,
                         subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                         child_profile: null,
                         recent_mistakes: [],
+                        review_queue: [], // Spaced Repetition Queue
                         emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
                         achievements: [],
                         quizzesCompleted: 0
@@ -3664,6 +3687,19 @@
                         
                         this.updateLevel();
                         this.checkPremiumExpiration();
+
+                        // Spaced Repetition: Check review queue
+                        if (this.learningStats.review_queue && this.learningStats.review_queue.length > 0) {
+                            const now = Date.now();
+                            const oneDay = 24 * 60 * 60 * 1000;
+                            const reviewItems = this.learningStats.review_queue.filter(q => (now - q.timestamp) > oneDay);
+                            
+                            if (reviewItems.length > 0) {
+                                // Take up to 3 random items for the review
+                                this.reviewQuestions = reviewItems.sort(() => 0.5 - Math.random()).slice(0, 3);
+                                this.showReviewBanner = true;
+                            }
+                        }
                     },
 
 
@@ -3879,6 +3915,22 @@
                         }
                     },
 
+                    startReviewQuiz() {
+                        if (this.reviewQuestions.length === 0) return;
+                        
+                        this.isReviewMode = true;
+                        this.showReviewBanner = false;
+                        this.showQuiz = true;
+                        this.quizState = 'active';
+                        this.toggleScroll(true);
+                        
+                        this.currentQuizIndex = 0;
+                        this.quizQuestions = JSON.parse(JSON.stringify(this.reviewQuestions));
+                        this.quizCoinsEarned = 0;
+                        
+                        this.loadQuizQuestion();
+                    },
+
                     loadQuizQuestion() {
                         const q = this.quizQuestions[this.currentQuizIndex];
                         if (!q) {
@@ -3984,6 +4036,12 @@
                     handleCorrect() {
                         this.quizCoinsEarned += 4; 
                         
+                        // Spaced Repetition: Remove from review queue
+                        const currentQ = this.quizQuestions[this.currentQuizIndex];
+                        if (this.learningStats.review_queue) {
+                            this.learningStats.review_queue = this.learningStats.review_queue.filter(q => q.question !== currentQ.question);
+                        }
+
                         if (this.currentQuizIndex < this.quizQuestions.length - 1) {
                             this.currentQuizIndex++;
                             setTimeout(() => this.loadQuizQuestion(), 1500);
@@ -3994,6 +4052,13 @@
                             this.coins += this.quizCoinsEarned;
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
                             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                            
+                            // Exit review mode
+                            if (this.isReviewMode) {
+                                this.isReviewMode = false;
+                                this.reviewQuestions = [];
+                            }
+                            
                             this.syncData();
                         }
                     },
@@ -4009,6 +4074,21 @@
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
                         this.learningStats.recent_mistakes.push(this.quizQuestion);
                         if(this.learningStats.recent_mistakes.length > 5) this.learningStats.recent_mistakes.shift();
+
+                        // Spaced Repetition: Save to review queue
+                        if (!this.learningStats.review_queue) this.learningStats.review_queue = [];
+                        
+                        // Don't add if already there
+                        const alreadyExists = this.learningStats.review_queue.some(q => q.question === this.quizQuestion);
+                        if (!alreadyExists) {
+                            const currentQuestion = this.quizQuestions[this.currentQuizIndex];
+                            if (currentQuestion) {
+                                this.learningStats.review_queue.push({
+                                    ...currentQuestion,
+                                    timestamp: Date.now()
+                                });
+                            }
+                        }
                         
                         this.syncData();
                     },
