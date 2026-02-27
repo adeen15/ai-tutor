@@ -392,6 +392,10 @@
                     <span class="text-xl sm:text-3xl">📕</span>
                 </button>
 
+                <button @click="generateStory()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
+                    <span class="text-xl sm:text-3xl">📖</span>
+                </button>
+
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <div class="flex flex-col items-center">
                         <span class="text-xl sm:text-2xl">👤</span>
@@ -2239,6 +2243,51 @@
             </div>
         </div>
 
+        <!-- Adventure Stories Modal -->
+        <div x-show="showStoryModal" x-cloak class="fixed inset-0 z-[160] bg-black bg-opacity-90 flex items-center justify-center p-4" x-transition.opacity>
+            <div @click.away="!isStoryThinking ? (showStoryModal = false; toggleScroll(false)) : null" class="bg-white rounded-[3rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0 relative animate__animated animate__zoomIn border-4 border-pink-200 shadow-2xl">
+                
+                <div class="bg-pink-50 p-6 flex justify-between items-center sticky top-0 z-10 border-b-2 border-pink-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center text-3xl text-white shadow-lg shadow-pink-100">
+                            📖
+                        </div>
+                        <div>
+                            <h3 class="font-kids text-2xl text-pink-600">Story Time!</h3>
+                            <p class="text-xs font-bold text-pink-400 uppercase tracking-widest" x-text="'A special story about ' + currentChar.subject"></p>
+                        </div>
+                    </div>
+                    <button @click="showStoryModal = false; toggleScroll(false)" class="text-pink-300 hover:text-pink-500 text-3xl transition-colors"><i class="fas fa-times-circle"></i></button>
+                </div>
+
+                <div class="p-8">
+                    <!-- Loading State -->
+                    <div x-show="isStoryThinking" class="text-center py-12">
+                        <div class="spinner mx-auto mb-6 border-pink-400 scale-150"></div>
+                        <h2 class="text-3xl font-kids text-pink-500 mb-2">Writing a magic story...</h2>
+                        <p class="text-gray-400 font-bold animate-pulse">Just for you, <span x-text="childProfile.name"></span>! ✨</p>
+                    </div>
+
+                    <!-- Story Content -->
+                    <div x-show="!isStoryThinking" class="animate__animated animate__fadeIn">
+                        <div class="bg-gradient-to-br from-white to-pink-50 p-8 rounded-[2.5rem] shadow-inner mb-8 border-2 border-pink-100 italic">
+                            <p class="text-2xl sm:text-3xl text-slate-700 font-medium leading-relaxed font-kids" x-text="currentStory.story"></p>
+                        </div>
+                        
+                        <div class="flex flex-col gap-4">
+                            <button @click="speak(currentStory.story)" class="w-full py-4 bg-white border-4 border-pink-200 text-pink-500 rounded-2xl font-kids text-2xl shadow-md hover:scale-105 transition-transform flex items-center justify-center gap-3 active:scale-95">
+                                <i class="fas fa-volume-up"></i> Read to Me!
+                            </button>
+
+                            <button @click="startStoryQuiz()" class="w-full py-5 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-3xl font-kids text-3xl shadow-xl hover:scale-105 transition-transform border-b-8 border-pink-700 active:border-b-4 active:translate-y-1">
+                                Answer Questions! 📝
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js");
@@ -2362,6 +2411,12 @@
                         achievements: [],
                         quizzesCompleted: 0
                     },
+                    // Adventure Stories Mode State
+                    showStoryModal: false,
+                    isStoryThinking: false,
+                    currentStory: { story: '', questions: [] },
+                    isStoryQuiz: false,
+                    coins: 0, 
                     xp: 0,
                     level: 1,
 
@@ -3958,11 +4013,79 @@
                         return "OPTIMAL LEARNING MODE: The child is in the sweet spot. Maintain a balance of clear explanation and gentle challenge.";
                     },
 
+                    async generateStory() {
+                        this.showStoryModal = true;
+                        this.isStoryThinking = true;
+                        this.isStoryQuiz = false;
+                        this.toggleScroll(true);
+
+                        const ageRange = this.childProfile.ageRange || '6-7';
+                        const subject = this.currentChar.subject;
+
+                        try {
+                            const systemPrompt = `You are an AI Story & Quiz Generator for kids.
+                            TARGET AGE: ${ageRange}.
+                            SUBJECT: ${subject}.
+                            
+                            1. Write a 5-sentence story that is educational and fun.
+                            2. Create 3 multiple-choice comprehension questions about the story.
+                            
+                            Return strictly JSON in this format: 
+                            {
+                                "story": "The full 5-sentence story text...",
+                                "questions": [
+                                    {"type": "multiple_choice", "question": "...", "options": ["A", "B", "C"], "correctIndex": 0},
+                                    ...
+                                ]
+                            }`;
+
+                            const response = await fetch("/api/chat", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    "messages": [
+                                        { "role": "system", "content": systemPrompt },
+                                        { "role": "user", "content": "Tell me a story!" }
+                                    ]
+                                })
+                            });
+
+                            const data = await response.json();
+                            let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
+                            this.currentStory = JSON.parse(cleanJson);
+                            this.isStoryThinking = false;
+
+                        } catch (e) {
+                            console.error("Story Error", e);
+                            this.currentStory = {
+                                story: "Once upon a time, there was a little explorer who loved learning. They asked a question and the world opened up with magic and wonder!",
+                                questions: [
+                                    {type: 'multiple_choice', question: "Who loved learning?", options: ["The Explorer", "A Robot", "A Cat"], correctIndex: 0},
+                                    {type: 'multiple_choice', question: "What did they do?", options: ["Slept", "Asked a question", "Ran away"], correctIndex: 1},
+                                    {type: 'multiple_choice', question: "What happened to the world?", options: ["It turned blue", "It opened with magic", "It stayed the same"], correctIndex: 1}
+                                ]
+                            };
+                            this.isStoryThinking = false;
+                        }
+                    },
+
+                    startStoryQuiz() {
+                        this.isStoryQuiz = true;
+                        this.quizQuestions = this.currentStory.questions;
+                        this.currentQuizIndex = 0;
+                        this.quizCoinsEarned = 0;
+                        this.showStoryModal = false;
+                        this.showQuiz = true;
+                        this.quizState = 'active';
+                        this.loadQuizQuestion();
+                    },
+
                     async startQuiz() {
                         this.showQuiz = true;
                         this.quizState = 'loading';
                         this.toggleScroll(true);
                         
+                        this.isStoryQuiz = false; // Reset story flag for normal quizzes
                         this.currentQuizIndex = 0;
                         this.quizQuestions = [];
                         this.quizCoinsEarned = 0;
@@ -4163,7 +4286,17 @@
                             confetti({ particleCount: 40, spread: 40, origin: { y: 0.7 } });
                         } else {
                             this.quizState = 'correct';
-                            this.coins += this.quizCoinsEarned;
+                            
+                            if (this.isStoryQuiz) {
+                                this.coins += 30;
+                                this.xp += 50;
+                                // Still add the individual question coins? No, user said 30 coins for completion.
+                                // Actually handleCorrect adds 4 coins per question.
+                                // To be safe, I'll just add the bonus.
+                            } else {
+                                this.coins += this.quizCoinsEarned;
+                            }
+                            
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
                             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                             
