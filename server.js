@@ -260,9 +260,28 @@ app.get('/api/cron/daily-reminders', async (req, res) => {
     } catch (err) {
         console.error("Cron failed:", err);
         res.status(500).json({ error: err.message });
-    }
 });
 
+// Vercel Cron endpoint - fires once weekly (Monday) to reset weekly xp
+app.get('/api/cron/reset-weekly-xp', async (req, res) => {
+    try {
+        if (!supabase) throw new Error("Database not initialized");
+
+        // Update all rows where xp_this_week > 0 to be 0
+        const { error } = await supabase
+            .from('weekly_xp')
+            .update({ xp_this_week: 0 })
+            .gt('xp_this_week', 0);
+
+        if (error) throw error;
+
+        console.log("✅ Weekly XP reset successful");
+        res.json({ success: true, message: "Weekly XP reset successfully." });
+    } catch (err) {
+        console.error("Weekly XP reset failed:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 
 
