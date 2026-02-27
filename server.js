@@ -268,16 +268,61 @@ app.get('/api/cron/reset-weekly-xp', async (req, res) => {
     try {
         if (!supabase) throw new Error("Database not initialized");
 
-        // Update all rows where xp_this_week > 0 to be 0
-        const { error } = await supabase
+        // 1. Fetch the Top 3 learners from the CURRENT week before resetting
+        const { data: topLearners, error: fetchError } = await supabase
+            .from('weekly_xp')
+            .select('user_id, xp_this_week, week_number')
+            .gt('xp_this_week', 0)
+            .order('xp_this_week', { ascending: false })
+            .limit(3);
+
+        if (fetchError) throw fetchError;
+
+        // 2. Distribute coin rewards (1st: 300, 2nd: 200, 3rd: 100)
+        if (topLearners && topLearners.length > 0) {
+            const rewardAmounts = [300, 200, 100];
+            
+            for (let i = 0; i < topLearners.length; i++) {
+                const learner = topLearners[i];
+                const coinsToAward = rewardAmounts[i] || 0;
+                
+                // Fetch the user's current profile to update coins safely
+                const { data: userProfile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('learning_stats')
+                    .eq('id', learner.user_id)
+                    .single();
+                    
+                if (profileError || !userProfile) continue;
+                
+                // Safely add coins to learning_stats.inventory.coins (assuming frontend mirrors this)
+                // Note: Frontend currently stores coins natively in `this.coins`, but it syncs to `learning_stats`
+                let stats = userProfile.learning_stats || {};
+                
+                // Track historical leaderboard wins in their profile for potential UI popups later
+                if (!stats.leaderboard_wins) stats.leaderboard_wins = [];
+                stats.leaderboard_wins.push({
+                    week_number: learner.week_number,
+                    rank: i + 1,
+                    reward: coinsToAward,
+                    xp: learner.xp_this_week,
+                    claimed: false // Frontend can check this to show a celebration popup
+                });
+
+                await supabase.from('profiles').update({ learning_stats: stats }).eq('id', learner.user_id);
+            }
+        }
+
+        // 3. Update all rows where xp_this_week > 0 to be 0
+        const { error: resetError } = await supabase
             .from('weekly_xp')
             .update({ xp_this_week: 0 })
             .gt('xp_this_week', 0);
 
-        if (error) throw error;
+        if (resetError) throw resetError;
 
-        console.log("✅ Weekly XP reset successful");
-        res.json({ success: true, message: "Weekly XP reset successfully." });
+        console.log("✅ Weekly XP reset successful & Rewards Distributed!");
+        res.json({ success: true, message: "Weekly XP reset & rewarded successfully." });
     } catch (err) {
         console.error("Weekly XP reset failed:", err);
         res.status(500).json({ error: err.message });
