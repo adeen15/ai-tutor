@@ -380,6 +380,10 @@
 
         <div class="absolute top-4 right-4 flex flex-row items-center justify-end gap-1.5 sm:gap-4 z-40">
 
+            <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                <span class="text-xl sm:text-3xl">🏆</span>
+            </button>
+
             <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                 <span class="text-xl sm:text-3xl">🗺️</span>
             </button>
@@ -2150,6 +2154,60 @@
             </div>
         </div>
 
+        <!-- Weekly Leaderboard Modal -->
+        <div x-show="showLeaderboard" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-4" x-transition.opacity>
+            <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl relative animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
+                <button @click="showLeaderboard = false; toggleScroll(false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <div class="text-center mb-6">
+                    <div class="text-5xl mb-2">🏆</div>
+                    <h2 class="text-2xl font-kids text-slate-800">Weekly Leaderboard</h2>
+                    <p class="text-sm text-gray-500 font-bold uppercase tracking-wider">Top Learners This Week</p>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3">
+                    <template x-if="leaderboardData.length === 0">
+                        <div class="text-center py-8 text-gray-400">
+                            <i class="fas fa-spinner fa-spin text-3xl mb-3 text-blue-300"></i>
+                            <p class="font-bold text-sm">Fetching top learners...</p>
+                        </div>
+                    </template>
+                    <template x-for="(student, index) in leaderboardData" :key="student.user_id">
+                        <div class="flex items-center gap-4 p-3 rounded-2xl border transition-colors"
+                             :class="student.user_id === session?.user?.id ? 'bg-yellow-50 border-yellow-300 shadow-sm' : 'bg-gray-50 border-gray-100'">
+                            
+                            <!-- Rank -->
+                            <div class="w-8 flex-shrink-0 text-center">
+                                <span x-show="index === 0" class="text-2xl">🥇</span>
+                                <span x-show="index === 1" class="text-2xl">🥈</span>
+                                <span x-show="index === 2" class="text-2xl">🥉</span>
+                                <span x-show="index > 2" class="text-lg font-kids text-gray-400" x-text="'#' + (index + 1)"></span>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-700 text-sm sm:text-base" 
+                                   :class="student.user_id === session?.user?.id ? 'text-yellow-700' : ''"
+                                   x-text="student.formattedName"></p>
+                                <p x-show="student.user_id === session?.user?.id" class="text-[10px] font-bold text-yellow-500 uppercase">That's You!</p>
+                            </div>
+
+                            <!-- XP -->
+                            <div class="text-right flex-shrink-0">
+                                <p class="font-bold text-blue-600 text-sm sm:text-base"><span x-text="student.xp_this_week"></span> XP</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+                    <p class="text-[10px] sm:text-xs text-gray-400 font-bold uppercase">Resets every Monday</p>
+                </div>
+            </div>
+        </div>
+
         <script>
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js");
@@ -2297,6 +2355,11 @@
                     scrambledWords: [],
                     scrambledSelected: [],
                     quizCoinsEarned: 0,
+                    
+                    // Anonymous Weekly Leaderboard State
+                    showLeaderboard: false,
+                    leaderboardData: [],
+                    currentWeekNumber: 0,
 
 
 
@@ -3310,6 +3373,7 @@
                         
                         this.coins += 50;
                         this.xp += 100;
+                        this.incrementWeeklyXP(100);
                         if (!this.learningStats.quizzesCompleted) this.learningStats.quizzesCompleted = 0;
                         this.learningStats.quizzesCompleted++;
                         this.updateLevel();
@@ -4255,6 +4319,88 @@
                         }
                     },
 
+                    getWeekNumber(d) {
+                        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+                        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+                        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+                        return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+                    },
+
+                    async incrementWeeklyXP(amount) {
+                        if (!this.session || !this.session.user) return; // Must be logged in
+                        try {
+                            const childName = (this.childProfile && this.childProfile.name) ? this.childProfile.name : 
+                                              (this.savedProfile && this.savedProfile.name) ? this.savedProfile.name : "Student";
+                            const currentWeek = this.getWeekNumber(new Date());
+
+                            // Check if a row exists for this user and week
+                            let { data: existingRecords, error: fetchError } = await this.supabase
+                                .from('weekly_xp')
+                                .select('id, xp_this_week')
+                                .eq('user_id', this.session.user.id)
+                                .eq('week_number', currentWeek);
+
+                            if (fetchError) {
+                                console.error("Error fetching weekly xp:", fetchError);
+                                return;
+                            }
+
+                            if (existingRecords && existingRecords.length > 0) {
+                                // Update existing
+                                const recordId = existingRecords[0].id;
+                                const newXp = existingRecords[0].xp_this_week + amount;
+                                await this.supabase.from('weekly_xp')
+                                    .update({ xp_this_week: newXp, child_name: childName })
+                                    .eq('id', recordId);
+                            } else {
+                                // Insert new
+                                await this.supabase.from('weekly_xp')
+                                    .insert([
+                                        { 
+                                            user_id: this.session.user.id, 
+                                            child_name: childName, 
+                                            xp_this_week: amount, 
+                                            week_number: currentWeek 
+                                        }
+                                    ]);
+                            }
+                        } catch (e) {
+                            console.error("Failed to increment weekly XP:", e);
+                        }
+                    },
+
+                    async loadLeaderboard() {
+                        this.showLeaderboard = true;
+                        this.leaderboardData = []; // Clear previous
+                        this.currentWeekNumber = this.getWeekNumber(new Date());
+
+                        try {
+                            const { data, error } = await this.supabase
+                                .from('weekly_xp')
+                                .select('user_id, child_name, xp_this_week')
+                                .eq('week_number', this.currentWeekNumber)
+                                .order('xp_this_week', { ascending: false })
+                                .limit(10);
+
+                            if (error) throw error;
+                            
+                            // Format child_name to "Amira S."
+                            this.leaderboardData = data.map(row => {
+                                let formattedName = row.child_name;
+                                const parts = formattedName.trim().split(' ');
+                                if (parts.length > 1) {
+                                    formattedName = parts[0] + ' ' + parts[parts.length - 1].charAt(0).toUpperCase() + '.';
+                                }
+                                return {
+                                    ...row,
+                                    formattedName: formattedName
+                                };
+                            });
+                        } catch (err) {
+                            console.error("Error loading leaderboard:", err);
+                        }
+                    },
+
                     async syncData() {
                         if (!this.registeredEmail) return;
                         
@@ -4864,6 +5010,7 @@
                         this.userQuery = '';
                         this.currentMoodIcon = this.currentChar.mood_happy;
                         this.xp += 20;
+                        this.incrementWeeklyXP(20);
                         this.updateLevel();
                         this.playPing();
                         this.updateProgress(originalQuery, response);
@@ -5005,4 +5152,3 @@
         </script>
     </body>
     </html>
-
