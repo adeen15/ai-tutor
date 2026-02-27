@@ -380,10 +380,6 @@
 
         <div class="absolute top-4 right-4 flex flex-row flex-wrap justify-end gap-1.5 sm:gap-4 z-40 max-w-[50vw] sm:max-w-none">
 
-            <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
-                <span class="text-xl sm:text-3xl">🏆</span>
-            </button>
-
             <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                 <span class="text-xl sm:text-3xl">🗺️</span>
             </button>
@@ -405,6 +401,10 @@
 
             <button @click="openParentPortal()" class="bg-white p-2 border-b-4 border-gray-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform">
                 <span class="text-xl sm:text-2xl">🔒</span>
+            </button>
+
+            <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                <span class="text-xl sm:text-3xl">🏆</span>
             </button>
         </div>
 
