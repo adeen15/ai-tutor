@@ -378,7 +378,7 @@
 
         </div>
 
-        <div class="absolute top-4 right-4 flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-4 z-40">
+        <div class="absolute top-4 right-4 flex flex-col items-end gap-2 sm:gap-4 z-40">
             <div class="flex flex-row gap-1 sm:gap-4">
                 <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl sm:text-3xl">🗺️</span>
@@ -390,10 +390,6 @@
 
                 <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
                     <span class="text-xl sm:text-3xl">📕</span>
-                </button>
-
-                <button @click="generateStory()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
-                    <span class="text-xl sm:text-3xl">📖</span>
                 </button>
 
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
@@ -408,9 +404,15 @@
                 </button>
             </div>
 
-            <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
-                <span class="text-xl sm:text-3xl">🏆</span>
-            </button>
+            <div class="flex flex-row gap-2 sm:gap-4">
+                <button @click="generateStory()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
+                    <span class="text-xl sm:text-3xl">📖</span>
+                </button>
+
+                <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                    <span class="text-xl sm:text-3xl">🏆</span>
+                </button>
+            </div>
         </div>
 
         <div class="container max-w-6xl mx-auto px-4 pt-48 sm:pt-12 pb-8 sm:pb-12">
