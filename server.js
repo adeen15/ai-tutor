@@ -260,6 +260,7 @@ app.get('/api/cron/daily-reminders', async (req, res) => {
     } catch (err) {
         console.error("Cron failed:", err);
         res.status(500).json({ error: err.message });
+    }
 });
 
 // Vercel Cron endpoint - fires once weekly (Monday) to reset weekly xp
