@@ -2155,9 +2155,9 @@
         </div>
 
         <!-- Weekly Leaderboard Modal -->
-        <div x-show="showLeaderboard" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-4" x-transition.opacity>
-            <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl relative animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
-                <button @click="showLeaderboard = false; toggleScroll(false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+        <div x-show="showLeaderboard" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
+            <div @click.away="showLeaderboard = false; toggleScroll(false)" class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-yellow-200 overflow-y-auto flex flex-col">
+                <button @click="showLeaderboard = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10 transition-colors">
                     <i class="fas fa-times"></i>
                 </button>
 
