@@ -2794,15 +2794,7 @@
                             this.isLoading = false;
                             
                             // Show onboarding for first-time users after login
-                            // MODIFIED: Only show original if child onboarding is NOT active or already complete
-                            if (this.isLoggedIn && !this.hasCompletedOnboarding && !this.isChildOnboarding) {
-                                setTimeout(() => {
-                                    if (!this.isChildOnboarding) {
-                                        this.showOnboarding = true;
-                                        this.toggleScroll(true);
-                                    }
-                                }, 1000);
-                            }
+                            this.checkOnboarding();
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -4561,12 +4553,8 @@
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
                             
-                            // Check for Child Onboarding
-                            if (this.isLoggedIn && !this.learningStats.has_completed_child_onboarding) {
-                                this.isChildOnboarding = true;
-                                this.childOnboardingStep = 0;
-                                this.toggleScroll(true);
-                            }
+                            // Check for Onboarding
+                            this.checkOnboarding();
                         }
                     },
 
@@ -4748,20 +4736,11 @@
                         this.isChildOnboarding = false;
                         this.learningStats.has_completed_child_onboarding = true;
                         this.coins += 10;
-                        
-                        // Sequence: If original tutorial isn't done, show it now
-                        if (!this.hasCompletedOnboarding) {
-                            setTimeout(() => {
-                                this.showOnboarding = true;
-                                this.onboardingStep = 0;
-                                this.toggleScroll(true);
-                            }, 800);
-                        } else {
-                            this.toggleScroll(false);
-                        }
-
                         await this.syncData();
                         confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+                        
+                        // Sequence: Automatically check for the next onboarding step
+                        this.checkOnboarding();
                     },
 
                     async buyItem(item) {
@@ -4892,6 +4871,9 @@
                             this.pinInput = '';
                             this.playPing();
                             confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+                            
+                            // Trigger onboarding if needed after PIN verification
+                            this.checkOnboarding();
                         } else {
                             alert("Incorrect PIN. Please try again.");
                             this.pinInput = '';
@@ -5349,6 +5331,35 @@
                         }
                     },
                     
+                    checkOnboarding() {
+                        if (!this.isLoggedIn) return;
+
+                        // Priority 1: Child-First Onboarding
+                        if (!this.learningStats.has_completed_child_onboarding) {
+                            if (!this.isChildOnboarding) {
+                                this.isChildOnboarding = true;
+                                this.childOnboardingStep = 0;
+                                this.toggleScroll(true);
+                            }
+                            return;
+                        }
+
+                        // Priority 2: Original Onboarding Tutorial
+                        if (!this.hasCompletedOnboarding && !this.showOnboarding) {
+                            setTimeout(() => {
+                                if (!this.isChildOnboarding && !this.hasCompletedOnboarding) {
+                                    this.showOnboarding = true;
+                                    this.onboardingStep = 0;
+                                    this.toggleScroll(true);
+                                } else {
+                                    this.toggleScroll(false);
+                                }
+                            }, 1000);
+                        } else {
+                            this.toggleScroll(false);
+                        }
+                    },
+
                     completeOnboarding() {
                         const isFirstTime = !this.hasCompletedOnboarding;
                         this.hasCompletedOnboarding = true;
