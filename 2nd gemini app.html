@@ -2794,10 +2794,13 @@
                             this.isLoading = false;
                             
                             // Show onboarding for first-time users after login
-                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
+                            // MODIFIED: Only show original if child onboarding is NOT active or already complete
+                            if (this.isLoggedIn && !this.hasCompletedOnboarding && !this.isChildOnboarding) {
                                 setTimeout(() => {
-                                    this.showOnboarding = true;
-                                    this.toggleScroll(true);
+                                    if (!this.isChildOnboarding) {
+                                        this.showOnboarding = true;
+                                        this.toggleScroll(true);
+                                    }
                                 }, 1000);
                             }
                         }
@@ -4745,7 +4748,18 @@
                         this.isChildOnboarding = false;
                         this.learningStats.has_completed_child_onboarding = true;
                         this.coins += 10;
-                        this.toggleScroll(false);
+                        
+                        // Sequence: If original tutorial isn't done, show it now
+                        if (!this.hasCompletedOnboarding) {
+                            setTimeout(() => {
+                                this.showOnboarding = true;
+                                this.onboardingStep = 0;
+                                this.toggleScroll(true);
+                            }, 800);
+                        } else {
+                            this.toggleScroll(false);
+                        }
+
                         await this.syncData();
                         confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
                     },
