@@ -3004,7 +3004,7 @@
                         }
                     },
 
-                    async speak(text) {
+                     async speak(text, onEnd = null) {
                         this.unlockAudio();
 
                         if (this.currentAudio) {
@@ -3013,7 +3013,10 @@
                         }
                         this.isSpeaking = false;
 
-                        if (!text) return;
+                        if (!text) {
+                            if (onEnd) onEnd();
+                            return;
+                        }
 
                         try {
                             const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
@@ -3043,17 +3046,18 @@
                                     this.startListening();
                                 }
                                 URL.revokeObjectURL(url);
+                                if (onEnd) onEnd();
                             };
                             this.currentAudio.onerror = (e) => { 
                                 console.error("Audio playback error:", e);
-                                this.speakNative(text); // Fallback on playback error
+                                this.speakNative(text, onEnd); // Pass onEnd to fallback
                                 URL.revokeObjectURL(url);
                             };
                             
                             await this.currentAudio.play();
                         } catch (e) {
                             console.warn("Cloud TTS failed, using browser fallback:", e.message);
-                            this.speakNative(text);
+                            this.speakNative(text, onEnd);
                         }
                     },
 
@@ -3134,18 +3138,19 @@
                         const subject = this.currentChar.subject;
 
                         try {
-                            const systemPrompt = `You are an AI Educational Dialogue Generator for kids.
+                            const systemPrompt = `You are an AI Educational Dialogue Generator.
                             TARGET AGE: ${ageRange}.
                             SUBJECT: ${subject}.
                             
-                            Write a fun, engaging 2-minute educational dialogue between two kids (Kid A and Kid B) talking about the subject.
-                            The dialogue should be educational, easy to understand, and enthusiastic.
-                            Include about 10-12 exchanges.
+                            Write a fun, LONG educational dialogue between two adventurous kids (Kid A and Kid B) talking about the subject.
+                            Length goal: 2 minutes of speech (approx 15-20 interesting exchanges).
+                            Make it extremely engaging, like a mini-podcast for kids.
                             
-                            Return strictly JSON in this format: 
+                            Return STRICTLY JSON. NO MARKDOWN, NO EXPLANATION.
+                            Format: 
                             [
-                                {"speaker": "Kid A", "text": "..."},
-                                {"speaker": "Kid B", "text": "..."},
+                                {"speaker": "Kid A", "text": "Wow, did you know that..."},
+                                {"speaker": "Kid B", "text": "No way! That sounds like..."},
                                 ...
                             ]`;
 
@@ -3155,24 +3160,29 @@
                                 body: JSON.stringify({
                                     "messages": [
                                         { "role": "system", "content": systemPrompt },
-                                        { "role": "user", "content": `Write a dialogue about ${subject}!` }
+                                        { "role": "user", "content": `Start a long educational conversation about ${subject}!` }
                                     ]
                                 })
                             });
 
                             const data = await response.json();
-                            let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
-                            this.listenDialogue = JSON.parse(cleanJson);
+                            let rawResponse = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response));
+                            let cleanJson = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                            
+                            // Validate if it's an array
+                            const parsed = JSON.parse(cleanJson);
+                            this.listenDialogue = Array.isArray(parsed) ? parsed : [{speaker: "Narrator", text: cleanJson}];
+                            
                             this.isListenThinking = false;
-
-                            // Start sequential playback
                             this.playNextListenLine();
 
                         } catch (e) {
                             console.error("Listen Mode Error", e);
                             this.listenDialogue = [
                                 { "speaker": "Kid A", "text": `Hey! Did you know learning about ${subject} is super cool?` },
-                                { "speaker": "Kid B", "text": "It really is! There are so many amazing things to discover!" }
+                                { "speaker": "Kid B", "text": "It really is! There are so many amazing things to discover!" },
+                                { "speaker": "Kid A", "text": "I love how everything fits together in science!" },
+                                { "speaker": "Kid B", "text": "Exactly! It's like solving a giant mystery about the world." }
                             ];
                             this.isListenThinking = false;
                             this.playNextListenLine();
@@ -3184,21 +3194,20 @@
 
                         if (this.currentListenIndex < this.listenDialogue.length) {
                             const line = this.listenDialogue[this.currentListenIndex];
-                            this.speak(line.text);
                             
-                            // Attach one-time ended handler for sequential playback
-                            const originalOnEnded = this.currentAudio.onended;
-                            this.currentAudio.onended = () => {
-                                if (originalOnEnded) originalOnEnded();
+                            // Use the new callback for sequential playback
+                            this.speak(line.text, () => {
                                 this.currentListenIndex++;
-                                setTimeout(() => this.playNextListenLine(), 800);
-                            };
+                                setTimeout(() => this.playNextListenLine(), 1000);
+                            });
                         } else {
                             // Finished dialogue
                             setTimeout(() => {
-                                this.showListenModal = false;
-                                this.toggleScroll(false);
-                            }, 2000);
+                                if (this.showListenModal) {
+                                    this.showListenModal = false;
+                                    this.toggleScroll(false);
+                                }
+                            }, 3000);
                         }
                     },
 
@@ -3208,8 +3217,7 @@
                         this.toggleScroll(false);
                     },
 
-                    speakNative(text) {
-
+                    speakNative(text, onEnd = null) {
                         console.log("📢 Using Browser Native Speech Synthesis Fallback");
                         this.stopSpeaking();
                         this.isSpeaking = true;
@@ -3252,10 +3260,12 @@
                             if (this.isVoiceNativeMode) {
                                 this.startListening();
                             }
+                            if (onEnd) onEnd();
                         };
                         msg.onerror = (err) => {
                             console.error("Native Speech Error:", err);
                             this.isSpeaking = false;
+                            if (onEnd) onEnd();
                         };
 
                         window.speechSynthesis.speak(msg);
