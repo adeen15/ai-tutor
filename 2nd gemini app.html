@@ -125,33 +125,6 @@
                 .safe-badge { font-size: 7px; padding: 2px 8px; }
             }
 
-            /* --- LISTEN MODE WAVEFORM --- */
-            .waveform {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                height: 100px;
-            }
-            .waveform-bar {
-                width: 12px;
-                background: #ec4899;
-                border-radius: 10px;
-                animation: wave-bounce 1s ease-in-out infinite;
-                box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
-            }
-            @keyframes wave-bounce {
-                0%, 100% { height: 20px; opacity: 0.5; }
-                50% { height: 80px; opacity: 1; }
-            }
-            .waveform-bar:nth-child(2) { animation-delay: 0.1s; background: #f472b6; }
-            .waveform-bar:nth-child(3) { animation-delay: 0.2s; background: #db2777; }
-            .waveform-bar:nth-child(4) { animation-delay: 0.3s; background: #ec4899; }
-            .waveform-bar:nth-child(5) { animation-delay: 0.4s; background: #f472b6; }
-            .waveform-bar:nth-child(6) { animation-delay: 0.5s; background: #db2777; }
-            .waveform-bar:nth-child(7) { animation-delay: 0.6s; background: #ec4899; }
-            .waveform-bar:nth-child(8) { animation-delay: 0.7s; background: #f472b6; }
-
            @media print {
     body * { visibility: hidden; }
     #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area * { visibility: visible; }
@@ -438,10 +411,6 @@
 
                 <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl sm:text-3xl">🏆</span>
-                </button>
-
-                <button @click="startListenMode()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-400" title="Listen & Learn Mode">
-                    <span class="text-xl sm:text-3xl">🎧</span>
                 </button>
             </div>
         </div>
@@ -1806,45 +1775,6 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                     <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-smile-beam text-pink-500"></i> Emotional Insights (New)
-                                    </h3>
-                                    <div class="space-y-4 min-h-[200px] flex flex-col justify-center">
-                                        <template x-for="insight in getEmotionalInsights()">
-                                            <div class="flex items-start gap-3 p-3 rounded-xl" :class="insight.color">
-                                                <div class="text-2xl" x-text="insight.icon"></div>
-                                                <div>
-                                                    <p class="text-xs font-bold uppercase" x-text="insight.subject"></p>
-                                                    <p class="text-sm font-semibold text-slate-700" x-text="insight.text"></p>
-                                                </div>
-                                            </div>
-                                        </template>
-                                        <div x-show="parentLogs.length < 3" class="text-center py-4 text-gray-400 text-xs italic">
-                                            Asking more questions will reveal emotional patterns!
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                    <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-chart-pie text-indigo-500"></i> Learning Mood Trend
-                                    </h3>
-                                    <div class="h-40 flex items-end justify-between px-4 pb-2 border-b-2 border-slate-50 gap-2">
-                                        <template x-for="mood in getMoodStats()">
-                                            <div class="flex-1 flex flex-col items-center">
-                                                <div class="w-full rounded-t-lg transition-all duration-1000" 
-                                                    :class="mood.bg"
-                                                    :style="'height: ' + mood.percent + '%'"></div>
-                                                <span class="text-[10px] font-bold text-slate-400 mt-2 uppercase" x-text="mood.label"></span>
-                                            </div>
-                                        </template>
-                                    </div>
-                                    <p class="text-[10px] text-center text-slate-400 font-bold uppercase mt-4 tracking-widest">Aggregate Sentiment Analysis</p>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
                                     <div class="flex justify-between items-start">
                                         <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i>Membership</h3>
@@ -2321,52 +2251,6 @@
             </div>
         </div>
 
-        <!-- Listen & Learn Audio Mode Modal -->
-        <div x-show="showListenModal" x-cloak class="fixed inset-0 z-[170] bg-indigo-900/95 flex items-center justify-center p-6" x-transition.opacity>
-            <div class="bg-white rounded-[3rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__pulse animate__infinite animate__slow text-center border-4 border-indigo-200">
-                
-                <div class="mb-8">
-                    <div class="text-6xl mb-4">🎧</div>
-                    <h2 class="text-3xl font-kids text-indigo-600 mb-2">Listen & Learn</h2>
-                    <p class="text-gray-500 font-bold uppercase tracking-widest text-sm" x-text="'Exploring ' + currentChar.subject"></p>
-                </div>
-
-                <!-- Loading State -->
-                <div x-show="isListenThinking" class="py-12">
-                    <div class="spinner mx-auto mb-6 border-indigo-400"></div>
-                    <p class="font-kids text-indigo-500 animate-pulse">Writing a magic dialogue...</p>
-                </div>
-
-                <!-- Playback State -->
-                <div x-show="!isListenThinking" class="py-8">
-                    <!-- Animated Waveform -->
-                    <div class="waveform mb-8">
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                    </div>
-
-                    <div class="bg-indigo-50 p-6 rounded-2xl border-2 border-indigo-100 mb-8">
-                        <p class="text-indigo-800 font-kids text-xl leading-relaxed" x-text="listenDialogue[currentListenIndex]?.text || 'Listening...'"></p>
-                        <p class="text-xs font-bold text-indigo-400 mt-3 uppercase tracking-widest" x-text="listenDialogue[currentListenIndex]?.speaker"></p>
-                    </div>
-
-                    <button @click="stopListenMode()" class="px-8 py-3 bg-red-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-red-600 transition-all transform hover:scale-105 active:scale-95">
-                        Stop Listening 🛑
-                    </button>
-                </div>
-
-                <div class="mt-4">
-                    <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">Screen-Free Learning Mode</p>
-                </div>
-            </div>
-        </div>
-
         <script>
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js");
@@ -2545,12 +2429,6 @@
                     pathProgress: {}, 
                     selectedCertificatePath: null,
                     isGeneratingPath: false,
-
-                    // --- LISTEN MODE STATE ---
-                    showListenModal: false,
-                    isListenThinking: false,
-                    listenDialogue: [],
-                    currentListenIndex: 0,
 
                     availableBadges: [
                         { id: 'first_question', name: 'Curious Explorer', icon: '🔍', desc: 'Asked your first question!' },
@@ -3004,7 +2882,7 @@
                         }
                     },
 
-                     async speak(text, onEnd = null) {
+                    async speak(text) {
                         this.unlockAudio();
 
                         if (this.currentAudio) {
@@ -3013,10 +2891,7 @@
                         }
                         this.isSpeaking = false;
 
-                        if (!text) {
-                            if (onEnd) onEnd();
-                            return;
-                        }
+                        if (!text) return;
 
                         try {
                             const cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
@@ -3042,22 +2917,18 @@
                             this.currentAudio.onplay = () => { this.isSpeaking = true; };
                             this.currentAudio.onended = () => { 
                                 this.isSpeaking = false; 
-                                if (this.isVoiceNativeMode) {
-                                    this.startListening();
-                                }
                                 URL.revokeObjectURL(url);
-                                if (onEnd) onEnd();
                             };
                             this.currentAudio.onerror = (e) => { 
                                 console.error("Audio playback error:", e);
-                                this.speakNative(text, onEnd); // Pass onEnd to fallback
+                                this.speakNative(text); // Fallback on playback error
                                 URL.revokeObjectURL(url);
                             };
                             
                             await this.currentAudio.play();
                         } catch (e) {
                             console.warn("Cloud TTS failed, using browser fallback:", e.message);
-                            this.speakNative(text, onEnd);
+                            this.speakNative(text);
                         }
                     },
 
@@ -3126,99 +2997,9 @@
                         } catch (e) { console.error("Intro sound error", e); }
                     },
 
-                    async startListenMode() {
-                        this.showListenModal = true;
-                        this.isListenThinking = true;
-                        this.listenDialogue = [];
-                        this.currentListenIndex = 0;
-                        this.toggleScroll(true);
-                        this.stopSpeaking();
-
-                        const ageRange = this.childProfile.ageRange || '6-7';
-                        const subject = this.currentChar.subject;
-
-                        try {
-                            const systemPrompt = `You are an AI Educational Dialogue Generator.
-                            TARGET AGE: ${ageRange}.
-                            SUBJECT: ${subject}.
-                            
-                            Write a fun, LONG educational dialogue between two adventurous kids (Kid A and Kid B) talking about the subject.
-                            Length goal: 2 minutes of speech (approx 15-20 interesting exchanges).
-                            Make it extremely engaging, like a mini-podcast for kids.
-                            
-                            Return STRICTLY JSON. NO MARKDOWN, NO EXPLANATION.
-                            Format: 
-                            [
-                                {"speaker": "Kid A", "text": "Wow, did you know that..."},
-                                {"speaker": "Kid B", "text": "No way! That sounds like..."},
-                                ...
-                            ]`;
-
-                            const response = await fetch("/api/chat", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    "messages": [
-                                        { "role": "system", "content": systemPrompt },
-                                        { "role": "user", "content": `Start a long educational conversation about ${subject}!` }
-                                    ]
-                                })
-                            });
-
-                            const data = await response.json();
-                            let rawResponse = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response));
-                            let cleanJson = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                            
-                            // Validate if it's an array
-                            const parsed = JSON.parse(cleanJson);
-                            this.listenDialogue = Array.isArray(parsed) ? parsed : [{speaker: "Narrator", text: cleanJson}];
-                            
-                            this.isListenThinking = false;
-                            this.playNextListenLine();
-
-                        } catch (e) {
-                            console.error("Listen Mode Error", e);
-                            this.listenDialogue = [
-                                { "speaker": "Kid A", "text": `Hey! Did you know learning about ${subject} is super cool?` },
-                                { "speaker": "Kid B", "text": "It really is! There are so many amazing things to discover!" },
-                                { "speaker": "Kid A", "text": "I love how everything fits together in science!" },
-                                { "speaker": "Kid B", "text": "Exactly! It's like solving a giant mystery about the world." }
-                            ];
-                            this.isListenThinking = false;
-                            this.playNextListenLine();
-                        }
-                    },
-
-                    playNextListenLine() {
-                        if (!this.showListenModal) return;
-
-                        if (this.currentListenIndex < this.listenDialogue.length) {
-                            const line = this.listenDialogue[this.currentListenIndex];
-                            
-                            // Use the new callback for sequential playback
-                            this.speak(line.text, () => {
-                                this.currentListenIndex++;
-                                setTimeout(() => this.playNextListenLine(), 1000);
-                            });
-                        } else {
-                            // Finished dialogue
-                            setTimeout(() => {
-                                if (this.showListenModal) {
-                                    this.showListenModal = false;
-                                    this.toggleScroll(false);
-                                }
-                            }, 3000);
-                        }
-                    },
-
-                    stopListenMode() {
-                        this.showListenModal = false;
-                        this.stopSpeaking();
-                        this.toggleScroll(false);
-                    },
-
-                    speakNative(text, onEnd = null) {
+                    speakNative(text) {
                         console.log("📢 Using Browser Native Speech Synthesis Fallback");
+                        this.unlockAudio(); // Ensure context is ready
                         this.stopSpeaking();
                         this.isSpeaking = true;
                         
@@ -3260,12 +3041,10 @@
                             if (this.isVoiceNativeMode) {
                                 this.startListening();
                             }
-                            if (onEnd) onEnd();
                         };
                         msg.onerror = (err) => {
                             console.error("Native Speech Error:", err);
                             this.isSpeaking = false;
-                            if (onEnd) onEnd();
                         };
 
                         window.speechSynthesis.speak(msg);
