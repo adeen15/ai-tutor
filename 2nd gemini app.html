@@ -125,6 +125,33 @@
                 .safe-badge { font-size: 7px; padding: 2px 8px; }
             }
 
+            /* --- LISTEN MODE WAVEFORM --- */
+            .waveform {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                height: 100px;
+            }
+            .waveform-bar {
+                width: 12px;
+                background: #ec4899;
+                border-radius: 10px;
+                animation: wave-bounce 1s ease-in-out infinite;
+                box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+            }
+            @keyframes wave-bounce {
+                0%, 100% { height: 20px; opacity: 0.5; }
+                50% { height: 80px; opacity: 1; }
+            }
+            .waveform-bar:nth-child(2) { animation-delay: 0.1s; background: #f472b6; }
+            .waveform-bar:nth-child(3) { animation-delay: 0.2s; background: #db2777; }
+            .waveform-bar:nth-child(4) { animation-delay: 0.3s; background: #ec4899; }
+            .waveform-bar:nth-child(5) { animation-delay: 0.4s; background: #f472b6; }
+            .waveform-bar:nth-child(6) { animation-delay: 0.5s; background: #db2777; }
+            .waveform-bar:nth-child(7) { animation-delay: 0.6s; background: #ec4899; }
+            .waveform-bar:nth-child(8) { animation-delay: 0.7s; background: #f472b6; }
+
            @media print {
     body * { visibility: hidden; }
     #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area * { visibility: visible; }
@@ -411,6 +438,10 @@
 
                 <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl sm:text-3xl">🏆</span>
+                </button>
+
+                <button @click="startListenMode()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-400" title="Listen & Learn Mode">
+                    <span class="text-xl sm:text-3xl">🎧</span>
                 </button>
             </div>
         </div>
@@ -2290,6 +2321,52 @@
             </div>
         </div>
 
+        <!-- Listen & Learn Audio Mode Modal -->
+        <div x-show="showListenModal" x-cloak class="fixed inset-0 z-[170] bg-indigo-900/95 flex items-center justify-center p-6" x-transition.opacity>
+            <div class="bg-white rounded-[3rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__pulse animate__infinite animate__slow text-center border-4 border-indigo-200">
+                
+                <div class="mb-8">
+                    <div class="text-6xl mb-4">🎧</div>
+                    <h2 class="text-3xl font-kids text-indigo-600 mb-2">Listen & Learn</h2>
+                    <p class="text-gray-500 font-bold uppercase tracking-widest text-sm" x-text="'Exploring ' + currentChar.subject"></p>
+                </div>
+
+                <!-- Loading State -->
+                <div x-show="isListenThinking" class="py-12">
+                    <div class="spinner mx-auto mb-6 border-indigo-400"></div>
+                    <p class="font-kids text-indigo-500 animate-pulse">Writing a magic dialogue...</p>
+                </div>
+
+                <!-- Playback State -->
+                <div x-show="!isListenThinking" class="py-8">
+                    <!-- Animated Waveform -->
+                    <div class="waveform mb-8">
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                    </div>
+
+                    <div class="bg-indigo-50 p-6 rounded-2xl border-2 border-indigo-100 mb-8">
+                        <p class="text-indigo-800 font-kids text-xl leading-relaxed" x-text="listenDialogue[currentListenIndex]?.text || 'Listening...'"></p>
+                        <p class="text-xs font-bold text-indigo-400 mt-3 uppercase tracking-widest" x-text="listenDialogue[currentListenIndex]?.speaker"></p>
+                    </div>
+
+                    <button @click="stopListenMode()" class="px-8 py-3 bg-red-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-red-600 transition-all transform hover:scale-105 active:scale-95">
+                        Stop Listening 🛑
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">Screen-Free Learning Mode</p>
+                </div>
+            </div>
+        </div>
+
         <script>
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js");
@@ -2468,6 +2545,12 @@
                     pathProgress: {}, 
                     selectedCertificatePath: null,
                     isGeneratingPath: false,
+
+                    // --- LISTEN MODE STATE ---
+                    showListenModal: false,
+                    isListenThinking: false,
+                    listenDialogue: [],
+                    currentListenIndex: 0,
 
                     availableBadges: [
                         { id: 'first_question', name: 'Curious Explorer', icon: '🔍', desc: 'Asked your first question!' },
@@ -3039,7 +3122,94 @@
                         } catch (e) { console.error("Intro sound error", e); }
                     },
 
+                    async startListenMode() {
+                        this.showListenModal = true;
+                        this.isListenThinking = true;
+                        this.listenDialogue = [];
+                        this.currentListenIndex = 0;
+                        this.toggleScroll(true);
+                        this.stopSpeaking();
+
+                        const ageRange = this.childProfile.ageRange || '6-7';
+                        const subject = this.currentChar.subject;
+
+                        try {
+                            const systemPrompt = `You are an AI Educational Dialogue Generator for kids.
+                            TARGET AGE: ${ageRange}.
+                            SUBJECT: ${subject}.
+                            
+                            Write a fun, engaging 2-minute educational dialogue between two kids (Kid A and Kid B) talking about the subject.
+                            The dialogue should be educational, easy to understand, and enthusiastic.
+                            Include about 10-12 exchanges.
+                            
+                            Return strictly JSON in this format: 
+                            [
+                                {"speaker": "Kid A", "text": "..."},
+                                {"speaker": "Kid B", "text": "..."},
+                                ...
+                            ]`;
+
+                            const response = await fetch("/api/chat", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    "messages": [
+                                        { "role": "system", "content": systemPrompt },
+                                        { "role": "user", "content": `Write a dialogue about ${subject}!` }
+                                    ]
+                                })
+                            });
+
+                            const data = await response.json();
+                            let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
+                            this.listenDialogue = JSON.parse(cleanJson);
+                            this.isListenThinking = false;
+
+                            // Start sequential playback
+                            this.playNextListenLine();
+
+                        } catch (e) {
+                            console.error("Listen Mode Error", e);
+                            this.listenDialogue = [
+                                { "speaker": "Kid A", "text": `Hey! Did you know learning about ${subject} is super cool?` },
+                                { "speaker": "Kid B", "text": "It really is! There are so many amazing things to discover!" }
+                            ];
+                            this.isListenThinking = false;
+                            this.playNextListenLine();
+                        }
+                    },
+
+                    playNextListenLine() {
+                        if (!this.showListenModal) return;
+
+                        if (this.currentListenIndex < this.listenDialogue.length) {
+                            const line = this.listenDialogue[this.currentListenIndex];
+                            this.speak(line.text);
+                            
+                            // Attach one-time ended handler for sequential playback
+                            const originalOnEnded = this.currentAudio.onended;
+                            this.currentAudio.onended = () => {
+                                if (originalOnEnded) originalOnEnded();
+                                this.currentListenIndex++;
+                                setTimeout(() => this.playNextListenLine(), 800);
+                            };
+                        } else {
+                            // Finished dialogue
+                            setTimeout(() => {
+                                this.showListenModal = false;
+                                this.toggleScroll(false);
+                            }, 2000);
+                        }
+                    },
+
+                    stopListenMode() {
+                        this.showListenModal = false;
+                        this.stopSpeaking();
+                        this.toggleScroll(false);
+                    },
+
                     speakNative(text) {
+
                         console.log("📢 Using Browser Native Speech Synthesis Fallback");
                         this.stopSpeaking();
                         this.isSpeaking = true;
