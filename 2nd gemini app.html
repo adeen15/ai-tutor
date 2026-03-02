@@ -358,10 +358,10 @@
                 </div>
 
                 <!-- Streak Display -->
-                <div x-show="streak > 0" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
+                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
                     <span class="text-xl sm:text-3xl">🔥</span>
                     <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
-                </div>
+                </button>
 
                 <!-- Learning Score Badge -->
                 <div class="daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
@@ -3502,6 +3502,7 @@
                         this.incrementWeeklyXP(100);
                         if (!this.learningStats.quizzesCompleted) this.learningStats.quizzesCompleted = 0;
                         this.learningStats.quizzesCompleted++;
+                        this.updateDailyStreak();
                         this.updateLevel();
                         this.checkAchievements();
                         await this.syncData();
@@ -4364,6 +4365,7 @@
                             }
                             
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
+                            this.updateDailyStreak();
                             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                             
                             // Exit review mode
@@ -5140,17 +5142,13 @@
                         reader.readAsDataURL(this.visionFile);
                     },
 
-                    async askTutor() {
-                        if (!this.userQuery.trim()) return;
-
-                        // --- DAILY STREAK LOGIC ---
+                    updateDailyStreak() {
                         const today = new Date().toDateString();
                         if (this.lastStreakDate !== today) {
                             if (!this.lastStreakDate) {
                                 // First time ever
                                 this.streak = 1;
                             } else {
-                                const lastDate = new Date(this.lastStreakDate);
                                 const yesterday = new Date();
                                 yesterday.setDate(yesterday.getDate() - 1);
                                 
@@ -5176,6 +5174,13 @@
                             this.learningStats.last_streak_date = this.lastStreakDate;
                             this.learningStats.streak_freeze_used = this.streakFreezeUsed;
                         }
+                    },
+
+                    async askTutor() {
+                        if (!this.userQuery.trim()) return;
+
+                        // --- DAILY STREAK LOGIC ---
+                        this.updateDailyStreak();
 
                         if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
                             this.showPremiumModal = true;
