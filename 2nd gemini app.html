@@ -344,7 +344,7 @@
 
         
         <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
-            <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-16 h-16 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
+            <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
                 <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
                 <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
             </button>
@@ -364,7 +364,7 @@
                 </div>
 
                 <!-- Learning Score Badge -->
-                <div class="daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-16 h-14 sm:w-32 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
+                <div class="daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
                     <span class="text-[8px] sm:text-[10px] font-bold text-indigo-100 uppercase tracking-widest leading-none mb-1">Learning Score</span>
                     <span class="font-kids text-xs sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
