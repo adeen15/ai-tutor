@@ -341,6 +341,61 @@
                 </div>
             </div>
         </div>
+
+        <!-- CHILD-FIRST ONBOARDING OVERLAY -->
+        <div x-show="isChildOnboarding" x-cloak class="fixed inset-0 z-[150] bg-blue-500 flex items-center justify-center p-4 overflow-hidden">
+            <div class="absolute inset-0 opacity-20">
+                <div class="absolute top-10 left-10 text-6xl animate-bounce">⭐</div>
+                <div class="absolute bottom-20 right-10 text-6xl animate-pulse">🎨</div>
+                <div class="absolute top-1/2 left-20 text-6xl animate-bounce" style="animation-delay: 1s">🚀</div>
+            </div>
+
+            <div class="bg-white rounded-[3rem] w-full max-w-2xl p-8 sm:p-12 text-center shadow-2xl relative animate__animated animate__zoomIn border-8 border-white/30">
+                <!-- Step 0: Welcome -->
+                <div x-show="childOnboardingStep === 0" class="animate__animated animate__fadeIn">
+                    <div class="text-9xl mb-8 char-float">🦖</div>
+                    <h2 class="text-4xl sm:text-5xl font-kids text-slate-800 mb-4">Hi <span class="text-blue-500" x-text="childProfile.name"></span>!</h2>
+                    <p class="text-2xl text-slate-500 font-bold mb-8 italic">Want to meet your first teacher?</p>
+                    <button @click="childOnboardingStep = 1; speak('Hi ' + childProfile.name + '! I am Professor Dino. I am so excited to meet you! Can you help me with a quick question?')" 
+                            class="px-12 py-5 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 rounded-2xl font-kids text-3xl shadow-lg transform hover:scale-110 transition-all border-b-8 border-yellow-600">
+                        YES! 🚀
+                    </button>
+                </div>
+
+                <!-- Step 1: Simple Question -->
+                <div x-show="childOnboardingStep === 1" class="animate__animated animate__fadeIn">
+                    <div class="text-8xl mb-6 wiggle-speak">🦖</div>
+                    <h3 class="text-3xl font-kids text-slate-800 mb-8">What is 2 plus 2?</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <template x-for="opt in [3, 4, 5]">
+                            <button @click="answerChildOnboarding(opt)" 
+                                    class="py-6 bg-blue-50 border-4 border-blue-200 rounded-3xl text-4xl font-kids text-blue-600 hover:bg-blue-500 hover:text-white hover:border-blue-600 transition-all transform hover:scale-105"
+                                    x-text="opt">
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Step 2: Reward -->
+                <div x-show="childOnboardingStep === 2" class="animate__animated animate__fadeIn">
+                    <div class="text-9xl mb-6">🎉</div>
+                    <h2 class="text-4xl font-kids text-green-500 mb-2">You are amazing!</h2>
+                    <p class="text-2xl text-slate-600 font-bold mb-8 uppercase tracking-widest">Learning starts NOW!</p>
+                    
+                    <div class="bg-yellow-50 p-6 rounded-3xl border-4 border-yellow-200 inline-block mb-8 animate__animated animate__bounceIn">
+                        <div class="flex items-center gap-4">
+                            <span class="text-5xl">💰</span>
+                            <span class="text-4xl font-kids text-yellow-700">+10 COINS</span>
+                        </div>
+                    </div>
+
+                    <button @click="completeChildOnboarding()" 
+                            class="w-full py-5 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-3xl shadow-xl transform hover:scale-105 transition-all border-b-8 border-green-700">
+                        LET'S GO! 🎒
+                    </button>
+                </div>
+            </div>
+        </div>
         
         <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
             <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-16 h-16 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
@@ -3514,6 +3569,8 @@
                         this.leaderboardRewardData = null;
                         this.currentChar = this.characters[0];
                         this.displayText = `Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?`;
+                        this.isChildOnboarding = false;
+                        this.childOnboardingStep = 0;
                     },
 
                     // --- MULTI-CHILD MANAGEMENT ---
@@ -3737,7 +3794,8 @@
                             inventory: [],
                             equipped_item: null,
                             path_progress: {},
-                            quizHistory: []
+                            quizHistory: [],
+                            has_completed_child_onboarding: false
                         };
 
                         // 3. Populate sub-states from learningStats
@@ -4499,6 +4557,13 @@
                             clearTimeout(loginTimeout); // Clear the safety timer
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
+                            
+                            // Check for Child Onboarding
+                            if (this.isLoggedIn && !this.learningStats.has_completed_child_onboarding) {
+                                this.isChildOnboarding = true;
+                                this.childOnboardingStep = 0;
+                                this.toggleScroll(true);
+                            }
                         }
                     },
 
@@ -4611,6 +4676,7 @@
                         safeStats.equipped_item = this.equippedItem; // Save equipped item to JSON blob
                         safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum)); // Persist newly generated quests
                         safeStats.has_completed_onboarding = this.hasCompletedOnboarding;
+                        safeStats.has_completed_child_onboarding = this.learningStats.has_completed_child_onboarding;
                         
                         // Persist Monthly Quotas
                         safeStats.monthly_quests_used = this.monthlyQuestsUsed;
@@ -4659,11 +4725,29 @@
 
 
                     toggleScroll(disable) {
-                        if (disable) {
-                            document.body.classList.add('no-scroll');
+                        if (disable) document.body.classList.add('no-scroll');
+                        else document.body.classList.remove('no-scroll');
+                    },
+
+                    // --- CHILD-FIRST ONBOARDING ---
+                    answerChildOnboarding(val) {
+                        if (val === 4) {
+                            this.childOnboardingStep = 2;
+                            this.playPing();
+                            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                            this.speak("Exactly! You are a math genius! You earned 10 bonus coins to start your journey!");
                         } else {
-                            document.body.classList.remove('no-scroll');
+                            this.speak("Not quite! Try again, friend!");
                         }
+                    },
+
+                    async completeChildOnboarding() {
+                        this.isChildOnboarding = false;
+                        this.learningStats.has_completed_child_onboarding = true;
+                        this.coins += 10;
+                        this.toggleScroll(false);
+                        await this.syncData();
+                        confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
                     },
 
                     async buyItem(item) {
