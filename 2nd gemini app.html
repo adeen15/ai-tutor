@@ -2269,9 +2269,10 @@
                                 <p x-show="student.user_id === session?.user?.id" class="text-[10px] font-bold text-yellow-500 uppercase">That's You!</p>
                             </div>
 
-                            <!-- XP -->
+                            <!-- Score -->
                             <div class="text-right flex-shrink-0">
-                                <p class="font-bold text-blue-600 text-sm sm:text-base"><span x-text="student.xp_this_week"></span> XP</p>
+                                <p class="font-bold text-blue-600 text-sm sm:text-base"><span x-text="student.learning_score"></span> Score</p>
+                                <p class="text-[9px] text-gray-400 font-bold uppercase"><span x-text="student.xp_this_week"></span> XP</p>
                             </div>
                         </div>
                     </template>
@@ -3541,7 +3542,8 @@
                             emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
                             achievements: [],
                             quizzesCompleted: 0,
-                            quizHistory: []
+                            quizHistory: [],
+                            learningScoreInitialized: true // Mark as initialized to 0
                         };
                         this.dailyQuestionsUsed = 0;
                         this.rewardClaimedToday = false;
@@ -3909,6 +3911,17 @@
                                     this.playPing();
                                 }, 1500); // Show slightly after initial daily rewards if any
                             }
+                        }
+                        // --- Learning Score Reset Logic for Premium/Existing Users ---
+                        // If user is premium and hasn't had their score initialized to 0 yet, do it once.
+                        if (this.isPremium && !this.learningStats.learningScoreInitialized) {
+                            console.log("One-time Learning Score Reset for Premium User");
+                            this.xp = 0;
+                            this.learningStats.quizzesCompleted = 0;
+                            this.streak = 0;
+                            this.learningStats.wordsLearned = 0;
+                            this.learningStats.learningScoreInitialized = true;
+                            this.syncData();
                         }
                     },
 
@@ -4446,7 +4459,8 @@
                             emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
                             achievements: [],
                             quizzesCompleted: 0,
-                            quizHistory: []
+                            quizHistory: [],
+                            learningScoreInitialized: true
                         };
 
                         try {
@@ -4631,7 +4645,9 @@
                                 }
                                 return {
                                     ...row,
-                                    formattedName: formattedName
+                                    formattedName: formattedName,
+                                    // Use xp_this_week as a proxy for weekly learning score if specialized score isn't in weekly_xp table
+                                    learning_score: (row.xp_this_week * 2) 
                                 };
                             });
                         } catch (err) {
@@ -5405,4 +5421,3 @@
         </script>
     </body>
     </html>
-
