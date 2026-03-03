@@ -1833,22 +1833,6 @@
                                     </div>
                                 </div>
 
-                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                    <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-chart-pie text-indigo-500"></i> Learning Mood Trend
-                                    </h3>
-                                    <div class="h-40 flex items-end justify-between px-4 pb-2 border-b-2 border-slate-50 gap-2">
-                                        <template x-for="mood in getMoodStats()">
-                                            <div class="flex-1 flex flex-col items-center">
-                                                <div class="w-full rounded-t-lg transition-all duration-1000" 
-                                                    :class="mood.bg"
-                                                    :style="'height: ' + mood.percent + '%'"></div>
-                                                <span class="text-[10px] font-bold text-slate-400 mt-2 uppercase" x-text="mood.label"></span>
-                                            </div>
-                                        </template>
-                                    </div>
-                                    <p class="text-[10px] text-center text-slate-400 font-bold uppercase mt-4 tracking-widest">Aggregate Sentiment Analysis</p>
-                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -2448,7 +2432,6 @@
                         child_profile: null,
                         recent_mistakes: [],
                         review_queue: [], // Spaced Repetition Queue
-                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
                         achievements: [],
                         quizzesCompleted: 0
                     },
@@ -3588,8 +3571,7 @@
                             quizzesCompleted: 0,
                             quizHistory: [],
                             wordsLearned: 0,
-                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
+                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
                         };
                         this.allProfiles.push(newProfile);
                         if (!this.activeProfileId) {
@@ -3648,7 +3630,6 @@
                             this.curriculum = profile.curriculum || [];
                             this.learningStats.achievements = profile.achievements || [];
                             this.learningStats.quizzesCompleted = profile.quizzesCompleted || 0;
-                            this.learningStats.emotions = profile.emotions || { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
                             this.learningStats.wordsLearned = profile.wordsLearned || 0;
                             this.learningStats.subjects = profile.subjects || { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                             this.learningStats.quizHistory = profile.quizHistory || [];
@@ -3788,22 +3769,12 @@
                             subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
                             child_profile: { name: data.name, ageRange: '6-7' },
                             recent_mistakes: [],
-                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
                             inventory: [],
                             equipped_item: null,
                             path_progress: {},
                             quizHistory: []
                         };
 
-                        // 2.5 Ensure all emotion keys exist
-                        if (!this.learningStats.emotions) {
-                            this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
-                        } else {
-                            const emotionKeys = ['excited', 'curious', 'frustrated', 'happy', 'neutral'];
-                            emotionKeys.forEach(k => {
-                                if (this.learningStats.emotions[k] === undefined) this.learningStats.emotions[k] = 0;
-                            });
-                        }
 
                         // 3. Populate sub-states from learningStats
                         this.childProfile = this.learningStats.child_profile || { name: data.name, ageRange: '6-7' };
@@ -4918,10 +4889,8 @@
                     logActivity(query, emotion = 'neutral') {
                         let shortName = this.currentChar.name.replace("Professor ", "");
                         
-                        // Normalize emotion string (handle emojis, capitalization, and whitespace)
+                        // Normalize emotion string for logs
                         let normEmotion = String(emotion || 'neutral').toLowerCase().trim();
-                        
-                        // Map variations to standard keys
                         const emotionMap = {
                             'happy': 'happy', '😊': 'happy', '😄': 'happy', '🙂': 'happy',
                             'excited': 'excited', '🤩': 'excited', '😃': 'excited', '🔥': 'excited',
@@ -4929,7 +4898,6 @@
                             'frustrated': 'frustrated', '😤': 'frustrated', '😠': 'frustrated', '😟': 'frustrated',
                             'neutral': 'neutral', '😐': 'neutral', '😶': 'neutral'
                         };
-                        
                         normEmotion = emotionMap[normEmotion] || 'neutral';
 
                         const entry = {
@@ -4939,35 +4907,10 @@
                             emotion: normEmotion
                         };
                         this.parentLogs.push(entry);
-                        
-                        if(this.learningStats.emotions[normEmotion] !== undefined) {
-                            this.learningStats.emotions[normEmotion]++;
-                        } else {
-                            this.learningStats.emotions.neutral++;
-                        }
                     },
                     getEmotionIcon(emotion) {
                         const map = { excited: '🤩', curious: '🤔', frustrated: '😤', happy: '😊', neutral: '😐' };
                         return map[emotion] || '😐';
-                    },
-                    getMoodStats() {
-                        const moods = [
-                            { key: 'happy', label: 'Happy', bg: 'bg-green-400' },
-                            { key: 'excited', label: 'Excited', bg: 'bg-yellow-400' },
-                            { key: 'curious', label: 'Curious', bg: 'bg-blue-400' },
-                            { key: 'frustrated', label: 'Frustrated', bg: 'bg-red-400' }
-                        ];
-                        
-                        // Only count these 4 displayed moods for the total, 
-                        // so they fill the visible chart area appropriately.
-                        // Harden with Number() to prevent concatenation bugs.
-                        const total = moods.reduce((acc, m) => acc + Number(this.learningStats.emotions[m.key] || 0), 0) || 1;
-                        
-                        return moods.map(m => ({
-                            label: m.label,
-                            percent: (Number(this.learningStats.emotions[m.key] || 0) / total) * 100,
-                            bg: m.bg
-                        }));
                     },
                     getEmotionalInsights() {
                         const logs = this.parentLogs.slice(-10);
