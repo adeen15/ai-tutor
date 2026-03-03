@@ -3810,6 +3810,19 @@
                             const mockExpiry = new Date();
                             mockExpiry.setDate(mockExpiry.getDate() + 30);
                             this.premiumExpiry = mockExpiry.toISOString();
+                            
+                            // CRITICAL: Immediately sync this to the DB so it's not lost on refresh
+                            // Use a direct update call here instead of the full syncData to avoid conflicts
+                            this.supabase
+                                .from('profiles')
+                                .update({ 
+                                    is_premium: true, 
+                                    premium_expiry: this.premiumExpiry 
+                                })
+                                .eq('email', this.registeredEmail)
+                                .then(({error}) => {
+                                    if(error) console.error("Payment sync error:", error);
+                                });
                         } else {
                             // Priority: top-level column, then internal JSON stat (fallback)
                             this.isPremium = (data.is_premium === true) || (this.learningStats.is_premium === true);
@@ -4715,8 +4728,9 @@
                         const updateData = {
                             coins: this.coins,
                             xp: this.xp,
-                            is_premium: this.isPremium,
-                            premium_expiry: this.premiumExpiry,
+                            // Note: is_premium and premium_expiry are deliberately NOT included here
+                            // to prevent stale client-side state from overwriting server-side truth.
+                            // They are only updated via explicit actions (Payment Webhook or Cancel button).
                             learning_stats: safeStats,
                             parent_logs: safeLogs,
                             daily_usage: safeStats.daily_usage
@@ -4826,6 +4840,16 @@
                             this.rewardClaimedToday = false;
                             localStorage.removeItem('last_reward_date_' + this.registeredEmail);
                             this.setChar(this.characters[0]);
+                            
+                            // Explicit DB update for cancellation
+                            await this.supabase
+                                .from('profiles')
+                                .update({ 
+                                    is_premium: false, 
+                                    premium_expiry: null 
+                                })
+                                .eq('email', this.registeredEmail);
+                                
                             await this.syncData();
                         }
                     },
