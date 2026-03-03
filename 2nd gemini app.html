@@ -1846,7 +1846,7 @@
                                         
                                         <template x-if="isPremium && premiumExpiry">
                                             <p class="text-xs text-gray-400 font-bold mb-3">
-                                                Renews on: <span class="text-slate-600" x-text="new Date(premiumExpiry).toLocaleDateString()"></span>
+                                                Renews on: <span class="text-slate-600" x-text="new Date(Number(premiumExpiry)).toLocaleDateString()"></span>
                                             </p>
                                         </template>
 
@@ -3809,10 +3809,9 @@
                             // Set a mock expiry locally (30 days from now)
                             const mockExpiry = new Date();
                             mockExpiry.setDate(mockExpiry.getDate() + 30);
-                            this.premiumExpiry = mockExpiry.toISOString();
+                            this.premiumExpiry = mockExpiry.getTime();
                             
                             // CRITICAL: Immediately sync this to the DB so it's not lost on refresh
-                            // Use a direct update call here instead of the full syncData to avoid conflicts
                             this.supabase
                                 .from('profiles')
                                 .update({ 
