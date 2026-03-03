@@ -816,16 +816,23 @@ app.post('/api/webhook', async (req, res) => {
         console.log(`Webhook received: ${eventName} for ${userEmail}`);
 
         if ((eventName === 'order_created' || eventName === 'subscription_created') && supabase) {
+            // Calculate expiry date (30 days from now)
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 30);
+            
             const { error } = await supabase
                 .from('profiles')
-                .update({ is_premium: true })
+                .update({ 
+                    is_premium: true,
+                    premium_expiry: expiryDate.toISOString()
+                })
                 .eq('email', userEmail);
 
             if (error) {
                 console.error('Error updating Supabase:', error);
                 return res.status(500).send('Database update failed');
             }
-            console.log(`Successfully upgraded user ${userEmail} to premium`);
+            console.log(`Successfully upgraded user ${userEmail} to premium until ${expiryDate.toISOString()}`);
         }
 
         res.status(200).send('OK');
