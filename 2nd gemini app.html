@@ -344,12 +344,23 @@
 
         
         <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
-            <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
-                <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
-                <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
-            </button>
+            <!-- Top Row: Daily Gift and Learning Score (Mobile Only) -->
+            <div class="flex flex-row gap-2">
+                <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
+                    <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
+                    <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
+                </button>
 
-            <!-- Stats Group: Row on mobile, Column on desktop to save space -->
+                <!-- Learning Score Badge (Mobile Only - Top Row) -->
+                <div class="flex sm:hidden daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                    <span class="text-[7px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
+                    <span class="font-kids text-xs text-white drop-shadow-md" x-text="learningScore"></span>
+                    <div class="absolute -bottom-1 right-1 opacity-20 text-xl">🚀</div>
+                </div>
+            </div>
+
+            <!-- Stats Group: Row on mobile, Column on desktop -->
             <div class="flex flex-row sm:flex-col gap-2">
                 <!-- Coins Display -->
                 <div class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
@@ -363,12 +374,12 @@
                     <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
                 </button>
 
-                <!-- Learning Score Badge -->
-                <div class="daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
+                <!-- Learning Score Badge (Desktop Only - Stats Column) -->
+                <div class="hidden sm:flex daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 sm:w-24 sm:h-24 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                    <span class="text-[7px] sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
-                    <span class="font-kids text-xs sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
-                    <div class="absolute -bottom-1 right-1 opacity-20 text-xl sm:text-3xl">🚀</div>
+                    <span class="sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
+                    <span class="font-kids sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
+                    <div class="absolute -bottom-1 right-1 opacity-20 sm:text-3xl">🚀</div>
                 </div>
             </div>
 
@@ -389,7 +400,7 @@
 
         <div class="absolute top-4 right-4 flex flex-col items-end gap-2 sm:gap-4 z-40">
             <div class="flex flex-row gap-2 sm:gap-4">
-                <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl sm:text-3xl">🗺️</span>
                 </button>
 
@@ -420,6 +431,11 @@
 
                 <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl sm:text-3xl">🏆</span>
+                </button>
+
+                <!-- Adventure Map (Mobile Only - Second Row) -->
+                <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                    <span class="text-xl">🗺️</span>
                 </button>
             </div>
         </div>
