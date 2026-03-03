@@ -3586,7 +3586,10 @@
                             ],
                             achievements: [],
                             quizzesCompleted: 0,
-                            quizHistory: []
+                            quizHistory: [],
+                            wordsLearned: 0,
+                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                            emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 }
                         };
                         this.allProfiles.push(newProfile);
                         if (!this.activeProfileId) {
@@ -3615,7 +3618,11 @@
                             timeUsedToday: this.timeUsedToday,
                             curriculum: JSON.parse(JSON.stringify(this.curriculum)),
                             achievements: JSON.parse(JSON.stringify(this.learningStats.achievements || [])),
-                            quizzesCompleted: this.learningStats.quizzesCompleted || 0
+                            quizzesCompleted: this.learningStats.quizzesCompleted || 0,
+                            emotions: JSON.parse(JSON.stringify(this.learningStats.emotions || { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 })),
+                            wordsLearned: this.learningStats.wordsLearned || 0,
+                            subjects: JSON.parse(JSON.stringify(this.learningStats.subjects || { history: 0, robots: 0, space: 0, science: 0, nature: 0 })),
+                            quizHistory: JSON.parse(JSON.stringify(this.learningStats.quizHistory || []))
                         };
                     },
 
@@ -3641,6 +3648,10 @@
                             this.curriculum = profile.curriculum || [];
                             this.learningStats.achievements = profile.achievements || [];
                             this.learningStats.quizzesCompleted = profile.quizzesCompleted || 0;
+                            this.learningStats.emotions = profile.emotions || { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
+                            this.learningStats.wordsLearned = profile.wordsLearned || 0;
+                            this.learningStats.subjects = profile.subjects || { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
+                            this.learningStats.quizHistory = profile.quizHistory || [];
                         }
                         
                         await this.syncData();
