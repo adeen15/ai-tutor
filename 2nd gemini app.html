@@ -4917,16 +4917,31 @@
                     },
                     logActivity(query, emotion = 'neutral') {
                         let shortName = this.currentChar.name.replace("Professor ", "");
+                        
+                        // Normalize emotion string (handle emojis, capitalization, and whitespace)
+                        let normEmotion = String(emotion || 'neutral').toLowerCase().trim();
+                        
+                        // Map variations to standard keys
+                        const emotionMap = {
+                            'happy': 'happy', '😊': 'happy', '😄': 'happy', '🙂': 'happy',
+                            'excited': 'excited', '🤩': 'excited', '😃': 'excited', '🔥': 'excited',
+                            'curious': 'curious', '🤔': 'curious', '🧐': 'curious', '😮': 'curious',
+                            'frustrated': 'frustrated', '😤': 'frustrated', '😠': 'frustrated', '😟': 'frustrated',
+                            'neutral': 'neutral', '😐': 'neutral', '😶': 'neutral'
+                        };
+                        
+                        normEmotion = emotionMap[normEmotion] || 'neutral';
+
                         const entry = {
                             query: query,
                             time: new Date().toLocaleString(),
                             char: shortName,
-                            emotion: emotion
+                            emotion: normEmotion
                         };
                         this.parentLogs.push(entry);
                         
-                        if(this.learningStats.emotions[emotion] !== undefined) {
-                            this.learningStats.emotions[emotion]++;
+                        if(this.learningStats.emotions[normEmotion] !== undefined) {
+                            this.learningStats.emotions[normEmotion]++;
                         } else {
                             this.learningStats.emotions.neutral++;
                         }
@@ -4945,11 +4960,12 @@
                         
                         // Only count these 4 displayed moods for the total, 
                         // so they fill the visible chart area appropriately.
-                        const total = moods.reduce((acc, m) => acc + (this.learningStats.emotions[m.key] || 0), 0) || 1;
+                        // Harden with Number() to prevent concatenation bugs.
+                        const total = moods.reduce((acc, m) => acc + Number(this.learningStats.emotions[m.key] || 0), 0) || 1;
                         
                         return moods.map(m => ({
                             label: m.label,
-                            percent: ((this.learningStats.emotions[m.key] || 0) / total) * 100,
+                            percent: (Number(this.learningStats.emotions[m.key] || 0) / total) * 100,
                             bg: m.bg
                         }));
                     },
