@@ -824,7 +824,7 @@ app.post('/api/webhook', async (req, res) => {
                 .from('profiles')
                 .update({ 
                     is_premium: true,
-                    premium_expiry: expiryDate.toISOString()
+                    premium_expiry: expiryDate.getTime()
                 })
                 .eq('email', userEmail);
 
