@@ -3806,11 +3806,15 @@
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('payment') === 'success') {
                             this.isPremium = true;
+                            // Set a mock expiry locally (30 days from now)
+                            const mockExpiry = new Date();
+                            mockExpiry.setDate(mockExpiry.getDate() + 30);
+                            this.premiumExpiry = mockExpiry.toISOString();
                         } else {
                             // Priority: top-level column, then internal JSON stat (fallback)
                             this.isPremium = (data.is_premium === true) || (this.learningStats.is_premium === true);
+                            this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
                         }
-                        this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
 
                         // Load Daily Usage & Time Tracking
                         const dailyData = data.daily_usage || this.learningStats.daily_usage || {};
