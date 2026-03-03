@@ -3784,6 +3784,16 @@
                             quizHistory: []
                         };
 
+                        // 2.5 Ensure all emotion keys exist
+                        if (!this.learningStats.emotions) {
+                            this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
+                        } else {
+                            const emotionKeys = ['excited', 'curious', 'frustrated', 'happy', 'neutral'];
+                            emotionKeys.forEach(k => {
+                                if (this.learningStats.emotions[k] === undefined) this.learningStats.emotions[k] = 0;
+                            });
+                        }
+
                         // 3. Populate sub-states from learningStats
                         this.childProfile = this.learningStats.child_profile || { name: data.name, ageRange: '6-7' };
                         this.totalMinutesLearned = data.total_minutes || this.learningStats.total_minutes || 0;
@@ -4915,13 +4925,22 @@
                         return map[emotion] || '😐';
                     },
                     getMoodStats() {
-                        const total = Object.values(this.learningStats.emotions).reduce((a, b) => a + b, 0) || 1;
-                        return [
-                            { label: 'Happy', percent: (this.learningStats.emotions.happy / total) * 100, bg: 'bg-green-400' },
-                            { label: 'Excited', percent: (this.learningStats.emotions.excited / total) * 100, bg: 'bg-yellow-400' },
-                            { label: 'Curious', percent: (this.learningStats.emotions.curious / total) * 100, bg: 'bg-blue-400' },
-                            { label: 'Frustrated', percent: (this.learningStats.emotions.frustrated / total) * 100, bg: 'bg-red-400' }
+                        const moods = [
+                            { key: 'happy', label: 'Happy', bg: 'bg-green-400' },
+                            { key: 'excited', label: 'Excited', bg: 'bg-yellow-400' },
+                            { key: 'curious', label: 'Curious', bg: 'bg-blue-400' },
+                            { key: 'frustrated', label: 'Frustrated', bg: 'bg-red-400' }
                         ];
+                        
+                        // Only count these 4 displayed moods for the total, 
+                        // so they fill the visible chart area appropriately.
+                        const total = moods.reduce((acc, m) => acc + (this.learningStats.emotions[m.key] || 0), 0) || 1;
+                        
+                        return moods.map(m => ({
+                            label: m.label,
+                            percent: ((this.learningStats.emotions[m.key] || 0) / total) * 100,
+                            bg: m.bg
+                        }));
                     },
                     getEmotionalInsights() {
                         const logs = this.parentLogs.slice(-10);
