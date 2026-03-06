@@ -2999,6 +2999,8 @@
                             }
 
                             const blob = await response.blob();
+                            console.log(`📦 Received TTS Blob: type=${blob.type}, size=${blob.size} bytes`);
+                            
                             if (blob.size < 100) {
                                 throw new Error("Cloud TTS returned empty or invalid audio blob");
                             }
@@ -3017,7 +3019,16 @@
                                 console.log("🔇 Audio playback ended");
                             };
                             this.currentAudio.onerror = (e) => { 
-                                console.error("❌ Audio playback error event:", e);
+                                const error = this.currentAudio.error;
+                                const errorMap = {
+                                    1: "MEDIA_ERR_ABORTED",
+                                    2: "MEDIA_ERR_NETWORK",
+                                    3: "MEDIA_ERR_DECODE",
+                                    4: "MEDIA_ERR_SRC_NOT_SUPPORTED"
+                                };
+                                const errorName = errorMap[error?.code] || "UNKNOWN_ERROR";
+                                console.error(`❌ Audio playback error [${error?.code}]: ${errorName}`, error?.message);
+                                
                                 this.speakNative(text); 
                                 URL.revokeObjectURL(url);
                             };
