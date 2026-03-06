@@ -3668,6 +3668,8 @@
                             this.curriculum = profile.curriculum || [];
                             this.learningStats.achievements = profile.achievements || [];
                             this.learningStats.quizzesCompleted = profile.quizzesCompleted || 0;
+                            this.streak = profile.streak || 0;
+                            this.lastStreakDate = profile.lastStreakDate || null;
                             this.learningStats.wordsLearned = profile.wordsLearned || 0;
                             this.learningStats.subjects = profile.subjects || { history: 0, robots: 0, space: 0, science: 0, nature: 0 };
                             this.learningStats.quizHistory = profile.quizHistory || [];
@@ -3965,11 +3967,12 @@
                             console.log("One-time Learning Score Reset for Premium User");
                             this.xp = 0;
                             this.learningStats.quizzesCompleted = 0;
-                            this.streak = 0;
-                            this.learningStats.wordsLearned = 0;
                             this.learningStats.learningScoreInitialized = true;
                             this.syncData();
                         }
+                        
+                        // Always check streak on load to ensure UI is fresh
+                        this.updateDailyStreak();
                     },
 
 
@@ -5227,10 +5230,15 @@
                                 }
                             }
                             this.lastStreakDate = today;
+                            // Ensure learning path matches the streak
+                            this.learningPathDay = this.streak;
                             // Update learning_stats too just in case
                             this.learningStats.streak = this.streak;
                             this.learningStats.last_streak_date = this.lastStreakDate;
                             this.learningStats.streak_freeze_used = this.streakFreezeUsed;
+                        } else {
+                            // Even if streak didn't change, ensure learningPathDay is synced
+                            this.learningPathDay = this.streak || 1;
                         }
                     },
 
