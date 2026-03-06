@@ -442,8 +442,11 @@ app.post('/api/tts', async (req, res) => {
         const deepgramKey = normalizeKey(process.env.DEEPGRAM_API_KEY);
         if (deepgramKey && deepgramKey !== 'your_deepgram_key_here') {
             try {
-                console.log(`🎙️ Deepgram TTS Fallback.`);
-                const dgResponse = await fetch("https://api.deepgram.com/v1/speak?model=aura-asteria-en", {
+                console.log(`🎙️ Deepgram TTS Fallback Request. TextLength=${text.length}`);
+                // Force MP3 encoding to match the audio/mpeg content-type
+                const dgUrl = "https://api.deepgram.com/v1/speak?model=aura-asteria-en&encoding=mp3";
+                
+                const dgResponse = await fetch(dgUrl, {
                     method: "POST",
                     headers: {
                         "Authorization": `Token ${deepgramKey}`,
@@ -455,6 +458,7 @@ app.post('/api/tts', async (req, res) => {
                 if (dgResponse.ok) {
                     const audioBuffer = await dgResponse.arrayBuffer();
                     res.set('Content-Type', 'audio/mpeg');
+                    console.log(`✅ Deepgram TTS Success (${audioBuffer.byteLength} bytes, MP3)`);
                     return res.send(Buffer.from(audioBuffer));
                 } else {
                     const errText = await dgResponse.text();
