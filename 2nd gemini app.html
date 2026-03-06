@@ -2516,6 +2516,19 @@
                         { id: 'super_star', name: 'Super Star', icon: '⭐', desc: 'Reached Level 5!' }
                     ],
 
+                    // --- NATIVE SPEECH CALLBACKS ---
+                    init() {
+                        // This will be called when Alpine initializes the component
+                        window.onNativeSpeechEvent = (type, data) => {
+                            console.log(`🎙️ Native Speech Event: ${type}`, data);
+                            if (type === 'start') {
+                                this.isSpeaking = true;
+                            } else if (type === 'end' || type === 'error') {
+                                this.isSpeaking = false;
+                            }
+                        };
+                    },
+
                     checkAchievements() {
                         if (!this.learningStats.achievements) this.learningStats.achievements = [];
                         
@@ -2984,10 +2997,7 @@
                                 rate: settings.rate
                             }));
                             this.isSpeaking = true;
-                            
-                            // Simple timeout to reset speaking state since we don't have a callback from native yet
-                            // (or we could just leave it till next message)
-                            setTimeout(() => { this.isSpeaking = false; }, text.length * 100); 
+                            // Timeout removed: State is now handled via native callbacks onNativeSpeechEvent
                         } else {
                             // Browser fallback
                             console.warn("⚠️ Native bridge not found, falling back to cloud/native synth");
