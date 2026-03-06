@@ -119,9 +119,6 @@
             .certificate-border { border: 20px solid #f59e0b; border-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M20 0l5 15h15l-12 9 4 16-12-9-12 9 4-16-12-9h15z' fill='%23f59e0b'/%3E%3C/svg%3E") 30; }
 
             @media (max-width: 640px) {
-                .daily-reward-btn { padding: 0.5rem !important; }
-                .daily-reward-btn span.gift-bounce { font-size: 1.25rem !important; }
-                .daily-reward-btn span.font-bold { font-size: 6px !important; }
                 .safe-badge { font-size: 7px; padding: 2px 8px; }
             }
 
@@ -342,59 +339,24 @@
         </div>
 
         
-        <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
-            <!-- Top Row: Daily Gift and Learning Score (Mobile Only) -->
-            <div class="flex flex-row gap-2">
-                <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
-                    <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
-                    <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
-                </button>
+        <div class="absolute top-4 left-4 z-40 flex flex-wrap items-center gap-2 sm:gap-4">
+            <button @click="showRewards = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" :title="t('daily_rewards')">
+                <span class="text-xl sm:text-3xl gift-bounce">🎁</span>
+            </button>
 
-                <!-- Learning Score Badge (Mobile Only - Top Row) -->
-                <div class="flex sm:hidden daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
-                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                    <span class="text-[7px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
-                    <span class="font-kids text-xs text-white drop-shadow-md" x-text="learningScore"></span>
-                    <div class="absolute -bottom-1 right-1 opacity-20 text-xl">🚀</div>
-                </div>
+            <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-2 animate__animated animate__fadeInLeft">
+                <span class="text-xl sm:text-2xl">💰</span>
+                <span class="font-kids text-sm sm:text-xl text-yellow-700" x-text="coins"></span>
             </div>
 
-            <!-- Stats Group: Row on mobile, Column on desktop -->
-            <div class="flex flex-row sm:flex-col gap-2">
-                <!-- Coins Display -->
-                <div class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
-                    <span class="text-xl sm:text-3xl">💰</span>
-                    <span class="font-kids text-[10px] sm:text-base text-yellow-700 leading-none mt-1" x-text="coins"></span>
-                </div>
+            <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex items-center gap-2 animate__animated animate__fadeInLeft">
+                <span class="text-xl sm:text-2xl">🔥</span>
+                <span class="font-kids text-sm sm:text-xl text-orange-700" x-text="streak"></span>
+            </button>
 
-                <!-- Streak Display -->
-                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
-                    <span class="text-xl sm:text-3xl">🔥</span>
-                    <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
-                </button>
-
-                <!-- Learning Score Badge (Desktop Only - Stats Column) -->
-                <div class="hidden sm:flex daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 sm:w-24 sm:h-24 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
-                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                    <span class="sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
-                    <span class="font-kids sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
-                    <div class="absolute -bottom-1 right-1 opacity-20 sm:text-3xl">🚀</div>
-                </div>
-            </div>
-
-            <!-- Web Version: Under Daily Gift -->
-            <div x-show="!isPremium" class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex-col items-center min-w-[80px]">
-                <p class="text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">Free Questions</p>
-                <p class="text-[12px] font-kids text-orange-500 leading-none mt-0.5" x-text="dailyQuestionsUsed + '/' + maxFreeQuestions"></p>
-                <div class="w-full h-1 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
-                    <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
-                </div>
-            </div>
-            <div class="safe-badge w-14 sm:w-24 animate__animated animate__fadeInLeft">
+            <div class="safe-badge animate__animated animate__fadeInLeft">
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
-
-
         </div>
 
         <div class="absolute top-4 right-4 flex flex-col items-end gap-2 sm:gap-4 z-40">
@@ -3959,8 +3921,6 @@
                                 }, 1500); // Show slightly after initial daily rewards if any
                             }
                         }
-                        // --- Learning Score Reset Logic for Premium/Existing Users ---
-                        // If user is premium and hasn't had their score initialized to 0 yet, do it once.
                         if (this.isPremium && !this.learningStats.learningScoreInitialized) {
                             console.log("One-time Learning Score Reset for Premium User");
                             this.xp = 0;
@@ -3980,17 +3940,7 @@
                         return 66 + ((this.xp - 3000) / 2000) * 34; 
                     },
 
-                    get learningScore() {
-                        const xp = this.xp || 0;
-                        const quizzes = this.learningStats.quizzesCompleted || 0;
-                        const streak = this.streak || 0;
-                        const words = this.learningStats.wordsLearned || 0;
-                        // Goal: Correct quiz answer (XP: 2, Quiz: 1) = 5 score
-                        // (2 * 1) + (1 * 3) = 5
-                        // (streak * 2) for consistency
-                        // (words * 0.1) to keep response length impact minimal
-                        return Math.round((xp * 1) + (quizzes * 3) + (streak * 2) + (words * 0.1));
-                    },
+
 
                     getTopSubjects() {
                         const requiredKeys = ['history', 'robots', 'space', 'science', 'nature'];
