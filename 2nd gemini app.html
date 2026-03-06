@@ -3638,11 +3638,10 @@
                             timeUsedToday: this.timeUsedToday,
                             curriculum: JSON.parse(JSON.stringify(this.curriculum)),
                             achievements: JSON.parse(JSON.stringify(this.learningStats.achievements || [])),
-                            quizzesCompleted: this.learningStats.quizzesCompleted || 0,
-                            emotions: JSON.parse(JSON.stringify(this.learningStats.emotions || { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 })),
-                            wordsLearned: this.learningStats.wordsLearned || 0,
                             subjects: JSON.parse(JSON.stringify(this.learningStats.subjects || { history: 0, robots: 0, space: 0, science: 0, nature: 0 })),
-                            quizHistory: JSON.parse(JSON.stringify(this.learningStats.quizHistory || []))
+                            quizHistory: JSON.parse(JSON.stringify(this.learningStats.quizHistory || [])),
+                            streak: this.streak,
+                            lastStreakDate: this.lastStreakDate
                         };
                     },
 
@@ -3912,7 +3911,9 @@
                                 pathProgress: this.pathProgress,
                                 monthlyQuestsUsed: this.monthlyQuestsUsed,
                                 lastQuestMonth: this.lastQuestMonth,
-                                curriculum: this.curriculum
+                                curriculum: this.curriculum,
+                                streak: this.streak,
+                                lastStreakDate: this.lastStreakDate
                             }];
                             this.activeProfileId = initialId;
                         }
@@ -3967,11 +3968,12 @@
                             console.log("One-time Learning Score Reset for Premium User");
                             this.xp = 0;
                             this.learningStats.quizzesCompleted = 0;
+                            // Ensure streak isn't wiped during this reset
                             this.learningStats.learningScoreInitialized = true;
                             this.syncData();
                         }
                         
-                        // Always check streak on load to ensure UI is fresh
+                        // CRITICAL: Final check of streak after all profiles/states are loaded
                         this.updateDailyStreak();
                     },
 
