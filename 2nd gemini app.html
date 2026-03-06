@@ -2984,7 +2984,14 @@
                             });
                             
                             if (!response.ok) {
-                                throw new Error("TTS API Limit or Failure");
+                                let errMsg;
+                                try {
+                                    const errData = await response.json();
+                                    errMsg = errData.error || response.statusText;
+                                } catch (e) {
+                                    errMsg = await response.text() || response.statusText;
+                                }
+                                throw new Error(`Status ${response.status}: ${errMsg}`);
                             }
 
                             const blob = await response.blob();
@@ -2999,7 +3006,7 @@
                             };
                             this.currentAudio.onerror = (e) => { 
                                 console.error("Audio playback error:", e);
-                                this.speakNative(text); // Fallback on playback error
+                                this.speakNative(text); 
                                 URL.revokeObjectURL(url);
                             };
                             
@@ -3083,13 +3090,13 @@
                         
                         this.playCharIntro(this.currentChar.name);
 
-                        const UtteranceClass = window.SpeechSynthesisUtterance || window.webkitSpeechSynthesisUtterance;
-                        if (!UtteranceClass || !window.speechSynthesis) {
-                            console.warn("Speech Synthesis not supported in this environment");
-                            return;
-                        }
+                        try {
+                            const UtteranceClass = window.SpeechSynthesisUtterance || window.webkitSpeechSynthesisUtterance;
+                            if (!UtteranceClass || !window.speechSynthesis) {
+                                throw new Error("Speech Synthesis class not found");
+                            }
 
-                        const msg = new UtteranceClass(text);
+                            const msg = new UtteranceClass(text);
                         const voices = window.speechSynthesis.getVoices();
                         
                         // 1. Try to find the specific high-quality Microsoft Edge Neural voice
@@ -3131,7 +3138,11 @@
                             this.isSpeaking = false;
                         };
 
-                        window.speechSynthesis?.speak?.(msg);
+                            window.speechSynthesis?.speak?.(msg);
+                        } catch (err) {
+                            console.error("Native Speech Error:", err.message);
+                            this.isSpeaking = false;
+                        }
                     },
 
                     stopSpeaking() {
