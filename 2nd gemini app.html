@@ -3083,6 +3083,10 @@
                         
                         this.playCharIntro(this.currentChar.name);
 
+                        if (typeof SpeechSynthesisUtterance === 'undefined') {
+                            console.warn("SpeechSynthesisUtterance not supported");
+                            return;
+                        }
                         const msg = new SpeechSynthesisUtterance(text);
                         const voices = window.speechSynthesis.getVoices();
                         
@@ -3125,7 +3129,7 @@
                             this.isSpeaking = false;
                         };
 
-                        window.speechSynthesis.speak(msg);
+                        window.speechSynthesis?.speak?.(msg);
                     },
 
                     stopSpeaking() {
@@ -3135,7 +3139,7 @@
                             this.currentAudio.src = "";
                         }
                         // 2. Stop Speech Synthesis (Fallback/Native)
-                        window.speechSynthesis.cancel();
+                        window.speechSynthesis?.cancel?.();
                         
                         this.isSpeaking = false;
                     },
@@ -4891,6 +4895,10 @@
                         await this.syncData(); 
                     },
                     trySetChar(char) {
+                        if (this.isProfileLoading) {
+                            console.log("Wait! Profile is still loading...");
+                            return;
+                        }
                         this.stopSpeaking();
                         if (char.premium && !this.isPremium) {
                             this.showPremiumModal = true;
@@ -5209,6 +5217,10 @@
                     },
 
                     async askTutor() {
+                        if (this.isProfileLoading) {
+                            console.log("Wait! Profile is still loading...");
+                            return;
+                        }
                         if (!this.userQuery.trim()) return;
 
                         // --- DAILY STREAK LOGIC ---
