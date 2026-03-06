@@ -401,21 +401,16 @@ app.post('/api/tts', async (req, res) => {
         if (openAiKey && openAiKey !== 'your_openai_key_here') {
             try {
                 // Map Voice.ai IDs to OpenAI voices
-                // Dino (Deep/Friendly) -> Alloy
-                // Monkey (High/Energetic) -> Shimmer
-                // Alien (Ethereal) -> Nova
-                // Cat (Soft) -> Fable
-                // Bee (Playful) -> Onyx (or Shimmer)
                 const voiceMap = {
-                    "9740af7a-9674-4be1-967b-cf6daba06596": "alloy",   // Professor Dino (Classic/Friendly)
+                    "9740af7a-9674-4be1-967b-cf6daba06596": "alloy",   // Professor Dino (Deep/Friendly)
                     "79005bb6-7ae3-4768-b2a0-efc774a3c7a9": "echo",    // Milo Monkey (Energetic/Unique)
                     "0062153d-dd11-4330-a6b1-87cd29187ed7": "nova",    // Starry Alien (Dreamy/Sweet)
                     "2c96d996-4e88-44e8-944a-303d5b063775": "shimmer", // Magic Cat (Soft/Sweet)
                     "a09a1325-058b-4bc7-9105-b96b1cce27c5": "fable"    // Bouncy Bee (Playful/Sweet)
                 };
-                const openAiVoice = voiceMap[vId] || "shimmer";
+                const openAiVoice = voiceMap[vId] || "nova"; // Default to nova as it's known to work
 
-                console.log(`🎙️ OpenAI TTS. Voice: ${openAiVoice}`);
+                console.log(`🎙️ OpenAI TTS Request: Voice=${openAiVoice}, TextLength=${text.length}`);
                 const response = await fetch('https://api.openai.com/v1/audio/speech', {
                     method: 'POST',
                     headers: {
@@ -432,7 +427,11 @@ app.post('/api/tts', async (req, res) => {
                 if (response.ok) {
                     const audioBuffer = await response.arrayBuffer();
                     res.set('Content-Type', 'audio/mpeg');
+                    console.log(`✅ OpenAI TTS Success (${audioBuffer.byteLength} bytes)`);
                     return res.send(Buffer.from(audioBuffer));
+                } else {
+                    const errorText = await response.text();
+                    console.error(`❌ OpenAI TTS Error (${response.status}):`, errorText);
                 }
             } catch (err) {
                 console.warn("⚠️ OpenAI TTS Error:", err.message);
