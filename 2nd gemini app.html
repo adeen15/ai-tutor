@@ -3083,11 +3083,13 @@
                         
                         this.playCharIntro(this.currentChar.name);
 
-                        if (typeof SpeechSynthesisUtterance === 'undefined') {
-                            console.warn("SpeechSynthesisUtterance not supported");
+                        const UtteranceClass = window.SpeechSynthesisUtterance || window.webkitSpeechSynthesisUtterance;
+                        if (!UtteranceClass || !window.speechSynthesis) {
+                            console.warn("Speech Synthesis not supported in this environment");
                             return;
                         }
-                        const msg = new SpeechSynthesisUtterance(text);
+
+                        const msg = new UtteranceClass(text);
                         const voices = window.speechSynthesis.getVoices();
                         
                         // 1. Try to find the specific high-quality Microsoft Edge Neural voice
@@ -5348,11 +5350,17 @@
                         this.playPing();
 
                         // 2. Stop any existing speech
-                        window.speechSynthesis.cancel();
+                        window.speechSynthesis?.cancel?.();
                         this.isSpeaking = false;
+                        
+                        const UtteranceClass = window.SpeechSynthesisUtterance || window.webkitSpeechSynthesisUtterance;
+                        if (!UtteranceClass || !window.speechSynthesis) {
+                            console.warn("Speech Synthesis not supported in this environment");
+                            return;
+                        }
 
                         // 3. Create Utterance
-                        const msg = new SpeechSynthesisUtterance(letter);
+                        const msg = new UtteranceClass(letter);
                         const voices = window.speechSynthesis.getVoices();
                         
                         // force English for ABCs usually, or current language
@@ -5369,7 +5377,7 @@
                         msg.onend = () => { this.isSpeaking = false; };
                         msg.onerror = (e) => { console.error("Letter speech error:", e); };
 
-                        window.speechSynthesis.speak(msg);
+                        window.speechSynthesis?.speak?.(msg);
                     },
 
                     // Onboarding Methods
