@@ -439,6 +439,33 @@ app.post('/api/tts', async (req, res) => {
             }
         }
 
+        // --- Provider 2: Deepgram TTS (Fallback if OpenAI fails or missing) ---
+        const deepgramKey = normalizeKey(process.env.DEEPGRAM_API_KEY);
+        if (deepgramKey && deepgramKey !== 'your_deepgram_key_here') {
+            try {
+                console.log(`🎙️ Deepgram TTS Fallback.`);
+                const dgResponse = await fetch("https://api.deepgram.com/v1/speak?model=aura-asteria-en", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Token ${deepgramKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                if (dgResponse.ok) {
+                    const audioBuffer = await dgResponse.arrayBuffer();
+                    res.set('Content-Type', 'audio/mpeg');
+                    return res.send(Buffer.from(audioBuffer));
+                } else {
+                    const errText = await dgResponse.text();
+                    console.warn(`⚠️ Deepgram TTS Failed (${dgResponse.status}):`, errText);
+                }
+            } catch (err) {
+                console.warn("⚠️ Deepgram TTS Exception:", err.message);
+            }
+        }
+
         // --- No Providers Available ---
         console.error("❌ No TTS providers configured or all failed.");
         res.status(503).json({ error: "No TTS providers available. Please check API keys." });
