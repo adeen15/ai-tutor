@@ -119,6 +119,9 @@
             .certificate-border { border: 20px solid #f59e0b; border-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M20 0l5 15h15l-12 9 4 16-12-9-12 9 4-16-12-9h15z' fill='%23f59e0b'/%3E%3C/svg%3E") 30; }
 
             @media (max-width: 640px) {
+                .daily-reward-btn { padding: 0.5rem !important; }
+                .daily-reward-btn span.gift-bounce { font-size: 1.25rem !important; }
+                .daily-reward-btn span.font-bold { font-size: 6px !important; }
                 .safe-badge { font-size: 7px; padding: 2px 8px; }
             }
 
@@ -339,22 +342,31 @@
         </div>
 
         
-        <div class="absolute top-4 left-4 z-40 flex flex-wrap items-center gap-2 sm:gap-4">
-            <button @click="showRewards = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" :title="t('daily_rewards')">
-                <span class="text-xl sm:text-3xl gift-bounce">🎁</span>
-            </button>
-
-            <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex items-center gap-2 animate__animated animate__fadeInLeft">
-                <span class="text-xl sm:text-2xl">💰</span>
-                <span class="font-kids text-sm sm:text-xl text-yellow-700" x-text="coins"></span>
+        <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
+            <!-- Top Row: Daily Gift -->
+            <div class="flex flex-row gap-2">
+                <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
+                    <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
+                    <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
+                </button>
             </div>
 
-            <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex items-center gap-2 animate__animated animate__fadeInLeft">
-                <span class="text-xl sm:text-2xl">🔥</span>
-                <span class="font-kids text-sm sm:text-xl text-orange-700" x-text="streak"></span>
-            </button>
+            <!-- Stats Group: Row on mobile, Column on desktop -->
+            <div class="flex flex-row sm:flex-col gap-2">
+                <!-- Coins Display -->
+                <div class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
+                    <span class="text-xl sm:text-3xl">💰</span>
+                    <span class="font-kids text-[10px] sm:text-base text-yellow-700 leading-none mt-1" x-text="coins"></span>
+                </div>
 
-            <div class="safe-badge animate__animated animate__fadeInLeft">
+                <!-- Streak Display -->
+                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
+                    <span class="text-xl sm:text-3xl">🔥</span>
+                    <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
+                </button>
+            </div>
+
+            <div class="safe-badge w-14 sm:w-24 animate__animated animate__fadeInLeft">
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
         </div>
@@ -2458,8 +2470,6 @@
 
                     showLearningPath: false,
                     showStickerBook: false,
-                    showDailyPath: false, // Toggle for 30-Day Path
-                    learningPathDay: 1, // Tracks progress 1-30
                     currentPath: null,
                     activeLesson: null,
                     lessonStep: 'learn', 
@@ -3921,15 +3931,7 @@
                                 }, 1500); // Show slightly after initial daily rewards if any
                             }
                         }
-                        if (this.isPremium && !this.learningStats.learningScoreInitialized) {
-                            console.log("One-time Learning Score Reset for Premium User");
-                            this.xp = 0;
-                            this.learningStats.quizzesCompleted = 0;
-                            this.streak = 0;
-                            this.learningStats.wordsLearned = 0;
-                            this.learningStats.learningScoreInitialized = true;
-                            this.syncData();
-                        }
+
                     },
 
 
