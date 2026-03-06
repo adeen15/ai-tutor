@@ -3830,7 +3830,6 @@
                         // Hydrate Streak Data (Favor learning_stats for consistency)
                         this.streak = this.learningStats.streak || data.streak || 0;
                         this.lastStreakDate = this.learningStats.last_streak_date || data.last_streak_date || null;
-                        this.streakFreezeUsed = this.learningStats.streak_freeze_used || false;
                         
                         // Load Monthly Quotas
                         this.monthlyQuestsUsed = this.learningStats.monthly_quests_used || 0;
@@ -5213,24 +5212,15 @@
                                 if (this.lastStreakDate === yesterday.toDateString()) {
                                     // Consecutive day
                                     this.streak++;
-                                    this.streakFreezeUsed = false; // Reset freeze for the new day
                                 } else {
                                     // Gap of more than 1 day
-                                    if (this.isPremium && !this.streakFreezeUsed) {
-                                        // Auto-activate Streak Freeze for Premium users
-                                        console.log("Streak Freeze activated! Streak maintained.");
-                                        this.streakFreezeUsed = true;
-                                        // Streak remains the same
-                                    } else {
-                                        this.streak = 1; // Reset to 1 since they are active today
-                                    }
+                                    this.streak = 1; // Reset to 1 since they are active today
                                 }
                             }
                             this.lastStreakDate = today;
                             // Update learning_stats too just in case
                             this.learningStats.streak = this.streak;
                             this.learningStats.last_streak_date = this.lastStreakDate;
-                            this.learningStats.streak_freeze_used = this.streakFreezeUsed;
                         }
                     },
 
