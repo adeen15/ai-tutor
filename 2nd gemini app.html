@@ -189,21 +189,6 @@
             </div>
         </div>
 
-        <!-- Streak Celebration Overlay -->
-        <div x-show="showStreakCelebration" x-cloak
-             class="fixed inset-0 z-[150] flex items-center justify-center pointer-events-none"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-50"
-             x-transition:enter-end="opacity-100 scale-100"
-             x-transition:leave="transition ease-in duration-300"
-             x-transition:leave-start="opacity-100 scale-100"
-             x-transition:leave-end="opacity-0 scale-150">
-            <div class="bg-white/90 backdrop-blur-md px-10 py-6 rounded-[3rem] shadow-2xl border-8 border-orange-400 flex flex-col items-center animate__animated animate__tada">
-                <span class="text-8xl mb-4">🔥</span>
-                <h2 class="text-4xl font-kids text-orange-600" x-text="streakCelebrationText"></h2>
-                <p class="text-orange-400 font-bold uppercase tracking-widest mt-2">Amazing Learning!</p>
-            </div>
-        </div>
             <div class="min-h-full w-full p-0 sm:p-4 block sm:flex sm:items-center sm:justify-center">
                 <div class="bg-white m-0 w-full min-w-full sm:min-w-0 min-h-screen sm:min-h-0 sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative overflow-hidden animate__animated animate__zoomIn sm:my-8 sm:border-8 border-white/20">
                     
@@ -2512,8 +2497,6 @@
                     showLearningPath: false,
                     showStickerBook: false,
                     showDailyPath: false, // Toggle for 30-Day Path
-                    showStreakCelebration: false,
-                    streakCelebrationText: '',
                     learningPathDay: 1, // Tracks progress 1-30
                     currentPath: null,
                     activeLesson: null,
@@ -3654,10 +3637,11 @@
                             timeUsedToday: this.timeUsedToday,
                             curriculum: JSON.parse(JSON.stringify(this.curriculum)),
                             achievements: JSON.parse(JSON.stringify(this.learningStats.achievements || [])),
+                            quizzesCompleted: this.learningStats.quizzesCompleted || 0,
+                            emotions: JSON.parse(JSON.stringify(this.learningStats.emotions || { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 })),
+                            wordsLearned: this.learningStats.wordsLearned || 0,
                             subjects: JSON.parse(JSON.stringify(this.learningStats.subjects || { history: 0, robots: 0, space: 0, science: 0, nature: 0 })),
-                            quizHistory: JSON.parse(JSON.stringify(this.learningStats.quizHistory || [])),
-                            streak: this.streak,
-                            lastStreakDate: this.lastStreakDate
+                            quizHistory: JSON.parse(JSON.stringify(this.learningStats.quizHistory || []))
                         };
                     },
 
@@ -3927,9 +3911,7 @@
                                 pathProgress: this.pathProgress,
                                 monthlyQuestsUsed: this.monthlyQuestsUsed,
                                 lastQuestMonth: this.lastQuestMonth,
-                                curriculum: this.curriculum,
-                                streak: this.streak,
-                                lastStreakDate: this.lastStreakDate
+                                curriculum: this.curriculum
                             }];
                             this.activeProfileId = initialId;
                         }
@@ -3984,13 +3966,11 @@
                             console.log("One-time Learning Score Reset for Premium User");
                             this.xp = 0;
                             this.learningStats.quizzesCompleted = 0;
-                            // Ensure streak isn't wiped during this reset
+                            this.streak = 0;
+                            this.learningStats.wordsLearned = 0;
                             this.learningStats.learningScoreInitialized = true;
                             this.syncData();
                         }
-                        
-                        // CRITICAL: Final check of streak after all profiles/states are loaded
-                        this.updateDailyStreak();
                     },
 
 
@@ -4432,7 +4412,6 @@
                             }
                             
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
-                            this.updateDailyStreak();
                             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                             
                             // Exit review mode
@@ -5235,12 +5214,6 @@
                                     // Consecutive day
                                     this.streak++;
                                     this.streakFreezeUsed = false; // Reset freeze for the new day
-                                    // CELEBRATION!
-                                    this.streakCelebrationText = `🔥 +${this.streak} Streak!`;
-                                    this.showStreakCelebration = true;
-                                    this.playSuccessSound();
-                                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                                    setTimeout(() => { this.showStreakCelebration = false; }, 3000);
                                 } else {
                                     // Gap of more than 1 day
                                     if (this.isPremium && !this.streakFreezeUsed) {
@@ -5254,15 +5227,10 @@
                                 }
                             }
                             this.lastStreakDate = today;
-                            // Ensure learning path matches the streak
-                            this.learningPathDay = this.streak;
                             // Update learning_stats too just in case
                             this.learningStats.streak = this.streak;
                             this.learningStats.last_streak_date = this.lastStreakDate;
                             this.learningStats.streak_freeze_used = this.streakFreezeUsed;
-                        } else {
-                            // Even if streak didn't change, ensure learningPathDay is synced
-                            this.learningPathDay = this.streak || 1;
                         }
                     },
 
@@ -5272,9 +5240,6 @@
                             return;
                         }
                         if (!this.userQuery.trim()) return;
-
-                        // --- DAILY STREAK LOGIC ---
-                        this.updateDailyStreak();
 
                         if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
                             this.showPremiumModal = true;
@@ -5496,34 +5461,6 @@
                         } catch (e) {
                             console.error("Audio error:", e);
                         }
-                    },
-                    playSuccessSound() {
-                        try {
-                            const AudioContext = window.AudioContext || window.webkitAudioContext;
-                            if (!AudioContext) return;
-                            const context = new AudioContext();
-                            
-                            const playNote = (freq, time, duration) => {
-                                const osc = context.createOscillator();
-                                const gain = context.createGain();
-                                osc.type = 'sine';
-                                osc.frequency.setValueAtTime(freq, time);
-                                gain.gain.setValueAtTime(0.1, time);
-                                gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
-                                osc.connect(gain);
-                                gain.connect(context.destination);
-                                osc.start(time);
-                                osc.stop(time + duration);
-                            };
-
-                            // Arpeggio: C5, E5, G5, C6
-                            playNote(523.25, context.currentTime, 0.1);
-                            playNote(659.25, context.currentTime + 0.1, 0.1);
-                            playNote(783.99, context.currentTime + 0.2, 0.1);
-                            playNote(1046.50, context.currentTime + 0.3, 0.4);
-
-                            setTimeout(() => { if(context.state !== 'closed') context.close(); }, 1000);
-                        } catch (e) { console.error("Success audio error:", e); }
                     },
                     playClickSound() {
                         const context = new (window.AudioContext || window.webkitAudioContext)();
