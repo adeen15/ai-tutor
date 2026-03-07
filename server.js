@@ -401,16 +401,21 @@ app.post('/api/tts', async (req, res) => {
         if (openAiKey && openAiKey !== 'your_openai_key_here') {
             try {
                 // Map Voice.ai IDs to OpenAI voices
+                // Dino (Deep/Friendly) -> Alloy
+                // Monkey (High/Energetic) -> Shimmer
+                // Alien (Ethereal) -> Nova
+                // Cat (Soft) -> Fable
+                // Bee (Playful) -> Onyx (or Shimmer)
                 const voiceMap = {
-                    "9740af7a-9674-4be1-967b-cf6daba06596": "alloy",   // Professor Dino (Deep/Friendly)
+                    "9740af7a-9674-4be1-967b-cf6daba06596": "alloy",   // Professor Dino (Classic/Friendly)
                     "79005bb6-7ae3-4768-b2a0-efc774a3c7a9": "echo",    // Milo Monkey (Energetic/Unique)
                     "0062153d-dd11-4330-a6b1-87cd29187ed7": "nova",    // Starry Alien (Dreamy/Sweet)
                     "2c96d996-4e88-44e8-944a-303d5b063775": "shimmer", // Magic Cat (Soft/Sweet)
                     "a09a1325-058b-4bc7-9105-b96b1cce27c5": "fable"    // Bouncy Bee (Playful/Sweet)
                 };
-                const openAiVoice = voiceMap[vId] || "nova"; // Default to nova as it's known to work
+                const openAiVoice = voiceMap[vId] || "shimmer";
 
-                console.log(`🎙️ OpenAI TTS Request: Voice=${openAiVoice}, TextLength=${text.length}`);
+                console.log(`🎙️ OpenAI TTS. Voice: ${openAiVoice}`);
                 const response = await fetch('https://api.openai.com/v1/audio/speech', {
                     method: 'POST',
                     headers: {
@@ -427,45 +432,10 @@ app.post('/api/tts', async (req, res) => {
                 if (response.ok) {
                     const audioBuffer = await response.arrayBuffer();
                     res.set('Content-Type', 'audio/mpeg');
-                    console.log(`✅ OpenAI TTS Success (${audioBuffer.byteLength} bytes)`);
                     return res.send(Buffer.from(audioBuffer));
-                } else {
-                    const errorText = await response.text();
-                    console.error(`❌ OpenAI TTS Error (${response.status}):`, errorText);
                 }
             } catch (err) {
                 console.warn("⚠️ OpenAI TTS Error:", err.message);
-            }
-        }
-
-        // --- Provider 2: Deepgram TTS (Fallback if OpenAI fails or missing) ---
-        const deepgramKey = normalizeKey(process.env.DEEPGRAM_API_KEY);
-        if (deepgramKey && deepgramKey !== 'your_deepgram_key_here') {
-            try {
-                console.log(`🎙️ Deepgram TTS Fallback Request. TextLength=${text.length}`);
-                // Force MP3 encoding to match the audio/mpeg content-type
-                const dgUrl = "https://api.deepgram.com/v1/speak?model=aura-asteria-en&encoding=mp3";
-                
-                const dgResponse = await fetch(dgUrl, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Token ${deepgramKey}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ text })
-                });
-
-                if (dgResponse.ok) {
-                    const audioBuffer = await dgResponse.arrayBuffer();
-                    res.set('Content-Type', 'audio/mpeg');
-                    console.log(`✅ Deepgram TTS Success (${audioBuffer.byteLength} bytes, MP3)`);
-                    return res.send(Buffer.from(audioBuffer));
-                } else {
-                    const errText = await dgResponse.text();
-                    console.warn(`⚠️ Deepgram TTS Failed (${dgResponse.status}):`, errText);
-                }
-            } catch (err) {
-                console.warn("⚠️ Deepgram TTS Exception:", err.message);
             }
         }
 
