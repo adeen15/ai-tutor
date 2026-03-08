@@ -180,6 +180,31 @@ app.get('/api/health', (req, res) => {
     res.json({ status: "ok", version: "voice-debug-v1", time: new Date().toISOString() });
 });
 
+// --- DEBUG ENDPOINT ---
+app.get('/api/debug', (req, res) => {
+    const checkKey = (key) => {
+        const val = process.env[key];
+        if (!val) return "❌ MISSING";
+        if (val.includes('your_') || val.includes('placeholder')) return "⚠️ PLACEHOLDER";
+        return "✅ SET";
+    };
+
+    res.json({
+        environment: process.env.NODE_ENV || 'production',
+        keys: {
+            OPENROUTER_API_KEY: checkKey('OPENROUTER_API_KEY'),
+            OPENAI_API_KEY: checkKey('OPENAI_API_KEY'),
+            SUPABASE_URL: checkKey('SUPABASE_URL'),
+            SUPABASE_ANON_KEY: checkKey('SUPABASE_ANON_KEY'),
+            SUPABASE_SERVICE_ROLE_KEY: checkKey('SUPABASE_SERVICE_ROLE_KEY'),
+            DEEPGRAM_API_KEY: checkKey('DEEPGRAM_API_KEY'),
+            RESEND_API_KEY: checkKey('RESEND_API_KEY')
+        },
+        supabaseInitialized: !!supabase,
+        timestamp: new Date().toISOString()
+    });
+});
+
 // --- PUSH NOTIFICATION ROUTES ---
 
 app.get('/api/config/vapid', (req, res) => {
@@ -358,7 +383,7 @@ app.post('/api/chat', async (req, res) => {
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
                 "Content-Type": "application/json",
-                "HTTP-Referer": "https://ai-tutor-animated.vercel.app", // Optional for OpenRouter rankings
+                "HTTP-Referer": "https://ai-tutor-murex.vercel.app", // Updated to match current URL
                 "X-Title": "AI Tutor"
             },
             body: JSON.stringify({
@@ -440,8 +465,11 @@ app.post('/api/tts', async (req, res) => {
         }
 
         // --- No Providers Available ---
+        if (!openAiKey || openAiKey === 'your_openai_key_here') {
+            console.error("❌ OpenAI API key is missing or placeholder for TTS.");
+        }
         console.error("❌ No TTS providers configured or all failed.");
-        res.status(503).json({ error: "No TTS providers available. Please check API keys." });
+        res.status(503).json({ error: "No TTS providers available. Please check environment variables (OPENAI_API_KEY)." });
 
     } catch (error) {
         console.error("❌ TTS Endpoint Exception:", error);
