@@ -425,16 +425,16 @@
             </div>
 
             <div class="flex flex-row gap-2 sm:gap-4">
-                <button @click="generateStory()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
                     <span class="text-xl sm:text-3xl">📖</span>
                 </button>
 
-                <button @click="loadLeaderboard(); toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl sm:text-3xl">🏆</span>
                 </button>
 
                 <!-- Adventure Map (Mobile Only - Second Row) -->
-                <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl">🗺️</span>
                 </button>
             </div>
@@ -980,8 +980,8 @@
             </div>
         </div>
 
-        <div x-show="activeLesson" x-cloak class="fixed inset-0 z-[70] bg-black bg-opacity-90 flex items-center justify-center p-0 sm:p-4" x-transition.opacity>
-            <div class="bg-white rounded-none sm:rounded-[2rem] max-w-2xl w-full h-full flex flex-col sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 relative animate__animated animate__zoomIn">
+        <div x-show="activeLesson" x-cloak class="absolute inset-0 z-[70] bg-white flex flex-col w-full h-full" x-transition.opacity>
+            <div class="flex-1 w-full h-full flex flex-col overflow-y-auto animate__animated animate__zoomIn">
                 
                 <div class="bg-slate-100 p-4 sm:p-6 flex justify-between items-center sticky top-0 z-10 shrink-0">
                     <div class="flex items-center gap-3">
