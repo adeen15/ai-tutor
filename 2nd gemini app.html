@@ -1804,7 +1804,14 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                                    <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                                        <div>
+                                            <i class="fas fa-lock text-gray-400 mb-2"></i>
+                                            <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
+                                            <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                                        </div>
+                                    </div>
                                      <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
                                         <i class="fas fa-chart-bar text-indigo-500"></i> Learning Progress Score
                                     </h3>
@@ -1833,7 +1840,14 @@
                                     </div>
                                 </div>
 
-                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                                    <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                                        <div>
+                                            <i class="fas fa-lock text-gray-400 mb-2"></i>
+                                            <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
+                                            <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                                        </div>
+                                    </div>
                                      <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
                                         <i class="fas fa-smile-beam text-pink-500"></i> Emotional Insights (New)
                                     </h3>
@@ -1898,7 +1912,14 @@
                                 </div>
                             </div>
 
-                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8 relative overflow-hidden">
+                                <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                                    <div>
+                                        <i class="fas fa-lock text-gray-400 mb-2"></i>
+                                        <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
+                                        <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                                    </div>
+                                </div>
                                 <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
                                     <i class="fas fa-rocket text-purple-500"></i> Learning Journey
                                 </h3>
@@ -1962,7 +1983,14 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                                    <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                                        <div>
+                                            <i class="fas fa-lock text-gray-400 mb-2"></i>
+                                            <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
+                                            <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
+                                        </div>
+                                    </div>
                                     <h3 class="font-bold text-slate-800 text-lg mb-4">Evidence-Based Mastery Levels</h3>
                                     <div class="space-y-6">
                                         <template x-for="(score, subject) in getTopSubjects()">
