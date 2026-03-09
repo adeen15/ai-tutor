@@ -980,10 +980,10 @@
             </div>
         </div>
 
-        <div x-show="activeLesson" x-cloak class="fixed inset-0 z-[70] bg-black bg-opacity-90 flex items-center justify-center p-4" x-transition.opacity>
-            <div class="bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0 relative animate__animated animate__zoomIn">
+        <div x-show="activeLesson" x-cloak class="fixed inset-0 z-[70] bg-black bg-opacity-90 flex items-center justify-center p-0 sm:p-4" x-transition.opacity>
+            <div class="bg-white rounded-none sm:rounded-[2rem] max-w-2xl w-full h-full flex flex-col sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 relative animate__animated animate__zoomIn">
                 
-                <div class="bg-slate-100 p-6 flex justify-between items-center sticky top-0 z-10">
+                <div class="bg-slate-100 p-4 sm:p-6 flex justify-between items-center sticky top-0 z-10 shrink-0">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl text-white shadow-sm" :class="currentPath ? currentPath.color : 'bg-gray-500'">
                             <span x-text="activeLesson ? activeLesson.id : ''"></span>
@@ -993,7 +993,7 @@
                     <button @click="closeLesson()" class="text-gray-400 hover:text-red-500 text-2xl"><i class="fas fa-times-circle"></i></button>
                 </div>
 
-                <div class="p-8">
+                <div class="p-4 sm:p-8 flex-1 flex flex-col">
                     <div x-show="lessonStep === 'learn'" class="text-center">
                         <div class="text-6xl mb-6 bounce">👨‍🏫</div>
                         <p class="text-xl sm:text-2xl text-slate-700 font-medium leading-relaxed mb-8" x-text="activeLesson ? activeLesson.content : ''"></p>
