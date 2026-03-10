@@ -176,6 +176,172 @@ app.get('/api/config', (req, res) => {
     });
 });
 
+// --- PUBLIC LEGAL PAGES (Required by Apple App Store & Google Play) ---
+app.get('/privacy', (req, res) => {
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor — Privacy Policy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f8fafc; color: #334155; line-height: 1.7; }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 48px 24px; text-align: center; color: white; }
+        .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+        .header p { opacity: 0.85; font-size: 14px; }
+        .container { max-width: 720px; margin: -32px auto 48px; padding: 40px 32px; background: white; border-radius: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; }
+        h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin: 32px 0 12px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
+        h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+        p, li { font-size: 15px; margin-bottom: 12px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; background: #ecfdf5; color: #059669; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 24px; border: 1px solid #a7f3d0; }
+        .footer { text-align: center; padding: 24px; color: #94a3b8; font-size: 12px; }
+        a { color: #3b82f6; }
+        @media (max-width: 640px) { .container { margin: -16px 8px 24px; padding: 24px 20px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔒 Privacy Policy</h1>
+        <p>AI Tutor — Kid-Safe Educational App</p>
+    </div>
+    <div class="container">
+        <div class="badge">🛡️ STRICT NO DATA SALE POLICY — We never sell your data</div>
+
+        <p><strong>Effective Date:</strong> March 2026 &nbsp;|&nbsp; <strong>Last Updated:</strong> March 2026</p>
+        <p>AI Tutor ("we", "our", "us") is committed to protecting the privacy of children and families. This policy explains what data we collect and how we use it.</p>
+
+        <h2>1. Information We Collect (Strictly Necessary Only)</h2>
+        <ul>
+            <li><strong>Parent Email:</strong> Used solely for account recovery and login.</li>
+            <li><strong>PIN Code:</strong> Stored securely and used for parental controls.</li>
+            <li><strong>Child's First Name & Age Range:</strong> Used to personalize the learning experience and adjust difficulty.</li>
+            <li><strong>Progress Data:</strong> Coins, inventory, learning stats, and quiz scores — synced securely to provide continuity.</li>
+        </ul>
+
+        <h2>2. What We Do NOT Collect</h2>
+        <ul>
+            <li>We do <strong>NOT</strong> store voice recordings. Voice inputs are processed instantly and discarded.</li>
+            <li>We do <strong>NOT</strong> collect GPS location, physical addresses, or precise geolocation.</li>
+            <li>We do <strong>NOT</strong> use tracking cookies, advertising SDKs, or third-party analytics that profile children.</li>
+            <li>We do <strong>NOT</strong> collect photos. Vision/camera features process images in real-time and discard them immediately.</li>
+        </ul>
+
+        <h2>3. AI & COPPA Compliance</h2>
+        <p>Our AI interactions are filtered for child safety using a two-layer moderation system (automated content filtering + keyword detection). No personally identifiable information (PII) is sent to AI models for training purposes. We use stateless inference APIs — your child's conversations are not used to train any AI model.</p>
+
+        <h2>4. Data Storage & Security</h2>
+        <p>All data is stored securely using Supabase (hosted on AWS) with row-level security enabled. Data is encrypted in transit (TLS 1.2+) and at rest. We follow industry-standard security practices.</p>
+
+        <h2>5. Third-Party Services</h2>
+        <ul>
+            <li><strong>Supabase:</strong> Authentication and database (privacy policy: supabase.com/privacy)</li>
+            <li><strong>OpenRouter/OpenAI:</strong> AI inference only — no data retention</li>
+            <li><strong>Apple/Google:</strong> In-app purchase processing (subject to their respective privacy policies)</li>
+        </ul>
+
+        <h2>6. Parental Rights</h2>
+        <p>As a parent or guardian, you have the right to:</p>
+        <ul>
+            <li>Review all data associated with your child's account via the Parent Dashboard</li>
+            <li>Request deletion of your account and all associated data by contacting us</li>
+            <li>Withdraw consent at any time by deleting the account</li>
+        </ul>
+
+        <h2>7. Children's Privacy (COPPA & GDPR-K)</h2>
+        <p>This app is designed for children under 13 and complies with the Children's Online Privacy Protection Act (COPPA) and GDPR provisions for children. We require verifiable parental consent (parental gate) before any data collection. We do not condition a child's participation on disclosing more information than is reasonably necessary.</p>
+
+        <h2>8. Contact Us</h2>
+        <p>For privacy concerns or data deletion requests, contact us at: <a href="mailto:privacy@aitutor.app">privacy@aitutor.app</a></p>
+    </div>
+    <div class="footer">© ${new Date().getFullYear()} AI Tutor. All rights reserved.</div>
+</body>
+</html>`);
+});
+
+app.get('/terms', (req, res) => {
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor — Terms of Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f8fafc; color: #334155; line-height: 1.7; }
+        .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 48px 24px; text-align: center; color: white; }
+        .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+        .header p { opacity: 0.85; font-size: 14px; }
+        .container { max-width: 720px; margin: -32px auto 48px; padding: 40px 32px; background: white; border-radius: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; }
+        h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin: 32px 0 12px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
+        h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+        p, li { font-size: 15px; margin-bottom: 12px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        .footer { text-align: center; padding: 24px; color: #94a3b8; font-size: 12px; }
+        a { color: #6366f1; }
+        @media (max-width: 640px) { .container { margin: -16px 8px 24px; padding: 24px 20px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📋 Terms of Service</h1>
+        <p>AI Tutor — Kid-Safe Educational App</p>
+    </div>
+    <div class="container">
+        <p><strong>Effective Date:</strong> March 2026 &nbsp;|&nbsp; <strong>Last Updated:</strong> March 2026</p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using AI Tutor ("the App"), you agree to be bound by these Terms of Service. This app is intended for educational use by children under the supervision of a parent or legal guardian.</p>
+
+        <h2>2. Parental Responsibility</h2>
+        <p>You represent that you are the parent or legal guardian of the child using this app. You are responsible for maintaining the confidentiality of your PIN and for all activity that occurs under your account. You are responsible for supervising your child's use of the App.</p>
+
+        <h2>3. Subscriptions & Payments</h2>
+        <ul>
+            <li>Premium features are offered on a monthly subscription basis.</li>
+            <li>Payment is processed through Apple App Store or Google Play Store using their respective in-app purchase systems.</li>
+            <li>Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period.</li>
+            <li>You may cancel at any time through your device's subscription management settings.</li>
+            <li>No refunds will be provided for partial billing periods, except as required by applicable law or app store policies.</li>
+        </ul>
+
+        <h2>4. Acceptable Use</h2>
+        <p>The App is designed for educational purposes. You agree not to:</p>
+        <ul>
+            <li>Attempt to bypass the AI's content safety filters</li>
+            <li>Use the App for any unlawful or harmful purpose</li>
+            <li>Reverse engineer, decompile, or attempt to extract the source code</li>
+            <li>Share your account credentials with unauthorized parties</li>
+        </ul>
+
+        <h2>5. AI-Generated Content</h2>
+        <p>The App uses AI to generate educational content, including explanations, quizzes, and stories. While we strive for accuracy, AI-generated content may occasionally contain errors. The App is intended to supplement, not replace, formal education. We are not liable for any inaccuracies in AI-generated content.</p>
+
+        <h2>6. Intellectual Property</h2>
+        <p>All content, features, and functionality of the App, including but not limited to text, graphics, logos, and software, are the exclusive property of AI Tutor and are protected by international copyright laws.</p>
+
+        <h2>7. Limitation of Liability</h2>
+        <p>The App is provided "as is" without warranties of any kind, either express or implied. In no event shall AI Tutor be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of data or profits.</p>
+
+        <h2>8. Changes to Terms</h2>
+        <p>We reserve the right to modify these Terms at any time. Continued use of the App after changes constitutes acceptance of the new Terms. Material changes will be communicated via the App or email.</p>
+
+        <h2>9. Governing Law</h2>
+        <p>These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles.</p>
+
+        <h2>10. Contact Us</h2>
+        <p>For questions about these Terms, contact us at: <a href="mailto:support@aitutor.app">support@aitutor.app</a></p>
+    </div>
+    <div class="footer">© ${new Date().getFullYear()} AI Tutor. All rights reserved.</div>
+</body>
+</html>`);
+});
+
 app.get('/api/health', (req, res) => {
     res.json({ status: "ok", version: "voice-debug-v1", time: new Date().toISOString() });
 });
