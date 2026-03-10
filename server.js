@@ -7,6 +7,61 @@ const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const webpush = require('web-push');
 
+// --- In-Memory Rate Limiter (no external dependencies, works on Vercel) ---
+const rateLimitStore = {};
+
+function rateLimit(windowMs, maxRequests) {
+    return (req, res, next) => {
+        const ip = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
+        const key = `${ip}:${req.route?.path || req.path}`;
+        const now = Date.now();
+
+        if (!rateLimitStore[key]) {
+            rateLimitStore[key] = { count: 1, resetAt: now + windowMs };
+            return next();
+        }
+
+        const entry = rateLimitStore[key];
+
+        // Window expired — reset
+        if (now > entry.resetAt) {
+            entry.count = 1;
+            entry.resetAt = now + windowMs;
+            return next();
+        }
+
+        // Within window
+        entry.count++;
+        if (entry.count > maxRequests) {
+            const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+            res.set('Retry-After', String(retryAfter));
+            return res.status(429).json({
+                error: "Whoa, slow down! 🦕",
+                message: "You're asking questions too fast! Take a breath and try again in a few seconds.",
+                retryAfter
+            });
+        }
+
+        next();
+    };
+}
+
+// Cleanup expired entries every 5 minutes to prevent memory leaks
+setInterval(() => {
+    const now = Date.now();
+    for (const key of Object.keys(rateLimitStore)) {
+        if (now > rateLimitStore[key].resetAt) {
+            delete rateLimitStore[key];
+        }
+    }
+}, 5 * 60 * 1000);
+
+// Rate limit configs
+const chatLimit = rateLimit(60 * 1000, 10);     // 10 chat requests per minute
+const ttsLimit = rateLimit(60 * 1000, 15);       // 15 TTS requests per minute
+const visionLimit = rateLimit(60 * 1000, 5);     // 5 vision requests per minute
+const authLimit = rateLimit(10 * 1000, 10);      // 10 auth-related requests per 10s
+
 // Initialize Supabase client safely
 let supabase;
 try {
@@ -523,7 +578,7 @@ app.get('/api/cron/reset-weekly-xp', async (req, res) => {
 
 
 // --- CHAT API ---
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', chatLimit, async (req, res) => {
     try {
         const { messages } = req.body;
         const apiKey = normalizeKey(process.env.OPENROUTER_API_KEY);
@@ -582,7 +637,7 @@ app.post('/api/chat', async (req, res) => {
 
 // --- CLOUD VOICE APIs (ElevenLabs & Deepgram) ---
 
-app.post('/api/tts', async (req, res) => {
+app.post('/api/tts', ttsLimit, async (req, res) => {
     try {
         const { text, voiceId } = req.body;
         const vId = voiceId ? voiceId.trim() : "voice_placeholder_id";
@@ -683,7 +738,7 @@ app.post('/api/stt', async (req, res) => {
 
 
 // --- VISION API ---
-app.post('/api/vision', async (req, res) => {
+app.post('/api/vision', visionLimit, async (req, res) => {
     try {
         const { prompt, image, systemInstruction } = req.body;
         const apiKey = normalizeKey(process.env.OPENROUTER_API_KEY);
@@ -742,7 +797,7 @@ app.post('/api/vision', async (req, res) => {
 });
 
 // --- EMAIL API ---
-app.post('/api/send-email', async (req, res) => {
+app.post('/api/send-email', authLimit, async (req, res) => {
     try {
         const { to, subject, body } = req.body;
         
