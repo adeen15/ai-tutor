@@ -1216,7 +1216,7 @@
                                 <p class="text-2xl font-bold text-slate-700 mb-6" x-text="q.q"></p>
                                 <div class="flex flex-wrap gap-4 justify-center">
                                     <template x-for="(opt, optIdx) in q.options">
-                                        <button @click="if(optIdx === q.correct) { playPing(); confetti({particleCount: 50, spread: 50}); alert('Correct! 🎉'); } else { alert('Try again!'); }" 
+                                        <button @click="if(optIdx === q.correct) { playSFX('correct'); confetti({particleCount: 50, spread: 50}); alert('Correct! 🎉'); } else { playSFX('wrong'); alert('Try again!'); }" 
                                                 class="bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-sm border-2 border-blue-100" x-text="opt"></button>
                                     </template>
                                 </div>
@@ -1225,7 +1225,7 @@
                     </div>
 
                     <!-- Type: Report -->
-                    <div x-show="getDailyContent().type === 'report'" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
+                    <div x-show="getDailyContent().type === 'report'" @click="playSFX('levelup')" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
                         <div class="text-9xl mb-6">🏆</div>
                         <h3 class="text-5xl font-kids text-yellow-600 mb-4">Super Star!</h3>
                         <p class="text-2xl text-gray-500 font-bold mb-10">You completed Week 1!</p>
@@ -2366,6 +2366,15 @@
                 navigator.serviceWorker.register("service-worker.js");
             }
 
+            // --- Sound Effects Assets ---
+            const SFX_URLS = {
+                correct: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3',
+                wrong: 'https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3',
+                coin: 'https://www.soundjay.com/misc/sounds/coin-drop-1.mp3',
+                levelup: 'https://www.soundjay.com/misc/sounds/tada-1.mp3',
+                click: 'https://www.soundjay.com/misc/sounds/button-3.mp3'
+            };
+
             function aiTutor() {
                 return {
                     supabase: null,
@@ -2488,9 +2497,27 @@
                     isStoryThinking: false,
                     currentStory: { story: '', questions: [] },
                     isStoryQuiz: false,
-                    coins: 0, 
                     xp: 0,
                     level: 1,
+                    
+                    // SFX Helper
+                    playSFX(type) {
+                        const url = SFX_URLS[type] || SFX_URLS.click;
+                        
+                        // 1. Try Native Bridge (Mobile)
+                        if (window.ReactNativeWebView) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'PLAY_SFX',
+                                sfxType: type,
+                                url: url
+                            }));
+                        } else {
+                            // 2. Web Fallback
+                            const audio = new Audio(url);
+                            audio.volume = 0.4;
+                            audio.play().catch(e => console.warn("SFX logic blocked by browser:", e));
+                        }
+                    },
 
                     showShop: false,
                     inventory: [],
@@ -3536,6 +3563,7 @@
                         }
                         
                         this.coins += 50;
+                        this.playSFX('coin');
                         this.xp += 100;
                         this.incrementWeeklyXP(100);
                         if (!this.learningStats.quizzesCompleted) this.learningStats.quizzesCompleted = 0;
@@ -3970,9 +3998,10 @@
                                     this.showLeaderboardRewardModal = true;
                                     this.toggleScroll(true);
                                     this.coins += unclaimed.reward;
+                                    this.playSFX('coin');
                                     unclaimed.claimed = true;
                                     this.syncData();
-                                    this.playPing();
+                                    this.playSFX('levelup');
                                 }, 1500); // Show slightly after initial daily rewards if any
                             }
                         }
@@ -4419,12 +4448,11 @@
                             
                             if (this.isStoryQuiz) {
                                 this.coins += 30;
+                                this.playSFX('coin');
                                 this.xp += 2;
-                                // Still add the individual question coins? No, user said 30 coins for completion.
-                                // Actually handleCorrect adds 4 coins per question.
-                                // To be safe, I'll just add the bonus.
                             } else {
                                 this.coins += this.quizCoinsEarned;
+                                this.playSFX('coin');
                             }
                             
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
@@ -5067,8 +5095,7 @@
                         setTimeout(() => this.playCharIntro(char.name), 100);
                     },
                     updateLevel() {
-                        // Calculate level based on the CURRENT character's subject mastery
-                        // Standard: Level 1 (0-39), Level 2 (40-79), Level 3 (80-119), Level 4 (120+)
+                        const oldLevel = this.level;
                         const subjectKey = this.currentChar.subjectKey || 'history'; // Fallback to history for Dino
                         const score = this.learningStats.subjects[subjectKey] || 0;
                         
@@ -5076,6 +5103,10 @@
                         else if (score >= 80) this.level = 3;
                         else if (score >= 40) this.level = 2;
                         else this.level = 1;
+
+                        if (this.level > oldLevel) {
+                            this.playSFX('levelup');
+                        }
                     },
                     isQuerySafe(query) {
                         const lowerQuery = query.toLowerCase();
@@ -5440,6 +5471,7 @@
                         this.toggleScroll(false);
                         if (isFirstTime) {
                             this.coins += 50;
+                            this.playSFX('coin');
                         }
                         this.checkAchievements();
                         this.syncData();
@@ -5454,52 +5486,10 @@
                     },
 
                     playPing() {
-                        try {
-                            const AudioContext = window.AudioContext || window.webkitAudioContext;
-                            if (!AudioContext) return;
-                            
-                            const context = new AudioContext();
-                            const osc = context.createOscillator();
-                            const gain = context.createGain();
-
-                            osc.type = 'sine';
-                            osc.frequency.setValueAtTime(523.25, context.currentTime); // C5
-                            osc.frequency.exponentialRampToValueAtTime(880, context.currentTime + 0.1);
-                            
-                            gain.gain.setValueAtTime(0.1, context.currentTime);
-                            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
-
-                            osc.connect(gain);
-                            gain.connect(context.destination);
-                            
-                            osc.start();
-                            osc.stop(context.currentTime + 0.1);
-                            
-                            // Critical: Close context to prevent limit errors (Chrome limit ~6)
-                            setTimeout(() => {
-                                if(context.state !== 'closed') context.close();
-                            }, 150);
-                        } catch (e) {
-                            console.error("Audio error:", e);
-                        }
+                        this.playSFX('click');
                     },
                     playClickSound() {
-                        const context = new (window.AudioContext || window.webkitAudioContext)();
-                        const osc = context.createOscillator();
-                        const gain = context.createGain();
-                        
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(400, context.currentTime);
-                        osc.frequency.exponentialRampToValueAtTime(1200, context.currentTime + 0.05);
-                        
-                        gain.gain.setValueAtTime(0.1, context.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.08);
-                        
-                        osc.connect(gain);
-                        gain.connect(context.destination);
-                        
-                        osc.start();
-                        osc.stop(context.currentTime + 0.08);
+                        this.playSFX('click');
                     },
                     generateWorksheet() {
                         if(!this.isPremium) {
@@ -5509,6 +5499,7 @@
                         this.playPing();
                         window.print();
                         this.coins += 100;
+                        this.playSFX('coin');
                         this.syncData();
                     }
                 }
