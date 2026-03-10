@@ -260,8 +260,8 @@
                                         <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                         <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
                                             I confirm I am the parent/guardian and agree to the 
-                                            <a href="#" @click.prevent="showLegalDoc = 'privacy'" class="text-blue-500 underline">Privacy Policy</a> & 
-                                            <a href="#" @click.prevent="showLegalDoc = 'terms'" class="text-blue-500 underline">Terms</a>. 
+                                            <a href="/privacy.html" target="_blank" class="text-blue-500 underline">Privacy Policy</a> & 
+                                            <a href="/terms.html" target="_blank" class="text-blue-500 underline">Terms</a>. 
                                             I consent to kid-safe AI processing (COPPA/GDPR).
                                         </span>
                                     </label>
@@ -333,8 +333,8 @@
                         <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
                             <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Legal & Privacy</h3>
                             <div class="flex justify-center gap-6">
-                                <button @click="showLegalDoc = 'privacy'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Privacy Policy</button>
-                                <button @click="showLegalDoc = 'terms'" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Terms of Service</button>
+                                <a href="/privacy.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Privacy Policy</a>
+                                <a href="/terms.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Terms of Service</a>
                             </div>
                         </div>
                     </div>
@@ -1216,7 +1216,7 @@
                                 <p class="text-2xl font-bold text-slate-700 mb-6" x-text="q.q"></p>
                                 <div class="flex flex-wrap gap-4 justify-center">
                                     <template x-for="(opt, optIdx) in q.options">
-                                        <button @click="if(optIdx === q.correct) { playSFX('correct'); confetti({particleCount: 50, spread: 50}); alert('Correct! 🎉'); } else { playSFX('wrong'); alert('Try again!'); }" 
+                                        <button @click="if(optIdx === q.correct) { playPing(); confetti({particleCount: 50, spread: 50}); alert('Correct! 🎉'); } else { alert('Try again!'); }" 
                                                 class="bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-sm border-2 border-blue-100" x-text="opt"></button>
                                     </template>
                                 </div>
@@ -1225,7 +1225,7 @@
                     </div>
 
                     <!-- Type: Report -->
-                    <div x-show="getDailyContent().type === 'report'" @click="playSFX('levelup')" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
+                    <div x-show="getDailyContent().type === 'report'" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
                         <div class="text-9xl mb-6">🏆</div>
                         <h3 class="text-5xl font-kids text-yellow-600 mb-4">Super Star!</h3>
                         <p class="text-2xl text-gray-500 font-bold mb-10">You completed Week 1!</p>
@@ -1517,20 +1517,20 @@
             <div @click.away="showLeaderboardRewardModal = false; leaderboardRewardData = null; toggleScroll(false)" class="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden animate__animated animate__tada border-8 border-yellow-400">
                 <div class="h-40 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 relative flex items-center justify-center overflow-hidden">
                     <div class="absolute inset-0 opacity-30 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTEyIDJsMy4wOSA2LjI2TDIyIDkuMjdsLTUgNC44N0wxOC4xOCAyMiAxMiAxOC4yNyA1LjgyIDIybDEuMTgtNy44Ni01LTQuODcgNi45MS0xLjAxTDEyIDJ6IiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjUiLz48L3N2Zz4=')] bg-[length:30px_30px] animate-[slide_10s_linear_infinite]"></div>
-                    <div class="text-7xl drop-shadow-lg transform hover:scale-110 transition-transform cursor-default z-10" x-text="leaderboardRewardData ? (leaderboardRewardData.rank === 1 ? '🏆' : (leaderboardRewardData.rank === 2 ? '🥈' : '🥉')) : ''"></div>
+                    <div class="text-7xl drop-shadow-lg transform hover:scale-110 transition-transform cursor-default z-10" x-text="leaderboardRewardData?.rank === 1 ? '🏆' : (leaderboardRewardData?.rank === 2 ? '🥈' : '🥉')"></div>
                 </div>
                 
                 <div class="p-8 text-center bg-yellow-50">
                     <h2 class="text-4xl font-kids text-amber-600 mb-2 drop-shadow-sm">Amazing Job!</h2>
                     <h3 class="text-2xl font-kids text-slate-700 mb-6 font-bold tracking-wide">
-                        You placed <span class="text-amber-500 underline decoration-wavy" x-text="leaderboardRewardData ? (leaderboardRewardData.rank === 1 ? '1st' : (leaderboardRewardData.rank === 2 ? '2nd' : '3rd')) : ''"></span> last week!
+                        You placed <span class="text-amber-500 underline decoration-wavy" x-text="leaderboardRewardData?.rank === 1 ? '1st' : (leaderboardRewardData?.rank === 2 ? '2nd' : '3rd')"></span> last week!
                     </h3>
                     
                     <div class="bg-white rounded-3xl p-6 border border-yellow-200 shadow-inner mb-8">
-                        <p class="text-slate-500 font-bold mb-4">Your Weekly XP: <span class="text-blue-500 text-xl" x-text="leaderboardRewardData ? leaderboardRewardData.xp : '0'"></span> ✨</p>
+                        <p class="text-slate-500 font-bold mb-4">Your Weekly XP: <span class="text-blue-500 text-xl" x-text="leaderboardRewardData?.xp"></span> ✨</p>
                         <div class="flex items-center justify-center gap-3 animate-pulse">
                             <i class="fas fa-coins text-4xl text-yellow-500 drop-shadow-md"></i>
-                            <span class="text-5xl font-kids text-yellow-600 drop-shadow-sm" x-text="leaderboardRewardData ? '+' + leaderboardRewardData.reward : ''"></span>
+                            <span class="text-5xl font-kids text-yellow-600 drop-shadow-sm" x-text="'+' + leaderboardRewardData?.reward"></span>
                         </div>
                         <p class="text-xs text-yellow-600 font-bold uppercase tracking-widest mt-4 opacity-80">Coins Added to Wallet</p>
                     </div>
@@ -1607,48 +1607,7 @@
             </div>
         </div>
 
-        <div x-show="showCheckout" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-6 bg-slate-900 bg-opacity-95 overflow-y-auto" x-transition.opacity>
-            <div class="bg-white rounded-[2rem] max-w-md w-full p-8 shadow-2xl text-center my-auto">
-                <h2 class="text-3xl font-kids text-slate-800 mb-2">Secure Checkout</h2>
-                <p class="text-gray-500 mb-6">Unlock <span class="font-bold text-slate-800">1 Month Premium</span> for $4.99</p>
-                
-                <div class="text-left space-y-4 mb-8">
-                    <div>
-                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Cardholder Name</label>
-                        <input type="text" x-model="checkoutForm.name" placeholder="John Doe" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Card Number</label>
-                        <div class="relative">
-                            <input type="text" x-model="checkoutForm.card" placeholder="0000 0000 0000 0000" maxlength="19" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700">
-                            <i class="fas fa-credit-card absolute right-4 top-5 text-slate-300"></i>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="flex-1">
-                            <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Expiry Date</label>
-                            <input type="text" x-model="checkoutForm.expiry" placeholder="MM/YY" maxlength="5" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">CVV</label>
-                            <input type="password" x-model="checkoutForm.cvv" placeholder="***" maxlength="3" class="w-full p-4 bg-slate-50 border-2 border-black rounded-xl focus:border-blue-500 outline-none transition-colors font-bold text-slate-700 text-center">
-                        </div>
-                    </div>
-                </div>
 
-                <div class="space-y-3">
-                    <button 
-                        @click="processPayment" 
-                        :disabled="!checkoutForm.name || !checkoutForm.card || !checkoutForm.expiry || !checkoutForm.cvv"
-                        class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:grayscale"
-                    >
-                        <i class="fas fa-lock mr-2"></i> Complete Payment
-                    </button>
-                    <button @click="showCheckout = false" class="w-full py-4 text-black font-bold hover:text-slate-600">Cancel</button>
-                </div>
-                <p class="text-[10px] text-slate-400 mt-6 italic">Simulation: Do not enter real sensitive information.</p>
-            </div>
-        </div>
 
         <div x-show="showParentPortal" x-cloak
             class="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-6 bg-slate-900 bg-opacity-95 overflow-y-auto"
@@ -1884,7 +1843,7 @@
                                             </p>
                                         </template>
 
-                                        <button @click="isPremium ? cancelSubscription() : processPayment()" 
+                                        <button @click="isPremium ? cancelSubscription() : triggerIAP()" 
                                             class="w-full py-3 rounded-xl font-bold text-sm transition-all" 
                                             :class="isPremium ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg transform hover:-translate-y-1'">
                                             <span x-text="isPremium ? 'Cancel Subscription' : 'Upgrade Now ($4.99/mo)'"></span>
@@ -2366,19 +2325,12 @@
                 navigator.serviceWorker.register("service-worker.js");
             }
 
-            // --- Sound Effects Assets ---
-            const SFX_URLS = {
-                correct: 'https://www.soundjay.com/communication/sounds/bell-ringing-05.mp3',
-                wrong: 'https://www.soundjay.com/buttons/sounds/button-10.mp3',
-                coin: 'https://www.soundjay.com/misc/sounds/coin-drop-1.mp3',
-                levelup: 'https://www.soundjay.com/human/sounds/tada-1.mp3',
-                click: 'https://www.soundjay.com/buttons/sounds/button-3.mp3'
-            };
-
             function aiTutor() {
                 return {
                     supabase: null,
                     isLoading: true, // Start in loading state
+                    isLoggedIn: false,
+
                     isLoggedIn: false,
                     hasAccount: false,
                     savedProfile: null,
@@ -2495,27 +2447,9 @@
                     isStoryThinking: false,
                     currentStory: { story: '', questions: [] },
                     isStoryQuiz: false,
+                    coins: 0, 
                     xp: 0,
                     level: 1,
-                    
-                    // SFX Helper
-                    playSFX(type) {
-                        const url = SFX_URLS[type] || SFX_URLS.click;
-                        
-                        // 1. Try Native Bridge (Mobile)
-                        if (window.ReactNativeWebView) {
-                            window.ReactNativeWebView.postMessage(JSON.stringify({
-                                type: 'PLAY_SFX',
-                                sfxType: type,
-                                url: url
-                            }));
-                        } else {
-                            // 2. Web Fallback
-                            const audio = new Audio(url);
-                            audio.volume = 0.4;
-                            audio.play().catch(e => console.warn("SFX logic blocked by browser:", e));
-                        }
-                    },
 
                     showShop: false,
                     inventory: [],
@@ -2846,6 +2780,32 @@
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
                         this.$watch('isTimeUp', value => {
                             if (value) this.parentVerified = false;
+                        });
+
+                        // --- Native Bridge Message Listener ---
+                        window.addEventListener('message', async (event) => {
+                            try {
+                                const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                                console.log("Received native message:", data);
+
+                                if (data.type === 'PREMIUM_ACTIVATED') {
+                                    console.log("💎 Premium Activated via Native IAP!");
+                                    this.isPremium = true;
+                                    this.premiumExpiry = new Date().getTime() + (30 * 24 * 60 * 60 * 1000); // 30 days
+                                    this.coins = Number(this.coins) + 500; // Bonus coins
+                                    
+                                    confetti({
+                                        particleCount: 200,
+                                        spread: 100,
+                                        origin: { y: 0.6 }
+                                    });
+                                    this.playPing();
+                                    alert("Congratulations! Premium is now active. Enjoy all the features!");
+                                    await this.syncData();
+                                }
+                            } catch (e) {
+                                // Silent fail for non-JSON or unrelated messages
+                            }
                         });
                     },
 
@@ -3561,7 +3521,6 @@
                         }
                         
                         this.coins += 50;
-                        this.playSFX('coin');
                         this.xp += 100;
                         this.incrementWeeklyXP(100);
                         if (!this.learningStats.quizzesCompleted) this.learningStats.quizzesCompleted = 0;
@@ -3996,10 +3955,9 @@
                                     this.showLeaderboardRewardModal = true;
                                     this.toggleScroll(true);
                                     this.coins += unclaimed.reward;
-                                    this.playSFX('coin');
                                     unclaimed.claimed = true;
                                     this.syncData();
-                                    this.playSFX('levelup');
+                                    this.playPing();
                                 }, 1500); // Show slightly after initial daily rewards if any
                             }
                         }
@@ -4446,11 +4404,12 @@
                             
                             if (this.isStoryQuiz) {
                                 this.coins += 30;
-                                this.playSFX('coin');
                                 this.xp += 2;
+                                // Still add the individual question coins? No, user said 30 coins for completion.
+                                // Actually handleCorrect adds 4 coins per question.
+                                // To be safe, I'll just add the bonus.
                             } else {
                                 this.coins += this.quizCoinsEarned;
-                                this.playSFX('coin');
                             }
                             
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
@@ -4887,27 +4846,15 @@
                             }
                         }
                     },
-                    async processPayment() {
-                        this.isLoading = true;
-                        try {
-                            const res = await fetch('/api/create-checkout', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ userEmail: this.registeredEmail })
-                            });
-                            
-                            const data = await res.json();
-                            
-                            if (data.url) {
-                                window.location.href = data.url;
-                            } else {
-                                alert("Could not connect to payment server. Check console.");
-                            }
-                        } catch (e) {
-                            alert("Payment Error. Please try again.");
-                        } finally {
-                            this.isLoading = false;
-                            this.showCheckout = false;
+                    triggerIAP() {
+                        if (window.ReactNativeWebView) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'IAP_PURCHASE_REQUEST',
+                                productId: 'premium_monthly'
+                            }));
+                        } else {
+                            // Fallback for web testing if needed
+                            alert("Native IAP is only available in the mobile app. (Simulation)");
                         }
                     },
                     async cancelSubscription() {
@@ -5093,9 +5040,8 @@
                         setTimeout(() => this.playCharIntro(char.name), 100);
                     },
                     updateLevel() {
-                        if (!this.learningStats || !this.learningStats.subjects) return;
-                        
-                        const oldLevel = this.level;
+                        // Calculate level based on the CURRENT character's subject mastery
+                        // Standard: Level 1 (0-39), Level 2 (40-79), Level 3 (80-119), Level 4 (120+)
                         const subjectKey = this.currentChar.subjectKey || 'history'; // Fallback to history for Dino
                         const score = this.learningStats.subjects[subjectKey] || 0;
                         
@@ -5103,10 +5049,6 @@
                         else if (score >= 80) this.level = 3;
                         else if (score >= 40) this.level = 2;
                         else this.level = 1;
-
-                        if (this.level > oldLevel) {
-                            this.playSFX('levelup');
-                        }
                     },
                     isQuerySafe(query) {
                         const lowerQuery = query.toLowerCase();
@@ -5471,7 +5413,6 @@
                         this.toggleScroll(false);
                         if (isFirstTime) {
                             this.coins += 50;
-                            this.playSFX('coin');
                         }
                         this.checkAchievements();
                         this.syncData();
@@ -5486,10 +5427,52 @@
                     },
 
                     playPing() {
-                        this.playSFX('click');
+                        try {
+                            const AudioContext = window.AudioContext || window.webkitAudioContext;
+                            if (!AudioContext) return;
+                            
+                            const context = new AudioContext();
+                            const osc = context.createOscillator();
+                            const gain = context.createGain();
+
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(523.25, context.currentTime); // C5
+                            osc.frequency.exponentialRampToValueAtTime(880, context.currentTime + 0.1);
+                            
+                            gain.gain.setValueAtTime(0.1, context.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+
+                            osc.connect(gain);
+                            gain.connect(context.destination);
+                            
+                            osc.start();
+                            osc.stop(context.currentTime + 0.1);
+                            
+                            // Critical: Close context to prevent limit errors (Chrome limit ~6)
+                            setTimeout(() => {
+                                if(context.state !== 'closed') context.close();
+                            }, 150);
+                        } catch (e) {
+                            console.error("Audio error:", e);
+                        }
                     },
                     playClickSound() {
-                        this.playSFX('click');
+                        const context = new (window.AudioContext || window.webkitAudioContext)();
+                        const osc = context.createOscillator();
+                        const gain = context.createGain();
+                        
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(400, context.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(1200, context.currentTime + 0.05);
+                        
+                        gain.gain.setValueAtTime(0.1, context.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.08);
+                        
+                        osc.connect(gain);
+                        gain.connect(context.destination);
+                        
+                        osc.start();
+                        osc.stop(context.currentTime + 0.08);
                     },
                     generateWorksheet() {
                         if(!this.isPremium) {
@@ -5499,7 +5482,6 @@
                         this.playPing();
                         window.print();
                         this.coins += 100;
-                        this.playSFX('coin');
                         this.syncData();
                     }
                 }
