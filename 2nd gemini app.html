@@ -3016,6 +3016,9 @@
                             });
                             
                             if (!response.ok) {
+                                if (response.status === 429) {
+                                    throw new Error("RATE_LIMIT");
+                                }
                                 throw new Error("TTS API Limit or Failure");
                             }
 
@@ -3037,7 +3040,11 @@
                             
                             await this.currentAudio.play();
                         } catch (e) {
-                            console.warn("Cloud TTS failed, using browser fallback:", e.message);
+                            if (e.message === "RATE_LIMIT") {
+                                console.warn("Rate limit reached for TTS");
+                            } else {
+                                console.warn("Cloud TTS failed, using browser fallback:", e.message);
+                            }
                             this.speakNative(text);
                         }
                     },
@@ -5186,6 +5193,9 @@
                                     })
                                 });
                                 if (!response.ok) {
+                                    if (response.status === 429) {
+                                        throw new Error("RATE_LIMIT");
+                                    }
                                     console.error("Vision API request failed");
                                     throw new Error("Vision API request failed");
                                 }
@@ -5200,7 +5210,11 @@
                             } catch (err) {
                                 console.error("Vision API Error:", err);
                                 this.closeVisionModal();
-                                this.finishThinking("My magic eyes are a bit blurry right now. Can we try another photo?", "Vision Error");
+                                if (err.message === "RATE_LIMIT") {
+                                    this.finishThinking("Whoa, slow down! 🦕 My magic eyes are tired. Let's take a little break and try again in a minute.", "Vision Rate Limit");
+                                } else {
+                                    this.finishThinking("My magic eyes are a bit blurry right now. Can we try another photo?", "Vision Error");
+                                }
                             }
                         };
                         reader.readAsDataURL(this.visionFile);
@@ -5303,6 +5317,10 @@
 
                             if (!response.ok) {
                                 const errData = await response.json().catch(() => ({}));
+                                // Rate Limit check
+                                if (response.status === 429) {
+                                    throw new Error("RATE_LIMIT");
+                                }
                                 // 451 = content moderation block — show the kid-friendly message
                                 if (response.status === 451 && errData.blocked && errData.response) {
                                     const blocked = JSON.parse(errData.response);
@@ -5338,7 +5356,11 @@
                             console.error("API Error:", error);
                             this.logActivity(savedQuery, 'neutral');
                             if (this.currentChar.name === activeCharName) {
-                                this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
+                                if (error.message === "RATE_LIMIT") {
+                                    this.finishThinking("Whoa, slow down! 🦕 You're asking questions too fast! Take a breath and try again in a minute.", savedQuery);
+                                } else {
+                                    this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
+                                }
                             } else {
                                 this.isThinking = false;
                             }
@@ -5494,4 +5516,3 @@
         </script>
     </body>
     </html>
-
