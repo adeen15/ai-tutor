@@ -4477,6 +4477,10 @@
                     },
 
                     async handleSignup() {
+                        if (!this.supabase || !navigator.onLine) {
+                            alert("⚠️ You're offline! Please connect to the internet to create an account.");
+                            return;
+                        }
                         if (!this.loginForm.name || !this.loginForm.email || !this.loginForm.password) {
                             alert("Please fill in all fields.");
                             return;
@@ -4582,6 +4586,10 @@
                     },
 
                     async handleLogin() {
+                        if (!this.supabase || !navigator.onLine) {
+                            alert("⚠️ You're offline! Please connect to the internet to login.");
+                            return;
+                        }
                         console.log("Attempting Login..."); // Log start
                         this.isLoading = true;
                         
