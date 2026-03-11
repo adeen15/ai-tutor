@@ -2507,6 +2507,14 @@
                     quizType: 'multiple_choice', 
                     isMusicOn: localStorage.getItem('is_music_on') === 'true',
                     bgMusic: null,
+                    musicPlaylist: [
+                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
+                    ],
+                    currentMusicIndex: Math.floor(Math.random() * 5), // Start with a random track
                     quizQuestions: [],
                     currentQuizIndex: 0,
                     quizTotalQuestions: 5,
@@ -5697,12 +5705,38 @@
                     },
                     playBgMusic() {
                         if (!this.isMusicOn) return;
-                        if (!this.bgMusic) {
-                            this.bgMusic = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3');
-                            this.bgMusic.loop = true;
-                            this.bgMusic.volume = 0.3;
+                        
+                        try {
+                            if (!this.bgMusic) {
+                                this.bgMusic = new Audio(this.musicPlaylist[this.currentMusicIndex]);
+                                this.bgMusic.volume = 0.3;
+                                
+                                // Automatic cycling
+                                this.bgMusic.onended = () => {
+                                    this.playNextTrack();
+                                };
+                            } else if (this.bgMusic.src !== this.musicPlaylist[this.currentMusicIndex]) {
+                                // If index changed, update source
+                                this.bgMusic.src = this.musicPlaylist[this.currentMusicIndex];
+                            }
+                            
+                            this.bgMusic.play().catch(e => {
+                                console.log("Music play blocked by browser, waiting for interaction.");
+                            });
+                        } catch (e) {
+                            console.error("Music initialization error:", e);
                         }
-                        this.bgMusic.play().catch(e => console.log("Music play blocked:", e));
+                    },
+                    playNextTrack() {
+                        this.currentMusicIndex = (this.currentMusicIndex + 1) % this.musicPlaylist.length;
+                        if (this.bgMusic) {
+                            this.bgMusic.src = this.musicPlaylist[this.currentMusicIndex];
+                            if (this.isMusicOn) {
+                                this.bgMusic.play().catch(e => console.log("Next track play blocked:", e));
+                            }
+                        } else {
+                            this.playBgMusic();
+                        }
                     },
                     stopBgMusic() {
                         if (this.bgMusic) {
