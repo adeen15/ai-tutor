@@ -440,6 +440,14 @@
                     </div>
                 </div>
 
+                <!-- Magic Aura Button (Moved to prevent overlap) -->
+                <button @click="showShop = true; toggleScroll(true)" 
+                        class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft" 
+                        :title="t('magic_auras')">
+                    <span class="text-xl sm:text-3xl">🪄</span>
+                    <span class="text-[8px] sm:text-[10px] font-bold uppercase leading-none mt-1" x-text="t('magic_auras')"></span>
+                </button>
+
                 <!-- Streak Display (Desktop Only) -->
                 <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="hidden sm:flex daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex-col items-center justify-center animate__animated animate__fadeInLeft">
                     <span class="text-xl sm:text-3xl">🔥</span>
@@ -483,9 +491,6 @@
                     <span class="text-xl sm:text-3xl">🗺️</span>
                 </button>
 
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
-                    <span class="text-xl sm:text-3xl">🪄</span>
-                </button>
 
                 <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
                     <span class="text-xl sm:text-3xl">📕</span>
@@ -2763,8 +2768,8 @@
                     hasAnswered: true,
                     currentMoodIcon: '🦖',
                     suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                    isPremium: true,
-                    premiumExpiry: new Date().getTime() + (365 * 24 * 60 * 60 * 1000),
+                    isPremium: false,
+                    premiumExpiry: null,
                     showCheckout: false,
                     checkoutForm: { name: '', card: '', expiry: '', cvv: '' },
                     maxFreeQuestions: 5,
@@ -2834,7 +2839,7 @@
                     isOfflineMode: false,
 
                     // Family Plan State
-                    isFamilyPlan: true,
+                    isFamilyPlan: false,
 
                     // Onboarding State
                     showOnboarding: false,
