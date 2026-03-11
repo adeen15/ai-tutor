@@ -2003,7 +2003,12 @@
                             </div>
 
                             <div class="mt-8 pt-6 pb-10 sm:pb-4 border-t flex justify-between items-center">
-                                <button @click="handleLogout" class="text-red-500 font-bold text-xs hover:underline uppercase tracking-widest -ml-1">Log Out</button>
+                                <div class="flex gap-4 items-center">
+                                    <button @click="handleLogout" class="text-red-500 font-bold text-xs hover:underline uppercase tracking-widest">Log Out</button>
+                                    <button @click="handleDeleteAccount" class="text-red-800 font-bold text-xs hover:underline uppercase tracking-widest flex items-center gap-1">
+                                        <i class="fas fa-trash-alt"></i> Delete Account
+                                    </button>
+                                </div>
                                 <button @click="closeParentPortal" class="bg-slate-800 text-white px-8 py-3 rounded-xl font-kids text-sm hover:bg-slate-700 transition-colors -mr-1">Exit Dashboard</button>
                             </div>
                         </div>
@@ -4603,6 +4608,52 @@
                         await this.supabase.auth.signOut();
                         this.refreshAppState();
                         this.closeParentPortal();
+                    },
+
+                    async handleDeleteAccount() {
+                        // Step 1: First confirmation
+                        const firstConfirm = confirm(
+                            "⚠️ Are you sure you want to permanently delete your account?\n\n" +
+                            "This will erase ALL your data including:\n" +
+                            "• Learning progress & stats\n" +
+                            "• Coins & inventory\n" +
+                            "• All child profiles\n\n" +
+                            "This action CANNOT be undone."
+                        );
+                        if (!firstConfirm) return;
+
+                        // Step 2: Type DELETE to confirm
+                        const typed = prompt("Type DELETE (in capitals) to confirm permanent account deletion:");
+                        if (typed !== 'DELETE') {
+                            alert("Account deletion cancelled. You typed incorrectly.");
+                            return;
+                        }
+
+                        this.isLoading = true;
+                        try {
+                            const { data: { user } } = await this.supabase.auth.getUser();
+                            if (!user) throw new Error("Not logged in");
+
+                            const response = await fetch('/api/delete-account', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ userId: user.id, email: user.email })
+                            });
+
+                            const result = await response.json();
+                            if (!response.ok) throw new Error(result.error || 'Deletion failed');
+
+                            alert("✅ Your account has been permanently deleted. Goodbye!");
+                            await this.supabase.auth.signOut();
+                            this.refreshAppState();
+                            this.closeParentPortal();
+
+                        } catch (err) {
+                            console.error("Delete account error:", err);
+                            alert("Error deleting account: " + err.message);
+                        } finally {
+                            this.isLoading = false;
+                        }
                     },
 
                     async handleLogin() {
