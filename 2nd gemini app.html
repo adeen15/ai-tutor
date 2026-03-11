@@ -376,22 +376,24 @@
                         <span class="text-[8px] sm:text-[10px] font-bold uppercase leading-none mt-1" x-text="isMusicOn ? 'ON' : 'OFF'"></span>
                     </button>
                     
-                    <!-- Hover Menu -->
-                    <div class="absolute left-full top-0 ml-4 bg-white rounded-3xl shadow-2xl p-3 hidden group-hover:block z-[100] min-w-[160px] border-4 border-slate-100 animate__animated animate__fadeInLeft animate__faster">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase mb-2 px-2 flex items-center justify-between">
-                            <span>Select Music</span>
-                            <i class="fas fa-music"></i>
-                        </div>
-                        <div class="space-y-1">
-                            <template x-for="(track, index) in musicPlaylist">
-                                <button @click="selectTrack(index)" 
-                                        class="w-full text-left px-3 py-2.5 rounded-2xl text-[11px] font-bold transition-all flex items-center justify-between group/item"
-                                        :class="currentMusicIndex === index && isMusicOn ? 'bg-green-500 text-white shadow-lg' : 'hover:bg-blue-50 text-slate-600 hover:text-blue-600'">
-                                    <span x-text="track.name"></span>
-                                    <i class="fas fa-play-circle opacity-0 group-hover/item:opacity-100 transition-opacity" x-show="currentMusicIndex !== index || !isMusicOn"></i>
-                                    <i class="fas fa-volume-up" x-show="currentMusicIndex === index && isMusicOn"></i>
-                                </button>
-                            </template>
+                    <!-- Hover Menu (Wrapped to bridge the gap) -->
+                    <div class="absolute left-full top-0 pl-4 hidden group-hover:block z-[100] animate__animated animate__fadeInLeft animate__faster">
+                        <div class="bg-white rounded-3xl shadow-2xl p-3 min-w-[160px] border-4 border-slate-100">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase mb-2 px-2 flex items-center justify-between">
+                                <span>Select Music</span>
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <template x-for="(track, index) in musicPlaylist">
+                                    <button @click="selectTrack(index)" 
+                                            class="w-full text-left px-3 py-2.5 rounded-2xl text-[11px] font-bold transition-all flex items-center justify-between group/item"
+                                            :class="currentMusicIndex === index && isMusicOn ? 'bg-green-500 text-white shadow-lg' : 'hover:bg-blue-50 text-slate-600 hover:text-blue-600'">
+                                        <span x-text="track.name"></span>
+                                        <i class="fas fa-play-circle opacity-0 group-hover/item:opacity-100 transition-opacity" x-show="currentMusicIndex !== index || !isMusicOn"></i>
+                                        <i class="fas fa-volume-up" x-show="currentMusicIndex === index && isMusicOn"></i>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                     </div>
                 </div>
