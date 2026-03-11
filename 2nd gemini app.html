@@ -2763,8 +2763,8 @@
                     hasAnswered: true,
                     currentMoodIcon: '🦖',
                     suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                    isPremium: false,
-                    premiumExpiry: null,
+                    isPremium: true,
+                    premiumExpiry: new Date().getTime() + (365 * 24 * 60 * 60 * 1000),
                     showCheckout: false,
                     checkoutForm: { name: '', card: '', expiry: '', cvv: '' },
                     maxFreeQuestions: 5,
@@ -2834,7 +2834,7 @@
                     isOfflineMode: false,
 
                     // Family Plan State
-                    isFamilyPlan: false,
+                    isFamilyPlan: true,
 
                     // Onboarding State
                     showOnboarding: false,
