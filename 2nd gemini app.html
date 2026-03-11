@@ -368,12 +368,33 @@
                     <span class="font-kids text-[10px] sm:text-base text-yellow-700 leading-none mt-1" x-text="coins"></span>
                 </div>
 
-                <!-- Music Toggle -->
-                <button @click="toggleMusic()" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 flex flex-col items-center justify-center animate__animated animate__fadeInLeft"
-                        :class="isMusicOn ? 'border-green-400 text-green-600' : 'border-slate-300 text-slate-400'">
-                    <span class="text-xl sm:text-3xl" x-text="isMusicOn ? '🎵' : '🔇'"></span>
-                    <span class="text-[8px] sm:text-[10px] font-bold uppercase leading-none mt-1" x-text="isMusicOn ? 'ON' : 'OFF'"></span>
-                </button>
+                <!-- Music Toggle with Hover Selection -->
+                <div class="relative group">
+                    <button @click="toggleMusic()" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 flex flex-col items-center justify-center animate__animated animate__fadeInLeft"
+                            :class="isMusicOn ? 'border-green-400 text-green-600' : 'border-slate-300 text-slate-400'">
+                        <span class="text-xl sm:text-3xl" x-text="isMusicOn ? '🎵' : '🔇'"></span>
+                        <span class="text-[8px] sm:text-[10px] font-bold uppercase leading-none mt-1" x-text="isMusicOn ? 'ON' : 'OFF'"></span>
+                    </button>
+                    
+                    <!-- Hover Menu -->
+                    <div class="absolute left-full top-0 ml-4 bg-white rounded-3xl shadow-2xl p-3 hidden group-hover:block z-[100] min-w-[160px] border-4 border-slate-100 animate__animated animate__fadeInLeft animate__faster">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase mb-2 px-2 flex items-center justify-between">
+                            <span>Select Music</span>
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <template x-for="(track, index) in musicPlaylist">
+                                <button @click="selectTrack(index)" 
+                                        class="w-full text-left px-3 py-2.5 rounded-2xl text-[11px] font-bold transition-all flex items-center justify-between group/item"
+                                        :class="currentMusicIndex === index && isMusicOn ? 'bg-green-500 text-white shadow-lg' : 'hover:bg-blue-50 text-slate-600 hover:text-blue-600'">
+                                    <span x-text="track.name"></span>
+                                    <i class="fas fa-play-circle opacity-0 group-hover/item:opacity-100 transition-opacity" x-show="currentMusicIndex !== index || !isMusicOn"></i>
+                                    <i class="fas fa-volume-up" x-show="currentMusicIndex === index && isMusicOn"></i>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Streak Display -->
                 <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
@@ -2508,13 +2529,13 @@
                     isMusicOn: localStorage.getItem('is_music_on') === 'true',
                     bgMusic: null,
                     musicPlaylist: [
-                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
+                        { name: '🦖 Happy Dino', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+                        { name: '✨ Magic Forest', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+                        { name: '☀️ Sunny Day', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+                        { name: '🎒 Learning Fun', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+                        { name: '🍭 Playtime Mix', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
                     ],
-                    currentMusicIndex: Math.floor(Math.random() * 5), // Start with a random track
+                    currentMusicIndex: Math.floor(Math.random() * 5), 
                     quizQuestions: [],
                     currentQuizIndex: 0,
                     quizTotalQuestions: 5,
@@ -5707,17 +5728,18 @@
                         if (!this.isMusicOn) return;
                         
                         try {
+                            const track = this.musicPlaylist[this.currentMusicIndex];
                             if (!this.bgMusic) {
-                                this.bgMusic = new Audio(this.musicPlaylist[this.currentMusicIndex]);
+                                this.bgMusic = new Audio(track.url);
                                 this.bgMusic.volume = 0.3;
                                 
                                 // Automatic cycling
                                 this.bgMusic.onended = () => {
                                     this.playNextTrack();
                                 };
-                            } else if (this.bgMusic.src !== this.musicPlaylist[this.currentMusicIndex]) {
-                                // If index changed, update source
-                                this.bgMusic.src = this.musicPlaylist[this.currentMusicIndex];
+                            } else if (this.bgMusic.src !== track.url) {
+                                // If track changed, update source
+                                this.bgMusic.src = track.url;
                             }
                             
                             this.bgMusic.play().catch(e => {
@@ -5727,10 +5749,22 @@
                             console.error("Music initialization error:", e);
                         }
                     },
+                    selectTrack(index) {
+                        this.currentMusicIndex = index;
+                        this.isMusicOn = true;
+                        localStorage.setItem('is_music_on', 'true');
+                        
+                        if (this.bgMusic) {
+                            this.bgMusic.src = this.musicPlaylist[this.currentMusicIndex].url;
+                            this.bgMusic.play().catch(e => console.log("Track selection blocked:", e));
+                        } else {
+                            this.playBgMusic();
+                        }
+                    },
                     playNextTrack() {
                         this.currentMusicIndex = (this.currentMusicIndex + 1) % this.musicPlaylist.length;
                         if (this.bgMusic) {
-                            this.bgMusic.src = this.musicPlaylist[this.currentMusicIndex];
+                            this.bgMusic.src = this.musicPlaylist[this.currentMusicIndex].url;
                             if (this.isMusicOn) {
                                 this.bgMusic.play().catch(e => console.log("Next track play blocked:", e));
                             }
