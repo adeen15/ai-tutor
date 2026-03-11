@@ -24,6 +24,10 @@
     <style>
             [x-cloak] { display: none !important; }
 
+            html { 
+                scroll-behavior: smooth; 
+                background: white; /* Prevent white line at top */
+            }
             body {
                 font-family: 'Quicksand', sans-serif;
                 min-height: 100vh;
@@ -32,6 +36,8 @@
                 display: block;   
                 transition: background 0.5s ease;
                 overscroll-behavior-y: none;
+                margin: 0;
+                padding: 0;
             }
 
             @media (min-width: 640px) {
@@ -431,9 +437,9 @@
                     <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
                 </button>
 
-                <!-- Event Hub (Desktop) -->
+                <!-- Event Hub (Desktop Only) -->
                 <button @click="showEventHub = true; toggleScroll(true)" 
-                        class="daily-reward-btn bg-pink-50 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-pink-200 flex flex-col items-center justify-center animate__animated animate__pulse animate__infinite hover:bg-pink-100 transition-colors">
+                        class="hidden sm:flex daily-reward-btn bg-pink-50 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-pink-200 flex-col items-center justify-center animate__animated animate__pulse animate__infinite hover:bg-pink-100 transition-colors">
                     <span class="text-xl sm:text-3xl" x-text="currentSeason.icon"></span>
                     <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="currentSeason.name">Event</span>
                 </button>
@@ -504,7 +510,7 @@
             </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-48 sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[380px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
@@ -3002,7 +3008,7 @@
                                     await this.loadUserProfile(session.user.email);
                                     this.loadHearts(); // Restore hearts from localStorage
                                     this.setupPushNotifications(); // Ask for push permission on login
-                                    window.scrollTo(0, 0); // Ensure we start at the top after login
+                                    setTimeout(() => window.scrollTo(0, 0), 500); // Robust scroll to top after login
                                 } else if (event === 'SIGNED_OUT') {
                                     this.refreshAppState();
                                 }
@@ -3014,7 +3020,7 @@
                             console.log("INIT FINALLY BLOCK EXECUTED");
                             // spinner handled by session state
                             this.isLoading = false;
-                            window.scrollTo(0, 0); // Always start at the top
+                            setTimeout(() => window.scrollTo(0, 0), 1000); // Delayed robust scroll to top
                             
                             // Show onboarding fully logged in users
                             if (this.isLoggedIn && !this.hasCompletedOnboarding) {
