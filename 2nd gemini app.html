@@ -4410,6 +4410,7 @@
                                 // To be safe, I'll just add the bonus.
                             } else {
                                 this.coins += this.quizCoinsEarned;
+                                this.playSFX('coin');
                             }
                             
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
@@ -4459,6 +4460,7 @@
                     checkAnswer(index) {
                         if (index === this.quizCorrectIndex) {
                             this.playPing();
+                            this.playSFX('correct');
                             this.consecutiveMistakes = 0;
                             this.isVisualMode = false;
                             
@@ -4468,6 +4470,7 @@
                             
                             this.handleCorrect();
                         } else {
+                            this.playSFX('wrong');
                             this.handleMistake();
                             this.quizState = 'wrong';
                         }
@@ -4855,6 +4858,29 @@
                         } else {
                             // Fallback for web testing if needed
                             alert("Native IAP is only available in the mobile app. (Simulation)");
+                        }
+                    },
+
+                    // --- Sound Effects (Feature 3: Phase 2) ---
+                    playSFX(type) {
+                        const sfxUrls = {
+                            correct: 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3',
+                            wrong:   'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-buzz-949.mp3',
+                            coin:    'https://assets.mixkit.co/sfx/preview/mixkit-coin-winning-in-a-slot-machine-2358.mp3',
+                            levelup: 'https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3',
+                        };
+                        const url = sfxUrls[type];
+                        if (!url) return;
+                        if (window.ReactNativeWebView) {
+                            // Send to React Native for native audio + haptics
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'PLAY_SFX',
+                                sfxType: type,
+                                url: url
+                            }));
+                        } else {
+                            // Web browser fallback
+                            try { new Audio(url).play(); } catch (e) {}
                         }
                     },
                     async cancelSubscription() {
