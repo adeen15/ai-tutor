@@ -501,6 +501,11 @@
                 <button @click="openParentPortal()" class="bg-white p-2 border-b-4 border-gray-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform">
                     <span class="text-xl sm:text-2xl">🔒</span>
                 </button>
+
+                <!-- Social Button -->
+                <button @click="socialTab = 'friends'; showSocialModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-pink-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Friends & Social">
+                    <span class="text-xl sm:text-2xl">👫</span>
+                </button>
             </div>
 
             <div class="flex flex-row gap-2 sm:gap-4">
@@ -510,6 +515,11 @@
 
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl sm:text-3xl">🏆</span>
+                </button>
+
+                <!-- Offline Downloads Button -->
+                <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-indigo-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
+                    <span class="text-xl sm:text-3xl">📥</span>
                 </button>
 
                 <!-- Adventure Map (Mobile Only - Second Row) -->
@@ -1075,6 +1085,14 @@
                                 <div class="relative z-10 bg-white px-4 py-2 rounded-xl shadow-md mt-3 mb-16 text-center border-2" 
                                     :class="isLevelUnlocked(currentPath.id, level.id) ? 'border-gray-100' : 'border-transparent opacity-50'">
                                     <h4 class="font-bold text-slate-700 text-sm" x-text="level.title"></h4>
+                                    
+                                    <!-- Download Lesson Button -->
+                                    <button x-show="isLevelUnlocked(currentPath.id, level.id)"
+                                            @click.stop="downloadLesson(level)"
+                                            class="mt-2 text-[9px] font-bold uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1 mx-auto transition-transform active:scale-95">
+                                        <i class="fas" :class="downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title)) ? 'fa-check-circle text-green-500' : 'fa-download'"></i>
+                                        <span x-text="downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title)) ? 'Saved' : 'Download'"></span>
+                                    </button>
                                 </div>
                             </div>
                         </template>
@@ -1644,7 +1662,13 @@
                     <div class="flex justify-between items-center mb-8">
                         <div>
                             <h2 class="text-3xl font-kids text-slate-800">Family Management 👨‍👩‍👧‍👦</h2>
-                            <p class="text-slate-400 text-sm">Add or remove explorers from your account.</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] font-bold uppercase py-1 px-2 rounded-md tracking-widest" 
+                                      :class="isFamilyPlan ? 'bg-indigo-100 text-indigo-600' : (isPremium ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-500')"
+                                      x-text="isFamilyPlan ? 'Family Plan' : (isPremium ? 'Individual Premium' : 'Free Plan')"></span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+                                      x-text="allProfiles.length + '/' + (isFamilyPlan ? 5 : (isPremium ? 2 : 1)) + ' Explorers'"></span>
+                            </div>
                         </div>
                         <button @click="showManageChildren = false" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-2xl"></i></button>
                     </div>
@@ -1778,25 +1802,60 @@
         <div x-show="showPremiumModal" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black bg-opacity-70 sm:overflow-y-auto overflow-hidden"
             x-transition.opacity>
-            <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-none sm:rounded-[3rem] max-w-none sm:max-w-md w-full h-full sm:h-auto sm:max-h-[90vh] p-0 sm:p-8 shadow-2xl relative animate__animated animate__bounceIn border-0 sm:border-4 border-yellow-100 sm:overflow-y-auto overflow-hidden flex flex-col">
-                <button @click="showPremiumModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-yellow-800 hover:text-white z-10">
+            <div @click.away="showPremiumModal = false; toggleScroll(false)" class="bg-gradient-to-b from-yellow-100 to-yellow-300 rounded-none sm:rounded-[3rem] max-w-none sm:max-w-3xl w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__bounceIn border-0 sm:border-4 border-yellow-100 overflow-y-auto flex flex-col">
+                <button @click="showPremiumModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-yellow-800 hover:text-white z-10 transition-colors">
                     <i class="fas fa-times-circle"></i>
                 </button>
-                <div class="text-center p-6 sm:p-0 flex-1 flex flex-col justify-center">
+                
+                <div class="text-center mb-8">
                     <div class="text-6xl mb-4">👑</div>
-                    <h2 class="text-3xl font-kids text-yellow-900 mb-2">Go Premium!</h2>
-                    <p class="text-yellow-900 font-bold text-lg mb-6">Unlock the full power of learning!</p>
-                    <div class="bg-white/50 rounded-2xl p-6 mb-6 text-left space-y-3">
-                        <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Personalized Weekly Learning Plans</span></div>
-                        <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Monthly Progress Reports (PDF)</span></div>
-                        <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Priority AI Explanations</span></div>
-                        <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Official Path Certificates</span></div>
-                        <div class="flex items-center gap-3 text-yellow-900 font-bold"><i class="fas fa-check-circle text-green-600"></i><span>Parent Email Summaries</span></div>
-                    </div>
-                    <button @click="openParentPortal(); showPremiumModal = false" class="bg-white text-yellow-600 rounded-2xl px-8 py-4 font-kids text-2xl shadow-xl w-full border-b-4 border-yellow-200 mt-6">
-                        Get Premium ($4.99/mo)
-                    </button>
+                    <h2 class="text-4xl font-kids text-yellow-900 mb-2">Choose Your Power!</h2>
+                    <p class="text-yellow-800 font-bold text-lg">Unlock the full magic of learning!</p>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
+                    <!-- Individual Plan -->
+                    <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-white flex flex-col">
+                        <div class="text-4xl mb-2">⭐</div>
+                        <h3 class="text-2xl font-kids text-slate-800">Individual</h3>
+                        <p class="text-gray-400 text-sm font-bold uppercase mb-4">For 1-2 Curious Kids</p>
+                        <ul class="text-slate-600 text-sm space-y-3 mb-8 flex-1">
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Personalized Weekly Plans</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Monthly PDF Reports</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> Priority AI Support</li>
+                        </ul>
+                        <div class="text-center">
+                            <div class="text-3xl font-kids text-blue-600 mb-4">$4.99<span class="text-sm">/mo</span></div>
+                            <button @click="window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_monthly'}))" 
+                                    class="w-full py-4 bg-yellow-400 text-yellow-900 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600 active:translate-y-1 transition-all">
+                                Get Individual
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Family Plan -->
+                    <div class="bg-indigo-600 rounded-3xl p-6 shadow-xl border-4 border-indigo-400 flex flex-col text-white transform md:scale-105">
+                        <div class="absolute -top-4 -right-4 bg-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">Popular</div>
+                        <div class="text-4xl mb-2">👨‍👩‍👧‍👦</div>
+                        <h3 class="text-2xl font-kids">Family Plan</h3>
+                        <p class="text-indigo-200 text-sm font-bold uppercase mb-4">Up to 5 Kids + Siblings</p>
+                        <ul class="text-indigo-100 text-sm space-y-3 mb-8 flex-1">
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-orange-400"></i> Everything in Individual</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-orange-400"></i> Unlimited Profiles (up to 5)</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-orange-400"></i> Family Leaderboard</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check text-orange-400"></i> Dashboard for each child</li>
+                        </ul>
+                        <div class="text-center">
+                            <div class="text-3xl font-kids mb-4">$9.99<span class="text-sm">/mo</span></div>
+                            <button @click="window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_family'}))" 
+                                    class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-indigo-200 active:translate-y-1 transition-all">
+                                Get Family Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-center text-[10px] text-yellow-800 uppercase font-bold tracking-widest opacity-60">Cancel Anytime • Secure Payment</p>
             </div>
         </div>
 
@@ -2459,9 +2518,22 @@
                             </div>
 
                             <!-- Score -->
-                            <div class="text-right flex-shrink-0">
-                                <p class="font-bold text-blue-600 text-sm sm:text-base"><span x-text="student.learning_score"></span> Score</p>
-                                <p class="text-[9px] text-gray-400 font-bold uppercase"><span x-text="student.xp_this_week"></span> XP</p>
+                            <div class="text-right flex-shrink-0 flex flex-row items-center gap-3">
+                                <div>
+                                    <p class="font-bold text-blue-600 text-sm sm:text-base"><span x-text="student.learning_score"></span> Score</p>
+                                    <p class="text-[9px] text-gray-400 font-bold uppercase"><span x-text="student.xp_this_week"></span> XP</p>
+                                </div>
+                                
+                                <!-- Add Friend Button -->
+                                <button x-show="student.user_id !== session?.user?.id && !friends.includes(student.user_id)" 
+                                        @click="addFriend(student.user_id)"
+                                        class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                                        title="Add Friend">
+                                    <i class="fas fa-user-plus"></i>
+                                </button>
+                                <div x-show="friends.includes(student.user_id)" class="text-green-500 text-xl" title="Friend">
+                                    ✅
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -2473,7 +2545,136 @@
             </div>
         </div>
 
-        <!-- Adventure Stories Modal -->
+        <!-- High-Five Animation Overlay -->
+        <div x-show="showHighFiveAnimation" x-transition:enter="animate__animated animate__bounceInDown" x-transition:leave="animate__animated animate__fadeOutUp"
+             class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[200] pointer-events-none" x-cloak>
+            <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-[2rem] shadow-2xl flex items-center gap-4 border-4 border-white">
+                <span class="text-4xl animate-bounce">✋</span>
+                <div class="text-left">
+                    <p class="text-xs font-bold uppercase tracking-widest opacity-80">High-Five!</p>
+                    <p class="font-kids text-xl" x-text="lastHighFiveFrom + ' sent you a high-five!'"></p>
+                </div>
+                <span class="text-4xl animate-bounce" style="animation-delay: 0.1s">✨</span>
+            </div>
+        </div>
+
+        <!-- Social Modal -->
+        <div x-show="showSocialModal" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-0 sm:p-8" x-transition.opacity>
+            <div @click.away="showSocialModal = false; toggleScroll(false)" 
+                 class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-pink-200 overflow-y-auto flex flex-col">
+                
+                <button @click="showSocialModal = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <!-- Tabs -->
+                <div class="flex gap-4 mb-8">
+                    <button @click="socialTab = 'friends'" 
+                            class="flex-1 py-3 rounded-2xl font-kids text-xl transition-all border-b-4"
+                            :class="socialTab === 'friends' ? 'bg-pink-500 text-white border-pink-700 shadow-lg' : 'bg-gray-100 text-gray-400 border-gray-300 hover:bg-gray-200'">
+                        Friends 👫
+                    </button>
+                    <button @click="socialTab = 'add'" 
+                            class="flex-1 py-3 rounded-2xl font-kids text-xl transition-all border-b-4"
+                            :class="socialTab === 'add' ? 'bg-blue-500 text-white border-blue-700 shadow-lg' : 'bg-gray-100 text-gray-400 border-gray-300 hover:bg-gray-200'">
+                        Add Friends 🔍
+                    </button>
+                </div>
+
+                <!-- Friends List -->
+                <div x-show="socialTab === 'friends'" class="flex-1 overflow-y-auto custom-scroll space-y-4">
+                    <template x-if="friends.length === 0">
+                        <div class="text-center py-12">
+                            <div class="text-6xl mb-4">🏠</div>
+                            <h3 class="text-xl font-kids text-slate-700">No friends yet!</h3>
+                            <p class="text-gray-400 mt-2 text-sm">Add friends from the leaderboard to see their progress.</p>
+                            <button @click="socialTab = 'add'" class="mt-6 px-6 py-2 bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest hover:bg-blue-600 transition-colors">Find Friends</button>
+                        </div>
+                    </template>
+                    <template x-for="friendId in friends" :key="friendId">
+                        <div class="bg-slate-50 border-2 border-slate-100 p-4 rounded-3xl flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border-2 border-pink-200">👤</div>
+                                <div>
+                                    <h4 class="font-kids text-lg text-slate-800" x-text="'Friend ' + friendId.substring(0, 5)"></h4>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase">Top Learner</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button @click="sendHighFive(friendId)" class="p-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-xl shadow-md transition-transform active:scale-95" title="Give High-Five">
+                                    ✋
+                                </button>
+                                <button @click="removeFriend(friendId)" class="p-2 bg-gray-200 hover:bg-red-100 hover:text-red-500 text-gray-400 rounded-xl transition-colors">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Add Friends Tab -->
+                <div x-show="socialTab === 'add'" class="flex-1 flex flex-col">
+                    <div class="bg-blue-50 p-4 rounded-2xl mb-6">
+                        <p class="text-xs font-bold text-blue-600 uppercase mb-2">How to add friends</p>
+                        <p class="text-sm text-blue-800">You can add friends by clicking the ➕ button next to any kid on the leaderboard!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Offline Downloads Modal -->
+        <div x-show="showDownloadsModal" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-0 sm:p-8" x-transition.opacity>
+            <div @click.away="showDownloadsModal = false; toggleScroll(false)" 
+                 class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-indigo-200 overflow-y-auto flex flex-col">
+                
+                <button @click="showDownloadsModal = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <div class="text-center mb-6">
+                    <div class="text-5xl mb-2">📥</div>
+                    <h2 class="text-2xl font-kids text-slate-800">My Offline Lessons</h2>
+                    <p class="text-sm text-gray-500 font-bold uppercase tracking-wider">Learn even without Wi-Fi!</p>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scroll space-y-4">
+                    <template x-if="downloadedLessons.length === 0">
+                        <div class="text-center py-12">
+                            <div class="text-6xl mb-4">📭</div>
+                            <h3 class="text-xl font-kids text-slate-700">No downloads yet</h3>
+                            <p class="text-gray-400 mt-2 text-sm">Download lessons from the adventure map to learn offline.</p>
+                        </div>
+                    </template>
+                    <template x-for="lesson in downloadedLessons" :key="lesson.id || lesson.title">
+                        <div class="bg-indigo-50 border-2 border-indigo-100 p-4 rounded-3xl flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border-2 border-indigo-200">📚</div>
+                                <div>
+                                    <h4 class="font-kids text-lg text-indigo-900" x-text="lesson.title"></h4>
+                                    <p class="text-[10px] font-bold text-indigo-400 uppercase">Downloaded & Ready</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button @click="openDownloadedLesson(lesson)" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl shadow-md font-bold uppercase text-xs transition-transform active:scale-95">
+                                    Play
+                                </button>
+                                <button @click="deleteDownloadedLesson(lesson.id || lesson.title)" class="p-2 bg-gray-200 hover:bg-red-100 hover:text-red-500 text-gray-400 rounded-xl transition-colors">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="mt-8 p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-100 flex items-start gap-3">
+                    <span class="text-xl">💡</span>
+                    <p class="text-xs text-yellow-800 leading-relaxed font-bold">
+                        Tip: You can download any lesson by clicking the "Download" button on the adventure map. These lessons work even in airplane mode!
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <div x-show="showStoryModal" x-cloak class="fixed inset-0 z-[160] bg-black bg-opacity-90 flex items-center justify-center p-0 sm:p-4" x-transition.opacity>
             <div @click.away="!isStoryThinking ? (showStoryModal = false; toggleScroll(false)) : null" class="bg-white rounded-none sm:rounded-[3rem] max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 relative animate__animated animate__zoomIn border-0 sm:border-4 border-pink-200 shadow-2xl">
                 
@@ -2618,6 +2819,22 @@
                     showManageChildren: false,
                     showShareMenu: false,
                     sharingBadge: null,
+
+                    // Social System State
+                    showSocialModal: false,
+                    socialTab: 'friends', // 'friends' or 'add'
+                    friends: [],
+                    highFivesReceived: [],
+                    showHighFiveAnimation: false,
+                    lastHighFiveFrom: '',
+
+                    // Offline Lessons State
+                    showDownloadsModal: false,
+                    downloadedLessons: [],
+                    isOfflineMode: false,
+
+                    // Family Plan State
+                    isFamilyPlan: false,
 
                     // Onboarding State
                     showOnboarding: false,
@@ -3065,6 +3282,27 @@
                                     this.playPing();
                                     alert("Congratulations! Premium is now active. Enjoy all the features!");
                                     await this.syncData();
+                                }
+
+                                if (data.type === 'PREMIUM_FAMILY_ACTIVATED') {
+                                    console.log("👨‍👩‍👧‍👦 Family Premium Activated via Native IAP!");
+                                    this.isPremium = true;
+                                    this.isFamilyPlan = true;
+                                    this.premiumExpiry = new Date().getTime() + (30 * 24 * 60 * 60 * 1000);
+                                    this.playPing();
+                                    confetti({ particleCount: 300, spread: 120 });
+                                    alert("Your Family Plan is active! You can now add up to 5 child profiles.");
+                                    await this.syncData();
+                                }
+
+                                if (data.type === 'DOWNLOAD_COMPLETE') {
+                                    this.playPing();
+                                    alert("Lesson downloaded! You can now access it offline.");
+                                    this.loadDownloadedLessons();
+                                }
+
+                                if (data.type === 'DOWNLOADED_LESSONS_LIST') {
+                                    this.downloadedLessons = data.lessons || [];
                                 }
                             } catch (e) {
                                 // Silent fail for non-JSON or unrelated messages
@@ -3738,6 +3976,13 @@
                         this.currentLessonQuizIndex = 0;
                         this.toggleScroll(true);
                     },
+                    openDownloadedLesson(lesson) {
+                        this.activeLesson = lesson;
+                        this.lessonStep = 'learn';
+                        this.currentLessonQuizIndex = 0;
+                        this.showDownloadsModal = false;
+                        this.toggleScroll(true);
+                    },
                     closeLesson() {
                         this.activeLesson = null;
                         this.toggleScroll(false);
@@ -3848,6 +4093,22 @@
 
                     // --- MULTI-CHILD MANAGEMENT ---
                     async addNewProfile(name, ageRange = '6-7') {
+                        // Enforce Plan Limits
+                        if (!this.isPremium && this.allProfiles.length >= 1) {
+                            alert("Free plan is limited to 1 child profile. Upgrading to Premium allows more profiles!");
+                            this.showPremiumModal = true;
+                            return;
+                        }
+                        if (this.isPremium && !this.isFamilyPlan && this.allProfiles.length >= 2) {
+                            alert("Individual Premium is limited to 2 child profiles. Upgrade to Family Plan for up to 5 children!");
+                            this.showPremiumModal = true;
+                            return;
+                        }
+                        if (this.isFamilyPlan && this.allProfiles.length >= 5) {
+                            alert("Family Plan is limited to 5 child profiles.");
+                            return;
+                        }
+
                         const newId = 'child_' + Date.now();
                         const newProfile = {
                             id: newId,
@@ -3956,6 +4217,74 @@
                             } else {
                                 await this.syncData();
                             }
+                        }
+                    },
+
+                    // --- SOCIAL SYSTEM METHODS ---
+                    async addFriend(profileId) {
+                        if (this.friends.includes(profileId)) return;
+                        this.friends.push(profileId);
+                        await this.syncData();
+                        this.playPing();
+                    },
+
+                    async removeFriend(profileId) {
+                        this.friends = this.friends.filter(f => f !== profileId);
+                        await this.syncData();
+                    },
+
+                    async sendHighFive(targetProfileId) {
+                        // Mock sending a high-five
+                        this.playPing();
+                        confetti({
+                            particleCount: 50,
+                            spread: 50,
+                            origin: { y: 0.8 },
+                            colors: ['#FFD700', '#FFA500']
+                        });
+                        alert("High-five sent!");
+                        // In a real app, this would be a Supabase RPC or table insert
+                    },
+
+                    receiveHighFive(fromName) {
+                        this.lastHighFiveFrom = fromName;
+                        this.showHighFiveAnimation = true;
+                        this.playPing();
+                        setTimeout(() => {
+                            this.showHighFiveAnimation = false;
+                        }, 4000);
+                    },
+
+                    // --- OFFLINE LESSON METHODS ---
+                    downloadLesson(lesson) {
+                        if (!window.ReactNativeWebView) {
+                            alert("Downloads are only available in the mobile app!");
+                            return;
+                        }
+                        // Send lesson data to native app
+                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'DOWNLOAD_LESSON',
+                            lessonId: lesson.id || lesson.title,
+                            lessonData: lesson
+                        }));
+                        alert("Starting download...");
+                    },
+
+                    loadDownloadedLessons() {
+                        if (window.ReactNativeWebView) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'GET_DOWNLOADED_LESSONS'
+                            }));
+                        }
+                    },
+
+                    deleteDownloadedLesson(lessonId) {
+                        if (window.ReactNativeWebView) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'DELETE_OFFLINE_LESSON',
+                                lessonId: lessonId
+                            }));
+                            this.downloadedLessons = this.downloadedLessons.filter(l => (l.id || l.title) !== lessonId);
                         }
                     },
 
@@ -4136,6 +4465,7 @@
                         } else {
                             // Priority: top-level column, then internal JSON stat (fallback)
                             this.isPremium = (data.is_premium === true) || (this.learningStats.is_premium === true);
+                            this.isFamilyPlan = (this.learningStats.is_family_plan === true);
                             this.premiumExpiry = data.premium_expiry || this.learningStats.premium_expiry;
                         }
 
@@ -4155,6 +4485,8 @@
                         // --- Multi-Child Load ---
                         this.allProfiles = this.learningStats.all_profiles || [];
                         this.activeProfileId = this.learningStats.active_profile_id;
+                        this.friends = this.learningStats.friends || [];
+                        this.highFivesReceived = this.learningStats.high_fives || [];
 
                         if (this.allProfiles.length > 0) {
                             // Load the active profile's specific data
@@ -5075,6 +5407,7 @@
                         };
                         safeStats.inventory = safeInventory;
                         safeStats.is_premium = this.isPremium;
+                        safeStats.is_family_plan = this.isFamilyPlan;
                         safeStats.premium_expiry = this.premiumExpiry;
                         safeStats.total_minutes = this.totalMinutesLearned;
                         safeStats.email_summary_enabled = this.emailSummaryEnabled;
@@ -5094,6 +5427,10 @@
                         safeStats.active_profile_id = this.activeProfileId;
                         safeStats.time_used_today = this.timeUsedToday;
                         safeStats.daily_time_limit = this.dailyTimeLimit;
+
+                        // Persist Social Data
+                        safeStats.friends = this.friends;
+                        safeStats.high_fives = this.highFivesReceived;
 
                         // Persist Streak Data in JSON blob
                         safeStats.streak = this.streak;
