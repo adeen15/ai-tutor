@@ -401,6 +401,48 @@ app.get('/terms', (req, res) => {
 app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
 app.get('/terms.html', (req, res) => res.redirect(301, '/terms'));
 
+// --- GDPR: Account Deletion ---
+app.post('/api/delete-account', authLimit, async (req, res) => {
+    const { userId, email } = req.body;
+
+    if (!userId || !email) {
+        return res.status(400).json({ error: 'userId and email are required' });
+    }
+
+    if (!supabase) {
+        return res.status(503).json({ error: 'Database not available' });
+    }
+
+    try {
+        // 1. Delete all user data from profiles table
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('email', email);
+
+        if (profileError) {
+            console.error('Profile delete error:', profileError);
+            // Continue anyway — partial deletion is better than none
+        }
+
+        // 2. Delete the auth user (requires service role key)
+        const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+
+        if (authError) {
+            console.error('Auth delete error:', authError);
+            return res.status(500).json({ error: 'Failed to delete account: ' + authError.message });
+        }
+
+        console.log(`✅ Account deleted: ${email}`);
+        res.json({ success: true, message: 'Account permanently deleted' });
+
+    } catch (err) {
+        console.error('Delete account error:', err);
+        res.status(500).json({ error: 'Server error during account deletion' });
+    }
+});
+
+
 app.get('/api/health', (req, res) => {
     res.json({ status: "ok", version: "voice-debug-v1", time: new Date().toISOString() });
 });
