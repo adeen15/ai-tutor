@@ -368,6 +368,13 @@
                     <span class="font-kids text-[10px] sm:text-base text-yellow-700 leading-none mt-1" x-text="coins"></span>
                 </div>
 
+                <!-- Music Toggle -->
+                <button @click="toggleMusic()" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 flex flex-col items-center justify-center animate__animated animate__fadeInLeft"
+                        :class="isMusicOn ? 'border-green-400 text-green-600' : 'border-slate-300 text-slate-400'">
+                    <span class="text-xl sm:text-3xl" x-text="isMusicOn ? '🎵' : '🔇'"></span>
+                    <span class="text-[8px] sm:text-[10px] font-bold uppercase leading-none mt-1" x-text="isMusicOn ? 'ON' : 'OFF'"></span>
+                </button>
+
                 <!-- Streak Display -->
                 <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
                     <span class="text-xl sm:text-3xl">🔥</span>
@@ -1071,7 +1078,14 @@
                 <div class="mb-6" x-show="quizState === 'active'">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" x-text="'Question ' + (currentQuizIndex + 1) + ' of ' + quizQuestions.length"></span>
-                        <span class="text-xs font-bold text-yellow-600" x-text="quizCoinsEarned + ' Coins'"><i class="fas fa-coins mr-1"></i></span>
+                        <!-- Hearts Display -->
+                        <div class="flex gap-0.5 items-center" x-show="!isPremium">
+                            <template x-for="i in maxHearts" :key="i">
+                                <span class="text-base leading-none transition-all duration-300" :class="i <= hearts ? '' : 'opacity-20'" x-text="i <= hearts ? '❤️' : '🖤'"></span>
+                            </template>
+                        </div>
+                        <span x-show="isPremium" class="text-xs font-bold text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">♾️ Unlimited</span>
+                        <span class="text-xs font-bold text-yellow-600"><i class="fas fa-coins mr-1"></i><span x-text="quizCoinsEarned + ' Coins'"></span></span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                         <div class="bg-blue-400 h-full transition-all duration-500" :style="'width: ' + (((currentQuizIndex + 1) / (quizQuestions.length || 1)) * 100) + '%'"></div>
@@ -1169,6 +1183,26 @@
                     <p class="font-bold text-gray-500 mb-6" x-text="consecutiveMistakes >= 2 ? 'Let\'s try something easier together!' : 'That wasn\'t quite right. Try again?'"></p>
                     <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Out of Hearts Modal -->
+        <div x-show="showOutOfHeartsModal" x-cloak class="fixed inset-0 z-[99] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
+            <div class="bg-white rounded-[2.5rem] max-w-sm w-full p-8 shadow-2xl text-center animate__animated animate__bounceIn">
+                <div class="text-7xl mb-4">💔</div>
+                <h2 class="text-3xl font-kids text-red-500 mb-2">Out of Hearts!</h2>
+                <p class="text-gray-500 font-bold mb-4">Take a break and come back later, or get Premium for unlimited hearts!</p>
+
+                <div class="bg-red-50 rounded-2xl py-3 px-4 mb-6 text-sm font-bold text-red-400" x-show="heartsRefillTime">
+                    <i class="fas fa-clock mr-2"></i>Hearts refill in: <span x-text="heartsRefillMinutes()"></span>
+                </div>
+
+                <button @click="showPremiumModal = true; showOutOfHeartsModal = false" class="w-full py-4 bg-yellow-400 text-yellow-900 rounded-2xl font-kids text-xl shadow-lg mb-3 hover:scale-105 transition-transform border-b-4 border-yellow-600">
+                    👑 Get Unlimited Hearts
+                </button>
+                <button @click="showOutOfHeartsModal = false; showQuiz = false; toggleScroll(false)" class="text-gray-400 font-bold text-sm hover:underline">
+                    Come back later
+                </button>
             </div>
         </div>
 
@@ -2383,6 +2417,11 @@
                     lastQuestMonth: new Date().getMonth(), // 0-11
                     
                     coins: 0, 
+                    // --- Hearts/Lives System ---
+                    hearts: 5,
+                    maxHearts: 5,
+                    heartsRefillTime: null,
+                    showOutOfHeartsModal: false,
                     streak: 0,
                     lastStreakDate: null,
                     streakFreezeUsed: false,
@@ -2466,6 +2505,8 @@
                     quizOptions: [],
                     quizCorrectIndex: 0,
                     quizType: 'multiple_choice', 
+                    isMusicOn: localStorage.getItem('is_music_on') === 'true',
+                    bgMusic: null,
                     quizQuestions: [],
                     currentQuizIndex: 0,
                     quizTotalQuestions: 5,
@@ -2710,7 +2751,18 @@
                     isProfileLoading: false,
                     async init() {
                         this.initializeCurrentChar();
+                        this.loadHearts(); // Load hearts for guests/on load
                         this.startTimeTracking();
+                        
+                        // Start music if enabled
+                        setTimeout(() => this.playBgMusic(), 1000);
+
+                        // Global click listener to start music (browsers block autoplay)
+                        window.addEventListener('click', () => {
+                            if (this.isMusicOn && (!this.bgMusic || this.bgMusic.paused)) {
+                                this.playBgMusic();
+                            }
+                        }, { once: true });
                         
                         // Check if user has completed onboarding
                         const onboardingCompleted = localStorage.getItem('onboarding_completed');
@@ -2777,6 +2829,7 @@
                                 if (session) {
                                     this.hasAccount = true;
                                     await this.loadUserProfile(session.user.email);
+                                    this.loadHearts(); // Restore hearts from localStorage
                                     this.setupPushNotifications(); // Ask for push permission on login
                                 } else if (event === 'SIGNED_OUT') {
                                     this.refreshAppState();
@@ -4453,6 +4506,7 @@
                     },
 
                     handleMistake() {
+                        this.loseHeart(); // Deduct a heart on wrong answer
                         this.consecutiveMistakes++;
                         if (this.consecutiveMistakes >= 2) this.isVisualMode = true;
                         
@@ -5578,6 +5632,82 @@
                         
                         osc.start();
                         osc.stop(context.currentTime + 0.08);
+                    },
+                    loseHeart() {
+                        if (this.isPremium) return;
+                        if (this.hearts > 0) {
+                            this.hearts--;
+                            this.saveHearts();
+                            if (this.hearts === 0) {
+                                this.showOutOfHeartsModal = true;
+                            }
+                            // Start refill timer if not already running
+                            if (this.hearts < this.maxHearts && !this.heartsRefillTime) {
+                                this.heartsRefillTime = Date.now() + (4 * 60 * 60 * 1000); // 4 hours
+                                this.saveHearts();
+                            }
+                        }
+                    },
+                    loadHearts() {
+                        const saved = localStorage.getItem('ai_tutor_hearts_' + (this.session?.user?.id || 'guest'));
+                        if (saved) {
+                            const data = JSON.parse(saved);
+                            this.hearts = data.hearts;
+                            this.heartsRefillTime = data.refillTime;
+
+                            // Calculate refills
+                            if (this.hearts < this.maxHearts && this.heartsRefillTime) {
+                                let now = Date.now();
+                                let refillInterval = 4 * 60 * 60 * 1000;
+                                
+                                while (now >= this.heartsRefillTime && this.hearts < this.maxHearts) {
+                                    this.hearts++;
+                                    this.heartsRefillTime += refillInterval;
+                                }
+
+                                if (this.hearts === this.maxHearts) {
+                                    this.heartsRefillTime = null;
+                                }
+                                this.saveHearts();
+                            }
+                        }
+                    },
+                    saveHearts() {
+                        localStorage.setItem('ai_tutor_hearts_' + (this.session?.user?.id || 'guest'), JSON.stringify({
+                            hearts: this.hearts,
+                            refillTime: this.heartsRefillTime
+                        }));
+                    },
+                    heartsRefillMinutes() {
+                        if (!this.heartsRefillTime) return "Full";
+                        const diff = this.heartsRefillTime - Date.now();
+                        if (diff <= 0) return "Ready!";
+                        const hours = Math.floor(diff / (60 * 60 * 1000));
+                        const mins = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+                        return `${hours}h ${mins}m`;
+                    },
+                    toggleMusic() {
+                        this.isMusicOn = !this.isMusicOn;
+                        localStorage.setItem('is_music_on', this.isMusicOn);
+                        if (this.isMusicOn) {
+                            this.playBgMusic();
+                        } else {
+                            this.stopBgMusic();
+                        }
+                    },
+                    playBgMusic() {
+                        if (!this.isMusicOn) return;
+                        if (!this.bgMusic) {
+                            this.bgMusic = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3');
+                            this.bgMusic.loop = true;
+                            this.bgMusic.volume = 0.3;
+                        }
+                        this.bgMusic.play().catch(e => console.log("Music play blocked:", e));
+                    },
+                    stopBgMusic() {
+                        if (this.bgMusic) {
+                            this.bgMusic.pause();
+                        }
                     },
                     generateWorksheet() {
                         if(!this.isPremium) {
