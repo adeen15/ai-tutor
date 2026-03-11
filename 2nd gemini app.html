@@ -386,12 +386,21 @@
                 </div>
             </div>
 
-            <!-- Event Hub (Mobile Only - Dedicated Row to prevent overlapping) -->
-            <button @click="showEventHub = true; toggleScroll(true)" 
-                    class="flex sm:hidden daily-reward-btn bg-pink-100 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-pink-400 flex-col items-center justify-center animate__animated animate__pulse animate__infinite">
-                <span class="text-xl" x-text="currentSeason.icon"></span>
-                <span class="text-[7px] font-bold text-pink-600 uppercase leading-none mt-1" x-text="currentSeason.name">Event</span>
-            </button>
+            <!-- Second Row (Mobile Only): Event Hub and Streak (Aligned under Learning Score) -->
+            <div class="flex flex-row gap-2">
+                <button @click="showEventHub = true; toggleScroll(true)" 
+                        class="flex sm:hidden daily-reward-btn bg-pink-100 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-pink-400 flex-col items-center justify-center animate__animated animate__pulse animate__infinite">
+                    <span class="text-xl" x-text="currentSeason.icon"></span>
+                    <span class="text-[7px] font-bold text-pink-600 uppercase leading-none mt-1" x-text="currentSeason.name">Event</span>
+                </button>
+
+                <!-- Streak Display (Mobile Only - Under Learning Score) -->
+                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" 
+                        class="flex sm:hidden daily-reward-btn bg-white w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-orange-400 flex-col items-center justify-center animate__animated animate__fadeInLeft">
+                    <span class="text-xl">🔥</span>
+                    <span class="font-kids text-[10px] text-orange-700 leading-none mt-1" x-text="streak"></span>
+                </button>
+            </div>
 
             <!-- Stats Group: Row on mobile, Column on desktop -->
             <div class="flex flex-row sm:flex-col gap-2">
@@ -431,8 +440,8 @@
                     </div>
                 </div>
 
-                <!-- Streak Display -->
-                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
+                <!-- Streak Display (Desktop Only) -->
+                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="hidden sm:flex daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex-col items-center justify-center animate__animated animate__fadeInLeft">
                     <span class="text-xl sm:text-3xl">🔥</span>
                     <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
                 </button>
@@ -510,7 +519,7 @@
             </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[380px] sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[280px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
