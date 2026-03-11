@@ -129,9 +129,29 @@
     body * { visibility: hidden; }
     #printable-art, #printable-art *, #worksheet-print-area, #worksheet-print-area * { visibility: visible; }
     #printable-art { position: fixed; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; z-index: 9999; }
-    #worksheet-print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; background: white; color: black; }
     .fixed, .absolute, .bg-black, .bg-slate-900, .bg-slate-50 { background: none !important; box-shadow: none !important; }
 }
+
+            .bloom-particle { position: absolute; animation: bloom-float 4s ease-in-out infinite; pointer-events: none; }
+            @keyframes bloom-float { 
+                0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0; } 
+                20% { opacity: 0.8; }
+                50% { transform: translate(20px, -40px) scale(1.2) rotate(180deg); opacity: 1; } 
+                80% { opacity: 0.8; }
+            }
+
+            .flower-trail { 
+                position: absolute; 
+                top: -50px; 
+                animation: flower-fall 5s linear infinite; 
+                pointer-events: none; 
+            }
+            @keyframes flower-fall {
+                0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+                10% { opacity: 1; }
+                90% { opacity: 1; }
+                100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+            }
         </style>
     </head>
     <body x-data="aiTutor()" 
@@ -358,6 +378,13 @@
                     <span class="font-kids text-xs text-white drop-shadow-md" x-text="learningScore"></span>
                     <div class="absolute -bottom-1 right-1 opacity-20 text-xl">🚀</div>
                 </div>
+
+                <!-- Event Hub (Mobile Only) -->
+                <button @click="showEventHub = true; toggleScroll(true)" 
+                        class="flex sm:hidden daily-reward-btn bg-pink-100 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-pink-400 flex-col items-center justify-center animate__animated animate__pulse animate__infinite">
+                    <span class="text-xl" x-text="currentSeason.icon"></span>
+                    <span class="text-[7px] font-bold text-pink-600 uppercase leading-none mt-1">Event</span>
+                </button>
             </div>
 
             <!-- Stats Group: Row on mobile, Column on desktop -->
@@ -402,6 +429,13 @@
                 <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
                     <span class="text-xl sm:text-3xl">🔥</span>
                     <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
+                </button>
+
+                <!-- Event Hub (Desktop) -->
+                <button @click="showEventHub = true; toggleScroll(true)" 
+                        class="daily-reward-btn bg-pink-50 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-pink-200 flex flex-col items-center justify-center animate__animated animate__pulse animate__infinite hover:bg-pink-100 transition-colors">
+                    <span class="text-xl sm:text-3xl" x-text="currentSeason.icon"></span>
+                    <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="currentSeason.name">Event</span>
                 </button>
 
                 <!-- Learning Score Badge (Desktop Only - Stats Column) -->
@@ -549,16 +583,40 @@
                             </div>
                         </template>
 
-                        <template x-if="getEquippedItemData().effectType === 'dust'">
-                            <div class="absolute inset-0 pointer-events-none overflow-visible">
-                            <template x-for="i in 8">
-                                <div class="dust-particle text-blue-300 text-2xl"
-                                        :style="'left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's; animation-duration: ' + (2 + Math.random()) + 's'">
-                                        🪄
-                                </div>
-                            </template>
-                            </div>
-                        </template>
+                         <template x-if="getEquippedItemData().effectType === 'dust'">
+                             <div class="absolute inset-0 pointer-events-none overflow-visible">
+                             <template x-for="i in 8">
+                                 <div class="dust-particle text-blue-300 text-2xl"
+                                         :style="'left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's; animation-duration: ' + (2 + Math.random()) + 's'">
+                                         🪄
+                                 </div>
+                             </template>
+                             </div>
+                         </template>
+ 
+                         <!-- Seasonal: Bloom Effect -->
+                         <template x-if="getEquippedItemData().effectType === 'bloom'">
+                             <div class="absolute inset-0 pointer-events-none overflow-visible">
+                                 <template x-for="i in 10">
+                                     <div class="bloom-particle text-pink-400 text-3xl"
+                                         :style="'top: ' + (Math.random() * 100) + '%; left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 3) + 's'">
+                                         🌸
+                                     </div>
+                                 </template>
+                             </div>
+                         </template>
+ 
+                         <!-- Seasonal: Flower Trail -->
+                         <template x-if="getEquippedItemData().effectType === 'flowers'">
+                             <div class="absolute inset-0 pointer-events-none overflow-visible">
+                                 <template x-for="i in 8">
+                                     <div class="flower-trail text-2xl"
+                                         :style="'left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's'">
+                                         🌻
+                                     </div>
+                                 </template>
+                             </div>
+                         </template>
 
                         <div class="text-[6rem] sm:text-[9rem] md:text-[12rem] lg:text-[15rem]" x-text="currentMoodIcon"></div>
                     </div>
@@ -1413,35 +1471,97 @@
                                 </div>
                             </div>
                             
-                            <div class="text-center w-full">
-                                <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
-                                <div x-show="!inventory.includes(item.id)" class="text-yellow-600 font-bold text-xs sm:text-sm bg-yellow-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block">
-                                    <span x-text="item.price"></span> 💰
-                                </div>
-                            </div>
-
-                            <button 
-                                @click="inventory.includes(item.id) ? toggleEquip(item.id) : buyItem(item)"
-                                class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
-                                :class="inventory.includes(item.id) 
-                                    ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') 
-                                    : (coins >= item.price ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
-                                :disabled="!inventory.includes(item.id) && coins < item.price"
-                            >
-                                <span x-text="(inventory.includes(item.id) || inventory.includes(String(item.id))) ? (equippedItem === item.id ? 'Active Now' : t('activate')) : t('buy_now')"></span>
-                            </button>
+                             <div class="text-center w-full">
+                                 <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
+                                 <div x-show="!inventory.includes(item.id)" class="font-bold text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block"
+                                     :class="item.seasonal ? 'text-pink-600 bg-pink-50' : 'text-yellow-600 bg-yellow-100'">
+                                     <span x-text="item.price"></span> <span x-text="item.seasonal ? currentSeason.tokenIcon : '💰'"></span>
+                                 </div>
+                             </div>
+ 
+                             <button 
+                                 @click="inventory.includes(item.id) ? toggleEquip(item.id) : (item.seasonal ? buySeasonalItem(item) : buyItem(item))"
+                                 class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
+                                 :class="inventory.includes(item.id) 
+                                     ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') 
+                                     : ((item.seasonal ? eventTokens : coins) >= item.price ? (item.seasonal ? 'bg-pink-500' : 'bg-green-500') + ' text-white hover:opacity-90' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
+                                 :disabled="!inventory.includes(item.id) && (item.seasonal ? eventTokens : coins) < item.price"
+                             >
+                                 <span x-text="(inventory.includes(item.id) || inventory.includes(String(item.id))) ? (equippedItem === item.id ? 'Active Now' : t('activate')) : t('buy_now')"></span>
+                             </button>
                         </div>
                     </template>
                 </div>
                 
-                <div class="mt-6 sm:mt-8 flex justify-center">
-                    <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
-                        <span class="text-xl sm:text-2xl">💰</span>
-                        <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="'You have ' + coins + ' coins'"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+                 <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                     <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
+                         <span class="text-xl sm:text-2xl">💰</span>
+                         <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="coins + ' coins'"></span>
+                     </div>
+                     <div class="bg-pink-50 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-pink-200">
+                         <span class="text-xl sm:text-2xl" x-text="currentSeason.tokenIcon"></span>
+                         <span class="font-bold text-sm sm:text-base text-pink-600" x-text="eventTokens + ' tokens'"></span>
+                     </div>
+                 </div>
+ 
+                 <!-- Event Branding in Shop -->
+                 <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                     <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest leading-none">Seasonal Event Support</p>
+                     <p class="text-xs text-slate-400 mt-1">Seasonal items are only available during the <span class="font-bold text-pink-500" x-text="currentSeason.name"></span> event!</p>
+             </div>
+         </div>
+ 
+         <!-- Event Hub Modal -->
+         <div x-show="showEventHub" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900 bg-opacity-70 backdrop-blur-sm" x-transition.opacity>
+             <div @click.away="showEventHub = false; toggleScroll(false)" 
+                 class="bg-white rounded-[3rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__zoomIn border-4"
+                 :class="currentSeason.borderColor">
+                 
+                 <button @click="showEventHub = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600 transition-colors"><i class="fas fa-times-circle"></i></button>
+                 
+                 <div class="text-center mb-8">
+                     <div class="text-7xl mb-4" x-text="currentSeason.icon"></div>
+                     <h2 class="text-4xl font-kids" :class="currentSeason.color" x-text="currentSeason.name"></h2>
+                     <p class="text-slate-500 font-bold">Seasonal Event is LIVE! 🎊</p>
+                 </div>
+ 
+                 <div class="space-y-6 mb-8">
+                     <div class="flex items-center justify-between border-b pb-2">
+                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Seasonal Challenges</h3>
+                         <div class="flex items-center gap-1 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100">
+                             <span class="text-xs" x-text="currentSeason.tokenIcon"></span>
+                             <span class="text-[10px] font-bold text-pink-500" x-text="eventTokens"></span>
+                         </div>
+                     </div>
+                     <template x-for="quest in seasonalQuests">
+                         <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 group hover:border-pink-200 transition-colors">
+                             <div class="flex justify-between items-start mb-2">
+                                 <div>
+                                     <h4 class="font-bold text-slate-800 text-sm sm:text-base" x-text="quest.title"></h4>
+                                     <p class="text-[10px] sm:text-xs text-slate-500 font-medium" x-text="quest.desc"></p>
+                                 </div>
+                                 <div class="text-right">
+                                     <span class="bg-pink-100 text-pink-600 px-2 py-1 rounded-lg text-[10px] font-bold uppercase" x-text="'+' + quest.reward + ' ' + currentSeason.tokenIcon"></span>
+                                 </div>
+                             </div>
+                             <div class="w-full bg-gray-200 rounded-full h-3 mt-3 overflow-hidden">
+                                 <div class="bg-pink-500 h-full transition-all duration-1000" :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
+                             </div>
+                             <div class="flex justify-between mt-1">
+                                 <span class="text-[10px] font-bold text-slate-400" x-text="quest.progress + ' / ' + quest.target"></span>
+                                 <span x-show="quest.progress === quest.target" class="text-[10px] font-bold text-green-500 uppercase flex items-center gap-1">
+                                     <i class="fas fa-check-circle"></i> Completed!
+                                 </span>
+                             </div>
+                         </div>
+                     </template>
+                 </div>
+ 
+                 <button @click="showEventHub = false; showShop = true" class="w-full py-4 bg-gradient-to-r from-pink-500 to-rose-400 text-white rounded-2xl font-kids text-xl shadow-lg shadow-pink-200 hover:scale-105 transition-transform active:scale-95">
+                     Open Seasonal Shop 🛍️
+                 </button>
+             </div>
+         </div>
 
         <div x-show="showRewards" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black bg-opacity-70"
@@ -2518,9 +2638,26 @@
                     xp: 0,
                     level: 1,
 
-                    showShop: false,
-                    inventory: [],
-                    equippedItem: null,
+                     showShop: false,
+                     inventory: [],
+                     equippedItem: null,
+                     
+                     // --- Seasonal Events State ---
+                     showEventHub: false,
+                     eventTokens: parseInt(localStorage.getItem('event_tokens')) || 0,
+                     currentSeason: {
+                         name: 'Spring Sprouts',
+                         icon: '🌸',
+                         color: 'text-pink-500',
+                         bgColor: 'bg-pink-50',
+                         borderColor: 'border-pink-200',
+                         tokenIcon: '🌸'
+                     },
+                     seasonalQuests: JSON.parse(localStorage.getItem('seasonal_quests')) || [
+                         { id: 'ask_3', title: 'Curious Explorer', desc: 'Ask 3 questions to your teacher', target: 3, progress: 0, reward: 50, type: 'questions' },
+                         { id: 'quiz_2', title: 'Quiz Master', desc: 'Complete 2 quizzes today', target: 2, progress: 0, reward: 100, type: 'quizzes' },
+                         { id: 'words_5', title: 'Word Weaver', desc: 'Learn 5 new words', target: 5, progress: 0, reward: 30, type: 'words' }
+                     ],
                     
                     showQuiz: false,
                     quizState: 'loading',
@@ -2667,7 +2804,9 @@
                         { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
                         { id: 'fireflies', name: 'Fireflies', icon: '🐝', price: 350, effectType: 'fireflies' },
                         { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
-                        { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' }
+                        { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' },
+                        { id: 'spring_aura', name: 'Spring Aura', icon: '🌸', price: 200, effectType: 'bloom', seasonal: true },
+                        { id: 'flower_trail', name: 'Flower Trail', icon: '🌻', price: 350, effectType: 'flowers', seasonal: true }
                     ],
                     characters: [
                         { 
@@ -3921,8 +4060,16 @@
                             inventory: [],
                             equipped_item: null,
                             path_progress: {},
-                            quizHistory: []
-                        };
+                             quizHistory: [],
+                             event_tokens: 0,
+                             seasonal_quests: null
+                         };
+ 
+                         // --- Hydrate Seasonal State ---
+                         this.eventTokens = Number(this.learningStats.event_tokens) || parseInt(localStorage.getItem('event_tokens')) || 0;
+                         if (this.learningStats.seasonal_quests) {
+                             this.seasonalQuests = this.learningStats.seasonal_quests;
+                         }
 
 
                         // 3. Populate sub-states from learningStats
@@ -4523,17 +4670,19 @@
                             }
                             
                             this.learningStats.quizzesCompleted = (this.learningStats.quizzesCompleted || 0) + 1;
-                            this.updateDailyStreak();
-                            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                            
-                            // Exit review mode
-                            if (this.isReviewMode) {
-                                this.isReviewMode = false;
-                                this.reviewQuestions = [];
-                            }
-                            
-                            this.syncData();
-                        }
+                             this.updateDailyStreak();
+                             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                             
+                             this.updateSeasonalProgress('quizzes', 1);
+                             
+                             // Exit review mode
+                             if (this.isReviewMode) {
+                                 this.isReviewMode = false;
+                                 this.reviewQuestions = [];
+                             }
+                             
+                             this.syncData();
+                         }
                     },
 
                     handleMistake() {
@@ -4886,12 +5035,17 @@
                         const todayStr = new Date().toDateString();
                         if (!this.learningStats.daily_snapshots) this.learningStats.daily_snapshots = [];
                         const existingIdx = this.learningStats.daily_snapshots.findIndex(s => s.date === todayStr);
-                        if (existingIdx !== -1) {
-                            this.learningStats.daily_snapshots[existingIdx].score = this.learningScore;
-                        } else {
-                            this.learningStats.daily_snapshots.push({ date: todayStr, score: this.learningScore });
-                            if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
-                        }
+                         if (existingIdx !== -1) {
+                             this.learningStats.daily_snapshots[existingIdx].score = this.learningScore;
+                         } else {
+                             this.learningStats.daily_snapshots.push({ date: todayStr, score: this.learningScore });
+                             if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
+                         }
+ 
+                        // Persistent Seasonal Data
+                        this.learningStats.event_tokens = this.eventTokens;
+                        this.learningStats.seasonal_quests = this.seasonalQuests;
+                        this.learningStats.current_season_name = this.currentSeason.name;
 
                         // Deep copy to remove reactivity proxies which might confuse Supabase
                         const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
@@ -5208,7 +5362,10 @@
                     },
                     updateProgress(query, response) {
                         const words = response.split(' ').length;
-                        this.learningStats.wordsLearned += words;
+                        this.learningStats.wordsLearned += (words || 0);
+                        if (words > 10) {
+                            this.updateSeasonalProgress('words', 1);
+                        }
                         const queryLower = query.toLowerCase();
                         if (queryLower.match(/bee|ocean|rainbow|flower|animal|dog|cat|nature|tree/)) this.learningStats.subjects.nature += 2;
                         if (queryLower.match(/sun|alien|space|star|moon|planet|mars|jupiter|rocket|astronaut/)) this.learningStats.subjects.space += 2;
@@ -5541,8 +5698,9 @@
                         this.playPing();
                         this.updateProgress(originalQuery, response);
                         this.checkAchievements();
-                        this.speak(response);
-                        await this.syncData();
+                         this.speak(response);
+                         this.updateSeasonalProgress('questions', 1);
+                         await this.syncData();
                         this.sendDailyReport(); // Automated report attempt
                     },
                     speakLetter(letter) {
@@ -5786,9 +5944,50 @@
                         }
                         this.playPing();
                         window.print();
-                        this.coins += 100;
-                        this.syncData();
-                    }
+                         this.coins += 100;
+                         this.updateSeasonalProgress('quizzes', 1);
+                         this.syncData();
+                     },
+
+                     // --- Seasonal Event Helpers ---
+                     updateSeasonalProgress(type, amount = 1) {
+                         this.seasonalQuests.forEach(quest => {
+                             if (quest.type === type && quest.progress < quest.target) {
+                                 quest.progress = Math.min(quest.target, quest.progress + amount);
+                                 if (quest.progress === quest.target) {
+                                     this.claimSeasonalReward(quest);
+                                 }
+                             }
+                         });
+                         this.syncData();
+                     },
+
+                     claimSeasonalReward(quest) {
+                         this.eventTokens += quest.reward;
+                         this.playPing();
+                         confetti({
+                             particleCount: 100,
+                             spread: 70,
+                             origin: { y: 0.6 },
+                             colors: ['#FF69B4', '#FFB6C1', '#FFC0CB']
+                         });
+                          console.log(`🎁 Seasonal Reward: ${quest.reward} tokens earned for ${quest.title}!`);
+                      },
+
+                      buySeasonalItem(item) {
+                          if (this.eventTokens >= item.price) {
+                              this.eventTokens -= item.price;
+                              this.inventory = [...this.inventory, item.id];
+                              this.toggleEquip(item.id);
+                              confetti({
+                                  particleCount: 100,
+                                  spread: 70,
+                                  colors: ['#FF69B4', '#ffffff']
+                              });
+                              this.playPing();
+                              this.syncData();
+                          }
+                      }
                 }
             }
         </script>
