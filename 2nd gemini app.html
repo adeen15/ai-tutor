@@ -440,13 +440,6 @@
                     </div>
                 </div>
 
-                <!-- Magic Aura Button (Moved to prevent overlap) -->
-                <button @click="showShop = true; toggleScroll(true)" 
-                        class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft" 
-                        :title="t('magic_auras')">
-                    <span class="text-xl sm:text-3xl">🪄</span>
-                    <span class="text-[8px] sm:text-[10px] font-bold uppercase leading-none mt-1" x-text="t('magic_auras')"></span>
-                </button>
 
                 <!-- Streak Display (Desktop Only) -->
                 <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="hidden sm:flex daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex-col items-center justify-center animate__animated animate__fadeInLeft">
@@ -530,6 +523,13 @@
                 <!-- Adventure Map (Mobile Only - Second Row) -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl">🗺️</span>
+                </button>
+            </div>
+
+            <!-- Third Row -->
+            <div class="flex flex-row gap-2 sm:gap-4">
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
+                    <span class="text-xl sm:text-3xl">🪄</span>
                 </button>
             </div>
         </div>
