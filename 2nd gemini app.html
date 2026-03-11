@@ -378,14 +378,14 @@
                     <span class="font-kids text-xs text-white drop-shadow-md" x-text="learningScore"></span>
                     <div class="absolute -bottom-1 right-1 opacity-20 text-xl">🚀</div>
                 </div>
-
-                <!-- Event Hub (Mobile Only) -->
-                <button @click="showEventHub = true; toggleScroll(true)" 
-                        class="flex sm:hidden daily-reward-btn bg-pink-100 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-pink-400 flex-col items-center justify-center animate__animated animate__pulse animate__infinite">
-                    <span class="text-xl" x-text="currentSeason.icon"></span>
-                    <span class="text-[7px] font-bold text-pink-600 uppercase leading-none mt-1">Event</span>
-                </button>
             </div>
+
+            <!-- Event Hub (Mobile Only - Dedicated Row to prevent overlapping) -->
+            <button @click="showEventHub = true; toggleScroll(true)" 
+                    class="flex sm:hidden daily-reward-btn bg-pink-100 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-pink-400 flex-col items-center justify-center animate__animated animate__pulse animate__infinite">
+                <span class="text-xl" x-text="currentSeason.icon"></span>
+                <span class="text-[7px] font-bold text-pink-600 uppercase leading-none mt-1" x-text="currentSeason.name">Event</span>
+            </button>
 
             <!-- Stats Group: Row on mobile, Column on desktop -->
             <div class="flex flex-row sm:flex-col gap-2">
@@ -1513,9 +1513,9 @@
          </div>
  
          <!-- Event Hub Modal -->
-         <div x-show="showEventHub" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900 bg-opacity-70 backdrop-blur-sm" x-transition.opacity>
+         <div x-show="showEventHub" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 bg-slate-900 bg-opacity-70 backdrop-blur-sm overflow-y-auto" x-transition.opacity>
              <div @click.away="showEventHub = false; toggleScroll(false)" 
-                 class="bg-white rounded-[3rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__zoomIn border-4"
+                 class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-lg w-full h-full sm:h-auto p-6 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 flex flex-col overflow-y-auto"
                  :class="currentSeason.borderColor">
                  
                  <button @click="showEventHub = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600 transition-colors"><i class="fas fa-times-circle"></i></button>
@@ -3002,6 +3002,7 @@
                                     await this.loadUserProfile(session.user.email);
                                     this.loadHearts(); // Restore hearts from localStorage
                                     this.setupPushNotifications(); // Ask for push permission on login
+                                    window.scrollTo(0, 0); // Ensure we start at the top after login
                                 } else if (event === 'SIGNED_OUT') {
                                     this.refreshAppState();
                                 }
@@ -3010,12 +3011,10 @@
                         } catch (e) {
                             console.error("Initialization error:", e);
                         } finally {
-
-
                             console.log("INIT FINALLY BLOCK EXECUTED");
                             // spinner handled by session state
                             this.isLoading = false;
-                            
+                            window.scrollTo(0, 0); // Always start at the top
                             
                             // Show onboarding fully logged in users
                             if (this.isLoggedIn && !this.hasCompletedOnboarding) {
