@@ -2710,14 +2710,24 @@
                         // Check if user has completed onboarding
                         const onboardingCompleted = localStorage.getItem('onboarding_completed');
                         this.hasCompletedOnboarding = onboardingCompleted === 'true';
-                        // Safety Timeout: Force loading off after 5 seconds if still stuck
+
+                        // --- Offline Detection: Don't show spinner if no internet ---
+                        if (!navigator.onLine) {
+                            console.warn("App loaded offline — skipping Supabase init.");
+                            this.isLoading = false;
+                            this.currentMoodIcon = this.currentChar?.icon || '🦖';
+                            this.generateGate();
+                            return; // Skip all network calls
+                        }
+
+                        // Safety Timeout: Force loading off after 4 seconds if still stuck
                         setTimeout(() => {
                             console.log("SAFETY TIMEOUT CHECK: isLoading is", this.isLoading);
                             if (this.isLoading) {
                                 console.warn("Forcing loading screen off due to timeout.");
                                 this.isLoading = false;
                             }
-                        }, 15000); // Increased from 5s to 15s
+                        }, 4000); // Reduced from 15s to 4s
 
                         this.currentMoodIcon = this.currentChar?.icon || '🦖';
                         this.isLoading = true;
