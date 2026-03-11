@@ -1,9 +1,17 @@
 {
   "version": 2,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/server.js"
+      "src": "/privacy.html",
+      "dest": "/privacy.html"
+    },
+    {
+      "src": "/terms.html",
+      "dest": "/terms.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
     }
   ],
   "crons": [
