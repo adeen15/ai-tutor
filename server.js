@@ -397,6 +397,10 @@ app.get('/terms', (req, res) => {
 </html>`);
 });
 
+// --- LEGAL PAGE ALIASES (support both /privacy and /privacy.html formats) ---
+app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
+app.get('/terms.html', (req, res) => res.redirect(301, '/terms'));
+
 app.get('/api/health', (req, res) => {
     res.json({ status: "ok", version: "voice-debug-v1", time: new Date().toISOString() });
 });
