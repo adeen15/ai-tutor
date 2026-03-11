@@ -1504,10 +1504,11 @@
                      </div>
                  </div>
  
-                 <!-- Event Branding in Shop -->
-                 <div class="mt-6 pt-6 border-t border-slate-100 text-center">
-                     <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest leading-none">Seasonal Event Support</p>
-                     <p class="text-xs text-slate-400 mt-1">Seasonal items are only available during the <span class="font-bold text-pink-500" x-text="currentSeason.name"></span> event!</p>
+                  <!-- Event Branding in Shop -->
+                  <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                      <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest leading-none">Seasonal Event Support</p>
+                      <p class="text-xs text-slate-400 mt-1">Seasonal items are only available during the <span class="font-bold text-pink-500" x-text="currentSeason.name"></span> event!</p>
+                  </div>
              </div>
          </div>
  
@@ -5306,6 +5307,7 @@
                             emotion: normEmotion
                         };
                         this.parentLogs.push(entry);
+                        this.updateSeasonalProgress('questions', 1); // Seasonal Quest Tracking
                     },
                     getEmotionIcon(emotion) {
                         const map = { excited: '🤩', curious: '🤔', frustrated: '😤', happy: '😊', neutral: '😐' };
