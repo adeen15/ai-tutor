@@ -543,8 +543,8 @@
                         @click="trySetChar(char)"
                         class="char-btn w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-white flex items-center justify-center text-3xl sm:text-4xl border-4 border-transparent shadow-lg"
                         :class="{
-                            'active border-white': currentChar.nameKey === char.nameKey, 
-                            'opacity-60': currentChar.nameKey !== char.nameKey && (!char.premium || isPremium),
+                            'active border-white': currentChar?.nameKey === char.nameKey, 
+                            'opacity-60': currentChar?.nameKey !== char.nameKey && (!char.premium || isPremium),
                             'char-locked': char.premium && !isPremium
                         }"
                     >
@@ -2692,7 +2692,7 @@
                         </div>
                         <div>
                             <h3 class="font-kids text-2xl text-pink-600">Story Time!</h3>
-                            <p class="text-xs font-bold text-pink-400 uppercase tracking-widest" x-text="t('story_about') + ' ' + t(currentChar.subjectKey)"></p>
+                            <p class="text-xs font-bold text-pink-400 uppercase tracking-widest" x-text="currentChar ? (t('story_about') + ' ' + t(currentChar.subjectKey)) : ''"></p>
                         </div>
                     </div>
                     <button @click="showStoryModal = false; toggleScroll(false)" class="text-pink-300 hover:text-pink-500 text-3xl transition-colors"><i class="fas fa-times-circle"></i></button>
@@ -2735,9 +2735,8 @@
                 return {
                     supabase: null,
                     leaderboardRewardData: null,
+                    showLeaderboardRewardModal: false,
                     isLoading: true, // Start in loading state
-                    isLoggedIn: false,
-
                     isLoggedIn: false,
                     hasAccount: false,
                     savedProfile: null,
@@ -2798,6 +2797,7 @@
                     rewardClaimedToday: false,
                     todayIndex: (new Date().getDay() + 6) % 7, 
                     showPremiumModal: false,
+                    showLeaderboardRewardModal: false,
                     safetySettings: {
                         blockedWords: localStorage.getItem('blocked_words') || 'war, killing, blood, gun, scary',
                         forbiddenTopics: ['violence', 'horror', 'politics', 'death', 'crime']
@@ -3091,7 +3091,14 @@
                             preferredVoice: "Microsoft Ana Online (Natural)"
                         }
                     ],
-                     currentChar: null,
+                      currentChar: { 
+                          nameKey: "char_dino_name", 
+                          subjectKey: "history",
+                          suggestionsKeys: ["suggest_pyramids", "suggest_mummy", "suggest_king"],
+                          icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", personalityKey: "char_dino_personality", introKey: "char_dino_intro", premium: false,
+                          voiceId: "9740af7a-9674-4be1-967b-cf6daba06596",
+                          preferredVoice: "Microsoft Steffan Online (Natural)"
+                      },
                      initializeCurrentChar() {
                          if (!this.currentChar && this.characters && this.characters.length > 0) {
                              this.currentChar = this.characters[0];
@@ -3684,7 +3691,7 @@
                         this.stopSpeaking();
                         this.isSpeaking = true;
                         
-                        this.playCharIntro(this.currentChar.name);
+                        this.playCharIntro(this.t(this.currentChar.nameKey));
 
                         const msg = new SpeechSynthesisUtterance(text);
                         const voices = window.speechSynthesis.getVoices();
@@ -3706,14 +3713,14 @@
 
                         // Natural settings for high-quality voices + Intro sounds
                         const voiceSettings = {
-                            "Professor Dino": { pitch: 1.0, rate: 0.95 },
-                            "Milo Monkey": { pitch: 1.05, rate: 1.05 },
-                            "Starry Alien": { pitch: 1.0, rate: 0.85 },
-                            "Magic Cat": { pitch: 1.05, rate: 1.0 },
-                            "Bouncy Bee": { pitch: 1.05, rate: 1.1 }
+                            "char_dino_name": { pitch: 1.0, rate: 0.95 },
+                            "char_milo_name": { pitch: 1.05, rate: 1.05 },
+                            "char_starry_name": { pitch: 1.0, rate: 0.85 },
+                            "char_cat_name": { pitch: 1.05, rate: 1.0 },
+                            "char_bee_name": { pitch: 1.05, rate: 1.1 }
                         };
 
-                        const settings = voiceSettings[this.currentChar.name] || { pitch: 1.0, rate: 1.0 };
+                        const settings = voiceSettings[this.currentChar.nameKey] || { pitch: 1.0, rate: 1.0 };
                         msg.pitch = settings.pitch;
                         msg.rate = settings.rate;
 
@@ -5716,7 +5723,9 @@
                         this.toggleScroll(false);
                     },
                     logActivity(query, emotion = 'neutral') {
-                        let shortName = this.currentChar.name.replace("Professor ", "");
+                        if (!this.currentChar) return;
+                        let fullName = this.t(this.currentChar.nameKey) || "Teacher";
+                        let shortName = String(fullName).replace("Professor ", "").replace("البروفيسور ", "");
                         
                         // Normalize emotion string for logs
                         let normEmotion = String(emotion || 'neutral').toLowerCase().trim();
