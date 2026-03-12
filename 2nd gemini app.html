@@ -2840,6 +2840,7 @@
                     showDownloadsModal: false,
                     downloadedLessons: [],
                     isOfflineMode: false,
+                    isWifi: window.isWifiAttached || false,
 
                     // Family Plan State
                     isFamilyPlan: false,
@@ -3375,8 +3376,10 @@
                                 }
 
                                 if (data.type === 'DOWNLOAD_COMPLETE') {
-                                    this.playPing();
-                                    alert("Lesson downloaded! You can now access it offline.");
+                                    if (!data.isBackground) {
+                                        this.playPing();
+                                        alert("Lesson downloaded! You can now access it offline.");
+                                    }
                                     this.loadDownloadedLessons();
                                 }
 
@@ -4116,6 +4119,7 @@
                         this.updateLevel();
                         this.checkAchievements();
                         await this.syncData();
+                        this.predictiveDownloadNextLessons();
                         this.closeLesson();
                     },
 
@@ -4347,6 +4351,48 @@
                             lessonData: lesson
                         }));
                         alert("Starting download...");
+                    },
+
+                    updateNetworkStatus(isWifi) {
+                        this.isWifi = isWifi;
+                        if (isWifi) {
+                            console.log("[Predictive Cache] Wi-Fi detected. Checking for pre-downloads...");
+                            this.predictiveDownloadNextLessons();
+                        }
+                    },
+
+                    predictiveDownloadNextLessons() {
+                        if (!this.isWifi || !this.currentPath) return;
+
+                        const pathId = this.currentPath.id;
+                        const currentProgress = this.pathProgress[pathId] || 0;
+                        
+                        // Find the next 5 lessons in the current path
+                        const nextLessons = this.currentPath.levels.filter(level => level.id > currentProgress && level.id <= currentProgress + 5);
+                        
+                        if (nextLessons.length === 0) return;
+
+                        console.log(`[Predictive Cache] Found ${nextLessons.length} lessons to pre-download.`);
+
+                        nextLessons.forEach((level, index) => {
+                            // Check if already downloaded to avoid redundant bridge calls
+                            const isDownloaded = this.downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title));
+                            
+                            if (!isDownloaded) {
+                                // Add a staggered delay to avoid flooding the bridge
+                                setTimeout(() => {
+                                    if (window.ReactNativeWebView) {
+                                        console.log(`[Predictive Cache] Pre-downloading: ${level.title}`);
+                                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                                            type: 'DOWNLOAD_LESSON',
+                                            lessonId: level.id || level.title,
+                                            lessonData: level,
+                                            isBackground: true // Flag to suppress "Starting download" alert on native side if handled
+                                        }));
+                                    }
+                                }, index * 2000); // 2 second delay between each download request
+                            }
+                        });
                     },
 
                     loadDownloadedLessons() {
@@ -6507,6 +6553,13 @@
                       }
                 }
             }
+
+            // --- Global Bridge for Native App ---
+            window.updateNetworkStatus = (isWifi) => {
+                const app = document.querySelector('[x-data]').__x?.$data;
+                if (app) app.updateNetworkStatus(isWifi);
+                else window.isWifiAttached = isWifi; // Fallback for early init
+            };
         </script>
     </body>
     </html>
