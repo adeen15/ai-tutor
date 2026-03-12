@@ -1008,6 +1008,88 @@ app.post('/api/send-email', authLimit, async (req, res) => {
     }
 });
 
+// --- SPACED REPETITION ENGINE (SRM) CRON JOB ---
+app.get('/api/cron/srm-review', async (req, res) => {
+    try {
+        console.log("⏰ Running Daily Spaced Repetition Cron Job...");
+        
+        if (!supabase) {
+            return res.status(500).json({ error: "Supabase not configured." });
+        }
+
+        // 1. Fetch all profiles
+        const { data: profiles, error: fetchError } = await supabase
+            .from('profiles')
+            .select('id, email, learning_stats');
+
+        if (fetchError) {
+            console.error("❌ Failed to fetch profiles for SRM:", fetchError);
+            return res.status(500).json({ error: "DB fetch error" });
+        }
+
+        const now = Date.now();
+        let updatedCount = 0;
+
+        // 2. Process each profile
+        for (const profile of profiles) {
+            let stats = profile.learning_stats;
+            if (!stats) continue;
+
+            // Handle stringified JSON
+            if (typeof stats === 'string') {
+                try { stats = JSON.parse(stats); } 
+                catch (e) { continue; }
+            }
+
+            // Check if they have mastery levels to review
+            if (stats.mastery_levels && Object.keys(stats.mastery_levels).length > 0) {
+                let hasUpdates = false;
+                
+                // Initialize review queue if missing
+                if (!stats.review_queue) stats.review_queue = [];
+                
+                // 3. Check every tracked word
+                for (const [conceptKey, data] of Object.entries(stats.mastery_levels)) {
+                    if (data.next_review && data.next_review <= now) {
+                        // Time to review! Check if it's already in the queue
+                        const alreadyInQueue = stats.review_queue.some(q => q.question === data.question_data.question);
+                        
+                        if (!alreadyInQueue) {
+                            stats.review_queue.push({
+                                ...data.question_data,
+                                conceptKey: conceptKey, // Track which word this is for reporting back
+                                timestamp: now
+                            });
+                            hasUpdates = true;
+                        }
+                    }
+                }
+
+                // 4. Update DB if they have newly queued reviews
+                if (hasUpdates) {
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .update({ learning_stats: stats })
+                        .eq('id', profile.id);
+                        
+                    if (updateError) {
+                        console.error(`❌ Failed to update SRM for ${profile.email}:`, updateError);
+                    } else {
+                        console.log(`✅ Queued reviews for ${profile.email}`);
+                        updatedCount++;
+                    }
+                }
+            }
+        }
+
+        res.json({ success: true, message: `SRM Cron Completed. Updated ${updatedCount} profiles.` });
+
+    } catch (e) {
+        console.error("❌ Internal Spaced Repetition Error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // --- LEMON SQUEEZY CHECKOUT ---
 app.post('/api/create-checkout', async (req, res) => {
     try {
