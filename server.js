@@ -65,14 +65,15 @@ const authLimit = rateLimit(10 * 1000, 10);      // 10 auth-related requests per
 // Initialize Supabase client safely
 let supabase;
 try {
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    if (process.env.SUPABASE_URL && supaKey) {
         supabase = createClient(
             process.env.SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
+            supaKey
         );
         console.log("✅ Supabase client initialized");
     } else {
-        console.warn("⚠️ Supabase credentials missing (SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)");
+        console.warn("⚠️ Supabase credentials missing (SUPABASE_URL or Key)");
     }
 } catch (error) {
     console.error("❌ Supabase initialization failed:", error);
@@ -1020,7 +1021,7 @@ app.get('/api/cron/srm-review', async (req, res) => {
         // 1. Fetch all profiles
         const { data: profiles, error: fetchError } = await supabase
             .from('profiles')
-            .select('id, email, learning_stats');
+            .select('email, learning_stats');
 
         if (fetchError) {
             console.error("❌ Failed to fetch profiles for SRM:", fetchError);
@@ -1070,7 +1071,7 @@ app.get('/api/cron/srm-review', async (req, res) => {
                     const { error: updateError } = await supabase
                         .from('profiles')
                         .update({ learning_stats: stats })
-                        .eq('id', profile.id);
+                        .eq('email', profile.email);
                         
                     if (updateError) {
                         console.error(`❌ Failed to update SRM for ${profile.email}:`, updateError);
