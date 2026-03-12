@@ -698,6 +698,7 @@
                         </div>
                     </button>
                     <div class="chat-bubble p-6 sm:p-8 md:p-10 mb-8 min-h-[180px] sm:min-h-[220px] flex flex-col justify-between transition-all duration-500"
+                        :dir="currentLanguage === 'Arabic' ? 'rtl' : 'ltr'"
                         :style="'border-color: ' + (currentChar?.accent || '#3b82f6')">
                         <div class="p-6">
                             <span class="font-kids text-base sm:text-lg uppercase tracking-widest block mb-2" :style="'color: ' + (currentChar?.accent || '#3b82f6')" x-text="(currentChar?.name || 'Owl') + ' ' + t('says') + ':'"></span>
@@ -762,6 +763,7 @@
                             type="text" 
                             x-model="userQuery" 
                             x-ref="queryInput"
+                            :dir="currentLanguage === 'Arabic' ? 'rtl' : 'ltr'"
                             @keyup="if(isKeyboardMode) playClickSound()"
                             @keyup.enter="askTutor()"
                             :placeholder="isListening ? t('listening') + '...' : (isKeyboardMode ? t('type_here') + '...' : t('ask_about') + ' ' + (currentChar?.subject || 'Learning') + '...')" 
@@ -2708,7 +2710,8 @@
 
                     <!-- Story Content -->
                     <div x-show="!isStoryThinking" class="animate__animated animate__fadeIn">
-                        <div class="bg-gradient-to-br from-white to-pink-50 p-8 rounded-[2.5rem] shadow-inner mb-8 border-2 border-pink-100 italic">
+                        <div class="bg-gradient-to-br from-white to-pink-50 p-8 rounded-[2.5rem] shadow-inner mb-8 border-2 border-pink-100 italic"
+                             :dir="currentLanguage === 'Arabic' ? 'rtl' : 'ltr'">
                             <p class="text-2xl sm:text-3xl text-slate-700 font-medium leading-relaxed font-kids" x-text="currentStory.story"></p>
                         </div>
                         
@@ -3227,7 +3230,8 @@
                         this.updateRTL();
                     },
                     updateRTL() {
-                        document.body.dir = (this.currentLanguage === 'Arabic') ? 'rtl' : 'ltr';
+                        // We no longer flip the entire body direction to keep the dashboard LTR
+                        // UI elements will use :dir="currentLanguage === 'Arabic' ? 'rtl' : 'ltr'"
                     },
                     
                     isProfileLoading: false,
