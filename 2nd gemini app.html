@@ -2867,6 +2867,7 @@
                         child_profile: null,
                         recent_mistakes: [],
                         review_queue: [], // Spaced Repetition Queue
+                        mastery_levels: {}, // Spaced Repetition Engine (Word Tracking)
                         achievements: [],
                         quizzesCompleted: 0
                     },
@@ -4484,8 +4485,15 @@
                             path_progress: {},
                              quizHistory: [],
                              event_tokens: 0,
-                             seasonal_quests: null
+                             seasonal_quests: null,
+                             review_queue: [], 
+                             mastery_levels: {} 
                          };
+
+                        // Ensure mastery_levels exists for existing users
+                        if (!this.learningStats.mastery_levels) {
+                            this.learningStats.mastery_levels = {};
+                        }
  
                          // --- Hydrate Seasonal State ---
                          this.eventTokens = Number(this.learningStats.event_tokens) || parseInt(localStorage.getItem('event_tokens')) || 0;
@@ -5069,10 +5077,10 @@
                     handleCorrect() {
                         this.quizCoinsEarned += 4; 
                         
-                        // Spaced Repetition: Remove from review queue
+                        // Spaced Repetition: Process correct answer
                         const currentQ = this.quizQuestions[this.currentQuizIndex];
-                        if (this.learningStats.review_queue) {
-                            this.learningStats.review_queue = this.learningStats.review_queue.filter(q => q.question !== currentQ.question);
+                        if (currentQ) {
+                            this.captureWordForSRM(currentQ, true);
                         }
 
                         if (this.currentQuizIndex < this.quizQuestions.length - 1) {
@@ -5123,22 +5131,88 @@
                         this.learningStats.recent_mistakes.push(this.quizQuestion);
                         if(this.learningStats.recent_mistakes.length > 5) this.learningStats.recent_mistakes.shift();
 
-                        // Spaced Repetition: Save to review queue
-                        if (!this.learningStats.review_queue) this.learningStats.review_queue = [];
-                        
-                        // Don't add if already there
-                        const alreadyExists = this.learningStats.review_queue.some(q => q.question === this.quizQuestion);
-                        if (!alreadyExists) {
-                            const currentQuestion = this.quizQuestions[this.currentQuizIndex];
-                            if (currentQuestion) {
-                                this.learningStats.review_queue.push({
-                                    ...currentQuestion,
-                                    timestamp: Date.now()
-                                });
-                            }
+                        // Spaced Repetition: Process mistake
+                        const currentQuestion = this.quizQuestions[this.currentQuizIndex];
+                        if (currentQuestion) {
+                            this.captureWordForSRM(currentQuestion, false);
                         }
                         
                         this.syncData();
+                    },
+
+                    captureWordForSRM(questionObj, isCorrect) {
+                        try {
+                            if (!this.learningStats.mastery_levels) this.learningStats.mastery_levels = {};
+                            
+                            // Extract a "word" or "concept" from the question to track.
+                            // If it's a fill-in-the-blank or matching, use the target word. Otherwise, use the question text itself as a fallback concept identifier.
+                            let conceptKey = questionObj.question; 
+                            if (questionObj.type === 'matching' && questionObj.pairs && questionObj.pairs.length > 0) {
+                                conceptKey = questionObj.pairs[0].word;
+                            } else if (questionObj.type === 'fill_blank' && questionObj.options) {
+                                conceptKey = questionObj.options[questionObj.correctIndex] || conceptKey;
+                            }
+                            
+                            // Clean up the key to avoid massive strings as object keys
+                            conceptKey = conceptKey.substring(0, 50).trim();
+
+                            let currentMastery = this.learningStats.mastery_levels[conceptKey];
+                            const now = Date.now();
+                            const oneDayMs = 24 * 60 * 60 * 1000;
+
+                            if (!currentMastery) {
+                                // First time encountering this word/concept
+                                if (isCorrect) {
+                                    // Start at Level 1
+                                    this.learningStats.mastery_levels[conceptKey] = {
+                                        level: 1,
+                                        next_review: now + (1 * oneDayMs), // Review in 1 day
+                                        question_data: questionObj // Store question for the review generator
+                                    };
+                                } else {
+                                    // If they got it wrong the very first time, review it even sooner (e.g. 12 hours)
+                                    this.learningStats.mastery_levels[conceptKey] = {
+                                        level: 0,
+                                        next_review: now + (0.5 * oneDayMs), 
+                                        question_data: questionObj
+                                    };
+                                }
+                            } else {
+                                // Already exists, update mastery
+                                if (isCorrect && this.isReviewMode) {
+                                    // Only increase level if they get it right during a REVIEW, not regular play
+                                    currentMastery.level += 1;
+                                    
+                                    // Calculate next interval based on SR multiplier (roughly 2.5x)
+                                    let daysToAdd = 1;
+                                    if (currentMastery.level === 2) daysToAdd = 3;
+                                    else if (currentMastery.level === 3) daysToAdd = 7;
+                                    else if (currentMastery.level === 4) daysToAdd = 14;
+                                    else if (currentMastery.level >= 5) daysToAdd = 30; // Mastered
+                                    
+                                    currentMastery.next_review = now + (daysToAdd * oneDayMs);
+                                    
+                                    // Remove from immediate review queue since they answered it right
+                                    if (this.learningStats.review_queue) {
+                                        this.learningStats.review_queue = this.learningStats.review_queue.filter(q => q.question !== questionObj.question);
+                                    }
+                                } else if (!isCorrect) {
+                                    // Got it wrong, reset to Level 1
+                                    currentMastery.level = 1;
+                                    currentMastery.next_review = now + (1 * oneDayMs);
+                                    
+                                    // Make sure it's in the review queue
+                                    if (!this.learningStats.review_queue) this.learningStats.review_queue = [];
+                                    const exists = this.learningStats.review_queue.some(q => q.question === questionObj.question);
+                                    if (!exists) {
+                                        this.learningStats.review_queue.push(questionObj);
+                                    }
+                                }
+                                this.learningStats.mastery_levels[conceptKey] = currentMastery;
+                            }
+                        } catch (e) {
+                            console.error("Error capturing SRM word:", e);
+                        }
                     },
 
                     checkAnswer(index) {
