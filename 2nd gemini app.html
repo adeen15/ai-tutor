@@ -2692,7 +2692,7 @@
                         </div>
                         <div>
                             <h3 class="font-kids text-2xl text-pink-600">Story Time!</h3>
-                            <p class="text-xs font-bold text-pink-400 uppercase tracking-widest" x-text="'A special story about ' + currentChar.subject"></p>
+                            <p class="text-xs font-bold text-pink-400 uppercase tracking-widest" x-text="t('story_about') + ' ' + t(currentChar.subjectKey)"></p>
                         </div>
                     </div>
                     <button @click="showStoryModal = false; toggleScroll(false)" class="text-pink-300 hover:text-pink-500 text-3xl transition-colors"><i class="fas fa-times-circle"></i></button>
@@ -2734,6 +2734,7 @@
             function aiTutor() {
                 return {
                     supabase: null,
+                    leaderboardRewardData: null,
                     isLoading: true, // Start in loading state
                     isLoggedIn: false,
 
@@ -3111,6 +3112,7 @@
                                 see_you_tomorrow: 'See You Tomorrow!', active: 'Active Now', buy_now: 'Buy Now', activate: 'Activate',
                                 personalized_mission: 'Personalized Mission', choose_journey: 'Choose your journey!', complete: 'Complete',
                                 read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here',
+                                story_about: 'A special story about',
                                 history: 'History', robots: 'Maths', space: 'Space Exploration', science: 'Science', nature: 'Nature',
                                 char_dino_name: 'Professor Dino', char_milo_name: 'Milo Monkey', char_starry_name: 'Starry Alien', char_cat_name: 'Magic Cat', char_bee_name: 'Bouncy Bee',
                                 char_dino_personality: 'History Teacher', char_milo_personality: 'Math Teacher', char_starry_personality: 'Space Teacher', char_cat_personality: 'Science Teacher', char_bee_personality: 'Nature Teacher',
@@ -3130,6 +3132,7 @@
                                 see_you_tomorrow: '¡Hasta Mañana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
                                 personalized_mission: 'Misión Personalizada', choose_journey: '¡Elige tu viaje!', complete: 'Completo',
                                 read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí',
+                                story_about: 'Una historia especial sobre',
                                 history: 'Historia', robots: 'Matemáticas', space: 'Exploración Espacial', science: 'Ciencia', nature: 'Naturaleza',
                                 char_dino_name: 'Profesor Dino', char_milo_name: 'Milo Mono', char_starry_name: 'Alienígena Estrellado', char_cat_name: 'Gato Mágico', char_bee_name: 'Abeja Saltarina',
                                 char_dino_personality: 'Profesor de Historia', char_milo_personality: 'Profesor de Matemáticas', char_starry_personality: 'Profesor del Espacio', char_cat_personality: 'Profesor de Ciencias', char_bee_personality: 'Profesor de la Naturaleza',
@@ -3149,6 +3152,7 @@
                                 see_you_tomorrow: 'À Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
                                 personalized_mission: 'Mission Personnalisée', choose_journey: 'Choisis ton voyage!', complete: 'Terminé',
                                 read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Écris ici',
+                                story_about: 'Une histoire spéciale sur',
                                 history: 'Histoire', robots: 'Maths', space: 'Exploration Spatiale', science: 'Science', nature: 'Nature',
                                 char_dino_name: 'Professeur Dino', char_milo_name: 'Milo le Singe', char_starry_name: 'Extraterrestre Étoilé', char_cat_name: 'Chat Magique', char_bee_name: 'Abeille Bondissante',
                                 char_dino_personality: 'Professeur d\'Histoire', char_milo_personality: 'Professeur de Maths', char_starry_personality: 'Professeur de l\'Espace', char_cat_personality: 'Professeur de Science', char_bee_personality: 'Professeur de Nature',
@@ -3168,6 +3172,7 @@
                                 see_you_tomorrow: 'Bis morgen!', active: 'Aktiv', buy_now: 'Kaufen', activate: 'Aktivieren',
                                 personalized_mission: 'Personalisierte Mission', choose_journey: 'Wähle deine Reise!', complete: 'Abgeschlossen',
                                 read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!', type_here: 'Hier tippen',
+                                story_about: 'Eine besondere Geschichte über',
                                 history: 'Geschichte', robots: 'Mathe', space: 'Weltraumforschung', science: 'Wissenschaft', nature: 'Natur',
                                 char_dino_name: 'Professor Dino', char_milo_name: 'Milo Affe', char_starry_name: 'Sternen-Alien', char_cat_name: 'Zauberkatze', char_bee_name: 'Hüpfbiene',
                                 char_dino_personality: 'Geschichtslehrer', char_milo_personality: 'Mathelehrer', char_starry_personality: 'Weltraumlehrer', char_cat_personality: 'Wissenschaftslehrer', char_bee_personality: 'Naturlehrer',
@@ -3187,6 +3192,7 @@
                                 see_you_tomorrow: 'أراك غداً!', active: 'نشط', buy_now: 'شراء', activate: 'تفعيل',
                                 personalized_mission: 'مهمة مخصصة', choose_journey: 'اختر رحلتك!', complete: 'مكتمل',
                                 read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!', type_here: 'اكتب هنا',
+                                story_about: 'قصة خاصة عن',
                                 history: 'التاريخ', robots: 'الرياضيات', space: 'استكشاف الفضاء', science: 'العلوم', nature: 'الطبيعة',
                                 char_dino_name: 'البروفيسور دينو', char_milo_name: 'ميلو القرد', char_starry_name: 'الفضائي النجمي', char_cat_name: 'القطة السحرية', char_bee_name: 'النحلة القافزة',
                                 char_dino_personality: 'مدرس التاريخ', char_milo_personality: 'مدرس الرياضيات', char_starry_personality: 'مدرس الفضاء', char_cat_personality: 'مدرس العلوم', char_bee_personality: 'مدرس الطبيعة',
@@ -6019,6 +6025,7 @@
                             return;
                         }
 
+                        const activeCharName = this.t(this.currentChar.nameKey);
                         const activeCharKey = this.currentChar.nameKey;
                         const savedQuery = this.userQuery;
                         
