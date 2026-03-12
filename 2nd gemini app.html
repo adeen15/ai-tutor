@@ -20,6 +20,8 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+        <script src="https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js"></script>
+        <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
 
     <style>
             [x-cloak] { display: none !important; }
@@ -541,8 +543,8 @@
                         @click="trySetChar(char)"
                         class="char-btn w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-white flex items-center justify-center text-3xl sm:text-4xl border-4 border-transparent shadow-lg"
                         :class="{
-                            'active border-white': currentChar.name === char.name, 
-                            'opacity-60': currentChar.name !== char.name && (!char.premium || isPremium),
+                            'active border-white': currentChar.nameKey === char.nameKey, 
+                            'opacity-60': currentChar.nameKey !== char.nameKey && (!char.premium || isPremium),
                             'char-locked': char.premium && !isPremium
                         }"
                     >
@@ -3048,47 +3050,42 @@
                     ],
                     characters: [
                         { 
-                            name: "Professor Dino", 
-                            subject: "History", 
+                            nameKey: "char_dino_name", 
                             subjectKey: "history",
-                            suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
-                            icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", personality: "History Teacher", intro_phrase: "Rawr! ", premium: false,
+                            suggestionsKeys: ["suggest_pyramids", "suggest_mummy", "suggest_king"],
+                            icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", personalityKey: "char_dino_personality", introKey: "char_dino_intro", premium: false,
                             voiceId: "9740af7a-9674-4be1-967b-cf6daba06596",
                             preferredVoice: "Microsoft Steffan Online (Natural)"
                         },
                         { 
-                            name: "Milo Monkey", 
-                            subject: "Maths", 
+                            nameKey: "char_milo_name", 
                             subjectKey: "robots",
-                            suggestions: ["What is 2 + 2? 🍌", "Count to 10! 🔟", "What is a circle? 🔵"],
-                            icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", personality: "Math Teacher", intro_phrase: "Ooh ooh! Let's count bananas! ", premium: true,
+                            suggestionsKeys: ["suggest_2plus2", "suggest_count10", "suggest_circle"],
+                            icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", personalityKey: "char_milo_personality", introKey: "char_milo_intro", premium: true,
                             voiceId: "79005bb6-7ae3-4768-b2a0-efc774a3c7a9",
                             preferredVoice: "Microsoft Christopher Online (Natural)"
                         },
                         { 
-                            name: "Starry Alien", 
-                            subject: "Space Exploration", 
+                            nameKey: "char_starry_name", 
                             subjectKey: "space",
-                            suggestions: ["How hot is the sun? ☀️", "What is a black hole? 🕳️", "How many planets are there? 🪐"],
-                            icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", personality: "Space Teacher", intro_phrase: "Greetings from the stars! ", premium: true,
+                            suggestionsKeys: ["suggest_sun_hot", "suggest_black_hole", "suggest_planets"],
+                            icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", personalityKey: "char_starry_personality", introKey: "char_starry_intro", premium: true,
                             voiceId: "0062153d-dd11-4330-a6b1-87cd29187ed7",
                             preferredVoice: "Microsoft Jenny Online (Natural)"
                         },
                         { 
-                            name: "Magic Cat", 
-                            subject: "Science", 
+                            nameKey: "char_cat_name", 
                             subjectKey: "science",
-                            suggestions: ["Why does ice melt? 🧊", "What is a signature? 🍎", "How do magnets work? 🧲"],
-                            icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", personality: "Science Teacher", intro_phrase: "Meow! ", premium: true,
+                            suggestionsKeys: ["suggest_ice_melt", "suggest_signature", "suggest_magnets"],
+                            icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", personalityKey: "char_cat_personality", introKey: "char_cat_intro", premium: true,
                             voiceId: "2c96d996-4e88-44e8-944a-303d5b063775",
                             preferredVoice: "Microsoft Aria Online (Natural)"
                         },
                         { 
-                            name: "Bouncy Bee", 
-                            subject: "Nature", 
+                            nameKey: "char_bee_name", 
                             subjectKey: "nature",
-                            suggestions: ["Why do bees make honey? 🍯", "How do flowers grow? 🌻", "Why is the sky blue? ☁️"],
-                            icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", personality: "Nature Teacher", intro_phrase: "Buzz buzz! ", premium: true,
+                            suggestionsKeys: ["suggest_honey", "suggest_flowers", "suggest_sky_blue"],
+                            icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", personalityKey: "char_bee_personality", introKey: "char_bee_intro", premium: true,
                             voiceId: "a09a1325-058b-4bc7-9105-b96b1cce27c5",
                             preferredVoice: "Microsoft Ana Online (Natural)"
                         }
@@ -3101,8 +3098,11 @@
                      },
 
                     t(key) {
-                        const dict = {
-                            'English': {
+                        return i18next.t(key);
+                    },
+                    async initI18n() {
+                        const resources = {
+                            'en': { translation: {
                                 adventure_map: 'Adventure Map 🗺️', magic_auras: 'Magic Auras', daily_gift: 'Daily Gift',
                                 parent_portal: 'Parent Dashboard', says: 'says', challenge_me: 'Challenge Me!', listen: 'Listen',
                                 stop: 'Stop', ask: 'ASK!', ask_about: 'Ask about', listening: 'Listening',
@@ -3110,9 +3110,18 @@
                                 daily_rewards: 'Daily Rewards!', claim: 'Claim',
                                 see_you_tomorrow: 'See You Tomorrow!', active: 'Active Now', buy_now: 'Buy Now', activate: 'Activate',
                                 personalized_mission: 'Personalized Mission', choose_journey: 'Choose your journey!', complete: 'Complete',
-                                read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here'
-                            },
-                            'Spanish': {
+                                read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here',
+                                history: 'History', robots: 'Maths', space: 'Space Exploration', science: 'Science', nature: 'Nature',
+                                char_dino_name: 'Professor Dino', char_milo_name: 'Milo Monkey', char_starry_name: 'Starry Alien', char_cat_name: 'Magic Cat', char_bee_name: 'Bouncy Bee',
+                                char_dino_personality: 'History Teacher', char_milo_personality: 'Math Teacher', char_starry_personality: 'Space Teacher', char_cat_personality: 'Science Teacher', char_bee_personality: 'Nature Teacher',
+                                char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Let\'s count bananas! ', char_starry_intro: 'Greetings from the stars! ', char_cat_intro: 'Meow! ', char_bee_intro: 'Buzz buzz! ',
+                                suggest_pyramids: 'Who built the pyramids? 🏜️', suggest_mummy: 'What is a mummy? 🤕', suggest_king: 'Who was the first king? 👑',
+                                suggest_2plus2: 'What is 2 + 2? 🍌', suggest_count10: 'Count to 10! 🔟', suggest_circle: 'What is a circle? 🔵',
+                                suggest_sun_hot: 'How hot is the sun? ☀️', suggest_black_hole: 'What is a black hole? 🕳️', suggest_planets: 'How many planets are there? 🪐',
+                                suggest_ice_melt: 'Why does ice melt? 🧊', suggest_signature: 'What is a signature? 🍎', suggest_magnets: 'How do magnets work? 🧲',
+                                suggest_honey: 'Why do bees make honey? 🍯', suggest_flowers: 'How do flowers grow? 🌻', suggest_sky_blue: 'Why is the sky blue? ☁️'
+                            }},
+                            'es': { translation: {
                                 adventure_map: 'Mapa de Aventuras 🗺️', magic_auras: 'Auras Mágicas', daily_gift: 'Regalo Diario',
                                 parent_portal: 'Panel de Padres', says: 'dice', challenge_me: '¡Desafíame!', listen: 'Escuchar',
                                 stop: 'Parar', ask: '¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
@@ -3120,9 +3129,18 @@
                                 daily_rewards: '¡Premios Diarios!', claim: 'Reclamar',
                                 see_you_tomorrow: '¡Hasta Mañana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
                                 personalized_mission: 'Misión Personalizada', choose_journey: '¡Elige tu viaje!', complete: 'Completo',
-                                read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí'
-                            },
-                            'French': {
+                                read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí',
+                                history: 'Historia', robots: 'Matemáticas', space: 'Exploración Espacial', science: 'Ciencia', nature: 'Naturaleza',
+                                char_dino_name: 'Profesor Dino', char_milo_name: 'Milo Mono', char_starry_name: 'Alienígena Estrellado', char_cat_name: 'Gato Mágico', char_bee_name: 'Abeja Saltarina',
+                                char_dino_personality: 'Profesor de Historia', char_milo_personality: 'Profesor de Matemáticas', char_starry_personality: 'Profesor del Espacio', char_cat_personality: 'Profesor de Ciencias', char_bee_personality: 'Profesor de la Naturaleza',
+                                char_dino_intro: '¡Rawr! ', char_milo_intro: '¡Ooh ooh! ¡Contemos plátanos! ', char_starry_intro: '¡Saludos desde las estrellas! ', char_cat_intro: '¡Miau! ', char_bee_intro: '¡Buzz buzz! ',
+                                suggest_pyramids: '¿Quién construyó las pirámides? 🏜️', suggest_mummy: '¿Qué es una momia? 🤕', suggest_king: '¿Quién fue el primer rey? 👑',
+                                suggest_2plus2: '¿Cuánto es 2 + 2? 🍌', suggest_count10: '¡Cuenta hasta 10! 🔟', suggest_circle: '¿Qué es un círculo? 🔵',
+                                suggest_sun_hot: '¿Qué tan caliente es el sol? ☀️', suggest_black_hole: '¿Qué es un agujero negro? 🕳️', suggest_planets: '¿Cuántos planetas hay? 🪐',
+                                suggest_ice_melt: '¿Por qué se derrite el hielo? 🧊', suggest_signature: '¿Qué es una firma? 🍎', suggest_magnets: '¿Cómo funcionan los imanes? 🧲',
+                                suggest_honey: '¿Por qué las abejas hacen miel? 🍯', suggest_flowers: '¿Cómo crecen las flores? 🌻', suggest_sky_blue: '¿Por qué el cielo es azul? ☁️'
+                            }},
+                            'fr': { translation: {
                                 adventure_map: 'Carte d\'Aventure 🗺️', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
                                 parent_portal: 'Tableau de Bord', says: 'dit', challenge_me: 'Défie-moi!', listen: 'Écouter',
                                 stop: 'Arrêter', ask: 'DEMANDER!', ask_about: 'Demander sur', listening: 'Écoute',
@@ -3130,9 +3148,18 @@
                                 daily_rewards: 'Récompenses Quotidiennes!', claim: 'Réclamer',
                                 see_you_tomorrow: 'À Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
                                 personalized_mission: 'Mission Personnalisée', choose_journey: 'Choisis ton voyage!', complete: 'Terminé',
-                                read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Écris ici'
-                            },
-                            'German': {
+                                read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Écris ici',
+                                history: 'Histoire', robots: 'Maths', space: 'Exploration Spatiale', science: 'Science', nature: 'Nature',
+                                char_dino_name: 'Professeur Dino', char_milo_name: 'Milo le Singe', char_starry_name: 'Extraterrestre Étoilé', char_cat_name: 'Chat Magique', char_bee_name: 'Abeille Bondissante',
+                                char_dino_personality: 'Professeur d\'Histoire', char_milo_personality: 'Professeur de Maths', char_starry_personality: 'Professeur de l\'Espace', char_cat_personality: 'Professeur de Science', char_bee_personality: 'Professeur de Nature',
+                                char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Comptons les bananes! ', char_starry_intro: 'Salutations des étoiles! ', char_cat_intro: 'Miaou! ', char_bee_intro: 'Buzz buzz! ',
+                                suggest_pyramids: 'Qui a construit les pyramides? 🏜️', suggest_mummy: 'Qu\'est-ce qu\'une momie? 🤕', suggest_king: 'Qui était le premier roi? 👑',
+                                suggest_2plus2: 'Combien font 2 + 2? 🍌', suggest_count10: 'Compte jusqu\'à 10! 🔟', suggest_circle: 'Qu\'est-ce qu\'un cercle? 🔵',
+                                suggest_sun_hot: 'Quelle est la température du soleil? ☀️', suggest_black_hole: 'Qu\'est-ce qu\'un trou noir? 🕳️', suggest_planets: 'Combien y a-t-il de planètes? 🪐',
+                                suggest_ice_melt: 'Pourquoi la glace fond-elle? 🧊', suggest_signature: 'Qu\'est-ce qu\'une signature? 🍎', suggest_magnets: 'Comment fonctionnent les aimants? 🧲',
+                                suggest_honey: 'Pourquoi les abeilles font-elles du miel? 🍯', suggest_flowers: 'Comment poussent les fleurs? 🌻', suggest_sky_blue: 'Pourquoi le ciel est-il bleu? ☁️'
+                            }},
+                            'de': { translation: {
                                 adventure_map: 'Abenteuerkarte 🗺️', magic_auras: 'Magische Auren', daily_gift: 'Tägliches Geschenk',
                                 parent_portal: 'Eltern-Dashboard', says: 'sagt', challenge_me: 'Fordere mich heraus!', listen: 'Hören',
                                 stop: 'Stopp', ask: 'FRAGEN!', ask_about: 'Fragen über', listening: 'Hören',
@@ -3140,9 +3167,18 @@
                                 daily_rewards: 'Tägliche Belohnungen!', claim: 'Abholen',
                                 see_you_tomorrow: 'Bis morgen!', active: 'Aktiv', buy_now: 'Kaufen', activate: 'Aktivieren',
                                 personalized_mission: 'Personalisierte Mission', choose_journey: 'Wähle deine Reise!', complete: 'Abgeschlossen',
-                                read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!', type_here: 'Hier tippen'
-                            },
-                            'Arabic': {
+                                read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!', type_here: 'Hier tippen',
+                                history: 'Geschichte', robots: 'Mathe', space: 'Weltraumforschung', science: 'Wissenschaft', nature: 'Natur',
+                                char_dino_name: 'Professor Dino', char_milo_name: 'Milo Affe', char_starry_name: 'Sternen-Alien', char_cat_name: 'Zauberkatze', char_bee_name: 'Hüpfbiene',
+                                char_dino_personality: 'Geschichtslehrer', char_milo_personality: 'Mathelehrer', char_starry_personality: 'Weltraumlehrer', char_cat_personality: 'Wissenschaftslehrer', char_bee_personality: 'Naturlehrer',
+                                char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Lass uns Bananen zählen! ', char_starry_intro: 'Grüße von den Sternen! ', char_cat_intro: 'Miau! ', char_bee_intro: 'Buzz buzz! ',
+                                suggest_pyramids: 'Wer hat die Pyramiden gebaut? 🏜️', suggest_mummy: 'Was ist eine Mumie? 🤕', suggest_king: 'Wer war der erste König? 👑',
+                                suggest_2plus2: 'Was ist 2 + 2? 🍌', suggest_count10: 'Zähle bis 10! 🔟', suggest_circle: 'Was ist ein Kreis? 🔵',
+                                suggest_sun_hot: 'Wie heiß ist die Sonne? ☀️', suggest_black_hole: 'Was ist ein Schwarzes Loch? 🕳️', suggest_planets: 'Wie viele Planeten gibt es? 🪐',
+                                suggest_ice_melt: 'Warum schmilzt Eis? 🧊', suggest_signature: 'Was ist eine Unterschrift? 🍎', suggest_magnets: 'Wie funktionieren Magnete? 🧲',
+                                suggest_honey: 'Warum machen Bienen Honig? 🍯', suggest_flowers: 'Wie wachsen Blumen? 🌻', suggest_sky_blue: 'Warum ist der Himmel blau? ☁️'
+                            }},
+                            'ar': { translation: {
                                 adventure_map: 'خريطة المغامرة 🗺️', magic_auras: 'الهالات السحرية', daily_gift: 'هدية يومية',
                                 parent_portal: 'لوحة تحكم الوالدين', says: 'يقول', challenge_me: 'تحداني!', listen: 'استمع',
                                 stop: 'توقف', ask: 'اسأل!', ask_about: 'اسأل عن', listening: 'أسمعك',
@@ -3150,14 +3186,40 @@
                                 daily_rewards: 'مكافآت يومية!', claim: 'احصل عليها',
                                 see_you_tomorrow: 'أراك غداً!', active: 'نشط', buy_now: 'شراء', activate: 'تفعيل',
                                 personalized_mission: 'مهمة مخصصة', choose_journey: 'اختر رحلتك!', complete: 'مكتمل',
-                                read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!', type_here: 'اكتب هنا'
-                            }
+                                read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!', type_here: 'اكتب هنا',
+                                history: 'التاريخ', robots: 'الرياضيات', space: 'استكشاف الفضاء', science: 'العلوم', nature: 'الطبيعة',
+                                char_dino_name: 'البروفيسور دينو', char_milo_name: 'ميلو القرد', char_starry_name: 'الفضائي النجمي', char_cat_name: 'القطة السحرية', char_bee_name: 'النحلة القافزة',
+                                char_dino_personality: 'مدرس التاريخ', char_milo_personality: 'مدرس الرياضيات', char_starry_personality: 'مدرس الفضاء', char_cat_personality: 'مدرس العلوم', char_bee_personality: 'مدرس الطبيعة',
+                                char_dino_intro: 'راور! ', char_milo_intro: 'أوه أوه! لنعد الموز! ', char_starry_intro: 'تحياتي من النجوم! ', char_cat_intro: 'مياو! ', char_bee_intro: 'بز بز! ',
+                                suggest_pyramids: 'من بنى الأهرامات؟ 🏜️', suggest_mummy: 'ما هي المومياء؟ 🤕', suggest_king: 'من كان أول ملك؟ 👑',
+                                suggest_2plus2: 'كم يساوي 2 + 2؟ 🍌', suggest_count10: 'عد إلى 10! 🔟', suggest_circle: 'ما هي الدائرة؟ 🔵',
+                                suggest_sun_hot: 'كم تبلغ حرارة الشمس؟ ☀️', suggest_black_hole: 'ما هو الثقب الأسود؟ 🕳️', suggest_planets: 'كم عدد الكواكب؟ 🪐',
+                                suggest_ice_melt: 'لماذا يذوب الجليد؟ 🧊', suggest_signature: 'ما هو التوقيع؟ 🍎', suggest_magnets: 'كيف تعمل المغناطيسات؟ 🧲',
+                                suggest_honey: 'لماذا يصنع النحل العسل؟ 🍯', suggest_flowers: 'كيف تنمو الزهور؟ 🌻', suggest_sky_blue: 'لماذا السماء زرقاء؟ ☁️'
+                            }}
                         };
-                        return dict[this.currentLanguage][key] || dict['English'][key];
+
+                        const langMap = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
+                        const inverseLangMap = { 'en': 'English', 'es': 'Spanish', 'fr': 'French', 'de': 'German', 'ar': 'Arabic' };
+
+                        const initialLng = window.deviceLocale || langMap[this.currentLanguage] || 'en';
+
+                        await i18next.init({
+                            lng: initialLng,
+                            fallbackLng: 'en',
+                            resources: resources
+                        });
+
+                        this.currentLanguage = inverseLangMap[i18next.language] || 'English';
+                        this.updateRTL();
+                    },
+                    updateRTL() {
+                        document.body.dir = (this.currentLanguage === 'Arabic') ? 'rtl' : 'ltr';
                     },
                     
                     isProfileLoading: false,
                     async init() {
+                        await this.initI18n();
                         this.initializeCurrentChar();
                         this.loadHearts(); // Load hearts for guests/on load
                         this.startTimeTracking();
@@ -3263,6 +3325,11 @@
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
+                        this.$watch('currentLanguage', value => {
+                            const langMap = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
+                            i18next.changeLanguage(langMap[value] || 'en');
+                            this.updateRTL();
+                        });
                         this.$watch('isTimeUp', value => {
                             if (value) this.parentVerified = false;
                         });
@@ -5734,15 +5801,17 @@
                     setChar(char) {
                         this.currentChar = char;
                         this.currentMoodIcon = char.icon;
-                        this.displayText = `Hello! I'm ${char.name}. I teach ${char.subject}! Ask me anything about it.`;
-                        this.suggestions = char.suggestions;
+                        const charName = this.t(char.nameKey);
+                        const subject = this.t(char.subjectKey);
+                        this.displayText = `Hello! I'm ${charName}. I teach ${subject}! Ask me anything about it.`;
+                        this.suggestions = char.suggestionsKeys.map(k => this.t(k));
                         this.hasAnswered = true; // Allow listening to the intro
                         this.stopSpeaking();
                         this.isVoiceNativeMode = false;
                         this.updateLevel(); // Update level for this specific character
                         
                         // Play the magical intro sound!
-                        setTimeout(() => this.playCharIntro(char.name), 100);
+                        setTimeout(() => this.playCharIntro(charName), 100);
                     },
                     updateLevel() {
                         // Calculate level based on the CURRENT character's subject mastery
@@ -5950,7 +6019,7 @@
                             return;
                         }
 
-                        const activeCharName = this.currentChar.name;
+                        const activeCharKey = this.currentChar.nameKey;
                         const savedQuery = this.userQuery;
                         
                         this.unlockAudio();
@@ -5966,9 +6035,9 @@
                         const childName = this.childProfile.name || "friend";
                         
                         try {
-                            const systemPrompt = `You are ${this.currentChar.name}, a fun teacher. 
+                            const systemPrompt = `You are ${activeCharName}, a fun teacher. 
                             ${ageLogicInstruction}
-                            YOUR SUBJECT: ${this.currentChar.subject}.
+                            YOUR SUBJECT: ${this.t(this.currentChar.subjectKey)}.
                             Language: ${this.currentLanguage}.
 
                             BEHAVIORAL ANALYSIS:
@@ -6024,8 +6093,8 @@
                             }
 
                             // Only proceed if we haven't switched characters
-                            if (this.currentChar.name === activeCharName) {
-                                this.finishThinking(this.currentChar.intro_phrase + parsed.response, savedQuery);
+                            if (this.currentChar.nameKey === activeCharKey) {
+                                this.finishThinking(this.t(this.currentChar.introKey) + parsed.response, savedQuery);
                             } else {
                                 console.log("Aborting response: Character switched.");
                                 this.isThinking = false;
@@ -6033,7 +6102,7 @@
                         } catch (error) {
                             console.error("API Error:", error);
                             this.logActivity(savedQuery, 'neutral');
-                            if (this.currentChar.name === activeCharName) {
+                            if (this.currentChar.nameKey === activeCharKey) {
                                 if (error.message === "RATE_LIMIT") {
                                     this.finishThinking("Whoa, slow down! 🦕 You're asking questions too fast! Take a breath and try again in a minute.", savedQuery);
                                 } else {
