@@ -2319,10 +2319,10 @@
                     
                     <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8">
                         <template x-for="char in characters.slice(0, 3)">
-                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-3 sm:p-6 rounded-2xl border-2 border-gray-200 hover:border-blue-400 transition-all cursor-pointer text-center" @click="playCharIntro(char.name)">
+                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-3 sm:p-6 rounded-2xl border-2 border-gray-200 hover:border-blue-400 transition-all cursor-pointer text-center" @click="playCharIntro(t(char.nameKey))">
                                 <div class="text-3xl sm:text-5xl mb-1 sm:mb-3" x-text="char.icon"></div>
-                                <p class="font-bold text-slate-800 text-xs sm:text-base" x-text="char.name"></p>
-                                <p class="text-[10px] sm:text-xs text-gray-500" x-text="char.subject"></p>
+                                <p class="font-bold text-slate-800 text-xs sm:text-base" x-text="t(char.nameKey)"></p>
+                                <p class="text-[10px] sm:text-xs text-gray-500" x-text="t(char.subjectKey)"></p>
                             </div>
                         </template>
                     </div>
@@ -5716,7 +5716,7 @@
                         this.toggleScroll(false);
                     },
                     logActivity(query, emotion = 'neutral') {
-                        let shortName = this.currentChar.name.replace("Professor ", "");
+                        let shortName = this.t(this.currentChar.nameKey).replace("Professor ", "");
                         
                         // Normalize emotion string for logs
                         let normEmotion = String(emotion || 'neutral').toLowerCase().trim();
@@ -5924,14 +5924,14 @@
                             const base64Image = e.target.result;
                             
                             try {
-                                const systemPrompt = `You are ${this.currentChar.name}, a helpful AI teacher.
-                                TARGET AGE: ${ageRange}. Personality: ${this.currentChar.personality}.
+                                const systemPrompt = `You are ${this.t(this.currentChar.nameKey)}, a helpful AI teacher.
+                                TARGET AGE: ${ageRange}. Personality: ${this.t(this.currentChar.personalityKey)}.
                                 Language: ${this.currentLanguage}.
                                 An image has been uploaded. It is either a child's drawing or a homework page.
                                 Look at the image and explain what you see in a way that helps the child learn.
                                 - If it is homework, explain the steps to solve it (don't just give the answer).
                                 - If it is a drawing, praise their creativity and tell them a fun fact about the subject.
-                                Max 3 sentences. Character Intro: ${this.currentChar.intro_phrase}
+                                Max 3 sentences. Character Intro: ${this.t(this.currentChar.introKey)}
                                 
                                 Return ONLY JSON:
                                 { "response": "Your teaching explanation here..." }`;
