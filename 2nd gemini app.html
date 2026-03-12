@@ -5527,6 +5527,15 @@
                     async syncData() {
                         if (!this.registeredEmail) return;
                         
+                        // --- Native Bridge: UPDATE_STATS ---
+                        if (window.ReactNativeWebView) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'UPDATE_STATS',
+                                subjects: this.learningStats.subjects,
+                                currentChar: this.currentChar.name
+                            }));
+                        }
+
                         this.learningStats.path_progress = this.pathProgress;
                         this.learningStats.child_profile = this.childProfile;
 
