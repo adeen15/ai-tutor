@@ -533,6 +533,11 @@
                 <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
                     <span class="text-xl sm:text-3xl">🪄</span>
                 </button>
+
+                <!-- Scavenger Hunt Button -->
+                <button @click="startScavengerHunt()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                    <span class="text-xl sm:text-3xl">🔍</span>
+                </button>
             </div>
         </div>
 
@@ -863,6 +868,68 @@
                             Clear / Retake
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scavenger Hunt Modal -->
+        <div x-show="showScavengerModal" x-cloak class="fixed inset-0 z-[85] flex items-center justify-center p-6 bg-black bg-opacity-90" x-transition.opacity>
+            <div @click.away="!isAnalyzingScavenger ? (showScavengerModal = false, toggleScroll(false)) : null" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-emerald-400">
+                <button @click="showScavengerModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-red-500 transition-colors" x-show="!isAnalyzingScavenger"><i class="fas fa-times-circle"></i></button>
+                
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4">🕵️‍♂️</div>
+                    <h2 class="text-3xl font-kids text-emerald-600">Scavenger Hunt!</h2>
+                    <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Can you find this object?</p>
+                </div>
+
+                <div class="bg-emerald-50 rounded-3xl p-8 border-4 border-dashed border-emerald-200 text-center mb-8">
+                    <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em] mb-2">YOUR MISSION:</p>
+                    <h3 class="text-4xl font-kids text-emerald-700" x-text="scavengerTarget.name"></h3>
+                </div>
+
+                <!-- Result Display -->
+                <div x-show="scavengerResult" class="mb-8 animate__animated animate__fadeInUp">
+                    <div class="p-6 rounded-2xl text-center" :class="scavengerResult === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                        <div class="text-4xl mb-2" x-text="scavengerResult === 'success' ? '🎉' : '😅'"></div>
+                        <p class="font-bold text-lg" x-text="scavengerMessage"></p>
+                        <template x-if="scavengerResult === 'success'">
+                            <div class="mt-4 flex justify-center gap-2">
+                                <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">💰 +50 Coins</span>
+                                <span class="bg-blue-400 text-white px-3 py-1 rounded-full text-xs font-bold">⭐ +10 XP</span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Analyzing State -->
+                <div x-show="isAnalyzingScavenger" class="flex flex-col items-center mb-8">
+                    <div class="spinner border-emerald-500 mb-4 h-12 w-12 border-t-transparent"></div>
+                    <p class="font-kids text-emerald-600 animate-pulse text-xl">Dino is checking his list...</p>
+                </div>
+
+                <div class="flex flex-col gap-3" x-show="!isAnalyzingScavenger">
+                    <template x-if="!scavengerResult">
+                        <button @click="openScavengerCamera()" class="w-full py-5 bg-emerald-500 text-white rounded-[2rem] font-kids text-2xl shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-3">
+                            <i class="fas fa-camera"></i> TAKE PHOTO!
+                        </button>
+                    </template>
+                    
+                    <template x-if="scavengerResult === 'success'">
+                        <button @click="showScavengerModal = false; toggleScroll(false)" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform">
+                            Awesome! 🚀
+                        </button>
+                    </template>
+
+                    <template x-if="scavengerResult === 'fail'">
+                        <button @click="openScavengerCamera()" class="w-full py-4 bg-orange-400 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform">
+                            Try Again! 📸
+                        </button>
+                    </template>
+
+                    <button @click="startScavengerHunt()" x-show="!isAnalyzingScavenger" class="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-emerald-500 transition-colors py-2">
+                        Get different object
+                    </button>
                 </div>
             </div>
         </div>
@@ -2943,6 +3010,23 @@
                     visionPreview: null,
                     isCameraActive: false,
 
+                    // --- SCAVENGER HUNT STATE ---
+                    showScavengerModal: false,
+                    scavengerTarget: '',
+                    isAnalyzingScavenger: false,
+                    scavengerResult: null, // 'success' or 'fail'
+                    scavengerMessage: '',
+                    scavengerTargets: [
+                        { name: "Something Red", prompt: "an object that is primarily red in color" },
+                        { name: "A Spoon", prompt: "a spoon for eating" },
+                        { name: "A Green Leaf", prompt: "a green leaf from a plant" },
+                        { name: "A Toy Car", prompt: "a small toy car" },
+                        { name: "Your Shoes", prompt: "a pair of shoes" },
+                        { name: "A Pencil", prompt: "a pencil or pen for writing" },
+                        { name: "A Book", prompt: "a book to read" },
+                        { name: "A Water Bottle", prompt: "a water bottle" }
+                    ],
+
                     showLearningPath: false,
                     showStickerBook: false,
                     showDailyPath: false, // Toggle for 30-Day Path
@@ -2981,6 +3065,80 @@
                                 this.awardBadge(badge.id);
                             }
                         });
+                    },
+
+                    startScavengerHunt() {
+                        const randomTarget = this.scavengerTargets[Math.floor(Math.random() * this.scavengerTargets.length)];
+                        this.scavengerTarget = randomTarget;
+                        this.scavengerResult = null;
+                        this.scavengerMessage = '';
+                        this.showScavengerModal = true;
+                        this.toggleScroll(true);
+                        this.playPing();
+                    },
+
+                    openScavengerCamera() {
+                        if (window.ReactNativeWebView) {
+                            this.isAnalyzingScavenger = true;
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'OPEN_CAMERA'
+                            }));
+                        } else {
+                            alert("Camera is only available in the mobile app! 📱");
+                        }
+                    },
+
+                    async analyzeScavengerHunt(base64Image) {
+                        this.isAnalyzingScavenger = true;
+                        this.scavengerResult = null;
+                        
+                        try {
+                            const systemPrompt = `You are an AI judge for a kid's Scavenger Hunt.
+                            The child was asked to find: ${this.scavengerTarget.name} (${this.scavengerTarget.prompt}).
+                            Analyze the image and determine if they found it.
+                            
+                            Return ONLY JSON:
+                            {
+                                "found": true | false,
+                                "message": "A short, encouraging message for the child (max 2 sentences)."
+                            }`;
+
+                            const response = await fetch("/api/vision", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    prompt: `Did the child find ${this.scavengerTarget.name}?`,
+                                    image: "data:image/jpeg;base64," + base64Image,
+                                    systemInstruction: systemPrompt
+                                })
+                            });
+
+                            if (!response.ok) throw new Error("Vision API failed");
+
+                            const data = await response.json();
+                            const result = typeof data.response === 'string' ? JSON.parse(data.response) : data.response;
+                            
+                            this.scavengerResult = result.found ? 'success' : 'fail';
+                            this.scavengerMessage = result.message;
+
+                            if (result.found) {
+                                this.coins += 50;
+                                this.xp += 10;
+                                this.playPing();
+                                confetti({
+                                    particleCount: 150,
+                                    spread: 70,
+                                    origin: { y: 0.6 }
+                                });
+                                this.syncData();
+                            }
+                        } catch (err) {
+                            console.error("Scavenger Analysis Error:", err);
+                            this.scavengerResult = 'fail';
+                            this.scavengerMessage = "My magic eyes are a bit blurry! Can we try another photo?";
+                        } finally {
+                            this.isAnalyzingScavenger = false;
+                        }
                     },
 
                     awardBadge(badgeId) {
@@ -3385,6 +3543,18 @@
 
                                 if (data.type === 'DOWNLOADED_LESSONS_LIST') {
                                     this.downloadedLessons = data.lessons || [];
+                                }
+
+                                if (data.type === 'CAMERA_CAPTURE_SUCCESS') {
+                                    console.log("📸 Camera Capture Success from Native!");
+                                    if (this.showScavengerModal) {
+                                        this.analyzeScavengerHunt(data.base64);
+                                    }
+                                }
+
+                                if (data.type === 'CAMERA_CAPTURE_CANCELLED') {
+                                    console.log("📸 Camera Capture Cancelled from Native");
+                                    this.isAnalyzingScavenger = false;
                                 }
                             } catch (e) {
                                 // Silent fail for non-JSON or unrelated messages
