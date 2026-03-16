@@ -857,6 +857,14 @@
 
                         <!-- Action Buttons -->
                         <button 
+                            x-show="visionPreview && !isThinking && !isCameraActive"
+                            @click="generateToyLesson()"
+                            class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
+                        >
+                            Magic Lesson! 🪄
+                        </button>
+
+                        <button 
                             x-show="visionPreview && !isCameraActive"
                             @click="analyzeImage()"
                             class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
@@ -4328,7 +4336,9 @@
                             this.consecutiveMistakes = 0; // Reset mistakes on success
                             this.isVisualMode = false;
                             this.playPing();
-                            if(this.currentLessonQuizIndex < 2) {
+                            
+                            // Dynamically check against quiz length instead of hardcoded 2
+                            if(this.currentLessonQuizIndex < (this.activeLesson.quiz.length - 1)) {
                                 this.currentLessonQuizIndex++;
                             } else {
                                 this.lessonStep = 'success';
@@ -4339,6 +4349,71 @@
                             this.handleMistake();
                             alert("Oops! Try again!");
                         }
+                    },
+
+                    async generateToyLesson() {
+                        if (!this.visionFile) return;
+                        
+                        this.isThinking = true;
+                        this.currentMoodIcon = this.currentChar.mood_think;
+                        
+                        const ageRange = this.childProfile.ageRange || '6-7';
+                        const reader = new FileReader();
+                        
+                        reader.onload = async (e) => {
+                            const base64Image = e.target.result;
+                            
+                            try {
+                                const systemInstruction = `You are a creative teacher. Identify the objects or toys in the photo. 
+                                Create a FUN 5-question math or counting lesson for a ${ageRange} year old using ONLY those objects.
+                                
+                                Return ONLY JSON:
+                                {
+                                    "id": "toy_lesson_${Date.now()}",
+                                    "title": "Fun with [Object Name]!",
+                                    "content": "A short 3-sentence story explaining how we will use these toys to learn math.",
+                                    "quiz": [
+                                        {"q": "How many [object] do you see?", "options": ["1", "2", "3"], "correct": 1},
+                                        ...exactly 5 questions
+                                    ]
+                                }`;
+
+                                const response = await fetch("/api/vision", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        prompt: "Create a counting lesson from these toys.",
+                                        image: base64Image,
+                                        systemInstruction: systemInstruction
+                                    })
+                                });
+
+                                const data = await response.json();
+                                let raw = data.response;
+                                if (typeof raw === 'string') {
+                                    raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+                                }
+                                
+                                const lessonData = JSON.parse(raw);
+                                
+                                // Set as active lesson and show
+                                this.activeLesson = lessonData;
+                                this.lessonStep = 'learn';
+                                this.currentLessonQuizIndex = 0;
+                                this.showVisionModal = false;
+                                this.toggleScroll(true);
+                                this.playPing();
+                                
+                                console.log("Toy Lesson Generated:", lessonData);
+
+                            } catch (err) {
+                                console.error("Toy Lesson Error:", err);
+                                alert("Magic wand missed! Let's try again with a clearer photo.");
+                            } finally {
+                                this.isThinking = false;
+                            }
+                        };
+                        reader.readAsDataURL(this.visionFile);
                     },
                     handleMistake() {
                         this.consecutiveMistakes++;
