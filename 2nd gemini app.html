@@ -373,11 +373,17 @@
 
         
         <div class="absolute top-4 left-4 z-40 flex flex-col items-start gap-2">
-            <!-- Top Row: Daily Gift and Learning Score (Mobile Only) -->
+            <!-- Top Row: Daily Gift and AR Test Button and Learning Score (Mobile Only) -->
             <div class="flex flex-row gap-2">
                 <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
                     <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
                     <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
+                </button>
+
+                <!-- Temporary Test AR Button (Mobile Visible) -->
+                <button @click="triggerARCelebration()" class="daily-reward-btn bg-gradient-to-br from-yellow-400 to-orange-500 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-orange-600 flex flex-col items-center justify-center animate__animated animate__pulse animate__infinite">
+                    <span class="text-2xl sm:text-3xl drop-shadow-md">🦖</span>
+                    <span class="text-[8px] sm:text-[10px] font-bold text-white uppercase leading-none mt-1">TEST AR</span>
                 </button>
 
                 <!-- Learning Score Badge (Mobile Only - Top Row) -->
