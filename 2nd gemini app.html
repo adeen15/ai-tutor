@@ -1915,7 +1915,8 @@
 
                 <div x-show="activeDualQuest.isUnlocked" class="bg-green-50 p-6 rounded-3xl border-2 border-green-200 text-center mb-6">
                     <p class="text-green-600 font-bold">✨ Quest Active! ✨</p>
-                    <p class="text-xs text-green-500 font-bold uppercase tracking-widest mt-1">Double coins unlocked!</p>
+                    <p class="text-slate-700 font-bold mt-2" x-text="activeDualQuest.title"></p>
+                    <p class="text-xs text-green-500 font-bold uppercase tracking-widest mt-2">Double coins unlocked!</p>
                 </div>
 
                 <div x-show="!activeDualQuest.isUnlocked" class="space-y-6">
