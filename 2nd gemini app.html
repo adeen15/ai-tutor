@@ -2838,6 +2838,7 @@
                     hasAnswered: true,
                     currentMoodIcon: '🦖',
                     suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
+                    voiceSentiment: 'neutral', // Real-time sentiment detected from voice
                     isPremium: false,
                     premiumExpiry: null,
                     showCheckout: false,
@@ -3653,6 +3654,10 @@
                         
                         try {
                             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                            
+                            // --- Emotional AI Logic: Real-time Analysis ---
+                            this.initVoiceAnalyzer(stream);
+
                             this.mediaRecorder = new MediaRecorder(stream);
                             this.audioChunks = [];
 
@@ -3661,6 +3666,9 @@
                             };
 
                             this.mediaRecorder.onstop = async () => {
+                                // Stop analyzer when recording stops
+                                if (this.voiceAnalyzerInterval) clearInterval(this.voiceAnalyzerInterval);
+
                                 const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
                                 const reader = new FileReader();
                                 reader.readAsDataURL(audioBlob);
@@ -3703,6 +3711,73 @@
                             console.error("Mic Access Error:", e);
                             alert("Please allow microphone access to talk!");
                             this.isListening = false;
+                        }
+                    },
+
+                    voiceAnalyzerInterval: null,
+                    initVoiceAnalyzer(stream) {
+                        try {
+                            const AudioContext = window.AudioContext || window.webkitAudioContext;
+                            const audioCtx = new AudioContext();
+                            const source = audioCtx.createMediaStreamSource(stream);
+                            const analyser = audioCtx.createAnalyser();
+                            analyser.fftSize = 256;
+                            source.connect(analyser);
+
+                            const bufferLength = analyser.frequencyBinCount;
+                            const dataArray = new Uint8Array(bufferLength);
+                            
+                            let highPitchCount = 0;
+                            let fastVolumeCount = 0;
+                            let prevVolume = 0;
+                            let samples = 0;
+
+                            this.voiceSentiment = 'neutral';
+
+                            this.voiceAnalyzerInterval = setInterval(() => {
+                                analyser.getByteFrequencyData(dataArray);
+                                
+                                // Simple pitch estimation (peak frequency)
+                                let maxVal = 0;
+                                let maxIndex = -1;
+                                for(let i=0; i<bufferLength; i++) {
+                                    if(dataArray[i] > maxVal) {
+                                        maxVal = dataArray[i];
+                                        maxIndex = i;
+                                    }
+                                }
+
+                                // Volume check
+                                let sum = 0;
+                                for(let i=0; i<bufferLength; i++) sum += dataArray[i];
+                                let avgVolume = sum / bufferLength;
+
+                                if (avgVolume > 10) { // Only analyze if talking
+                                    samples++;
+                                    // Kids' high pitch is usually at higher frequencies
+                                    if (maxIndex > bufferLength * 0.4) highPitchCount++;
+                                    
+                                    // Tracking rapid volume changes (speed)
+                                    if (Math.abs(avgVolume - prevVolume) > 15) fastVolumeCount++;
+                                    prevVolume = avgVolume;
+
+                                    // Determine frustration (High pitch + High speed)
+                                    if (samples > 10) {
+                                        if (highPitchCount > samples * 0.6 && fastVolumeCount > samples * 0.5) {
+                                            this.voiceSentiment = 'frustrated';
+                                            console.log("Sentiment: Frustrated 😤");
+                                        } else if (highPitchCount > samples * 0.5) {
+                                            this.voiceSentiment = 'excited';
+                                            console.log("Sentiment: Excited 🤩");
+                                        } else {
+                                            this.voiceSentiment = 'neutral';
+                                        }
+                                    }
+                                }
+                            }, 100);
+
+                        } catch (err) {
+                            console.error("Voice Analyzer Error:", err);
                         }
                     },
 
@@ -6347,7 +6422,10 @@
                             Language: ${this.currentLanguage}.
 
                             BEHAVIORAL ANALYSIS:
-                            Analyze the child's tone. 
+                            The child's current voice sentiment is: ${this.voiceSentiment}.
+                            ${this.voiceSentiment === 'frustrated' ? 'IMPORTANT: The child sounds frustrated. Be extra encouraging, use simpler words, and offer a sympathetic analogy.' : ''}
+                            ${this.voiceSentiment === 'excited' ? 'The child sounds excited! Match their energy and praise their enthusiasm.' : ''}
+                            
                             Return ONLY JSON:
                             {
                                 "response": "Your encouraging teaching response here...",
@@ -6356,6 +6434,10 @@
 
                             SOCRATIC PROTOCOL:
                             Guide them to answers with analogies. MAX 3 sentences.`;
+
+                            // Clear sentiment after prompt is built to avoid it "sticking" to keyboard inputs
+                            const currentSentiment = this.voiceSentiment;
+                            this.voiceSentiment = 'neutral';
 
                             const response = await fetch("/api/chat", {
                                 method: "POST",
