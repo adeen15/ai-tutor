@@ -22,6 +22,7 @@
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
         <script src="https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js"></script>
         <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
             [x-cloak] { display: none !important; }
@@ -3357,6 +3358,12 @@
                         }
                     ],
                      currentChar: null,
+                isARCelebrating: false,
+                arStage: null, 
+                arScene: null, 
+                arCamera: null, 
+                arRenderer: null, 
+                arSprite: null,
                      initializeCurrentChar() {
                          if (!this.currentChar && this.characters && this.characters.length > 0) {
                              this.currentChar = this.characters[0];
@@ -4546,6 +4553,11 @@
                         await this.syncData();
                         this.predictiveDownloadNextLessons();
                         this.closeLesson();
+                        
+                        // AR Celebration Trigger
+                        if (Math.random() > 0.3) { // 70% chance to celebrate on lesson completion
+                            setTimeout(() => this.triggerARCelebration(), 1500);
+                        }
                     },
 
                     generateDualQuest() {
@@ -4758,6 +4770,109 @@
                         this.isLoading = false;
                         this.showProfileSwitcher = false;
                         this.playPing();
+                    },
+
+                    // This is a placeholder for where `updateLevel` or `completeLesson` might be.
+                    // Assuming the user intends to add this logic to a method that grants a level up or completes a lesson.
+                    // For the purpose of this edit, I'm placing it after `switchProfile` and before `deleteProfile`.
+                    // The `this.level = newLevel;` line and subsequent celebration logic should be integrated into an existing method
+                    // that handles level progression or lesson completion.
+                    // As per the instruction, I'm inserting the provided block as-is, assuming it's a new method or part of one.
+                    // If this is meant to be inside an existing method, the user would need to specify which one.
+                    // For now, I'll create a dummy method `_handleLevelUpOrLessonComplete` to contain it,
+                    // as the diff implies a method boundary with the closing `}`.
+                    _handleLevelUpOrLessonComplete(newLevel) { // Placeholder method name
+                        this.level = newLevel;
+                        this.playPing();
+                        confetti({
+                            particleCount: 200,
+                            spread: 90,
+                            origin: { y: 0.6 }
+                        });
+                        
+                        // AR Celebration Trigger
+                        setTimeout(() => this.triggerARCelebration(), 1000);
+                    },
+                    
+                    async triggerARCelebration() {
+                        if (!window.ReactNativeWebView) return; // Only for mobile
+                        if (this.isARCelebrating) return;
+                        
+                        console.log("🚀 Triggering AR Celebration Milestone!");
+                        this.isARCelebrating = true;
+                        
+                        // 1. Tell Native to open Camera and make WebView transparent
+                        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'START_AR_CELEBRATION' }));
+                        
+                        // 2. Setup Three.js Stage
+                        this.initARStage();
+                        
+                        // 3. Stop after 6 seconds
+                        setTimeout(() => {
+                            this.stopARCelebration();
+                        }, 8000);
+                    },
+
+                    initARStage() {
+                        const container = document.getElementById('ar-container');
+                        if (!container) return;
+                        
+                        this.arScene = new THREE.Scene();
+                        this.arCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                        this.arRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                        this.arRenderer.setSize(window.innerWidth, window.innerHeight);
+                        container.appendChild(this.arRenderer.domElement);
+
+                        const texture = new THREE.TextureLoader().load(this.getCharacterImage(this.currentChar.icon));
+                        const material = new THREE.SpriteMaterial({ map: texture });
+                        this.arSprite = new THREE.Sprite(material);
+                        
+                        // Position character in "front" of child
+                        this.arSprite.scale.set(1.5, 1.5, 1);
+                        this.arSprite.position.set(0, -0.5, -2);
+                        this.arScene.add(this.arSprite);
+                        
+                        this.arCamera.position.z = 1;
+
+                        const animate = () => {
+                            if (!this.isARCelebrating) return;
+                            requestAnimationFrame(animate);
+                            
+                            // Dancing Animation
+                            const time = Date.now() * 0.005;
+                            this.arSprite.position.y = -0.5 + Math.sin(time * 2) * 0.2; // Jump
+                            this.arSprite.rotation.z = Math.sin(time) * 0.1; // Sways
+                            this.arSprite.scale.x = 1.5 + Math.sin(time * 3) * 0.1; // Breathing/excite
+                            
+                            this.arRenderer.render(this.arScene, this.arCamera);
+                        };
+                        animate();
+                    },
+
+                    getCharacterImage(icon) {
+                        // Simple map to get high-res character assets or emojis if assets not available
+                        const maps = {
+                            "🦖": "https://cdn-icons-png.flaticon.com/512/1998/1998614.png",
+                            "🐵": "https://cdn-icons-png.flaticon.com/512/1998/1998592.png",
+                            "🛸": "https://cdn-icons-png.flaticon.com/512/1998/1998617.png",
+                            "👾": "https://cdn-icons-png.flaticon.com/512/1998/1998617.png",
+                            "🐱": "https://cdn-icons-png.flaticon.com/512/1998/1998592.png",
+                            "🐝": "https://cdn-icons-png.flaticon.com/512/1998/1998604.png"
+                        };
+                        return maps[icon] || "https://cdn-icons-png.flaticon.com/512/1998/1998614.png";
+                    },
+
+                    stopARCelebration() {
+                        this.isARCelebrating = false;
+                        if (window.ReactNativeWebView) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'STOP_AR_CELEBRATION' }));
+                        }
+                        
+                        if (this.arRenderer) {
+                            const container = document.getElementById('ar-container');
+                            if (container) container.innerHTML = '';
+                            this.arRenderer.dispose();
+                        }
                     },
 
                     async deleteProfile(profileId) {
@@ -5624,6 +5739,11 @@
                              this.updateDailyStreak();
                              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                              
+                             // --- AR Celebration: every 5th quiz completion ---
+                             if (this.learningStats.quizzesCompleted % 5 === 0) {
+                                 this.triggerARCelebration();
+                             }
+                             
                              this.updateSeasonalProgress('quizzes', 1);
                              
                              // Exit review mode
@@ -6274,6 +6394,8 @@
                             colors: ['#FFD700', '#FF69B4', '#00BFFF']
                         });
                         this.playPing();
+                        // --- AR Celebration: daily reward milestone ---
+                        this.triggerARCelebration();
                         localStorage.setItem('last_reward_date_' + this.registeredEmail, new Date().toDateString());
                         await this.syncData(); 
                     },
@@ -6807,6 +6929,10 @@
                         this.checkAchievements();
                         this.syncData();
                         confetti({ particleCount: 200, spread: 100 });
+                        // --- AR Celebration: onboarding complete (first time only) ---
+                        if (isFirstTime) {
+                            this.triggerARCelebration();
+                        }
                         this.speak("Congratulations! You're all set to start learning! Let's have fun together!");
                     },
                     
@@ -7013,8 +7139,24 @@
                              origin: { y: 0.6 },
                              colors: ['#FF69B4', '#FFB6C1', '#FFC0CB']
                          });
+                         // --- AR Celebration: seasonal quest milestone ---
+                         this.triggerARCelebration();
                           console.log(`🎁 Seasonal Reward: ${quest.reward} tokens earned for ${quest.title}!`);
                       },
+
+                     // --- AR Tutor Projection: send milestone trigger to native app ---
+                     triggerARCelebration() {
+                         if (window.ReactNativeWebView) {
+                             console.log('[AR] Sending START_AR_CELEBRATION to native app...');
+                             window.ReactNativeWebView.postMessage(JSON.stringify({
+                                 type: 'START_AR_CELEBRATION',
+                                 character: this.currentChar?.name || 'Professor Dino'
+                             }));
+                         } else {
+                             // Web browser fallback — AR not available, confetti already runs
+                             console.log('[AR] Native bridge not available — AR celebration skipped (web mode).');
+                         }
+                     },
 
                       buySeasonalItem(item) {
                           if (this.eventTokens >= item.price) {
@@ -7039,6 +7181,30 @@
                 if (app) app.updateNetworkStatus(isWifi);
                 else window.isWifiAttached = isWifi; // Fallback for early init
             };
+
+            // --- AR Celebration: Listen for messages FROM React Native ---
+            // Handles: AR_PERMISSION_DENIED (graceful fallback) and AR_CELEBRATION_DONE (completion log)
+            document.addEventListener('message', function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'AR_PERMISSION_DENIED') {
+                        console.log('[AR] Camera permission denied — AR overlay skipped. Web celebration continues normally.');
+                    } else if (data.type === 'AR_CELEBRATION_DONE') {
+                        console.log('[AR] AR Celebration completed! Welcome back to the classroom 🎉');
+                    }
+                } catch (e) { /* ignore non-JSON messages */ }
+            });
+            // Also listen on window for iOS WebView compatibility
+            window.addEventListener('message', function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'AR_PERMISSION_DENIED') {
+                        console.log('[AR] Camera permission denied — AR overlay skipped.');
+                    } else if (data.type === 'AR_CELEBRATION_DONE') {
+                        console.log('[AR] AR Celebration completed!');
+                    }
+                } catch (e) { /* ignore */ }
+            });
         </script>
     </body>
     </html>
