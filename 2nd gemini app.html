@@ -498,6 +498,22 @@
                     </div>
                 </button>
 
+                <!-- Dual Quest Button -->
+                <button 
+                    @click="showQuestModal = true; toggleScroll(true)"
+                    class="bg-white p-2 border-b-4 border-yellow-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform relative"
+                    title="Secret Quest"
+                >
+                    <i class="fas fa-trophy text-yellow-500 text-xl sm:text-2xl"></i>
+                    <span x-show="activeDualQuest.code && !activeDualQuest.isUnlocked" class="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <span x-show="activeDualQuest.isUnlocked" class="absolute -top-1 -right-1 flex h-4 w-4 bg-green-500 text-white rounded-full items-center justify-center text-[8px] font-bold border-2 border-white">
+                        <i class="fas fa-check"></i>
+                    </span>
+                </button>
+
                 <button @click="openParentPortal()" class="bg-white p-2 border-b-4 border-gray-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform">
                     <span class="text-xl sm:text-2xl">🔒</span>
                 </button>
@@ -1881,6 +1897,45 @@
             </div>
         </div>
 
+        <!-- Dual Quest Entry Modal -->
+        <div x-show="showQuestModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-md" x-transition.opacity>
+            <div @click.away="showQuestModal = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-md w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-yellow-400">
+                <button @click="showQuestModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-red-500 transition-colors"><i class="fas fa-times-circle"></i></button>
+                
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4">🏆</div>
+                    <h2 class="text-3xl font-kids text-yellow-600">Enter Secret Code!</h2>
+                    <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Complete a mission with your parent!</p>
+                </div>
+
+                <div x-show="activeDualQuest.isUnlocked" class="bg-green-50 p-6 rounded-3xl border-2 border-green-200 text-center mb-6">
+                    <p class="text-green-600 font-bold">✨ Quest Active! ✨</p>
+                    <p class="text-xs text-green-500 font-bold uppercase tracking-widest mt-1">Double coins unlocked!</p>
+                </div>
+
+                <div x-show="!activeDualQuest.isUnlocked" class="space-y-6">
+                    <div class="bg-yellow-50 rounded-3xl p-6 border-4 border-dashed border-yellow-200 text-center">
+                        <p class="text-[10px] font-bold text-yellow-400 uppercase tracking-widest mb-4">PARENT SECRET CODE:</p>
+                        <input type="text" 
+                               x-model="questCodeInput" 
+                               maxlength="4" 
+                               placeholder="****" 
+                               class="w-full text-center text-5xl font-bold tracking-[0.5em] bg-transparent border-b-4 border-yellow-200 focus:border-yellow-500 outline-none py-2 text-slate-700 placeholder-yellow-100"
+                               @keyup.enter="verifyQuestCode()">
+                    </div>
+
+                    <button @click="verifyQuestCode()" 
+                            class="w-full py-5 bg-yellow-500 text-white rounded-2xl font-kids text-2xl shadow-lg hover:scale-105 transition-transform border-b-4 border-yellow-700 active:border-b-0 active:translate-y-1">
+                        UNLOCK MAGIC! ✨
+                    </button>
+                    
+                    <p class="text-center text-xs text-slate-400 font-bold uppercase">Ask your parent for the code!</p>
+                </div>
+
+                <button @click="showQuestModal = false; toggleScroll(false)" class="w-full mt-4 text-slate-400 font-bold uppercase text-xs hover:text-slate-600">Close</button>
+            </div>
+        </div>
+
         <div x-show="showPremiumModal" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black bg-opacity-70 sm:overflow-y-auto overflow-hidden"
             x-transition.opacity>
@@ -2130,6 +2185,35 @@
                                             <span class="text-3xl font-kids text-indigo-600" x-text="learningScore"></span>
                                             <span class="text-[10px] font-bold text-indigo-400 bg-white px-2 py-1 rounded-full shadow-sm">Formula: XP + Quizzes + Streak + Vocabulary</span>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dual Quests Section -->
+                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                                     <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                        <i class="fas fa-bullseye text-red-500"></i> Shared Missions 🎯
+                                    </h3>
+                                    
+                                    <div class="space-y-4">
+                                        <template x-if="activeDualQuest && activeDualQuest.title">
+                                            <div class="bg-red-50 rounded-2xl p-4 border border-red-100">
+                                                <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Active Mission:</p>
+                                                <p class="text-sm font-bold text-slate-700" x-text="activeDualQuest.title"></p>
+                                                <div class="mt-3 flex items-center justify-between">
+                                                    <div>
+                                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Secret Code:</p>
+                                                        <p class="text-xl font-kids text-red-600 tracking-widest" x-text="activeDualQuest.code"></p>
+                                                    </div>
+                                                    <span x-show="activeDualQuest.isUnlocked" class="text-[10px] bg-green-500 text-white px-2 py-1 rounded-full font-bold">UNLOCKED</span>
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                        <p class="text-[10px] text-slate-500">Shared missions encourage bonding. Give your child the code once you finish the activity together!</p>
+                                        
+                                        <button @click="generateDualQuest()" class="w-full py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-md hover:bg-red-600 transition-colors">
+                                            <i class="fas fa-plus-circle mr-2"></i> Generate New Mission
+                                        </button>
                                     </div>
                                 </div>
 
@@ -2813,6 +2897,11 @@
                     isLoading: true, // Start in loading state
                     isLoggedIn: false,
                     showLeaderboardRewardModal: false,
+
+                    // --- DUAL QUESTS STATE ---
+                    activeDualQuest: { title: '', code: '', isUnlocked: false },
+                    questCodeInput: '',
+                    showQuestModal: false,
 
                     isLoggedIn: false,
                     hasAccount: false,
@@ -4431,7 +4520,16 @@
                             this.pathProgress[pathId] = this.activeLesson.id;
                         }
                         
-                        this.coins += 50;
+                        const coinReward = (this.activeDualQuest && this.activeDualQuest.isUnlocked) ? 100 : 50;
+                        this.coins += coinReward;
+                        
+                        // Reset dual quest if it was unlocked
+                        if (this.activeDualQuest && this.activeDualQuest.isUnlocked) {
+                            this.activeDualQuest.isUnlocked = false;
+                            this.activeDualQuest.code = '';
+                            this.activeDualQuest.title = '';
+                        }
+
                         this.xp += 100;
                         this.incrementWeeklyXP(100);
                         if (!this.learningStats.quizzesCompleted) this.learningStats.quizzesCompleted = 0;
@@ -4442,6 +4540,53 @@
                         await this.syncData();
                         this.predictiveDownloadNextLessons();
                         this.closeLesson();
+                    },
+
+                    generateDualQuest() {
+                        const missions = [
+                            "Read a story together for 10 minutes",
+                            "Count 20 items in the kitchen",
+                            "Learn 3 new words together",
+                            "Find 5 items that start with the letter B",
+                            "Sing an educational song together"
+                        ];
+                        const randomMission = missions[Math.floor(Math.random() * missions.length)];
+                        const code = Math.floor(1000 + Math.random() * 9000).toString();
+                        
+                        this.activeDualQuest = {
+                            title: randomMission,
+                            code: code,
+                            isUnlocked: false
+                        };
+                        
+                        // Send email notification to parent
+                        fetch("/api/send-email", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                to: this.registeredEmail,
+                                subject: "New Dual Quest Mission! 🎯",
+                                body: `Hi Parent! 🌟\n\nA new mission is waiting for you and ${this.childProfile.name || 'your child'}: \n\n"${randomMission}"\n\nOnce completed, give this SECRET CODE to them to unlock DOUBLE REWARDS: ${code}\n\nHave fun learning together!`
+                            })
+                        });
+                        
+                        this.syncData();
+                        alert("Quest Generated! Check your email for the secret code. 📩");
+                    },
+
+                    verifyQuestCode() {
+                        if (this.questCodeInput === this.activeDualQuest.code) {
+                            this.activeDualQuest.isUnlocked = true;
+                            this.showQuestModal = false;
+                            this.questCodeInput = '';
+                            this.playPing();
+                            confetti({ particleCount: 200, spread: 100 });
+                            alert("🏆 QUEST UNLOCKED! Your next lesson will give DOUBLE COINS!");
+                            this.syncData();
+                        } else {
+                            alert("Oops! That's not the right code. Ask your parent for help!");
+                            this.questCodeInput = '';
+                        }
                     },
 
                     async resetMapProgress() {
