@@ -7156,7 +7156,7 @@
                              console.log('[AR] Sending START_AR_CELEBRATION to native app...');
                              window.ReactNativeWebView.postMessage(JSON.stringify({
                                  type: 'START_AR_CELEBRATION',
-                                 character: this.currentChar?.name || 'Professor Dino'
+                                 character: this.t(this.currentChar?.nameKey) || 'Professor Dino'
                              }));
                          } else {
                              // Web browser fallback — AR not available, confetti already runs
