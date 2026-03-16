@@ -2812,6 +2812,7 @@
                     leaderboardRewardData: null,
                     isLoading: true, // Start in loading state
                     isLoggedIn: false,
+                    showLeaderboardRewardModal: false,
 
                     isLoggedIn: false,
                     hasAccount: false,
@@ -6287,10 +6288,13 @@
                     },
 
                     openVisionModal() {
+                        // Temporarily disabled for testing
+                        /*
                         if (!this.isPremium) {
                             this.showPremiumModal = true;
                             return;
                         }
+                        */
                         this.showVisionModal = true;
                         this.toggleScroll(true);
                     },
