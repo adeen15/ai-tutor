@@ -3655,6 +3655,7 @@
                     
                     isProfileLoading: false,
                     async init() {
+                        window.app = this; // Expose for easy console testing
                         await this.initI18n();
                         this.initializeCurrentChar();
                         this.loadHearts(); // Load hearts for guests/on load
