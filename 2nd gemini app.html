@@ -1531,24 +1531,24 @@
         </div>
 
         <!-- Blockchain Verification Modal -->
-        <div x-show="showVerificationModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900 bg-opacity-90 backdrop-blur-md" x-transition.opacity>
-            <div @click.away="showVerificationModal = false" class="bg-white rounded-[3rem] max-w-lg w-full p-0 overflow-hidden shadow-2xl relative animate__animated animate__zoomIn border-[12px] border-blue-50">
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-center text-white relative">
-                    <div class="absolute top-4 right-4 text-white/50 hover:text-white cursor-pointer" @click="showVerificationModal = false">
+        <div x-show="showVerificationModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900 bg-opacity-90 backdrop-blur-md" x-transition.opacity>
+            <div @click.away="showVerificationModal = false" class="bg-white rounded-[2rem] sm:rounded-[3rem] max-w-lg w-full max-h-[90vh] overflow-y-auto p-0 shadow-2xl relative animate__animated animate__zoomIn border-4 sm:border-[12px] border-blue-50">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 sm:p-8 text-center text-white relative">
+                    <div class="absolute top-4 right-4 text-white/50 hover:text-white cursor-pointer z-50" @click="showVerificationModal = false">
                         <i class="fas fa-times-circle text-2xl"></i>
                     </div>
-                    <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border-4 border-white/30">
-                        <span class="text-6xl" x-text="verifyingCert?.icon || '🏆'"></span>
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border-4 border-white/30">
+                        <span class="text-5xl sm:text-6xl" x-text="verifyingCert?.icon || '🏆'"></span>
                     </div>
-                    <h2 class="text-3xl font-kids mb-1">Certificate Verified!</h2>
-                    <p class="text-xs font-bold uppercase tracking-[0.3em] opacity-80">Official Proof of Learning</p>
+                    <h2 class="text-2xl sm:text-3xl font-kids mb-1">Certificate Verified!</h2>
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-80">Official Proof of Learning</p>
                 </div>
 
-                <div class="p-10 text-center">
-                    <div class="bg-blue-50 rounded-3xl p-6 border-2 border-blue-100 mb-8">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Blockchain Record Details</p>
+                <div class="p-6 sm:p-10 text-center">
+                    <div class="bg-blue-50 rounded-[1.5rem] sm:rounded-3xl p-4 sm:p-6 border-2 border-blue-100 mb-6 sm:mb-8">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-4">Blockchain Record Details</p>
                         
-                        <div class="grid grid-cols-2 gap-6 text-left">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
                             <div>
                                 <p class="text-[9px] font-bold text-blue-400 uppercase">Student Name</p>
                                 <p class="font-kids text-lg text-slate-800" x-text="verifyingCert?.studentName"></p>
@@ -1567,17 +1567,17 @@
                             </div>
                         </div>
 
-                        <div class="mt-8 pt-6 border-t border-blue-100 text-center">
+                        <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-blue-100 text-center">
                             <p class="text-[9px] font-bold text-slate-400 uppercase mb-2">Unique Verifiable ID (Hash)</p>
-                            <code class="block p-3 bg-white rounded-xl border border-blue-100 text-blue-600 font-mono text-xs break-all" x-text="verifyingCert?.id"></code>
+                            <code class="block p-3 bg-white rounded-xl border border-blue-100 text-blue-600 font-mono text-[10px] sm:text-xs break-all" x-text="verifyingCert?.id"></code>
                         </div>
                     </div>
 
-                    <p class="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto mb-8 font-medium italic">
+                    <p class="text-[11px] sm:text-xs text-slate-400 leading-relaxed max-w-xs mx-auto mb-6 sm:mb-8 font-medium italic">
                         "This certificate is cryptographically signed and recorded on our simulated public ledger. It cannot be altered or forged."
                     </p>
 
-                    <button @click="showVerificationModal = false" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-kids text-xl hover:bg-black transition-all shadow-xl">
+                    <button @click="showVerificationModal = false" class="w-full py-3 sm:py-4 bg-slate-900 text-white rounded-[1.2rem] sm:rounded-2xl font-kids text-lg sm:text-xl hover:bg-black transition-all shadow-xl">
                         Close Certificate
                     </button>
                     
