@@ -542,7 +542,7 @@
             </div>
 
             <div class="flex flex-row gap-2 sm:gap-4">
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
                     <span class="text-xl sm:text-3xl">📖</span>
                 </button>
 
@@ -563,7 +563,7 @@
 
             <!-- Third Row -->
             <div class="flex flex-row gap-2 sm:gap-4">
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
                     <span class="text-xl sm:text-3xl">🪄</span>
                 </button>
 
@@ -593,6 +593,16 @@
 
             <!-- Fourth Row (Mobile Only) -->
             <div class="flex sm:hidden flex-row gap-2">
+                <!-- Magic Aura (Mobile Only - Row 4) -->
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
+                    <span class="text-xl">🪄</span>
+                </button>
+
+                <!-- Story Time (Mobile Only - Row 4) -->
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
+                    <span class="text-xl">📖</span>
+                </button>
+
                 <!-- Profile Switcher (Mobile Only - Row 4) -->
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <span class="text-xl">👤</span>
