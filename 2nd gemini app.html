@@ -3388,6 +3388,11 @@
                     },
 
                     async generateBlockchainCertificate(path) {
+                        if (!path) {
+                            console.error("❌ Cannot generate certificate: Path is undefined. Use 'math', 'english', or 'science'.");
+                            alert("Oops! That path doesn't exist. Try 'math' or 'english'!");
+                            return;
+                        }
                         if (!this.learningStats.blockchain_certificates) {
                             this.learningStats.blockchain_certificates = [];
                         }
