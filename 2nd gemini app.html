@@ -380,18 +380,12 @@
                     <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
                 </button>
 
-                <!-- Temporary Test AR Button (Mobile Visible) -->
-                <button @click="triggerARCelebration()" class="daily-reward-btn bg-gradient-to-br from-yellow-400 to-orange-500 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-orange-600 flex flex-col items-center justify-center animate__animated animate__pulse animate__infinite">
-                    <span class="text-2xl sm:text-3xl drop-shadow-md">🦖</span>
-                    <span class="text-[8px] sm:text-[10px] font-bold text-white uppercase leading-none mt-1">TEST AR</span>
-                </button>
-
-                <!-- Learning Score Badge (Mobile Only - Top Row) -->
-                <div class="flex sm:hidden daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
+                <!-- Learning Score Badge -->
+                <div class="flex daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                    <span class="text-[7px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
-                    <span class="font-kids text-xs text-white drop-shadow-md" x-text="learningScore"></span>
-                    <div class="absolute -bottom-1 right-1 opacity-20 text-xl">🚀</div>
+                    <span class="text-[7px] sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
+                    <span class="font-kids text-xs sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
+                    <div class="absolute -bottom-1 right-1 opacity-20 text-xl sm:text-3xl">🚀</div>
                 </div>
             </div>
 
