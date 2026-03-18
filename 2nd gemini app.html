@@ -457,13 +457,6 @@
                     <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="currentSeason.name">Event</span>
                 </button>
 
-                <!-- Learning Score Badge (Desktop Only - Stats Column) -->
-                <div class="hidden sm:flex daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 sm:w-24 sm:h-24 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
-                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                    <span class="sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
-                    <span class="font-kids sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
-                    <div class="absolute -bottom-1 right-1 opacity-20 sm:text-3xl">🚀</div>
-                </div>
             </div>
 
             <!-- Web Version: Under Daily Gift -->
@@ -483,9 +476,6 @@
 
         <div class="absolute top-4 right-4 flex flex-col items-end gap-2 sm:gap-4 z-40">
             <div class="flex flex-row gap-2 sm:gap-4">
-                <button @click="showLearningPath = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
-                    <span class="text-xl sm:text-3xl">🗺️</span>
-                </button>
 
 
                 <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
@@ -549,21 +539,28 @@
                     <span class="text-xl sm:text-3xl">📥</span>
                 </button>
 
-                <!-- Adventure Map (Mobile Only - Second Row) -->
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
-                    <span class="text-xl">🗺️</span>
+                <!-- Adventure Map (Row 2 Desktop, Mobile Only - Second Row) -->
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                    <span class="text-xl sm:text-3xl">🗺️</span>
+                </button>
+
+                <!-- Scavenger Hunt (Row 2 Desktop) -->
+                <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                    <span class="text-xl sm:text-3xl">🔍</span>
+                </button>
+
+                <!-- Magic Auras (Row 2 Desktop) -->
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
+                    <span class="text-xl sm:text-3xl">🪄</span>
                 </button>
             </div>
 
             <!-- Third Row -->
             <div class="flex flex-row gap-2 sm:gap-4">
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
-                    <span class="text-xl sm:text-3xl">🪄</span>
-                </button>
 
-                <!-- Scavenger Hunt Button -->
-                <button @click="startScavengerHunt()" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
-                    <span class="text-xl sm:text-3xl">🔍</span>
+                <!-- Scavenger Hunt Button (Mobile Only) -->
+                <button @click="startScavengerHunt()" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                    <span class="text-xl">🔍</span>
                 </button>
 
                 <!-- Sticker Book (Mobile Only - Aligned in Third Row) -->
