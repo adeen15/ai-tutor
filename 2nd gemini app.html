@@ -539,9 +539,14 @@
                     <span class="text-xl sm:text-3xl">📥</span>
                 </button>
 
-                <!-- Adventure Map (Row 2 Desktop, Mobile Only - Second Row) -->
+                <!-- Adventure Map -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl sm:text-3xl">🗺️</span>
+                </button>
+
+                <!-- Skill Tree Button -->
+                <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
+                    <span class="text-xl sm:text-3xl">🌳</span>
                 </button>
 
                 <!-- Scavenger Hunt (Row 2 Desktop) -->
@@ -1317,6 +1322,107 @@
                                 </div>
                             </div>
                         </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- SKILL TREE MODAL --- -->
+        <div x-show="showSkillTree" x-cloak class="fixed inset-0 z-[65] bg-slate-900 bg-opacity-95 flex items-center justify-center p-0 sm:p-6" x-transition.opacity>
+            <div class="bg-white rounded-none sm:rounded-[3rem] w-full h-full max-w-5xl flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
+                <!-- Header -->
+                <div class="p-6 sm:p-8 border-b-4 border-amber-100 flex justify-between items-center bg-white z-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-amber-500 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl text-white shadow-lg">🌳</div>
+                        <div>
+                            <h2 class="text-2xl sm:text-4xl font-kids text-slate-800">Learning Skill Tree</h2>
+                            <p class="text-amber-500 font-bold uppercase tracking-widest text-[10px] sm:text-xs mt-1">Watch your knowledge grow, <span x-text="childProfile.name"></span>!</p>
+                        </div>
+                    </div>
+                    <button @click="toggleSkillTree(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-400 hover:text-red-500 transition-all">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Tree Content -->
+                <div class="flex-1 overflow-x-auto overflow-y-auto p-6 sm:p-12 bg-slate-50 relative custom-scroll">
+                    <div class="min-w-[800px] flex flex-row justify-around items-start gap-12 pb-20">
+                        <template x-for="path in curriculum" :key="path.id">
+                            <div class="flex flex-col items-center flex-1">
+                                <!-- Path Header -->
+                                <div class="mb-12 text-center group">
+                                    <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-[2rem] flex items-center justify-center text-5xl mb-4 shadow-xl transition-all group-hover:scale-110" :class="path.color">
+                                        <span x-text="path.icon"></span>
+                                    </div>
+                                    <h3 class="font-kids text-2xl sm:text-3xl text-slate-800" x-text="path.name"></h3>
+                                    <div class="mt-2 flex items-center justify-center gap-2">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" x-text="path.grade"></span>
+                                        <i x-show="path.premium && !isPremium" class="fas fa-lock text-amber-500 text-xs shadow-sm"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Levels (Nodes) -->
+                                <div class="flex flex-col items-center gap-16 relative w-full">
+                                    <template x-for="(level, lIdx) in path.levels" :key="level.id">
+                                        <div class="flex flex-col items-center relative z-10 w-full">
+                                            <!-- Connector Line (Vertical) -->
+                                            <template x-if="lIdx > 0">
+                                                <div class="absolute -top-16 w-1 rounded-full bg-gray-200 h-16"
+                                                     :class="isLevelUnlocked(path.id, level.id) ? (path.color.replace('bg-', 'bg-') + ' opacity-50') : 'bg-gray-200'"></div>
+                                            </template>
+
+                                            <!-- Node Button -->
+                                            <button 
+                                                @click="if(!path.premium || isPremium) { if(isLevelUnlocked(path.id, level.id)) { openLesson(level); currentPath = path; showSkillTree = false; } else { playPing(); alert('Complete the previous level first! ✨'); } } else { showPremiumModal = true; toggleSkillTree(false); }"
+                                                class="w-16 h-16 sm:w-24 sm:h-24 rounded-full flex items-center justify-center border-4 shadow-xl transition-all relative group/node"
+                                                :class="[
+                                                    isLevelComplete(path.id, level.id) ? (path.color + ' border-white scale-110 ring-4 ring-amber-300 ring-offset-2') : 
+                                                    (isLevelUnlocked(path.id, level.id) ? 'bg-white border-dashed ' + (path.color.replace('bg-', 'border-')) : 'bg-gray-100 border-gray-200 grayscale opacity-80 cursor-not-allowed')
+                                                ]"
+                                            >
+                                                <!-- Level Number/Status -->
+                                                <div class="relative flex items-center justify-center w-full h-full">
+                                                    <span x-show="isLevelComplete(path.id, level.id)" class="text-3xl sm:text-4xl animate__animated animate__bounceIn">⭐</span>
+                                                    <span x-show="!isLevelComplete(path.id, level.id) && isLevelUnlocked(path.id, level.id)" 
+                                                          class="text-2xl sm:text-3xl font-kids" :class="path.color.replace('bg-', 'text-')" x-text="level.id"></span>
+                                                    <i x-show="!isLevelUnlocked(path.id, level.id)" class="fas fa-lock text-gray-400"></i>
+                                                </div>
+
+                                                <!-- Hover Label -->
+                                                <div class="absolute -bottom-10 whitespace-nowrap bg-slate-800 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/node:opacity-100 pointer-events-none transition-all transform translate-y-2 group-hover/node:translate-y-0 shadow-xl z-20">
+                                                    <span x-text="level.title"></span>
+                                                </div>
+                                            </button>
+
+                                            <!-- Visual Path indicator (Horizontal connection to other branches could be added here if needed) -->
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Interactive background elements -->
+                    <div class="absolute inset-0 pointer-events-none opacity-5 overflow-hidden">
+                        <div class="absolute top-20 left-10 text-9xl">🌿</div>
+                        <div class="absolute bottom-20 right-10 text-9xl">🍃</div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[30rem] grayscale">🌳</div>
+                    </div>
+                </div>
+
+                <!-- Footer / Legend -->
+                <div class="p-6 bg-slate-100 border-t-2 border-slate-200 flex flex-wrap justify-center gap-6 sm:gap-12">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full bg-amber-400 shadow-sm border-2 border-white"></div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Completed</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full bg-white border-2 border-dashed border-gray-400"></div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">In Progress</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full bg-gray-200 border-2 border-gray-300"></div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Locked</span>
                     </div>
                 </div>
             </div>
@@ -3310,6 +3416,7 @@
                     ],
 
                     showLearningPath: false,
+                    showSkillTree: false,
                     showStickerBook: false,
                     showDailyPath: false, // Toggle for 30-Day Path
                     learningPathDay: 1, // Tracks progress 1-30
@@ -3447,6 +3554,12 @@
                         // for now we'll just let the sticker book reflect it.
                         console.log("🏆 Achievement Unlocked: " + badge.name);
                         this.syncData();
+                    },
+
+                    toggleSkillTree(show) {
+                        this.showSkillTree = show;
+                        this.toggleScroll(show);
+                        if (show) this.playPing();
                     },
 
                     // --- BLOCKCHAIN CERTIFICATE ENGINE ---
