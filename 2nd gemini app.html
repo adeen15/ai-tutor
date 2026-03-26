@@ -1199,6 +1199,182 @@
             </div>
         </div>
 
+        <!-- Skill Tree Modal -->
+        <div x-show="showSkillTree" x-cloak class="fixed inset-0 z-[65] bg-slate-900/95 flex items-center justify-center p-0" x-transition.opacity>
+            <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
+
+                <!-- Header -->
+                <div class="p-5 sm:p-7 bg-gradient-to-r from-amber-500 to-orange-500 flex justify-between items-center z-20 shadow-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">🌳</div>
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-kids text-white">Skill Tree</h2>
+                            <p class="text-amber-100 font-bold text-[10px] sm:text-xs uppercase tracking-widest">Unlock your knowledge path!</p>
+                        </div>
+                    </div>
+                    <button @click="toggleSkillTree(false)" class="bg-white/20 hover:bg-white/30 p-3 rounded-2xl text-white transition-all">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Subject Tabs -->
+                <div class="flex overflow-x-auto gap-2 px-4 sm:px-8 py-4 bg-white border-b-2 border-gray-100 min-h-[72px] items-center">
+                    <template x-for="subj in [{key:'history',label:'History',icon:'🦖',color:'bg-orange-500'},{key:'robots',label:'Math',icon:'🐒',color:'bg-blue-600'},{key:'space',label:'Space',icon:'👾',color:'bg-purple-600'},{key:'science',label:'Science',icon:'🐱',color:'bg-pink-500'},{key:'nature',label:'Nature',icon:'🐝',color:'bg-green-500'}]">
+                        <button @click="skillTreeSubject = subj.key" 
+                            class="flex-shrink-0 flex flex-col items-center gap-1 px-3 sm:px-5 py-2 rounded-2xl font-bold text-xs sm:text-sm transition-all border-b-4"
+                            :class="skillTreeSubject === subj.key ? subj.color + ' text-white border-black/20 scale-105' : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'">
+                            <span class="text-lg sm:text-2xl" x-text="subj.icon"></span>
+                            <span x-text="subj.label"></span>
+                        </button>
+                    </template>
+                </div>
+
+                <!-- Main Content -->
+                <div class="flex-1 overflow-y-auto bg-slate-50 px-4 sm:px-8 py-6">
+
+                    <!-- Empty State: No Tree Generated Yet -->
+                    <div x-show="!skillTreeData[skillTreeSubject]" class="flex flex-col items-center justify-center text-center py-16 px-6">
+                        <div class="text-7xl sm:text-9xl mb-6 animate__animated animate__pulse animate__infinite">🌱</div>
+                        <h3 class="text-2xl sm:text-3xl font-kids text-slate-700 mb-3">No Skill Tree Yet!</h3>
+                        <p class="text-slate-400 font-bold max-w-xs mb-8 text-sm sm:text-base">
+                            Let the AI generate a personalised skill path for 
+                            <span class="capitalize" x-text="skillTreeSubject"></span> 
+                            based on <span x-text="childProfile.name || 'your child'"></span>'s level!
+                        </p>
+                        <button @click="generateSkillTree(skillTreeSubject)"
+                            :disabled="isGeneratingSkillTree"
+                            class="relative px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl font-kids text-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all border-b-4 border-orange-700 disabled:opacity-60 disabled:cursor-not-allowed">
+                            <span x-show="!isGeneratingSkillTree">✨ Generate My Skill Tree</span>
+                            <span x-show="isGeneratingSkillTree" class="flex items-center gap-3">
+                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                Growing your tree...
+                            </span>
+                        </button>
+                        <p class="text-[10px] text-slate-300 mt-4 uppercase tracking-widest font-bold">Powered by AI ✨</p>
+                    </div>
+
+                    <!-- Skill Nodes Tree -->
+                    <div x-show="skillTreeData[skillTreeSubject]" class="max-w-lg mx-auto">
+
+                        <!-- Tree Header -->
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 class="font-kids text-2xl text-slate-800" x-text="skillTreeData[skillTreeSubject]?.title || 'Skill Tree'"></h3>
+                                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                    <span x-text="Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length"></span>
+                                    / <span x-text="(skillTreeData[skillTreeSubject]?.nodes || []).length"></span> skills mastered
+                                </p>
+                            </div>
+                            <button @click="if(confirm('Regenerate this skill tree? Your progress for this subject will be reset.')) { delete skillTreeData[skillTreeSubject]; if(skillTreeNodeProgress[skillTreeSubject]) delete skillTreeNodeProgress[skillTreeSubject]; localStorage.setItem('skill_tree_data', JSON.stringify(skillTreeData)); localStorage.setItem('skill_tree_progress', JSON.stringify(skillTreeNodeProgress)); generateSkillTree(skillTreeSubject); }" 
+                                class="bg-gray-100 hover:bg-amber-100 text-gray-400 hover:text-amber-600 p-2.5 rounded-xl transition-all" title="Regenerate Tree">
+                                <i class="fas fa-redo-alt"></i>
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-10 overflow-hidden shadow-inner">
+                            <div class="h-full bg-gradient-to-r from-amber-400 to-green-500 transition-all duration-1000 rounded-full"
+                                :style="'width: ' + (Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length / Math.max(1, (skillTreeData[skillTreeSubject]?.nodes || []).length) * 100) + '%'">
+                            </div>
+                        </div>
+
+                        <!-- Nodes -->
+                        <div class="flex flex-col items-center gap-0">
+                            <template x-for="(node, index) in (skillTreeData[skillTreeSubject]?.nodes || [])" :key="node.id">
+                                <div class="flex flex-col items-center w-full">
+
+                                    <!-- Connector Line (between nodes) -->
+                                    <div x-show="index > 0" class="w-1 h-8 rounded-full transition-colors duration-500"
+                                        :class="getSkillNodeStatus(skillTreeSubject, node.id) !== 'locked' ? 'bg-gradient-to-b from-amber-400 to-green-400' : 'bg-gray-200'">
+                                    </div>
+
+                                    <!-- Node Card -->
+                                    <button 
+                                        @click="startSkillNode(skillTreeSubject, node)"
+                                        :disabled="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'"
+                                        class="w-full max-w-sm rounded-3xl p-4 sm:p-5 border-4 shadow-lg transition-all duration-300 flex items-center gap-4 text-left group relative overflow-hidden"
+                                        :class="{
+                                            'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-400 hover:scale-[1.02] hover:shadow-xl': getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked',
+                                            'bg-gradient-to-br from-green-50 to-emerald-50 border-green-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'completed',
+                                            'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed': getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'
+                                        }">
+
+                                        <!-- Node Icon/Status Badge -->
+                                        <div class="flex-shrink-0 relative">
+                                            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md"
+                                                :class="{
+                                                    'bg-amber-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked',
+                                                    'bg-green-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'completed',
+                                                    'bg-gray-300': getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'
+                                                }">
+                                                <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) !== 'locked'" x-text="node.emoji || '⭐'"></span>
+                                                <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'">🔒</span>
+                                            </div>
+                                            <!-- Completed checkmark -->
+                                            <div x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'" 
+                                                class="absolute -top-1.5 -right-1.5 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white shadow">
+                                                <i class="fas fa-check text-white text-[10px]"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Node Content -->
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2 mb-0.5">
+                                                <span class="text-[10px] font-bold uppercase tracking-widest"
+                                                    :class="{
+                                                        'text-amber-500': getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked',
+                                                        'text-green-600': getSkillNodeStatus(skillTreeSubject, node.id) === 'completed',
+                                                        'text-gray-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'
+                                                    }">
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'">✅ Mastered</span>
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked'">▶ Ready</span>
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'">🔒 Locked</span>
+                                                </span>
+                                            </div>
+                                            <h4 class="font-kids text-base sm:text-xl text-slate-800 leading-tight" x-text="'Skill ' + (node.id + 1) + ': ' + node.title"></h4>
+                                            <p class="text-[11px] sm:text-xs text-slate-500 font-semibold mt-1 leading-snug" x-text="node.description"></p>
+                                        </div>
+
+                                        <!-- Right Arrow for unlocked -->
+                                        <div x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked'" 
+                                            class="flex-shrink-0 w-8 h-8 bg-amber-400 rounded-xl flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                            <i class="fas fa-play text-white text-sm"></i>
+                                        </div>
+
+                                        <!-- Stars for completed -->
+                                        <div x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'" class="flex-shrink-0 text-yellow-400 text-sm">
+                                            ⭐⭐⭐
+                                        </div>
+                                    </button>
+                                </div>
+                            </template>
+
+                            <!-- All Complete Banner -->
+                            <template x-if="skillTreeData[skillTreeSubject] && (skillTreeData[skillTreeSubject]?.nodes || []).length > 0 && Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length === (skillTreeData[skillTreeSubject]?.nodes || []).length">
+                                <div class="mt-10 w-full max-w-sm bg-gradient-to-r from-yellow-400 to-amber-500 rounded-3xl p-6 text-white text-center shadow-2xl animate__animated animate__bounceIn">
+                                    <div class="text-5xl mb-3">🏆</div>
+                                    <h3 class="font-kids text-2xl mb-1">Tree Complete!</h3>
+                                    <p class="text-yellow-100 text-sm font-bold">You mastered all skills in this subject!</p>
+                                </div>
+                            </template>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="p-4 sm:p-6 bg-white border-t-2 border-gray-100 flex items-center justify-between">
+                    <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">AI-Generated • Progress Saved</p>
+                    <button x-show="skillTreeData[skillTreeSubject]" 
+                        @click="generateSkillTree(skillTreeSubject)" 
+                        :disabled="isGeneratingSkillTree"
+                        class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50">
+                        <i class="fas fa-magic mr-1"></i> Regenerate
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[65] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
             <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
                 
@@ -3417,6 +3593,11 @@
 
                     showLearningPath: false,
                     showSkillTree: false,
+                    skillTreeData: JSON.parse(localStorage.getItem('skill_tree_data') || '{}'),
+                    skillTreeNodeProgress: JSON.parse(localStorage.getItem('skill_tree_progress') || '{}'),
+                    skillTreeSubject: null,
+                    isGeneratingSkillTree: false,
+                    skillTreeActiveNode: null,
                     showStickerBook: false,
                     showDailyPath: false, // Toggle for 30-Day Path
                     learningPathDay: 1, // Tracks progress 1-30
@@ -3531,6 +3712,129 @@
                         } finally {
                             this.isAnalyzingScavenger = false;
                         }
+                    },
+
+                    // --- SKILL TREE METHODS ---
+                    toggleSkillTree(show) {
+                        this.showSkillTree = show;
+                        this.toggleScroll(show);
+                        if (show && !this.skillTreeSubject) {
+                            this.skillTreeSubject = 'history'; // default to first subject
+                        }
+                    },
+
+                    async generateSkillTree(subject) {
+                        if (this.isGeneratingSkillTree) return;
+                        this.isGeneratingSkillTree = true;
+
+                        const ageRange = this.childProfile.ageRange || '6-7';
+                        const subjectNames = {
+                            history: 'History & Ancient Civilizations',
+                            robots: 'Mathematics',
+                            space: 'Space Exploration & Astronomy',
+                            science: 'Science & Nature',
+                            nature: 'Nature & Animals'
+                        };
+                        const subjectName = subjectNames[subject] || subject;
+
+                        try {
+                            const systemPrompt = `You are a curriculum designer for children aged ${ageRange}.
+                            Create a skill tree for "${subjectName}" with exactly 6 skill nodes that build on each other progressively.
+                            Each node should be a specific, concrete skill or concept that a child can learn.
+                            Nodes must go from BEGINNER to ADVANCED.
+                            Return ONLY valid JSON in this exact format:
+                            {
+                                "subject": "${subject}",
+                                "title": "${subjectName} Skill Tree",
+                                "nodes": [
+                                    { "id": 0, "title": "Node Title", "description": "1-2 sentence description of what the child learns.", "emoji": "emoji", "content": "A 3-4 sentence teaching paragraph suitable for ${ageRange} year olds.", "quiz": [{"q": "?", "options": ["A","B","C"], "correct": 0}, {"q": "?", "options": ["A","B","C"], "correct": 1}, {"q": "?", "options": ["A","B","C"], "correct": 2}] },
+                                    ... (6 nodes total, ids 0-5)
+                                ]
+                            }`;
+
+                            const response = await fetch('/api/chat', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    messages: [
+                                        { role: 'system', content: systemPrompt },
+                                        { role: 'user', content: `Generate a skill tree for ${subjectName}` }
+                                    ]
+                                })
+                            });
+
+                            const data = await response.json();
+                            let raw = typeof data.response === 'string' ? data.response : JSON.stringify(data.response);
+                            raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+                            const tree = JSON.parse(raw);
+
+                            this.skillTreeData[subject] = tree;
+                            localStorage.setItem('skill_tree_data', JSON.stringify(this.skillTreeData));
+                            this.playPing();
+                            await this.syncData();
+                        } catch (e) {
+                            console.error('Skill tree generation error:', e);
+                            alert('Oops! The skill tree magic is recharging. Please try again!');
+                        } finally {
+                            this.isGeneratingSkillTree = false;
+                        }
+                    },
+
+                    isSkillNodeUnlocked(subject, nodeId) {
+                        if (nodeId === 0) return true;
+                        const progress = this.skillTreeNodeProgress[subject] || {};
+                        return progress[nodeId - 1] === 'completed';
+                    },
+
+                    getSkillNodeStatus(subject, nodeId) {
+                        const progress = this.skillTreeNodeProgress[subject] || {};
+                        if (progress[nodeId] === 'completed') return 'completed';
+                        if (this.isSkillNodeUnlocked(subject, nodeId)) return 'unlocked';
+                        return 'locked';
+                    },
+
+                    async startSkillNode(subject, node) {
+                        if (!this.isSkillNodeUnlocked(subject, node.id)) return;
+                        this.skillTreeActiveNode = { subject, node };
+                        // Populate lesson content and start quiz
+                        this.displayText = node.content;
+                        this.hasAnswered = true;
+                        this.showSkillTree = false;
+                        this.toggleScroll(false);
+                        // After showing content, allow them to take quiz
+                        this.showQuiz = true;
+                        this.quizState = 'active';
+                        this.toggleScroll(true);
+                        this.quizQuestions = node.quiz.map(q => ({
+                            type: 'multiple_choice',
+                            question: q.q,
+                            options: q.options,
+                            correctIndex: q.correct
+                        }));
+                        this.currentQuizIndex = 0;
+                        this.quizCoinsEarned = 0;
+                        this.loadQuizQuestion();
+                    },
+
+                    async completeSkillNode(subject, nodeId) {
+                        if (!this.skillTreeNodeProgress[subject]) {
+                            this.skillTreeNodeProgress[subject] = {};
+                        }
+                        this.skillTreeNodeProgress[subject][nodeId] = 'completed';
+                        localStorage.setItem('skill_tree_progress', JSON.stringify(this.skillTreeNodeProgress));
+
+                        // Award coins and XP
+                        this.coins += 30;
+                        this.xp += 5;
+                        this.playPing();
+                        confetti({
+                            particleCount: 120,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ['#f59e0b', '#10b981', '#3b82f6']
+                        });
+
+                        await this.syncData();
                     },
 
                     awardBadge(badgeId) {
@@ -5622,6 +5926,16 @@
                             this.activeProfileId = initialId;
                         }
 
+                        // Hydrate Skill Tree Data
+                        if (this.learningStats.skill_tree_data) {
+                            this.skillTreeData = this.learningStats.skill_tree_data;
+                            localStorage.setItem('skill_tree_data', JSON.stringify(this.skillTreeData));
+                        }
+                        if (this.learningStats.skill_tree_node_progress) {
+                            this.skillTreeNodeProgress = this.learningStats.skill_tree_node_progress;
+                            localStorage.setItem('skill_tree_progress', JSON.stringify(this.skillTreeNodeProgress));
+                        }
+
                         // Ensure required objects exist
                         if(!this.learningStats.recent_mistakes) this.learningStats.recent_mistakes = [];
                         if(!this.learningStats.emotions) this.learningStats.emotions = { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 };
@@ -6129,6 +6443,18 @@
                              
                              this.updateSeasonalProgress('quizzes', 1);
                              
+                             // --- Skill Tree: mark node complete on quiz finish ---
+                             if (this.skillTreeActiveNode) {
+                                 const { subject, node } = this.skillTreeActiveNode;
+                                 this.completeSkillNode(subject, node.id);
+                                 this.skillTreeActiveNode = null;
+                                 // Re-open skill tree after short delay so user can see next unlock
+                                 setTimeout(() => {
+                                     this.showSkillTree = true;
+                                     this.toggleScroll(true);
+                                 }, 2000);
+                             }
+                             
                              // Exit review mode
                              if (this.isReviewMode) {
                                  this.isReviewMode = false;
@@ -6571,6 +6897,10 @@
                              if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
                          }
  
+                        // Persist Skill Tree Data
+                        safeStats.skill_tree_data = JSON.parse(JSON.stringify(this.skillTreeData));
+                        safeStats.skill_tree_node_progress = JSON.parse(JSON.stringify(this.skillTreeNodeProgress));
+
                         // Persistent Seasonal Data
                         this.learningStats.event_tokens = this.eventTokens;
                         this.learningStats.seasonal_quests = this.seasonalQuests;
