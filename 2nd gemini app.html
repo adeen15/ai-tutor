@@ -3,11 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>AI Tutor - Animated Friends</title>
+        <title>Animated Friends - Structured Learning with AI Support</title>
         
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="AI Tutor">
+        <meta name="apple-mobile-web-app-title" content="Structured Learning">
         <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1998/1998614.png">
         
         <link rel="manifest" href="manifest.json">
@@ -198,7 +198,7 @@
 
         <div id="worksheet-print-area" class="hidden">
             <div style="border: 4px solid black; padding: 20px;">
-                <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">AI Tutor: Learning Worksheet</h1>
+                <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">Animated Friends: Learning Worksheet</h1>
                 <p><strong>Student Name:</strong> <span x-text="childProfile.name"></span> ____________________</p>
                 <p><strong>Date:</strong> ____________________</p>
                 <hr style="margin: 20px 0;">
@@ -227,7 +227,7 @@
 
                     <div class="relative z-10">
                         <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
-                        <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
+                        <h1 class="text-4xl font-kids text-slate-800 mb-2">Animated Friends</h1>
                         <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
 
                         <div x-show="!hasAccount" class="space-y-4 text-left">
@@ -1306,12 +1306,26 @@
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">🌳</div>
                         <div>
-                            <h2 class="text-2xl sm:text-3xl font-kids text-white">Skill Tree</h2>
-                            <p class="text-amber-100 font-bold text-[10px] sm:text-xs uppercase tracking-widest">Unlock your knowledge path!</p>
+                            <h2 class="text-2xl sm:text-3xl font-kids text-white">Learning Map</h2>
+                            <p class="text-amber-100 font-bold text-[10px] sm:text-xs uppercase tracking-widest">Structured Path with AI Support</p>
                         </div>
                     </div>
                     <button @click="toggleSkillTree(false)" class="bg-white/20 hover:bg-white/30 p-3 rounded-2xl text-white transition-all">
                         <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Mode Switcher Tabs -->
+                <div class="flex bg-slate-100 p-1 mx-4 sm:mx-8 mt-6 rounded-2xl sm:rounded-3xl border-2 border-slate-200">
+                    <button @click="curriculumTab = 'ai'" 
+                        class="flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-kids text-sm sm:text-lg transition-all flex items-center justify-center gap-2"
+                        :class="curriculumTab === 'ai' ? 'bg-white text-amber-600 shadow-md' : 'text-slate-400 hover:text-slate-600'">
+                        <span>🌲</span> AI Adventure
+                    </button>
+                    <button @click="curriculumTab = 'core'" 
+                        class="flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-kids text-sm sm:text-lg transition-all flex items-center justify-center gap-2"
+                        :class="curriculumTab === 'core' ? 'bg-white text-indigo-600 shadow-md' : 'text-slate-400 hover:text-slate-600'">
+                        <span>📚</span> Core Lessons
                     </button>
                 </div>
 
@@ -1329,6 +1343,38 @@
 
                 <!-- Main Content -->
                 <div class="flex-1 overflow-y-auto bg-slate-50 px-4 sm:px-8 py-6">
+                    
+                    <!-- Core Curriculum View -->
+                    <div x-show="curriculumTab === 'core'" class="animate__animated animate__fadeIn">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
+                            <template x-for="module in coreCurriculum" :key="module.id">
+                                <div class="bg-white rounded-[2rem] border-4 border-slate-100 overflow-hidden shadow-xl hover:border-indigo-200 transition-all">
+                                    <div class="p-6 bg-slate-50 border-b-4 border-slate-100 flex items-center gap-4">
+                                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm" x-text="module.icon"></div>
+                                        <div>
+                                            <h3 class="font-kids text-xl text-slate-800" x-text="module.title"></h3>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" x-text="module.lessons.length + ' Structured Lessons'"></p>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 space-y-2">
+                                        <template x-for="lesson in module.lessons" :key="lesson.id">
+                                            <button @click="startFixedLesson(lesson)"
+                                                class="w-full flex items-center justify-between p-4 rounded-2xl bg-indigo-50 border-2 border-indigo-100 hover:bg-indigo-100 transition-all group">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-indigo-500 font-black shadow-sm group-hover:scale-110 transition-transform">✓</div>
+                                                    <span class="font-bold text-indigo-900" x-text="lesson.title"></span>
+                                                </div>
+                                                <i class="fas fa-play-circle text-indigo-300 group-hover:text-indigo-500 transition-colors"></i>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- AI Adventure View (Existing Skill Tree) -->
+                    <div x-show="curriculumTab === 'ai'">
 
                     <!-- Empty State: No Tree Generated Yet -->
                     <div x-show="!skillTreeData[skillTreeSubject]" class="flex flex-col items-center justify-center text-center py-16 px-6">
@@ -3648,6 +3694,45 @@
                     highFivesReceived: [],
                     showHighFiveAnimation: false,
                     lastHighFiveFrom: '',
+
+                    curriculumTab: 'core', // Default to structured choice
+                    coreCurriculum: [
+                        {
+                            id: 'math1', title: 'Math 101', icon: '🔢',
+                            lessons: [
+                                { 
+                                    id: 'counting', title: 'Counting to 10', 
+                                    questions: [
+                                        { type: 'multiple_choice', question: "How many apples are there? 🍎🍎🍎", options: ["2", "3", "4"], correctIndex: 1 },
+                                        { type: 'multiple_choice', question: "What number comes after 5?", options: ["4", "6", "7"], correctIndex: 1 },
+                                        { type: 'fill_blank', question: "1, 2, __, 4", options: ["3", "5", "0"], correctIndex: 0 },
+                                        { type: 'true_false', question: "Is 10 more than 5?", answer: true },
+                                        { type: 'multiple_choice', question: "Pick the number Eight!", options: ["8", "7", "9"], correctIndex: 0 }
+                                    ]
+                                },
+                                {
+                                    id: 'addition', title: 'Start Adding!',
+                                    questions: [
+                                        { type: 'multiple_choice', question: "1 + 1 = ?", options: ["1", "2", "3"], correctIndex: 1 },
+                                        { type: 'true_false', question: "2 + 2 is 4?", answer: true },
+                                        { type: 'fill_blank', question: "3 + 1 = __", options: ["2", "4", "5"], correctIndex: 1 }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: 'reading1', title: 'Early Reading', icon: '📖',
+                            lessons: [
+                                {
+                                    id: 'alphabet', title: 'The ABC Song',
+                                    questions: [
+                                        { type: 'multiple_choice', question: "What is the first letter?", options: ["B", "C", "A"], correctIndex: 2 },
+                                        { type: 'true_false', question: "Z is the last letter?", answer: true }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
 
                     // Offline Lessons State
                     showDownloadsModal: false,
@@ -6400,6 +6485,20 @@
                         this.showQuiz = true;
                         this.quizState = 'active';
                         this.loadQuizQuestion();
+                    },
+
+                    startFixedLesson(lesson) {
+                        this.showQuiz = true;
+                        this.quizState = 'active';
+                        this.toggleScroll(true);
+                        
+                        this.isStoryQuiz = false;
+                        this.currentQuizIndex = 0;
+                        this.quizQuestions = JSON.parse(JSON.stringify(lesson.questions));
+                        this.quizCoinsEarned = 0;
+                        
+                        this.loadQuizQuestion();
+                        this.showSkillTree = false;
                     },
 
                     async startQuiz() {
