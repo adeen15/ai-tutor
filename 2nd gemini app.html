@@ -3966,6 +3966,7 @@
                     showHighFiveAnimation: false,
                     lastHighFiveFrom: '',
 
+                    curriculum: JSON.parse(localStorage.getItem('saved_curriculum')) || [],
                     curriculumTab: 'core', // Default to structured choice
                     coreCurriculum: [
                         {
@@ -3990,64 +3991,18 @@
                                     ]
                                 }
                             ]
-                        },
-                        {
-                            id: 'reading1', title: 'Early Reading', icon: '📖',
-                            lessons: [
-                                {
-                                    id: 'alphabet', title: 'The ABC Song',
-                                    questions: [
-                                        { type: 'multiple_choice', question: "What is the first letter?", options: ["B", "C", "A"], correctIndex: 2 },
-                                        { type: 'true_false', question: "Z is the last letter?", answer: true }
-                                    ]
-                                }
-                            ]
                         }
                     ],
-
-                    // Offline Lessons State
-                    showDownloadsModal: false,
-                    downloadedLessons: [],
-                    isOfflineMode: false,
-                    isWifi: window.isWifiAttached || false,
-
-                    // Family Plan State
-                    isFamilyPlan: false,
-
-                    // Onboarding State
-                    showOnboarding: false,
-                    onboardingStep: 0,
-                    hasCompletedOnboarding: false,
-
-                    // Time Tracking State
-                    timeUsedToday: 0,
-                    dailyTimeLimit: 0, // 0 = Unlimited
-                    isTimeUp: false,
-                    lastTimeUpdate: Date.now(),
-                    timeCheckInterval: null,
-
-                    // Spaced Repetition State
-                    reviewQuestions: [],
-                    showReviewBanner: false,
-                    isReviewMode: false,
-
-                    learningStats: {
-                        wordsLearned: 0,
-                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                        child_profile: null,
-                        recent_mistakes: [],
-                        review_queue: [], // Spaced Repetition Queue
-                        mastery_levels: {}, // Spaced Repetition Engine (Word Tracking)
-                        achievements: [],
-                        quizzesCompleted: 0,
-                        blockchain_certificates: []
-                    },
-                    // Adventure Stories Mode State
-                    showStoryModal: false,
-                    isStoryThinking: false,
-                    currentStory: { story: '', questions: [] },
-                    isStoryQuiz: false,
-                    coins: 0, 
+                    shopItems: [
+                        { id: 'badge1', name: 'Magic Star', icon: '⭐', price: 50, seasonal: false },
+                        { id: 'badge2', name: 'Rainbow Cat', icon: '🌈', price: 100, seasonal: false },
+                        { id: 'badge3', name: 'Rocket Ship', icon: '🚀', price: 200, seasonal: false },
+                        { id: 'badge4', name: 'Dino Egg', icon: '🥚', price: 150, seasonal: true },
+                        { id: 'badge5', name: 'Cloud Friend', icon: '☁️', price: 75, seasonal: false },
+                        { id: 'aura1', name: 'Golden Glow', icon: '✨', price: 300, seasonal: false }
+                    ],
+                    inventory: JSON.parse(localStorage.getItem('user_inventory')) || [],
+                    equippedItem: localStorage.getItem('equipped_item'),
                     xp: 0,
                     level: 1,
 
@@ -4707,10 +4662,16 @@
                     isProfileLoading: false,
                     async init() {
                         window.app = this; // Expose for easy console testing
+                        this.generateGateQuestion(); // REQUIRED for Parent Login visibility
                         await this.initI18n();
                         this.initializeCurrentChar();
                         this.loadHearts(); // Load hearts for guests/on load
                         this.startTimeTracking();
+
+                        // Populate curriculum from core if empty
+                        if (this.curriculum.length === 0) {
+                            this.curriculum = [...this.coreCurriculum];
+                        }
                         
                         // Start music if enabled
                         setTimeout(() => this.playBgMusic(), 1000);
@@ -4935,22 +4896,6 @@
                         }
                     },
 
-                    generateGate() {
-                        const num1 = Math.floor(Math.random() * 20) + 10;
-                        const num2 = Math.floor(Math.random() * 15) + 5;
-                        this.gateQuestion = `${num1} + ${num2}`;
-                        this.correctGateResult = num1 + num2;
-                    },
-                    verifyGate() {
-                        if (parseInt(this.gateAnswer) === this.correctGateResult) {
-                            this.gateVerified = true;
-                            this.playPing();
-                        } else {
-                            alert("Incorrect. Please try again or ask an adult for help.");
-                            this.gateAnswer = '';
-                            this.generateGate();
-                        }
-                    },
 
                     startVoiceMode() {
                         this.isVoiceNativeMode = true;
@@ -8550,9 +8495,140 @@
                               this.playPing();
                               this.syncData();
                           }
+                      },
+
+                      // --- RE-ADDED MISSING METHODS ---
+                      toggleScroll(isFixed) {
+                          document.body.classList.toggle('overflow-hidden', isFixed);
+                          if (isFixed) {
+                              this.playPing();
+                          }
+                      },
+
+                      generateGateQuestion() {
+                          const a = Math.floor(Math.random() * 10) + 1;
+                          const b = Math.floor(Math.random() * 10) + 1;
+                          this.correctGateResult = a + b;
+                          this.gateQuestion = `Wait! Parents only! What is ${a} + ${b}?`;
+                          this.gateAnswer = '';
+                          this.gateVerified = false;
+                      },
+
+                      verifyGate() {
+                          if (parseInt(this.gateAnswer) === this.correctGateResult) {
+                              this.gateVerified = true;
+                              this.openParentPortal();
+                          } else {
+                              alert("Oops! That's not quite right. Try again!");
+                              this.generateGateQuestion();
+                          }
+                      },
+
+                      getWeeklyReport() {
+                          // Mock data for the parent dashboard
+                          return {
+                              minutesLearned: Math.floor(this.totalMinutesLearned / 60) || 120,
+                              lessonsCompleted: 15,
+                              topSubject: 'History',
+                              progressData: [10, 25, 45, 30, 55, 40, 60] // Placeholder for chart
+                          };
+                      },
+
+                      async generateStory() {
+                          this.showStoryModal = true;
+                          this.isStoryThinking = true;
+                          this.toggleScroll(true);
+
+                          try {
+                              const prompt = `Write a short, magical 3-sentence story about ${this.t(this.currentChar.subjectKey)} for a child named ${this.childProfile.name || 'Friend'}.`;
+                              const response = await fetch('/api/chat', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ message: prompt })
+                              });
+                              const data = await response.json();
+                              this.currentStory = { 
+                                  story: data.response || "Once upon a time, there was a magical dinosaur who loved history...",
+                                  questions: [] 
+                              };
+                          } catch (e) {
+                              this.currentStory = { story: "Oh no! My magic wand is out of battery. Let's try again later!", questions: [] };
+                          } finally {
+                              this.isStoryThinking = false;
+                          }
+                      },
+
+                      startLesson(path) {
+                          if (path.premium && !this.isPremium) {
+                              this.showPremiumModal = true;
+                              return;
+                          }
+                          this.playPing();
+                          this.showLearningPath = false;
+                          this.toggleScroll(false);
+                          
+                          // Navigate to lesson or start AI session
+                          this.displayText = `Welcome to ${path.name}! Let's start our adventure! 🌟`;
+                          this.speak(this.displayText);
+                      },
+
+                      buyShopItem(item) {
+                          if (this.coins >= item.price) {
+                              this.coins -= item.price;
+                              this.inventory.push({ ...item, date: new Date().toISOString() });
+                              localStorage.setItem('user_inventory', JSON.stringify(this.inventory));
+                              this.playPing();
+                              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                              this.syncData();
+                          } else {
+                              alert("You need more magic coins! Keep learning to earn them! 💰");
+                          }
+                      },
+
+                      loadLeaderboard() {
+                          this.isModalLoading = true;
+                          this.showLeaderboardRewardModal = true;
+                          setTimeout(() => {
+                              this.leaderboardRewardData = [
+                                  { name: this.childProfile.name || 'You', xp: this.xp, rank: 1, avatar: '🦖' },
+                                  { name: 'Alex', xp: 1200, rank: 2, avatar: '🤖' },
+                                  { name: 'Sam', xp: 1100, rank: 3, avatar: '🚀' },
+                                  { name: 'Jordan', xp: 950, rank: 4, avatar: '🦁' }
+                              ];
+                              this.isModalLoading = false;
+                          }, 1000);
+                      },
+
+                      loadDownloadedLessons() {
+                          const saved = localStorage.getItem('downloaded_lessons');
+                          this.downloadedLessons = saved ? JSON.parse(saved) : [];
+                      },
+
+                      t(key) {
+                          const translations = {
+                              'adventure_map': 'Adventure Map',
+                              'magic_auras': 'Magic Shop',
+                              'daily_gift': 'Daily Gift',
+                              'story_about': 'A story about',
+                              'history_subject': 'History',
+                              'robots_subject': 'Robots',
+                              'space_subject': 'Space',
+                              'science_subject': 'Science',
+                              'nature_subject': 'Nature',
+                              'dino_name': 'Professor Dino',
+                              'robot_name': 'Robo-Buddy',
+                              'astronaut_name': 'Star-Gazer',
+                              'subject_history': 'History',
+                              'subject_robots': 'Robots',
+                              'subject_space': 'Space',
+                              'subject_science': 'Science',
+                              'subject_nature': 'Nature'
+                          };
+                          return translations[key] || key;
                       }
                 }
             }
+
 
             // --- Global Bridge for Native App ---
             window.updateNetworkStatus = (isWifi) => {
