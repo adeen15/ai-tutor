@@ -549,6 +549,11 @@
                     <span class="text-xl sm:text-3xl">🌳</span>
                 </button>
 
+                <!-- Mastery Status Button -->
+                <button @click="showMasteryModal = true; toggleScroll(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-500" title="My Mastery">
+                    <span class="text-xl sm:text-3xl">🏆</span>
+                </button>
+
                 <!-- Scavenger Hunt (Row 2 Desktop) -->
                 <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
                     <span class="text-xl sm:text-3xl">🔍</span>
@@ -2832,8 +2837,13 @@
                                             <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
                                         </div>
                                     </div>
-                                    <h3 class="font-bold text-slate-800 text-lg mb-4">Evidence-Based Mastery Levels</h3>
-                                    <div class="space-y-6">
+                                    <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+                                        <i class="fas fa-graduation-cap text-indigo-500"></i> Evidence-Based Mastery
+                                    </h3>
+                                    
+                                    <!-- High Level Subject Progress -->
+                                    <div class="space-y-4 mb-8">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b pb-1">Subject Proficiency</p>
                                         <template x-for="(score, subject) in getTopSubjects()">
                                             <div>
                                                 <div class="flex justify-between items-center mb-1">
@@ -2842,19 +2852,40 @@
                                                           :class="getMasteryBadge(score).bg" 
                                                           x-text="getMasteryBadge(score).label"></span>
                                                 </div>
-                                                <div class="flex justify-between text-[9px] font-bold text-gray-400 mb-1">
-                                                    <span x-text="currentCurriculumRegion + ' Standard Alignment'"></span>
-                                                    <span x-text="score + ' pts'"></span>
-                                                </div>
-                                                <div class="h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden border border-gray-100">
                                                     <div class="h-full rounded-full transition-all duration-1000" 
                                                         :class="getSubjectColor(subject)" 
                                                         :style="'width: ' + Math.min((score / 150) * 100, 100) + '%'"></div>
                                                 </div>
                                             </div>
                                         </template>
-                                        <div x-show="Object.values(learningStats.subjects).reduce((a, b) => a + b, 0) === 0" class="text-center text-gray-400 text-sm py-4">
-                                            No mastery data yet. Start asking questions!
+                                    </div>
+
+                                    <!-- Granular Skill Breakdown -->
+                                    <div class="space-y-4">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b pb-1">Skill-by-Skill Breakdown</p>
+                                        <div class="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scroll">
+                                            <template x-if="getMasterySkills().length === 0">
+                                                <p class="text-xs text-slate-400 italic text-center py-4">No specific skills tracked yet.</p>
+                                            </template>
+                                            <template x-for="skill in getMasterySkills()">
+                                                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                                                    <div class="flex justify-between items-center mb-2">
+                                                        <span class="text-xs font-bold text-slate-700 truncate max-w-[60%]" x-text="skill.name"></span>
+                                                        <div class="flex items-center gap-2">
+                                                            <template x-if="skill.level >= 5">
+                                                                <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                                                            </template>
+                                                            <span class="text-[10px] font-bold text-slate-400" x-text="'Lvl ' + skill.level + '/5'"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="h-1.5 bg-white rounded-full overflow-hidden border border-slate-200">
+                                                        <div class="h-full bg-indigo-500 transition-all duration-700" 
+                                                            :class="skill.level >= 5 ? 'bg-green-500' : 'bg-indigo-500'"
+                                                            :style="'width: ' + (skill.level / 5 * 100) + '%'"></div>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
                                     </div>
                                 </div>
@@ -3103,6 +3134,67 @@
                     <template x-for="i in 5">
                         <div class="w-2 h-2 rounded-full transition-all" :class="onboardingStep === (i - 1) ? 'bg-blue-500 w-8' : 'bg-gray-300'"></div>
                     </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mastery Modal: My Skills -->
+        <div x-show="showMasteryModal" x-cloak class="fixed inset-0 z-[160] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
+            <div class="bg-slate-50 rounded-[2.5rem] max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl animate__animated animate__zoomIn overflow-hidden border-8 border-white">
+                <div class="bg-white p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-indigo-500 to-purple-600">
+                    <h2 class="text-2xl sm:text-3xl font-kids text-white flex items-center gap-3">
+                        <i class="fas fa-award"></i> My Skills Mastery
+                    </h2>
+                    <button @click="showMasteryModal = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors text-2xl">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scroll">
+                    <template x-if="getMasterySkills().length === 0">
+                        <div class="text-center py-20">
+                            <div class="text-6xl mb-4 text-center mx-auto">🌱</div>
+                            <h3 class="text-xl font-kids text-slate-400">Time to grow!</h3>
+                            <p class="text-slate-400">Complete quizzes or reviews to see your skills here.</p>
+                        </div>
+                    </template>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <template x-for="skill in getMasterySkills()">
+                            <div class="bg-white p-5 rounded-3xl shadow-sm border-b-4 border-slate-200 flex flex-col gap-3 transition-all hover:scale-[1.02]">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-kids text-lg text-slate-700 truncate max-w-[70%]" x-text="skill.name"></h4>
+                                    <div class="flex items-center gap-2">
+                                        <template x-if="skill.level >= 5">
+                                            <span class="bg-yellow-400 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm animate-pulse">MASTERED 🏆</span>
+                                        </template>
+                                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest" x-text="'Level ' + skill.level + '/5'"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="relative w-full h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-100">
+                                    <div class="h-full bg-gradient-to-r transition-all duration-1000" 
+                                         :class="skill.level >= 5 ? 'from-yellow-400 to-orange-500' : 'from-indigo-400 to-purple-500'"
+                                         :style="'width: ' + (skill.level / 5 * 100) + '%'">
+                                    </div>
+                                    <!-- Segment Markers -->
+                                    <div class="absolute inset-0 flex justify-between px-0.5 opacity-20 pointer-events-none">
+                                        <div class="w-px h-full bg-slate-400"></div>
+                                        <div class="w-px h-full bg-slate-400"></div>
+                                        <div class="w-px h-full bg-slate-400"></div>
+                                        <div class="w-px h-full bg-slate-400"></div>
+                                        <div class="w-px h-full bg-slate-400"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-white border-t border-slate-100 flex justify-center">
+                    <button @click="showMasteryModal = false; toggleScroll(false)" class="bg-slate-800 text-white px-10 py-3 rounded-2xl font-kids text-lg hover:bg-slate-700 transition-transform active:scale-95">
+                        Awesome!
+                    </button>
                 </div>
             </div>
         </div>
@@ -3498,11 +3590,9 @@
                         child_profile: null,
                         recent_mistakes: [],
                         review_queue: [], // Spaced Repetition Queue
-                        mastery_levels: {}, // Spaced Repetition Engine (Word Tracking)
-                        achievements: [],
-                        quizzesCompleted: 0,
                         blockchain_certificates: []
                     },
+                    showMasteryModal: false,
                     // Adventure Stories Mode State
                     showStoryModal: false,
                     isStoryThinking: false,
@@ -5453,10 +5543,22 @@
                             this.learningStats.quizHistory = profile.quizHistory || [];
                         }
                         
+                        this.learningStats.quizHistory = profile.quizHistory || [];
+                        }
+                        
                         await this.syncData();
                         this.isLoading = false;
                         this.showProfileSwitcher = false;
                         this.playPing();
+                    },
+
+                    getMasterySkills() {
+                        const mastery = this.learningStats.mastery_levels || {};
+                        return Object.keys(mastery).map(key => ({
+                            name: key,
+                            level: mastery[key].level || 0,
+                            next_review: mastery[key].next_review
+                        })).sort((a, b) => b.level - a.level);
                     },
 
                     // This is a placeholder for where `updateLevel` or `completeLesson` might be.
@@ -6528,7 +6630,23 @@
                                 // Already exists, update mastery
                                 if (isCorrect && this.isReviewMode) {
                                     // Only increase level if they get it right during a REVIEW, not regular play
-                                    currentMastery.level += 1;
+                                    if ((currentMastery.level || 0) < 5) {
+                                        currentMastery.level = (currentMastery.level || 0) + 1;
+                                        
+                                        // Level 5 Celebration
+                                        if (currentMastery.level === 5) {
+                                            setTimeout(() => {
+                                                confetti({
+                                                    particleCount: 200,
+                                                    spread: 70,
+                                                    origin: { y: 0.6 },
+                                                    colors: ['#FFD700', '#FFA500', '#FF4500']
+                                                });
+                                                this.playPing();
+                                                alert(`🎉 Amazing! You've MASTERED "${conceptKey}"! 🏆`);
+                                            }, 500);
+                                        }
+                                    }
                                     
                                     // Calculate next interval based on SR multiplier (roughly 2.5x)
                                     let daysToAdd = 1;
@@ -6544,8 +6662,9 @@
                                         this.learningStats.review_queue = this.learningStats.review_queue.filter(q => q.question !== questionObj.question);
                                     }
                                 } else if (!isCorrect) {
-                                    // Got it wrong, reset to Level 1
-                                    currentMastery.level = 1;
+                                    // Got it wrong, regression (decrease level but not below 0 or 1 depending on design)
+                                    // Resetting to 1 as per existing logic, but let's make it more "premium" by just dropping 1 level
+                                    currentMastery.level = Math.max(0, (currentMastery.level || 1) - 1);
                                     currentMastery.next_review = now + (1 * oneDayMs);
                                     
                                     // Make sure it's in the review queue
