@@ -2602,6 +2602,47 @@
 
                     <template x-if="parentVerified">
                         <div class="animate__animated animate__fadeIn">
+                            <!-- Weekly Insights Section (Auto-generated) -->
+                            <div class="bg-indigo-600 rounded-[2.5rem] p-6 sm:p-10 mb-8 border-b-[8px] border-indigo-800 shadow-2xl relative overflow-hidden text-white">
+                                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                                <div class="absolute top-4 right-6 text-white/20 text-4xl font-kids">WEEKLY REPORT</div>
+                                
+                                <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+                                    <div class="flex-1 space-y-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center text-xl">💡</div>
+                                            <h3 class="text-xl sm:text-2xl font-kids">Weekly Learning Snapshot</h3>
+                                        </div>
+                                        
+                                        <div class="flex flex-wrap gap-3">
+                                            <div class="bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
+                                                <span class="text-[10px] font-black uppercase tracking-widest text-indigo-100/60 block mb-1">Top Strength</span>
+                                                <span class="text-lg font-bold" x-text="getWeeklyReport().strongArea">Calculating...</span>
+                                            </div>
+                                            <div class="bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
+                                                <span class="text-[10px] font-black uppercase tracking-widest text-indigo-100/60 block mb-1">Focus For Next Week</span>
+                                                <span class="text-lg font-bold" x-text="getWeeklyReport().growthArea">Calculating...</span>
+                                            </div>
+                                        </div>
+
+                                        <p class="text-indigo-50 font-medium leading-relaxed max-w-lg" x-text="getWeeklyReport().summaryText"></p>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
+                                        <div class="bg-white text-indigo-600 p-4 rounded-3xl text-center shadow-lg transform hover:-translate-y-1 transition-transform">
+                                            <div class="text-xs font-black uppercase tracking-widest opacity-60 mb-1">New Words</div>
+                                            <div class="text-3xl font-kids font-black" x-text="'+' + getWeeklyReport().wordsNew"></div>
+                                            <div class="text-[10px] font-bold mt-1 text-green-500">Growth! 📈</div>
+                                        </div>
+                                        <div class="bg-indigo-400 text-white p-4 rounded-3xl text-center shadow-lg transform hover:-translate-y-1 transition-transform">
+                                            <div class="text-xs font-black uppercase tracking-widest opacity-70 mb-1">Accuracy</div>
+                                            <div class="text-3xl font-kids font-black" x-text="getWeeklyReport().accuracy + '%'"></div>
+                                            <div class="text-[10px] font-bold mt-1" :class="getWeeklyReport().accuracyTrend > 0 ? 'text-green-300' : 'text-indigo-200'" x-text="getWeeklyReport().accuracyTrend > 0 ? 'Improving! ✨' : 'Steady Progress'"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                                     <div class="flex justify-between items-start mb-4">
@@ -5953,9 +5994,12 @@
                              mastery_levels: {} 
                          };
 
-                        // Ensure mastery_levels exists for existing users
-                        if (!this.learningStats.mastery_levels) {
-                            this.learningStats.mastery_levels = {};
+                        // Ensure mastery_levels exists and set Weekly Benchmarks for Parent Reports
+                        if (!this.learningStats.mastery_levels) this.learningStats.mastery_levels = {};
+                        if (!this.learningStats.benchmarksUpdated || (Date.now() - (this.learningStats.benchmarksUpdated || 0) > 7 * 24 * 60 * 60 * 1000)) {
+                            this.learningStats.lastWeekWords = (this.learningStats.wordsLearned || 0);
+                            this.learningStats.lastWeekAccuracy = 70; 
+                            this.learningStats.benchmarksUpdated = Date.now();
                         }
  
                          // --- Hydrate Seasonal State ---
@@ -6735,6 +6779,64 @@
                             }
                         } catch (e) {
                             console.error("Error checking reviews:", e);
+                        }
+                    },
+
+                    getWeeklyReport() {
+                        const stats = this.learningStats;
+                        const defaultReport = { wordsNew: 0, accuracy: 0, accuracyTrend: 0, strongArea: 'None', growthArea: 'None', summaryText: 'Start learning to see insights!' };
+
+                        try {
+                            // 1. Vocabulary Growth
+                            const wordsNew = Math.max(0, (stats.wordsLearned || 0) - (stats.lastWeekWords || 0));
+
+                            // 2. Accuracy Calculation
+                            const qh = stats.quizHistory || [];
+                            const currentCorrect = qh.filter(Boolean).length;
+                            const totalQ = qh.length || 1;
+                            const currentAcc = Math.round((currentCorrect / totalQ) * 100);
+                            const accTrend = currentAcc - (stats.lastWeekAccuracy || 70);
+
+                            // 3. Strongest Subject
+                            const subjects = stats.subjects || {};
+                            const topSubjectKey = Object.keys(subjects).sort((a, b) => subjects[b] - subjects[a])[0] || 'history';
+                            
+                            const subjectMapping = {
+                                'history': 'History & Arts',
+                                'robots': 'Coding & Tech',
+                                'space': 'Space Explorer',
+                                'science': 'Science Master',
+                                'nature': 'Nature Guardian'
+                            };
+                            const strongArea = subjectMapping[topSubjectKey] || 'General';
+
+                            // 4. Growth Opportunity (Lowest Level in Mastery)
+                            const mastery = Object.entries(stats.mastery_levels || {});
+                            let growthArea = "All Areas";
+                            if (mastery.length > 0) {
+                                const lowestItem = mastery.sort((a, b) => a[1].level - b[1].level)[0];
+                                growthArea = lowestItem[0].substring(0, 15) + "...";
+                            } else {
+                                // Fallback to subject with fewest XP
+                                growthArea = subjectMapping[Object.keys(subjects).sort((a, b) => subjects[a] - subjects[b])[0]] || "New Topics";
+                            }
+
+                            // 5. Summary Text
+                            let summaryText = `Your child learned ${wordsNew} new words this week! `;
+                            if (currentAcc >= 80) summaryText += `They have a fantastic accuracy of ${currentAcc}% and are really shining in ${strongArea}.`;
+                            else summaryText += `They are making steady progress and are strongest in ${strongArea}. Keep focusing on ${growthArea}!`;
+
+                            return {
+                                wordsNew,
+                                accuracy: currentAcc,
+                                accuracyTrend: accTrend,
+                                strongArea,
+                                growthArea,
+                                summaryText
+                            };
+                        } catch (e) {
+                            console.error("Report Error:", e);
+                            return defaultReport;
                         }
                     },
 
