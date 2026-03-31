@@ -746,19 +746,36 @@
                 </div>
 
                 <div class="w-full max-w-2xl order-1 lg:order-2">
-                    <!-- Spaced Repetition Banner -->
+                    <!-- Spaced Repetition Banner (Duolingo Style) -->
                     <template x-if="showReviewBanner">
-                        <button @click="startReviewQuiz()" class="w-full bg-gradient-to-r from-orange-400 to-red-500 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-orange-300">
-                            <div class="flex items-center gap-3 sm:gap-4">
-                                <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">🧠</div>
+                        <button @click="startReviewQuiz()" class="w-full bg-gradient-to-br from-indigo-500 via-purple-600 to-fuchsia-500 rounded-[2.5rem] p-5 sm:p-7 mb-8 shadow-2xl shadow-indigo-200 flex items-center justify-between text-white transform hover:scale-[1.02] active:scale-95 transition-all text-left group border-b-[8px] border-indigo-800 relative overflow-hidden">
+                            <!-- Background Decoration -->
+                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all"></div>
+                            
+                            <div class="flex items-center gap-4 sm:gap-6 relative z-10">
+                                <div class="bg-white p-4 rounded-3xl text-3xl sm:text-4xl shadow-xl transform group-hover:rotate-12 transition-transform duration-500 animate__animated animate__bounceIn">
+                                    <span x-show="reviewQuestions.length > 3">🔥</span>
+                                    <span x-show="reviewQuestions.length <= 3">🧠</span>
+                                </div>
                                 <div>
-                                    <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Mastery Challenge</div>
-                                    <div class="text-xl sm:text-3xl font-kids">Let's practice something you found hard yesterday!</div>
-                                    <div class="text-xs font-bold opacity-90 mt-1 text-orange-100">Quick 3-question review to become a master!</div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <div class="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
+                                        <div class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-indigo-100">Ready to Review</div>
+                                    </div>
+                                    <div class="text-2xl sm:text-4xl font-kids drop-shadow-md">
+                                        <span x-text="reviewQuestions.length"></span> Skills to Master!
+                                    </div>
+                                    <div class="text-xs sm:text-sm font-bold mt-1.5 text-indigo-100/80 flex items-center gap-2">
+                                        <i class="fas fa-clock"></i> 1 day • 3 days • 7 days loop active
+                                    </div>
                                 </div>
                             </div>
-                            <div class="bg-white text-orange-600 px-3 py-2 sm:px-6 sm:py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors text-sm sm:text-base">
-                                REVIEW <i class="fas fa-bolt ml-1"></i>
+                            
+                            <div class="relative z-10 flex flex-col items-center gap-2">
+                                <div class="bg-white text-indigo-600 px-6 py-3 sm:px-8 sm:py-4 rounded-2xl font-black font-kids shadow-[0_4px_0_#c7d2fe] hover:shadow-none hover:translate-y-1 transition-all text-sm sm:text-lg flex items-center gap-2">
+                                    GO! <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="text-[9px] font-bold text-indigo-100 uppercase tracking-widest">+50 Bonus Coins</div>
                             </div>
                         </button>
                     </template>
@@ -2836,9 +2853,14 @@
 
                             <!-- Skill Mastery Section -->
                             <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8 relative overflow-hidden">
-                                <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
-                                    <i class="fas fa-trophy text-amber-500"></i> Skill Mastery (Levels 0-5)
-                                </h3>
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="font-bold text-slate-800 text-xl flex items-center gap-2">
+                                        <i class="fas fa-trophy text-amber-500"></i> Skill Mastery (Levels 0-5)
+                                    </h3>
+                                    <div x-show="showReviewBanner" class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate__animated animate__pulse animate__infinite">
+                                        <i class="fas fa-clock mr-1"></i> <span x-text="reviewQuestions.length"></span> Reviews Due
+                                    </div>
+                                </div>
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <template x-if="Object.keys(learningStats.mastery_levels || {}).length === 0">
@@ -6072,14 +6094,16 @@
                         this.updateLevel();
                         this.checkPremiumExpiration();
 
-                        // Spaced Repetition: Check review queue
-                        if (this.learningStats.review_queue && this.learningStats.review_queue.length > 0) {
+                        // Spaced Repetition: Check through the new Mastery System
+                        this.checkReviewsDue();
+
+                        // Fallback: Also check the old review_queue for immediate mistakes
+                        if (!this.showReviewBanner && this.learningStats.review_queue && this.learningStats.review_queue.length > 0) {
                             const now = Date.now();
-                            const oneDay = 24 * 60 * 60 * 1000;
-                            const reviewItems = this.learningStats.review_queue.filter(q => (now - q.timestamp) > oneDay);
+                            const oneHour = 60 * 60 * 1000;
+                            const reviewItems = this.learningStats.review_queue.filter(q => (now - (q.timestamp || 0)) > oneHour);
                             
                             if (reviewItems.length > 0) {
-                                // Take up to 3 random items for the review
                                 this.reviewQuestions = reviewItems.sort(() => 0.5 - Math.random()).slice(0, 3);
                                 this.showReviewBanner = true;
                             }
@@ -6690,6 +6714,28 @@
                         if (level === 3) return 'Rising Star';
                         if (level === 4) return 'Expert';
                         return 'Mastered! 🏆';
+                    },
+
+                    checkReviewsDue() {
+                        try {
+                            if (!this.learningStats.mastery_levels) return;
+                            
+                            const now = Date.now();
+                            const dueItems = Object.entries(this.learningStats.mastery_levels)
+                                .filter(([key, item]) => item.next_review && now >= item.next_review)
+                                .sort((a, b) => a[1].next_review - b[1].next_review);
+                            
+                            if (dueItems.length > 0) {
+                                // Take 5 oldest items for a "Daily Mix"
+                                this.reviewQuestions = dueItems.slice(0, 5).map(([key, item]) => item.question_data);
+                                this.showReviewBanner = true;
+                            } else {
+                                this.showReviewBanner = false;
+                                this.reviewQuestions = [];
+                            }
+                        } catch (e) {
+                            console.error("Error checking reviews:", e);
+                        }
                     },
 
                     checkAnswer(index) {
