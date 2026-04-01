@@ -175,7 +175,7 @@
         </div>
 
         <div id="certificate-area" class="hidden flex-col items-center justify-center p-12 text-center bg-white certificate-border" style="min-height: 100vh;">
-            <div class="text-6xl mb-4">Ž“</div>
+            <div class="text-6xl mb-4">🎓</div>
             <h1 class="text-5xl font-kids text-amber-600 mb-2">Certificate of Achievement</h1>
             <p class="text-2xl text-gray-600 mb-8">This award is proudly presented to</p>
             <h2 class="text-6xl font-kids text-slate-800 mb-8 underline" x-text="childProfile.name"></h2>
@@ -193,7 +193,7 @@
                     <p class="font-bold text-gray-400 uppercase">Date</p>
                 </div>
             </div>
-            <div class="mt-12 text-4xl">â­â­â­â­â­</div>
+            <div class="mt-12 text-4xl">⭐⭐⭐⭐⭐</div>
         </div>
 
         <div id="worksheet-print-area" class="hidden">
@@ -213,7 +213,7 @@
                     <div style="border-bottom: 1px solid black; height: 40px; margin-top: 10px;"></div>
                 </div>
                 <div style="margin-top: 40px; text-align: center;">
-                    <p>Great Job! â­ You earned 100 bonus coins!</p>
+                    <p>Great Job! ⭐ You earned 100 bonus coins!</p>
                 </div>
             </div>
         </div>
@@ -226,7 +226,7 @@
                     <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
 
                     <div class="relative z-10">
-                        <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">Ž“</div>
+                        <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
                         <h1 class="text-4xl font-kids text-slate-800 mb-2">Animated Friends</h1>
                         <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
 
@@ -258,19 +258,19 @@
                                         <button @click="loginForm.ageRange = '4-6'" 
                                                 :class="loginForm.ageRange === '4-6' ? 'bg-blue-500 text-white border-blue-600 shadow-md ring-2 ring-blue-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
                                                 class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">£</span>
+                                            <span class="text-lg">🐣</span>
                                             <span>4-6 (Basic)</span>
                                         </button>
                                         <button @click="loginForm.ageRange = '7-9'" 
                                                 :class="loginForm.ageRange === '7-9' ? 'bg-green-500 text-white border-green-600 shadow-md ring-2 ring-green-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
                                                 class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">Ž’</span>
+                                            <span class="text-lg">🎒</span>
                                             <span>7-9 (Logic)</span>
                                         </button>
                                         <button @click="loginForm.ageRange = '10-13'" 
                                                 :class="loginForm.ageRange === '10-13' ? 'bg-purple-500 text-white border-purple-600 shadow-md ring-2 ring-purple-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
                                                 class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">š€</span>
+                                            <span class="text-lg">🚀</span>
                                             <span>10-13 (Science)</span>
                                         </button>
                                     </div>
@@ -297,7 +297,7 @@
                                 </div>
 
                                 <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
-                                    Start Learning! š€
+                                    Start Learning! 🚀
                                 </button>
                                 
                                 <div class="flex items-center justify-center gap-2 mt-4 opacity-80 border-t pt-4">
@@ -325,7 +325,7 @@
                                         
                                         <div class="mt-6 space-y-3">
                                             <button @click="verifyPin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                                                Unlock App ”“
+                                                Unlock App 🔓
                                             </button>
 
                                             <button @click="handleLogout" class="text-xs text-blue-400 font-bold hover:underline uppercase block mx-auto py-2">
@@ -351,7 +351,7 @@
                                     </div>
 
                                     <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                                        Unlock App ”“
+                                        Unlock App 🔓
                                     </button>
                                     
                                     <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
@@ -376,7 +376,7 @@
             <!-- Top Row: Daily Gift and AR Test Button and Learning Score (Mobile Only) -->
             <div class="flex flex-row gap-2">
                 <button @click="showRewards = true; toggleScroll(true)" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400 flex flex-col items-center justify-center">
-                    <span class="text-2xl sm:text-3xl gift-bounce">Ž</span>
+                    <span class="text-2xl sm:text-3xl gift-bounce">🎁</span>
                     <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
                 </button>
 
@@ -385,7 +385,7 @@
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
                     <span class="text-[7px] sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
                     <span class="font-kids text-xs sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
-                    <div class="absolute -bottom-1 right-1 opacity-20 text-xl sm:text-3xl">š€</div>
+                    <div class="absolute -bottom-1 right-1 opacity-20 text-xl sm:text-3xl">🚀</div>
                 </div>
             </div>
 
@@ -398,9 +398,9 @@
                 </button>
 
                 <!-- Streak Display (Mobile Only - Under Learning Score) -->
-                <button @click="alert('”¥ Your streak shows how many days in a row you have learned! Keep it going!')" 
+                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" 
                         class="flex sm:hidden daily-reward-btn bg-white w-14 h-14 p-2 rounded-2xl shadow-lg border-b-4 border-orange-400 flex-col items-center justify-center animate__animated animate__fadeInLeft">
-                    <span class="text-xl">”¥</span>
+                    <span class="text-xl">🔥</span>
                     <span class="font-kids text-[10px] text-orange-700 leading-none mt-1" x-text="streak"></span>
                 </button>
             </div>
@@ -409,7 +409,7 @@
             <div class="flex flex-row sm:flex-col gap-2">
                 <!-- Coins Display -->
                 <div class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-gray-400 flex flex-col items-center justify-center animate__animated animate__fadeInLeft">
-                    <span class="text-xl sm:text-3xl">’°</span>
+                    <span class="text-xl sm:text-3xl">💰</span>
                     <span class="font-kids text-[10px] sm:text-base text-yellow-700 leading-none mt-1" x-text="coins"></span>
                 </div>
 
@@ -417,7 +417,7 @@
                 <div class="relative group">
                     <button @click="toggleMusic()" class="daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 flex flex-col items-center justify-center animate__animated animate__fadeInLeft"
                             :class="isMusicOn ? 'border-green-400 text-green-600' : 'border-slate-300 text-slate-400'">
-                        <span class="text-xl sm:text-3xl" x-text="isMusicOn ? 'Žµ' : '”‡'"></span>
+                        <span class="text-xl sm:text-3xl" x-text="isMusicOn ? '🎵' : '🔇'"></span>
                         <span class="text-[8px] sm:text-[10px] font-bold uppercase leading-none mt-1" x-text="isMusicOn ? 'ON' : 'OFF'"></span>
                     </button>
                     
@@ -445,8 +445,8 @@
 
 
                 <!-- Streak Display (Desktop Only) -->
-                <button @click="alert('”¥ Your streak shows how many days in a row you have learned! Keep it going!')" class="hidden sm:flex daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex-col items-center justify-center animate__animated animate__fadeInLeft">
-                    <span class="text-xl sm:text-3xl">”¥</span>
+                <button @click="alert('🔥 Your streak shows how many days in a row you have learned! Keep it going!')" class="hidden sm:flex daily-reward-btn bg-white w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-orange-400 flex-col items-center justify-center animate__animated animate__fadeInLeft">
+                    <span class="text-xl sm:text-3xl">🔥</span>
                     <span class="font-kids text-[10px] sm:text-base text-orange-700 leading-none mt-1" x-text="streak"></span>
                 </button>
 
@@ -478,17 +478,17 @@
             <!-- Row 1 -->
             <div class="flex flex-row gap-2 sm:gap-4">
                 <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
-                    <span class="text-xl sm:text-3xl">“•</span>
+                    <span class="text-xl sm:text-3xl">📕</span>
                 </button>
 
                 <button @click="showSkillsModal = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="My Skills">
-                    <span class="text-xl sm:text-3xl">†</span>
+                    <span class="text-xl sm:text-3xl">🏆</span>
                 </button>
 
                 <!-- Profile Switcher: Hidden on mobile here, moved to Row 4 -->
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white hidden sm:flex p-2 border-b-4 border-orange-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <div class="flex flex-col items-center">
-                        <span class="text-xl sm:text-2xl">‘¤</span>
+                        <span class="text-xl sm:text-2xl">👤</span>
                         <span class="hidden sm:block text-[9px] font-bold text-slate-400 mt-1 uppercase" x-text="childProfile.name"></span>
                     </div>
                 </button>
@@ -510,7 +510,7 @@
                 </button>
 
                 <button @click="openParentPortal()" class="bg-white p-2 border-b-4 border-gray-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform">
-                    <span class="text-xl sm:text-2xl">”’</span>
+                    <span class="text-xl sm:text-2xl">🔒</span>
                 </button>
             </div>
 
@@ -518,12 +518,12 @@
             <div class="flex flex-row gap-2 sm:gap-4">
                 <!-- Social Button -->
                 <button @click="socialTab = 'friends'; showSocialModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-pink-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Friends & Social">
-                    <span class="text-xl sm:text-2xl">‘«</span>
+                    <span class="text-xl sm:text-2xl">👫</span>
                 </button>
 
                 <!-- NEW: Trophy Room Button -->
                 <button @click="showTrophyRoom = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-500 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform relative group" title="Verified Trophy Room">
-                    <span class="text-xl sm:text-2xl">’Ž</span>
+                    <span class="text-xl sm:text-2xl">💎</span>
                     <span x-show="learningStats.blockchain_certificates && learningStats.blockchain_certificates.length > 0" class="absolute -top-1 -right-1 flex h-3 w-3">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
@@ -531,16 +531,16 @@
                 </button>
 
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
-                    <span class="text-xl sm:text-3xl">“–</span>
+                    <span class="text-xl sm:text-3xl">📖</span>
                 </button>
 
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
-                    <span class="text-xl sm:text-3xl">†</span>
+                    <span class="text-xl sm:text-3xl">🏆</span>
                 </button>
 
                 <!-- Offline Downloads Button -->
                 <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-indigo-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
-                    <span class="text-xl sm:text-3xl">“¥</span>
+                    <span class="text-xl sm:text-3xl">📥</span>
                 </button>
             </div>
 
@@ -548,22 +548,22 @@
             <div class="flex flex-row gap-2 sm:gap-4">
                 <!-- Adventure Map -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
-                    <span class="text-xl sm:text-3xl">—ºï¸</span>
+                    <span class="text-xl sm:text-3xl">🗺️</span>
                 </button>
 
                 <!-- Skill Tree Button -->
                 <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
-                    <span class="text-xl sm:text-3xl">Œ³</span>
+                    <span class="text-xl sm:text-3xl">🌳</span>
                 </button>
 
                 <!-- Scavenger Hunt (Row 2 Desktop) -->
                 <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
-                    <span class="text-xl sm:text-3xl">”</span>
+                    <span class="text-xl sm:text-3xl">🔍</span>
                 </button>
 
                 <!-- Magic Auras (Row 2 Desktop) -->
                 <button @click="showShop = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
-                    <span class="text-xl sm:text-3xl">ª„</span>
+                    <span class="text-xl sm:text-3xl">🪄</span>
                 </button>
             </div>
 
@@ -572,15 +572,15 @@
 
                 <!-- Scavenger Hunt Button (Mobile Only) -->
                 <button @click="startScavengerHunt()" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
-                    <span class="text-xl">”</span>
+                    <span class="text-xl">🔍</span>
                 </button>
 
                 <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
-                    <span class="text-xl">“•</span>
+                    <span class="text-xl">📕</span>
                 </button>
 
                 <button @click="showSkillsModal = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="My Skills">
-                    <span class="text-xl">†</span>
+                    <span class="text-xl">🏆</span>
                 </button>
 
                 <!-- Dual Quest (Mobile Only - Row 3) -->
@@ -601,17 +601,17 @@
             <div class="flex sm:hidden flex-row gap-2">
                 <!-- Magic Aura (Mobile Only - Row 4) -->
                 <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
-                    <span class="text-xl">ª„</span>
+                    <span class="text-xl">🪄</span>
                 </button>
 
                 <!-- Story Time (Mobile Only - Row 4) -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
-                    <span class="text-xl">“–</span>
+                    <span class="text-xl">📖</span>
                 </button>
 
                 <!-- Profile Switcher (Mobile Only - Row 4) -->
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
-                    <span class="text-xl">‘¤</span>
+                    <span class="text-xl">👤</span>
                 </button>
             </div>
         </div>
@@ -651,7 +651,7 @@
 
             <div class="text-center mb-6 sm:mb-10">
 
-                <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + (currentChar?.accent || '#3b82f6')" x-text="t('teacher_of') + ' ' + (currentChar?.subject || 'Learning') + ' âœ¨'"></p>
+                <p class="font-bold text-base sm:text-lg md:text-xl mt-3 opacity-80" :style="'color: ' + (currentChar?.accent || '#3b82f6')" x-text="t('teacher_of') + ' ' + (currentChar?.subject || 'Learning') + ' ✨'"></p>
                 <div x-show="isVisualMode" class="mt-4 animate__animated animate__fadeInDown">
                     <span class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-blue-200">
                         <i class="fas fa-eye mr-2"></i> Visual learning mode ON
@@ -671,7 +671,7 @@
                                 <template x-for="i in 6">
                                     <div class="sparkle-particle text-yellow-400 text-4xl"
                                         :style="'top: ' + (Math.random() * 100) + '%; left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's'">
-                                        âœ¨
+                                        ✨
                                     </div>
                                 </template>
                             </div>
@@ -689,9 +689,9 @@
 
                         <template x-if="getEquippedItemData().effectType === 'stars'">
                             <div class="orbit-container pointer-events-none">
-                                <div class="star-item text-4xl text-yellow-300" style="top: 0; left: 50%; transform: translateX(-50%);">â­</div>
-                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; left: 10%;">â­</div>
-                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; right: 10%;">â­</div>
+                                <div class="star-item text-4xl text-yellow-300" style="top: 0; left: 50%; transform: translateX(-50%);">⭐</div>
+                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; left: 10%;">⭐</div>
+                                <div class="star-item text-3xl text-yellow-400" style="bottom: 10%; right: 10%;">⭐</div>
                             </div>
                         </template>
 
@@ -700,7 +700,7 @@
                              <template x-for="i in 8">
                                  <div class="dust-particle text-blue-300 text-2xl"
                                          :style="'left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's; animation-duration: ' + (2 + Math.random()) + 's'">
-                                         ª„
+                                         🪄
                                  </div>
                              </template>
                              </div>
@@ -712,7 +712,7 @@
                                  <template x-for="i in 10">
                                      <div class="bloom-particle text-pink-400 text-3xl"
                                          :style="'top: ' + (Math.random() * 100) + '%; left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 3) + 's'">
-                                         Œ¸
+                                         🌸
                                      </div>
                                  </template>
                              </div>
@@ -724,7 +724,7 @@
                                  <template x-for="i in 8">
                                      <div class="flower-trail text-2xl"
                                          :style="'left: ' + (Math.random() * 100) + '%; animation-delay: ' + (Math.random() * 2) + 's'">
-                                         Œ»
+                                         🌻
                                      </div>
                                  </template>
                              </div>
@@ -754,8 +754,8 @@
                             
                             <div class="flex items-center gap-4 sm:gap-6 relative z-10">
                                 <div class="bg-white p-4 rounded-3xl text-3xl sm:text-4xl shadow-xl transform group-hover:rotate-12 transition-transform duration-500 animate__animated animate__bounceIn">
-                                    <span x-show="reviewQuestions.length > 3">”¥</span>
-                                    <span x-show="reviewQuestions.length <= 3">§ </span>
+                                    <span x-show="reviewQuestions.length > 3">🔥</span>
+                                    <span x-show="reviewQuestions.length <= 3">🧠</span>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2 mb-1">
@@ -766,7 +766,7 @@
                                         <span x-text="reviewQuestions.length"></span> Skills to Master!
                                     </div>
                                     <div class="text-xs sm:text-sm font-bold mt-1.5 text-indigo-100/80 flex items-center gap-2">
-                                        <i class="fas fa-clock"></i> 1 day â€¢ 3 days â€¢ 7 days loop active
+                                        <i class="fas fa-clock"></i> 1 day • 3 days • 7 days loop active
                                     </div>
                                 </div>
                             </div>
@@ -783,7 +783,7 @@
                     <!-- 30-Day Path Banner -->
                     <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">“…</div>
+                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">📅</div>
                             <div>
                                 <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Your Learning Plan</div>
                                 <div class="text-xl sm:text-3xl font-kids" x-text="getDailyContent().title">Start Day 1</div>
@@ -806,7 +806,7 @@
                                 @click="startQuiz()"
                                 class="flex items-center gap-2 px-5 py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4 bg-yellow-400 border-yellow-600 text-yellow-900 shadow-md"
                             >
-                                <span class="text-xl">†</span> <span x-text="t('challenge_me')">Challenge Me!</span>
+                                <span class="text-xl">🏆</span> <span x-text="t('challenge_me')">Challenge Me!</span>
                             </button>
 
                             <button 
@@ -872,7 +872,7 @@
                             class="btn-grad text-white rounded-2xl px-3 py-2 sm:px-6 sm:py-2 font-kids text-xs sm:text-lg shadow-lg transform transition hover:scale-105 active:scale-90 mr-1 sm:mr-0 whitespace-nowrap"
                             :style="'background: linear-gradient(to right, ' + (currentChar?.accent || '#3b82f6') + ', #ff512f)'"
                         >
-                            <span x-text="t('ask')">ASK!</span> š€
+                            <span x-text="t('ask')">ASK!</span> 🚀
                         </button>
                         
                         <div class="absolute -bottom-6 left-0 right-0 flex justify-center opacity-70">
@@ -901,7 +901,7 @@
             <div @click.away="!isThinking ? closeVisionModal() : null" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200">
                 <button @click="closeVisionModal()" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
                 
-                <h2 class="text-3xl font-kids text-blue-500 text-center mb-2">Vision Studio “¸</h2>
+                <h2 class="text-3xl font-kids text-blue-500 text-center mb-2">Vision Studio 📸</h2>
                 <p class="text-center text-gray-500 font-bold mb-6">Show me your homework or a drawing!</p>
 
                 <div class="flex flex-col items-center gap-6">
@@ -953,7 +953,7 @@
                             @click="generateToyLesson()"
                             class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
                         >
-                            Magic Lesson! ª„
+                            Magic Lesson! 🪄
                         </button>
 
                         <button 
@@ -961,7 +961,7 @@
                             @click="analyzeImage()"
                             class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
                         >
-                            Explain it to me! š€
+                            Explain it to me! 🚀
                         </button>
 
                         <button x-show="visionPreview && !isCameraActive" @click="visionFile = null; visionPreview = null" class="text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -978,7 +978,7 @@
                 <button @click="showScavengerModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-red-500 transition-colors" x-show="!isAnalyzingScavenger"><i class="fas fa-times-circle"></i></button>
                 
                 <div class="text-center mb-6">
-                    <div class="text-6xl mb-4">•µï¸â€â™‚ï¸</div>
+                    <div class="text-6xl mb-4">🕵️‍♂️</div>
                     <h2 class="text-3xl font-kids text-emerald-600">Scavenger Hunt!</h2>
                     <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Can you find this object?</p>
                 </div>
@@ -991,12 +991,12 @@
                 <!-- Result Display -->
                 <div x-show="scavengerResult" class="mb-8 animate__animated animate__fadeInUp">
                     <div class="p-6 rounded-2xl text-center" :class="scavengerResult === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
-                        <div class="text-4xl mb-2" x-text="scavengerResult === 'success' ? 'Ž‰' : '˜…'"></div>
+                        <div class="text-4xl mb-2" x-text="scavengerResult === 'success' ? '🎉' : '😅'"></div>
                         <p class="font-bold text-lg" x-text="scavengerMessage"></p>
                         <template x-if="scavengerResult === 'success'">
                             <div class="mt-4 flex justify-center gap-2">
-                                <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">’° +50 Coins</span>
-                                <span class="bg-blue-400 text-white px-3 py-1 rounded-full text-xs font-bold">â­ +10 XP</span>
+                                <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">💰 +50 Coins</span>
+                                <span class="bg-blue-400 text-white px-3 py-1 rounded-full text-xs font-bold">⭐ +10 XP</span>
                             </div>
                         </template>
                     </div>
@@ -1017,13 +1017,13 @@
                     
                     <template x-if="scavengerResult === 'success'">
                         <button @click="showScavengerModal = false; toggleScroll(false)" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform">
-                            Awesome! š€
+                            Awesome! 🚀
                         </button>
                     </template>
 
                     <template x-if="scavengerResult === 'fail'">
                         <button @click="openScavengerCamera()" class="w-full py-4 bg-orange-400 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform">
-                            Try Again! “¸
+                            Try Again! 📸
                         </button>
                     </template>
 
@@ -1102,7 +1102,7 @@
                 <!-- Loading State -->
                 <div class="text-center py-10" x-show="quizState === 'loading'">
                     <div class="spinner mx-auto mb-6 border-yellow-400 scale-125"></div>
-                    <h2 class="text-2xl font-kids text-yellow-500" x-text="t('thinking') + '... ¤”'">Thinking up a tricky one... ¤”</h2>
+                    <h2 class="text-2xl font-kids text-yellow-500" x-text="t('thinking') + '... 🤔'">Thinking up a tricky one... 🤔</h2>
                     <p class="text-xs text-slate-400 font-bold mt-2" x-text="'Building a fun challenge for ' + (childProfile.name || 'you') + '!'"></p>
                 </div>
 
@@ -1113,10 +1113,10 @@
                         <!-- Hearts Display -->
                         <div class="flex gap-0.5 items-center" x-show="!isPremium">
                             <template x-for="i in maxHearts" :key="i">
-                                <span class="text-base leading-none transition-all duration-300" :class="i <= hearts ? '' : 'opacity-20'" x-text="i <= hearts ? 'â¤ï¸' : '–¤'"></span>
+                                <span class="text-base leading-none transition-all duration-300" :class="i <= hearts ? '' : 'opacity-20'" x-text="i <= hearts ? '❤️' : '🖤'"></span>
                             </template>
                         </div>
-                        <span x-show="isPremium" class="text-xs font-bold text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">â™¾ï¸ Unlimited</span>
+                        <span x-show="isPremium" class="text-xs font-bold text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">♾️ Unlimited</span>
                         <span class="text-xs font-bold text-yellow-600"><i class="fas fa-coins mr-1"></i><span x-text="quizCoinsEarned + ' Coins'"></span></span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
@@ -1203,14 +1203,14 @@
                 </div>
 
                 <div class="text-center" x-show="quizState === 'correct'">
-                    <div class="text-6xl mb-4 animate__animated animate__tada">Ž‰</div>
+                    <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
                     <h2 class="text-3xl font-kids text-green-500 mb-2" x-text="t('awesome')">Awesome!</h2>
                     <p class="font-bold text-gray-500 mb-6" x-text="'You completed the quiz and earned ' + quizCoinsEarned + ' Coins!'"></p>
-                    <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Collect Reward! ’°</button>
+                    <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Collect Reward! 💰</button>
                 </div>
 
                 <div class="text-center" x-show="quizState === 'wrong'">
-                    <div class="text-6xl mb-4 animate__animated animate__shakeX">˜…</div>
+                    <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
                     <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
                     <p class="font-bold text-gray-500 mb-6" x-text="consecutiveMistakes >= 2 ? 'Let\'s try something easier together!' : 'That wasn\'t quite right. Try again?'"></p>
                     <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
@@ -1226,7 +1226,7 @@
                         <i class="fas fa-times-circle text-2xl"></i>
                     </div>
                     <div class="w-20 h-20 sm:w-24 sm:h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border-4 border-white/30">
-                        <span class="text-5xl sm:text-6xl" x-text="verifyingCert?.icon || '†'"></span>
+                        <span class="text-5xl sm:text-6xl" x-text="verifyingCert?.icon || '🏆'"></span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-kids mb-1">Certificate Verified!</h2>
                     <p class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-80">Official Proof of Learning</p>
@@ -1279,7 +1279,7 @@
         <!-- Out of Hearts Modal -->
         <div x-show="showOutOfHeartsModal" x-cloak class="fixed inset-0 z-[99] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
             <div class="bg-white rounded-[2.5rem] max-w-sm w-full p-8 shadow-2xl text-center animate__animated animate__bounceIn">
-                <div class="text-7xl mb-4">’”</div>
+                <div class="text-7xl mb-4">💔</div>
                 <h2 class="text-3xl font-kids text-red-500 mb-2">Out of Hearts!</h2>
                 <p class="text-gray-500 font-bold mb-4">Take a break and come back later, or get Premium for unlimited hearts!</p>
 
@@ -1288,7 +1288,7 @@
                 </div>
 
                 <button @click="showPremiumModal = true; showOutOfHeartsModal = false" class="w-full py-4 bg-yellow-400 text-yellow-900 rounded-2xl font-kids text-xl shadow-lg mb-3 hover:scale-105 transition-transform border-b-4 border-yellow-600">
-                    ‘‘ Get Unlimited Hearts
+                    👑 Get Unlimited Hearts
                 </button>
                 <button @click="showOutOfHeartsModal = false; showQuiz = false; toggleScroll(false)" class="text-gray-400 font-bold text-sm hover:underline">
                     Come back later
@@ -1340,7 +1340,7 @@
                                 <p class="text-2xl font-bold text-slate-700 mb-6" x-text="q.q"></p>
                                 <div class="flex flex-wrap gap-4 justify-center">
                                     <template x-for="(opt, optIdx) in q.options">
-                                        <button @click="if(optIdx === q.correct) { playPing(); confetti({particleCount: 50, spread: 50}); alert('Correct! Ž‰'); } else { alert('Try again!'); }" 
+                                        <button @click="if(optIdx === q.correct) { playPing(); confetti({particleCount: 50, spread: 50}); alert('Correct! 🎉'); } else { alert('Try again!'); }" 
                                                 class="bg-blue-50 hover:bg-blue-500 hover:text-white text-blue-600 px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-sm border-2 border-blue-100" x-text="opt"></button>
                                     </template>
                                 </div>
@@ -1350,7 +1350,7 @@
 
                     <!-- Type: Report -->
                     <div x-show="getDailyContent().type === 'report'" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
-                        <div class="text-9xl mb-6">†</div>
+                        <div class="text-9xl mb-6">🏆</div>
                         <h3 class="text-5xl font-kids text-yellow-600 mb-4">Super Star!</h3>
                         <p class="text-2xl text-gray-500 font-bold mb-10">You completed Week 1!</p>
                         <div class="flex justify-center gap-4">
@@ -1367,7 +1367,7 @@
 
                     <!-- Generic/Fallback -->
                     <div x-show="!['alphabet','words','quiz','report'].includes(getDailyContent().type)" class="text-center mt-10">
-                        <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center text-8xl shadow-xl mx-auto mb-8 animate-bounce">š€</div>
+                        <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center text-8xl shadow-xl mx-auto mb-8 animate-bounce">🚀</div>
                         <h3 class="text-3xl font-kids text-slate-700 mb-4" x-text="getDailyContent().task"></h3>
                         <button @click="showDailyPath = false; $nextTick(() => $refs.queryInput.focus())" class="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-5 rounded-full font-bold text-xl shadow-xl hover:scale-105 transition-transform hover:shadow-2xl">
                             Go to Chat & Ask! <i class="fas fa-comment-dots ml-2"></i>
@@ -1484,7 +1484,7 @@
                                  <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
                                  <div x-show="!inventory.includes(item.id)" class="font-bold text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block"
                                      :class="item.seasonal ? 'text-pink-600 bg-pink-50' : 'text-yellow-600 bg-yellow-100'">
-                                     <span x-text="item.price"></span> <span x-text="item.seasonal ? currentSeason.tokenIcon : '’°'"></span>
+                                     <span x-text="item.price"></span> <span x-text="item.seasonal ? currentSeason.tokenIcon : '💰'"></span>
                                  </div>
                              </div>
  
@@ -1504,7 +1504,7 @@
                 
                  <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center gap-4">
                      <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
-                         <span class="text-xl sm:text-2xl">’°</span>
+                         <span class="text-xl sm:text-2xl">💰</span>
                          <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="coins + ' coins'"></span>
                      </div>
                      <div class="bg-pink-50 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-pink-200">
@@ -1532,7 +1532,7 @@
                  <div class="text-center mb-8">
                      <div class="text-7xl mb-4" x-text="currentSeason.icon"></div>
                      <h2 class="text-4xl font-kids" :class="currentSeason.color" x-text="currentSeason.name"></h2>
-                     <p class="text-slate-500 font-bold">Seasonal Event is LIVE! ŽŠ</p>
+                     <p class="text-slate-500 font-bold">Seasonal Event is LIVE! 🎊</p>
                  </div>
  
                  <div class="space-y-6 mb-8">
@@ -1568,7 +1568,7 @@
                  </div>
  
                  <button @click="showEventHub = false; showShop = true" class="w-full py-4 bg-gradient-to-r from-pink-500 to-rose-400 text-white rounded-2xl font-kids text-xl shadow-lg shadow-pink-200 hover:scale-105 transition-transform active:scale-95">
-                     Open Seasonal Shop ›ï¸
+                     Open Seasonal Shop 🛍️
                  </button>
              </div>
          </div>
@@ -1587,7 +1587,7 @@
                         <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
                             :class="todayIndex === index ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50 opacity-60'">
                             <span class="text-[10px] font-bold uppercase" x-text="day"></span>
-                            <span class="text-xl" x-text="index === 6 ? 'Ž' : '’°'"></span>
+                            <span class="text-xl" x-text="index === 6 ? '🎁' : '💰'"></span>
                             <span class="text-xs font-bold text-gray-600" x-text="index === 6 ? '100' : '50'"></span>
                         </div>
                     </template>
@@ -1596,7 +1596,7 @@
                     class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
                     :class="(!isPremium || rewardClaimedToday) ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'"
                     :disabled="rewardClaimedToday">
-                    <span x-text="!isPremium ? 'Join Premium to Claim! ‘‘' : (rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' 100 Coins! âœ¨' : t('claim') + ' 50 Coins! âœ¨'))"></span>
+                    <span x-text="!isPremium ? 'Join Premium to Claim! 👑' : (rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' 100 Coins! ✨' : t('claim') + ' 50 Coins! ✨'))"></span>
                 </button>
             </div>
         </div>
@@ -1606,7 +1606,7 @@
             <div class="bg-white rounded-[40px] w-full max-w-md overflow-hidden shadow-2xl border-4 border-white transform animate__animated animate__zoomIn">
                 <div class="p-8">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-kids text-slate-800">Switch Explorer —ºï¸</h2>
+                        <h2 class="text-2xl font-kids text-slate-800">Switch Explorer 🗺️</h2>
                         <button @click="showProfileSwitcher = false" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
                     </div>
                     
@@ -1616,7 +1616,7 @@
                                     class="p-4 rounded-3xl border-4 transition-all flex flex-col items-center gap-2 group"
                                     :class="activeProfileId === profile.id ? 'border-blue-400 bg-blue-50' : 'border-slate-100 hover:border-blue-200 bg-white'">
                                 <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                                    ‘¤
+                                    👤
                                 </div>
                                 <span class="font-kids text-slate-800" x-text="profile.name"></span>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase" x-text="profile.xp + ' XP'"></span>
@@ -1657,7 +1657,7 @@
                                 <template x-for="profile in allProfiles">
                                     <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 flex justify-between items-center group hover:border-blue-200 transition-colors">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">‘¤</div>
+                                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">👤</div>
                                             <div>
                                                 <p class="font-kids text-slate-800 leading-none" x-text="profile.name"></p>
                                                 <p class="text-[10px] font-bold text-slate-400 uppercase mt-1" x-text="profile.ageRange + ' Years'"></p>
@@ -1696,7 +1696,7 @@
                                 </div>
                                 <button @click="if(newChild.name) { addNewProfile(newChild.name, newChild.age); newChild.name = ''; }" 
                                         class="w-full py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 shadow-lg shadow-blue-200 transition-all transform active:scale-95">
-                                    Create Profile š€
+                                    Create Profile 🚀
                                 </button>
                             </div>
                         </div>
@@ -1710,7 +1710,7 @@
             <div @click.away="showLeaderboardRewardModal = false; leaderboardRewardData = null; toggleScroll(false)" class="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden animate__animated animate__tada border-8 border-yellow-400">
                 <div class="h-40 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 relative flex items-center justify-center overflow-hidden">
                     <div class="absolute inset-0 opacity-30 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTEyIDJsMy4wOSA2LjI2TDIyIDkuMjdsLTUgNC44N0wxOC4xOCAyMiAxMiAxOC4yNyA1LjgyIDIybDEuMTgtNy44Ni01LTQuODcgNi45MS0xLjAxTDEyIDJ6IiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjUiLz48L3N2Zz4=')] bg-[length:30px_30px] animate-[slide_10s_linear_infinite]"></div>
-                    <div class="text-7xl drop-shadow-lg transform hover:scale-110 transition-transform cursor-default z-10" x-text="leaderboardRewardData?.rank === 1 ? '†' : (leaderboardRewardData?.rank === 2 ? '¥ˆ' : '¥‰')"></div>
+                    <div class="text-7xl drop-shadow-lg transform hover:scale-110 transition-transform cursor-default z-10" x-text="leaderboardRewardData?.rank === 1 ? '🏆' : (leaderboardRewardData?.rank === 2 ? '🥈' : '🥉')"></div>
                 </div>
                 
                 <div class="p-8 text-center bg-yellow-50">
@@ -1720,7 +1720,7 @@
                     </h3>
                     
                     <div class="bg-white rounded-3xl p-6 border border-yellow-200 shadow-inner mb-8">
-                        <p class="text-slate-500 font-bold mb-4">Your Weekly XP: <span class="text-blue-500 text-xl" x-text="leaderboardRewardData?.xp"></span> âœ¨</p>
+                        <p class="text-slate-500 font-bold mb-4">Your Weekly XP: <span class="text-blue-500 text-xl" x-text="leaderboardRewardData?.xp"></span> ✨</p>
                         <div class="flex items-center justify-center gap-3 animate-pulse">
                             <i class="fas fa-coins text-4xl text-yellow-500 drop-shadow-md"></i>
                             <span class="text-5xl font-kids text-yellow-600 drop-shadow-sm" x-text="'+' + leaderboardRewardData?.reward"></span>
@@ -1738,13 +1738,13 @@
         <!-- Time's Up Lock Screen -->
         <div x-show="isTimeUp && isLoggedIn" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-2 sm:p-4 bg-slate-900 bg-opacity-95 animate__animated animate__fadeIn">
             <div class="bg-white rounded-3xl sm:rounded-[50px] w-full max-w-xl overflow-hidden shadow-2xl border-4 sm:border-8 border-blue-400 transform animate__animated animate__bounceIn text-center p-6 sm:p-12 relative mx-2">
-                <div class="text-6xl sm:text-8xl mb-4 sm:mb-8 animate-bounce">¦‰</div>
+                <div class="text-6xl sm:text-8xl mb-4 sm:mb-8 animate-bounce">🦉</div>
                 <h2 class="text-2xl sm:text-4xl font-kids text-slate-800 mb-2 sm:mb-4">Time for a Break!</h2>
                 <p class="text-lg sm:text-xl text-slate-500 mb-6 sm:mb-8 font-semibold">You've done an amazing job learning today! Time to rest your eyes and play outside.  Œ³</p>
                 
                 <div x-show="!parentVerified" class="space-y-4 sm:space-y-6">
                     <div class="bg-blue-50 p-4 sm:p-6 rounded-3xl border-2 border-blue-100">
-                        <p class="text-blue-800 font-bold mb-3 sm:mb-4 uppercase tracking-widest text-xs sm:text-sm">Parent Secret Unlock ”’</p>
+                        <p class="text-blue-800 font-bold mb-3 sm:mb-4 uppercase tracking-widest text-xs sm:text-sm">Parent Secret Unlock 🔒</p>
                         <div class="flex flex-row justify-center gap-2 sm:gap-3">
                             <input type="password" maxlength="4" x-model="pinInput" placeholder="****" 
                                 class="w-full max-w-[120px] sm:w-48 text-center text-2xl sm:text-3xl font-bold p-3 sm:p-4 bg-white border-4 border-blue-200 rounded-2xl focus:border-blue-500 outline-none transition-all"
@@ -1759,7 +1759,7 @@
 
                 <!-- Bonus Time Options (Shown after PIN verified) -->
                 <div x-show="parentVerified" class="mt-8 pt-8 border-t border-slate-100 animate__animated animate__fadeIn">
-                    <p class="text-2xl font-kids text-green-600 mb-6">Permission Granted! ŒŸ</p>
+                    <p class="text-2xl font-kids text-green-600 mb-6">Permission Granted! 🌟</p>
                     <p class="font-bold text-slate-700 mb-6 uppercase tracking-widest text-sm">How much extra time?</p>
                     <div class="flex justify-center gap-4">
                         <button @click="timeUsedToday = Math.max(0, timeUsedToday - 15); isTimeUp = false; parentVerified = false; pinInput = ''; syncData()" 
@@ -1781,13 +1781,13 @@
                 <button @click="showQuestModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-red-500 transition-colors"><i class="fas fa-times-circle"></i></button>
                 
                 <div class="text-center mb-6">
-                    <div class="text-6xl mb-4">†</div>
+                    <div class="text-6xl mb-4">🏆</div>
                     <h2 class="text-3xl font-kids text-yellow-600">Enter Secret Code!</h2>
                     <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Complete a mission with your parent!</p>
                 </div>
 
                 <div x-show="activeDualQuest.isUnlocked" class="bg-green-50 p-6 rounded-3xl border-2 border-green-200 text-center mb-6">
-                    <p class="text-green-600 font-bold">âœ¨ Quest Active! âœ¨</p>
+                    <p class="text-green-600 font-bold">✨ Quest Active! ✨</p>
                     <p class="text-slate-700 font-bold mt-2" x-text="activeDualQuest.title"></p>
                     <p class="text-xs text-green-500 font-bold uppercase tracking-widest mt-2">Double coins unlocked!</p>
                 </div>
@@ -1805,7 +1805,7 @@
 
                     <button @click="verifyQuestCode()" 
                             class="w-full py-5 bg-yellow-500 text-white rounded-2xl font-kids text-2xl shadow-lg hover:scale-105 transition-transform border-b-4 border-yellow-700 active:border-b-0 active:translate-y-1">
-                        UNLOCK MAGIC! âœ¨
+                        UNLOCK MAGIC! ✨
                     </button>
                     
                     <p class="text-center text-xs text-slate-400 font-bold uppercase">Ask your parent for the code!</p>
@@ -1824,7 +1824,7 @@
                 </button>
                 
                 <div class="text-center mb-8">
-                    <div class="text-6xl mb-4">‘‘</div>
+                    <div class="text-6xl mb-4">👑</div>
                     <h2 class="text-4xl font-kids text-yellow-900 mb-2">Choose Your Power!</h2>
                     <p class="text-yellow-800 font-bold text-lg">Unlock the full magic of learning!</p>
                 </div>
@@ -1832,7 +1832,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
                     <!-- Individual Plan -->
                     <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-white flex flex-col">
-                        <div class="text-4xl mb-2">â­</div>
+                        <div class="text-4xl mb-2">⭐</div>
                         <h3 class="text-2xl font-kids text-slate-800">Individual</h3>
                         <p class="text-gray-400 text-sm font-bold uppercase mb-4">For 1-2 Curious Kids</p>
                         <ul class="text-slate-600 text-sm space-y-3 mb-8 flex-1">
@@ -1871,7 +1871,7 @@
                     </div>
                 </div>
                 
-                <p class="text-center text-[10px] text-yellow-800 uppercase font-bold tracking-widest opacity-60">Cancel Anytime â€¢ Secure Payment</p>
+                <p class="text-center text-[10px] text-yellow-800 uppercase font-bold tracking-widest opacity-60">Cancel Anytime • Secure Payment</p>
             </div>
         </div>
 
@@ -1910,7 +1910,7 @@
                                    @keyup.enter="verifyPin">
                             
                             <button @click="verifyPin" class="px-8 py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-200 transform active:scale-95">
-                                Unlock Dashboard ”“
+                                Unlock Dashboard 🔓
                             </button>
 
                             <p class="text-xs text-slate-300 mt-4">Default PIN is your account PIN or 0000</p>
@@ -1926,7 +1926,7 @@
                                 <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
                                     <div class="flex-1 space-y-4">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center text-xl">’¡</div>
+                                            <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center text-xl">💡</div>
                                             <h3 class="text-xl sm:text-2xl font-kids">Weekly Learning Snapshot</h3>
                                         </div>
                                         
@@ -1948,12 +1948,12 @@
                                         <div class="bg-white text-indigo-600 p-4 rounded-3xl text-center shadow-lg transform hover:-translate-y-1 transition-transform">
                                             <div class="text-xs font-black uppercase tracking-widest opacity-60 mb-1">New Words</div>
                                             <div class="text-3xl font-kids font-black" x-text="'+' + getWeeklyReport().wordsNew"></div>
-                                            <div class="text-[10px] font-bold mt-1 text-green-500">Growth! “ˆ</div>
+                                            <div class="text-[10px] font-bold mt-1 text-green-500">Growth! 📈</div>
                                         </div>
                                         <div class="bg-indigo-400 text-white p-4 rounded-3xl text-center shadow-lg transform hover:-translate-y-1 transition-transform">
                                             <div class="text-xs font-black uppercase tracking-widest opacity-70 mb-1">Accuracy</div>
                                             <div class="text-3xl font-kids font-black" x-text="getWeeklyReport().accuracy + '%'"></div>
-                                            <div class="text-[10px] font-bold mt-1" :class="getWeeklyReport().accuracyTrend > 0 ? 'text-green-300' : 'text-indigo-200'" x-text="getWeeklyReport().accuracyTrend > 0 ? 'Improving! âœ¨' : 'Steady Progress'"></div>
+                                            <div class="text-[10px] font-bold mt-1" :class="getWeeklyReport().accuracyTrend > 0 ? 'text-green-300' : 'text-indigo-200'" x-text="getWeeklyReport().accuracyTrend > 0 ? 'Improving! ✨' : 'Steady Progress'"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1995,7 +1995,7 @@
                                         <div class="mb-4">
                                             <label class="text-xs text-slate-400 font-bold uppercase">Daily Screen Time</label>
                                             <select x-model="dailyTimeLimit" @change="syncData()" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
-                                                <option value="0">Unlimited â™¾ï¸</option>
+                                                <option value="0">Unlimited ♾️</option>
                                                 <option value="15">15 Minutes</option>
                                                 <option value="30">30 Minutes</option>
                                                 <option value="45">45 Minutes</option>
@@ -2043,7 +2043,7 @@
                                         <div>
                                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Regional Curriculum</label>
                                             <select x-model="currentCurriculumRegion" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
-                                                <option value="Global">Global Standards Œ</option>
+                                                <option value="Global">Global Standards 🌍</option>
                                                 <option value="US">US (Common Core) ‡º‡¸</option>
                                                 <option value="UK">UK (National Curriculum) ‡¬‡§</option>
                                             </select>
@@ -2110,7 +2110,7 @@
                                 <!-- Dual Quests Section -->
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
                                      <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-bullseye text-red-500"></i> Shared Missions Ž¯
+                                        <i class="fas fa-bullseye text-red-500"></i> Shared Missions 🎯
                                     </h3>
                                     
                                     <div class="space-y-4">
@@ -2300,22 +2300,22 @@
 
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
                                     <div class="bg-orange-50 p-4 rounded-2xl border-orange-100 border text-center">
-                                        <div class="text-2xl mb-1">â“</div>
+                                        <div class="text-2xl mb-1">❓</div>
                                         <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
                                         <div class="text-[10px] text-orange-400 font-bold uppercase">Questions Asked</div>
                                     </div>
                                     <div class="bg-blue-50 p-4 rounded-2xl border-blue-100 border text-center">
-                                        <div class="text-2xl mb-1">“–</div>
+                                        <div class="text-2xl mb-1">📖</div>
                                         <div class="text-2xl font-bold text-blue-600" x-text="learningStats.wordsLearned"></div>
                                         <div class="text-[10px] text-blue-400 font-bold uppercase">Words Read</div>
                                     </div>
                                     <div class="bg-yellow-50 p-4 rounded-2xl border-yellow-100 border text-center">
-                                        <div class="text-2xl mb-1">’°</div>
+                                        <div class="text-2xl mb-1">💰</div>
                                         <div class="text-2xl font-bold text-yellow-600" x-text="coins"></div>
                                         <div class="text-[10px] text-yellow-400 font-bold uppercase">Coins Earned</div>
                                     </div>
                                     <div class="bg-pink-50 p-4 rounded-2xl border-pink-100 border text-center">
-                                        <div class="text-2xl mb-1">â­</div>
+                                        <div class="text-2xl mb-1">⭐</div>
                                         <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
                                         <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
                                     </div>
@@ -2414,20 +2414,20 @@
 
                 <!-- Step 0: Welcome -->
                 <div x-show="onboardingStep === 0" class="text-center py-4 sm:py-8 animate__animated animate__fadeIn">
-                    <div class="text-5xl sm:text-8xl mb-3 sm:mb-6 animate-bounce">¦–</div>
+                    <div class="text-5xl sm:text-8xl mb-3 sm:mb-6 animate-bounce">🦖</div>
                     <h2 class="text-2xl sm:text-4xl font-kids text-slate-800 mb-2 sm:mb-4">Welcome to AI Tutor!</h2>
                     <p class="text-base sm:text-xl text-gray-600 mb-4 sm:mb-8 leading-relaxed">Hi there! I'm Professor Dino, and I'll be your guide today! Let me show you around this amazing learning adventure!</p>
                     <div class="bg-blue-50 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 mb-4 sm:mb-8">
-                        <p class="text-blue-800 font-bold text-base sm:text-lg">Ž¯ What You'll Learn:</p>
+                        <p class="text-blue-800 font-bold text-base sm:text-lg">🎯 What You'll Learn:</p>
                         <ul class="text-left text-blue-700 mt-3 space-y-1.5 sm:space-y-2 text-sm sm:text-base">
-                            <li>âœ¨ How to ask questions and learn</li>
-                            <li>Ž¨ Meet your fun teacher friends</li>
-                            <li>’° Earn coins and unlock rewards</li>
-                            <li>‘‘ Discover Premium features</li>
+                            <li>✨ How to ask questions and learn</li>
+                            <li>🎨 Meet your fun teacher friends</li>
+                            <li>💰 Earn coins and unlock rewards</li>
+                            <li>👑 Discover Premium features</li>
                         </ul>
                     </div>
                     <button @click="nextOnboardingStep()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-2xl font-kids text-xl sm:text-2xl shadow-lg hover:scale-105 transition-transform">
-                        Let's Start! š€
+                        Let's Start! 🚀
                     </button>
                 </div>
 
@@ -2450,15 +2450,15 @@
                     </div>
                     
                     <div class="bg-yellow-50 p-3 sm:p-4 rounded-xl border-2 border-yellow-200 mb-4 sm:mb-6">
-                        <p class="text-yellow-800 font-bold text-xs sm:text-sm">’¡ Tip: Some teachers are locked! Upgrade to Premium to unlock them all!</p>
+                        <p class="text-yellow-800 font-bold text-xs sm:text-sm">💡 Tip: Some teachers are locked! Upgrade to Premium to unlock them all!</p>
                     </div>
                     
                     <div class="flex gap-3">
                         <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
-                            â† Back
+                            ← Back
                         </button>
                         <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
-                            Next â†’
+                            Next →
                         </button>
                     </div>
                 </div>
@@ -2466,21 +2466,21 @@
                 <!-- Step 2: How to Ask Questions -->
                 <div x-show="onboardingStep === 2" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
-                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">’¬</div>
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">💬</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Ask Me Anything!</h2>
                         <p class="text-sm sm:text-base text-gray-600">You can type or use your voice to ask questions!</p>
                     </div>
                     
                     <div class="bg-white border-4 border-blue-300 rounded-3xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-lg">
                         <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">âŒ¨ï¸</div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">⌨️</div>
                             <div class="flex-1">
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Type Your Question</p>
                                 <p class="text-xs sm:text-sm text-gray-500">Click the keyboard icon and type!</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">Ž¤</div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">🎤</div>
                             <div class="flex-1">
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Use Your Voice</p>
                                 <p class="text-xs sm:text-sm text-gray-500">Click the microphone and speak!</p>
@@ -2489,15 +2489,15 @@
                     </div>
                     
                     <div class="bg-green-50 p-3 sm:p-4 rounded-xl border-2 border-green-200 mb-4 sm:mb-6">
-                        <p class="text-green-800 font-bold text-xs sm:text-sm">›¡ï¸ Safe Learning: All answers are kid-friendly and educational!</p>
+                        <p class="text-green-800 font-bold text-xs sm:text-sm">🛡️ Safe Learning: All answers are kid-friendly and educational!</p>
                     </div>
                     
                     <div class="flex gap-3">
                         <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
-                            â† Back
+                            ← Back
                         </button>
                         <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
-                            Next â†’
+                            Next →
                         </button>
                     </div>
                 </div>
@@ -2505,14 +2505,14 @@
                 <!-- Step 3: Earn Coins & Rewards -->
                 <div x-show="onboardingStep === 3" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
-                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">’°</div>
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">💰</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Earn Coins & Rewards!</h2>
                         <p class="text-sm sm:text-base text-gray-600">Learning is fun AND rewarding!</p>
                     </div>
                     
                     <div class="space-y-2 sm:space-y-4 mb-4 sm:mb-6">
                         <div class="bg-yellow-50 p-3 sm:p-5 rounded-2xl border-2 border-yellow-200 flex items-center gap-3 sm:gap-4">
-                            <div class="text-2xl sm:text-4xl">â“</div>
+                            <div class="text-2xl sm:text-4xl">❓</div>
                             <div class="flex-1">
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Ask Questions</p>
                                 <p class="text-xs sm:text-sm text-gray-600">Earn 10 coins for every question!</p>
@@ -2520,7 +2520,7 @@
                         </div>
                         
                         <div class="bg-green-50 p-3 sm:p-5 rounded-2xl border-2 border-green-200 flex items-center gap-3 sm:gap-4">
-                            <div class="text-2xl sm:text-4xl">†</div>
+                            <div class="text-2xl sm:text-4xl">🏆</div>
                             <div class="flex-1">
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Complete Quizzes</p>
                                 <p class="text-xs sm:text-sm text-gray-600">Earn 20 coins for correct answers!</p>
@@ -2528,7 +2528,7 @@
                         </div>
                         
                         <div class="bg-purple-50 p-3 sm:p-5 rounded-2xl border-2 border-purple-200 flex items-center gap-3 sm:gap-4">
-                            <div class="text-2xl sm:text-4xl">ª„</div>
+                            <div class="text-2xl sm:text-4xl">🪄</div>
                             <div class="flex-1">
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Buy Magic Auras</p>
                                 <p class="text-xs sm:text-sm text-gray-600">Spend coins on cool effects!</p>
@@ -2538,10 +2538,10 @@
                     
                     <div class="flex gap-3">
                         <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
-                            â† Back
+                            ← Back
                         </button>
                         <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
-                            Next â†’
+                            Next →
                         </button>
                     </div>
                 </div>
@@ -2549,7 +2549,7 @@
                 <!-- Step 4: Premium Benefits -->
                 <div x-show="onboardingStep === 4" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
-                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">‘‘</div>
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">👑</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Unlock Premium!</h2>
                         <p class="text-sm sm:text-base text-gray-600">Get the full learning experience for just $4.99/month</p>
                     </div>
@@ -2557,42 +2557,42 @@
                     <div class="bg-gradient-to-br from-yellow-100 to-orange-100 p-4 sm:p-6 rounded-2xl border-4 border-yellow-300 mb-4 sm:mb-6">
                         <div class="space-y-2 sm:space-y-3">
                             <div class="flex items-center gap-2 sm:gap-3">
-                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">âœ“</div>
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Unlock ALL 5 Teachers</p>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-3">
-                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">âœ“</div>
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Unlimited Questions Daily</p>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-3">
-                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">âœ“</div>
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Daily Coin Rewards</p>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-3">
-                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">âœ“</div>
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Personalized Learning Paths</p>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-3">
-                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">âœ“</div>
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Progress Reports for Parents</p>
                             </div>
                             <div class="flex items-center gap-2 sm:gap-3">
-                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">âœ“</div>
+                                <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm flex-shrink-0">✓</div>
                                 <p class="font-bold text-slate-800 text-sm sm:text-base">Official Certificates</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="bg-blue-50 p-3 sm:p-4 rounded-xl border-2 border-blue-200 mb-4 sm:mb-6 text-center">
-                        <p class="text-blue-800 font-bold text-xs sm:text-base">Ž Special Offer: Get 50 bonus coins just for completing this tour!</p>
+                        <p class="text-blue-800 font-bold text-xs sm:text-base">🎁 Special Offer: Get 50 bonus coins just for completing this tour!</p>
                     </div>
                     
                     <div class="flex gap-3">
                         <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
-                            â† Back
+                            ← Back
                         </button>
                         <button @click="nextOnboardingStep()" class="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg text-sm sm:text-base">
-                            Finish Tour! Ž‰
+                            Finish Tour! 🎉
                         </button>
                     </div>
                 </div>
@@ -2614,7 +2614,7 @@
                 </button>
 
                 <div class="text-center mb-6">
-                    <div class="text-5xl mb-2">†</div>
+                    <div class="text-5xl mb-2">🏆</div>
                     <h2 class="text-2xl font-kids text-slate-800">Weekly Leaderboard</h2>
                     <p class="text-sm text-gray-500 font-bold uppercase tracking-wider">Top Learners This Week</p>
                 </div>
@@ -2632,9 +2632,9 @@
                             
                             <!-- Rank -->
                             <div class="w-8 flex-shrink-0 text-center">
-                                <span x-show="index === 0" class="text-2xl">¥‡</span>
-                                <span x-show="index === 1" class="text-2xl">¥ˆ</span>
-                                <span x-show="index === 2" class="text-2xl">¥‰</span>
+                                <span x-show="index === 0" class="text-2xl">🥇</span>
+                                <span x-show="index === 1" class="text-2xl">🥈</span>
+                                <span x-show="index === 2" class="text-2xl">🥉</span>
                                 <span x-show="index > 2" class="text-lg font-kids text-gray-400" x-text="'#' + (index + 1)"></span>
                             </div>
 
@@ -2661,7 +2661,7 @@
                                     <i class="fas fa-user-plus"></i>
                                 </button>
                                 <div x-show="friends.includes(student.user_id)" class="text-green-500 text-xl" title="Friend">
-                                    âœ…
+                                    ✅
                                 </div>
                             </div>
                         </div>
@@ -2678,12 +2678,12 @@
         <div x-show="showHighFiveAnimation" x-transition:enter="animate__animated animate__bounceInDown" x-transition:leave="animate__animated animate__fadeOutUp"
              class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[200] pointer-events-none" x-cloak>
             <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-[2rem] shadow-2xl flex items-center gap-4 border-4 border-white">
-                <span class="text-4xl animate-bounce">âœ‹</span>
+                <span class="text-4xl animate-bounce">✋</span>
                 <div class="text-left">
                     <p class="text-xs font-bold uppercase tracking-widest opacity-80">High-Five!</p>
                     <p class="font-kids text-xl" x-text="lastHighFiveFrom + ' sent you a high-five!'"></p>
                 </div>
-                <span class="text-4xl animate-bounce" style="animation-delay: 0.1s">âœ¨</span>
+                <span class="text-4xl animate-bounce" style="animation-delay: 0.1s">✨</span>
             </div>
         </div>
 
@@ -2701,12 +2701,12 @@
                     <button @click="socialTab = 'friends'" 
                             class="flex-1 py-3 rounded-2xl font-kids text-xl transition-all border-b-4"
                             :class="socialTab === 'friends' ? 'bg-pink-500 text-white border-pink-700 shadow-lg' : 'bg-gray-100 text-gray-400 border-gray-300 hover:bg-gray-200'">
-                        Friends ‘«
+                        Friends 👫
                     </button>
                     <button @click="socialTab = 'add'" 
                             class="flex-1 py-3 rounded-2xl font-kids text-xl transition-all border-b-4"
                             :class="socialTab === 'add' ? 'bg-blue-500 text-white border-blue-700 shadow-lg' : 'bg-gray-100 text-gray-400 border-gray-300 hover:bg-gray-200'">
-                        Add Friends ”
+                        Add Friends 🔍
                     </button>
                 </div>
 
@@ -2714,7 +2714,7 @@
                 <div x-show="socialTab === 'friends'" class="flex-1 overflow-y-auto custom-scroll space-y-4">
                     <template x-if="friends.length === 0">
                         <div class="text-center py-12">
-                            <div class="text-6xl mb-4"> </div>
+                            <div class="text-6xl mb-4">🏠</div>
                             <h3 class="text-xl font-kids text-slate-700">No friends yet!</h3>
                             <p class="text-gray-400 mt-2 text-sm">Add friends from the leaderboard to see their progress.</p>
                             <button @click="socialTab = 'add'" class="mt-6 px-6 py-2 bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest hover:bg-blue-600 transition-colors">Find Friends</button>
@@ -2723,7 +2723,7 @@
                     <template x-for="friendId in friends" :key="friendId">
                         <div class="bg-slate-50 border-2 border-slate-100 p-4 rounded-3xl flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border-2 border-pink-200">‘¤</div>
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border-2 border-pink-200">👤</div>
                                 <div>
                                     <h4 class="font-kids text-lg text-slate-800" x-text="'Friend ' + friendId.substring(0, 5)"></h4>
                                     <p class="text-[10px] font-bold text-gray-400 uppercase">Top Learner</p>
@@ -2731,7 +2731,7 @@
                             </div>
                             <div class="flex gap-2">
                                 <button @click="sendHighFive(friendId)" class="p-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-xl shadow-md transition-transform active:scale-95" title="Give High-Five">
-                                    âœ‹
+                                    ✋
                                 </button>
                                 <button @click="removeFriend(friendId)" class="p-2 bg-gray-200 hover:bg-red-100 hover:text-red-500 text-gray-400 rounded-xl transition-colors">
                                     <i class="fas fa-trash-alt"></i>
@@ -2745,7 +2745,7 @@
                 <div x-show="socialTab === 'add'" class="flex-1 flex flex-col">
                     <div class="bg-blue-50 p-4 rounded-2xl mb-6">
                         <p class="text-xs font-bold text-blue-600 uppercase mb-2">How to add friends</p>
-                        <p class="text-sm text-blue-800">You can add friends by clicking the âž• button next to any kid on the leaderboard!</p>
+                        <p class="text-sm text-blue-800">You can add friends by clicking the ➕ button next to any kid on the leaderboard!</p>
                     </div>
                 </div>
             </div>
@@ -2761,7 +2761,7 @@
                 </button>
 
                 <div class="text-center mb-6">
-                    <div class="text-5xl mb-2">“¥</div>
+                    <div class="text-5xl mb-2">📥</div>
                     <h2 class="text-2xl font-kids text-slate-800">My Offline Lessons</h2>
                     <p class="text-sm text-gray-500 font-bold uppercase tracking-wider">Learn even without Wi-Fi!</p>
                 </div>
@@ -2769,7 +2769,7 @@
                 <div class="flex-1 overflow-y-auto custom-scroll space-y-4">
                     <template x-if="downloadedLessons.length === 0">
                         <div class="text-center py-12">
-                            <div class="text-6xl mb-4">“­</div>
+                            <div class="text-6xl mb-4">📭</div>
                             <h3 class="text-xl font-kids text-slate-700">No downloads yet</h3>
                             <p class="text-gray-400 mt-2 text-sm">Download lessons from the adventure map to learn offline.</p>
                         </div>
@@ -2777,7 +2777,7 @@
                     <template x-for="lesson in downloadedLessons" :key="lesson.id || lesson.title">
                         <div class="bg-indigo-50 border-2 border-indigo-100 p-4 rounded-3xl flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border-2 border-indigo-200">“š</div>
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border-2 border-indigo-200">📚</div>
                                 <div>
                                     <h4 class="font-kids text-lg text-indigo-900" x-text="lesson.title"></h4>
                                     <p class="text-[10px] font-bold text-indigo-400 uppercase">Downloaded & Ready</p>
@@ -2796,7 +2796,7 @@
                 </div>
 
                 <div class="mt-8 p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-100 flex items-start gap-3">
-                    <span class="text-xl">’¡</span>
+                    <span class="text-xl">💡</span>
                     <p class="text-xs text-yellow-800 leading-relaxed font-bold">
                         Tip: You can download any lesson by clicking the "Download" button on the adventure map. These lessons work even in airplane mode!
                     </p>
@@ -2810,7 +2810,7 @@
                 <div class="bg-pink-50 p-6 flex justify-between items-center sticky top-0 z-10 border-b-2 border-pink-100">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center text-3xl text-white shadow-lg shadow-pink-100">
-                            “–
+                            📖
                         </div>
                         <div>
                             <h3 class="font-kids text-2xl text-pink-600">Story Time!</h3>
@@ -2825,7 +2825,7 @@
                     <div x-show="isStoryThinking" class="text-center py-12">
                         <div class="spinner mx-auto mb-6 border-pink-400 scale-150"></div>
                         <h2 class="text-3xl font-kids text-pink-500 mb-2">Writing a magic story...</h2>
-                        <p class="text-gray-400 font-bold animate-pulse">Just for you, <span x-text="childProfile.name"></span>! âœ¨</p>
+                        <p class="text-gray-400 font-bold animate-pulse">Just for you, <span x-text="childProfile.name"></span>! ✨</p>
                     </div>
 
                     <!-- Story Content -->
@@ -2840,7 +2840,7 @@
                             </button>
 
                             <button @click="startStoryQuiz()" class="w-full py-3 sm:py-4 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-2xl font-kids text-xl shadow-md hover:scale-105 transition-transform border-b-4 border-pink-700 active:border-b-2 active:translate-y-1">
-                                Answer Questions! “
+                                Answer Questions! 📝
                             </button>
                         </div>
                     </div>
@@ -2853,7 +2853,7 @@
             <div @click.away="showStickerBook = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-yellow-200">
                 <div class="bg-gradient-to-r from-yellow-400 to-orange-400 p-6 flex justify-between items-center text-white border-b-4 border-yellow-600">
                     <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">“—</span>
+                        <span class="text-4xl text-white drop-shadow-md">📗</span>
                         <h2 class="text-3xl font-kids tracking-wide">My Sticker Book</h2>
                     </div>
                     <button @click="showStickerBook = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
@@ -2864,7 +2864,7 @@
                     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6">
                         <template x-if="inventory.length === 0">
                             <div class="col-span-full py-12 text-center">
-                                <div class="text-7xl mb-4 grayscale opacity-30">âœ¨</div>
+                                <div class="text-7xl mb-4 grayscale opacity-30">✨</div>
                                 <h3 class="text-2xl font-kids text-slate-400">Your sticker book is empty!</h3>
                                 <p class="text-slate-400 mt-2">Earn coins and visit the Magic Shop to collect stickers!</p>
                             </div>
@@ -2885,7 +2885,7 @@
             <div @click.away="showSkillsModal = false; showTrophyRoom = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-blue-200">
                 <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-6 flex justify-between items-center text-white border-b-4 border-blue-700">
                     <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">†</span>
+                        <span class="text-4xl text-white drop-shadow-md">🏆</span>
                         <h2 class="text-3xl font-kids tracking-wide">My Achievements</h2>
                     </div>
                     <button @click="showSkillsModal = false; showTrophyRoom = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
@@ -2956,7 +2956,7 @@
             <div @click.away="showLearningPath = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-green-200">
                 <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-6 flex justify-between items-center text-white border-b-4 border-green-700">
                     <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">—ºï¸</span>
+                        <span class="text-4xl text-white drop-shadow-md">🗺️</span>
                         <h2 class="text-3xl font-kids tracking-wide">Adventure Map</h2>
                     </div>
                     <button @click="showLearningPath = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
@@ -2988,7 +2988,7 @@
                                         <button @click="startLesson(path)" 
                                                 class="px-6 py-2 rounded-xl text-white font-bold uppercase text-xs tracking-widest shadow-md transition-transform active:scale-95"
                                                 :class="path.premium && !isPremium ? 'bg-orange-500' : 'bg-green-500'"
-                                                x-text="path.premium && !isPremium ? 'Unlock with Premium âœ¨' : (pathProgress[path.id] ? 'Continue Adventure' : 'Start Journey')">
+                                                x-text="path.premium && !isPremium ? 'Unlock with Premium ✨' : (pathProgress[path.id] ? 'Continue Adventure' : 'Start Journey')">
                                         </button>
                                     </div>
                                 </div>
@@ -3000,7 +3000,7 @@
                         <button @click="generateNewPath()" 
                                 class="w-full py-6 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl text-white font-kids text-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95 relative overflow-hidden"
                                 :disabled="isGeneratingPath">
-                            <span x-show="!isGeneratingPath">Generate New AI Path âœ¨</span>
+                            <span x-show="!isGeneratingPath">Generate New AI Path ✨</span>
                             <span x-show="isGeneratingPath" class="flex items-center justify-center gap-3">
                                 <i class="fas fa-magic animate-spin"></i> Waving Wand...
                             </span>
@@ -3015,12 +3015,12 @@
             <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-purple-200">
                 <div class="bg-gradient-to-r from-purple-600 to-pink-500 p-6 flex justify-between items-center text-white border-b-4 border-purple-800">
                     <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">›ï¸</span>
+                        <span class="text-4xl text-white drop-shadow-md">🛍️</span>
                         <h2 class="text-3xl font-kids tracking-wide text-white">Magic Shop</h2>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="bg-white/20 px-4 py-2 rounded-2xl flex items-center gap-2 border-2 border-white/30">
-                            <span class="text-xl">’°</span>
+                            <span class="text-xl">💰</span>
                             <span class="font-kids text-xl" x-text="coins"></span>
                         </div>
                         <button @click="showShop = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
@@ -3043,7 +3043,7 @@
                                         <button @click="buyShopItem(item)" 
                                                 class="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-kids text-lg border-b-4 border-purple-700 active:border-b-0 active:translate-y-1 transition-all"
                                                 :class="coins < item.price ? 'opacity-50 cursor-not-allowed' : ''">
-                                            <span x-text="item.price"></span> ’°
+                                            <span x-text="item.price"></span> 💰
                                         </button>
                                     </template>
                                 </div>
@@ -3095,7 +3095,7 @@
             <div @click.away="showSkillTree = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-indigo-200">
                 <div class="bg-gradient-to-r from-indigo-500 to-indigo-700 p-6 flex justify-between items-center text-white border-b-4 border-indigo-800">
                     <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">Œ³</span>
+                        <span class="text-4xl text-white drop-shadow-md">🌳</span>
                         <h2 class="text-3xl font-kids tracking-wide text-white">Skill Tree</h2>
                     </div>
                     <button @click="showSkillTree = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
@@ -3105,11 +3105,11 @@
                 <div class="p-8 overflow-y-auto flex-1 custom-scroll bg-indigo-50/20">
                     <template x-if="!skillTreeData[skillTreeSubject]">
                         <div class="text-center py-20">
-                            <div class="text-8xl mb-6 opacity-30">Œ³</div>
+                            <div class="text-8xl mb-6 opacity-30">🌳</div>
                             <h3 class="text-2xl font-kids text-slate-600">Grow Your Skills</h3>
                             <p class="text-slate-400 mt-2 mb-8">Click below to start your learning tree!</p>
                             <button @click="generateSkillTree(skillTreeSubject)" class="px-10 py-4 bg-indigo-500 text-white rounded-3xl font-kids text-2xl shadow-xl hover:scale-105 active:scale-95 transition-all">
-                                Start Growing âœ¨
+                                Start Growing ✨
                             </button>
                         </div>
                     </template>
@@ -3161,13 +3161,13 @@
                     userQuery: '',
                     isKeyboardMode: false,
                     isVoiceNativeMode: false, 
-                    displayText: "Hi friend! ŒŸ I'm Professor Dino. I teach History! What do you want to know about the past?",
+                    displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                     isThinking: false,
                     isSpeaking: false,
                     isListening: false,
                     hasAnswered: true,
-                    currentMoodIcon: '¦–',
-                    suggestions: ["Who built the pyramids? œï¸", "What is a mummy? ¤•", "Who was the first king? ‘‘"],
+                    currentMoodIcon: '🦖',
+                    suggestions: ["Who built the pyramids? 🏜️", "What is a mummy? 🤕", "Who was the first king? 👑"],
                     voiceSentiment: 'neutral', // Real-time sentiment detected from voice
                     isPremium: false,
                     premiumExpiry: null,
@@ -3266,7 +3266,7 @@
                     curriculumTab: 'core', // Default to structured choice
                     coreCurriculum: [
                         {
-                            id: 'math1', title: 'Math 101', icon: '”¢',
+                            id: 'math1', title: 'Math 101', icon: '🔢',
                             lessons: [
                                 { 
                                     id: 'counting', title: 'Counting to 10', 
@@ -3290,12 +3290,12 @@
                         }
                     ],
                     shopItems: [
-                        { id: 'badge1', name: 'Magic Star', icon: 'â­', price: 50, seasonal: false },
-                        { id: 'badge2', name: 'Rainbow Cat', icon: 'Œˆ', price: 100, seasonal: false },
-                        { id: 'badge3', name: 'Rocket Ship', icon: 'š€', price: 200, seasonal: false },
-                        { id: 'badge4', name: 'Dino Egg', icon: '¥š', price: 150, seasonal: true },
-                        { id: 'badge5', name: 'Cloud Friend', icon: 'â˜ï¸', price: 75, seasonal: false },
-                        { id: 'aura1', name: 'Golden Glow', icon: 'âœ¨', price: 300, seasonal: false }
+                        { id: 'badge1', name: 'Magic Star', icon: '⭐', price: 50, seasonal: false },
+                        { id: 'badge2', name: 'Rainbow Cat', icon: '🌈', price: 100, seasonal: false },
+                        { id: 'badge3', name: 'Rocket Ship', icon: '🚀', price: 200, seasonal: false },
+                        { id: 'badge4', name: 'Dino Egg', icon: '🥚', price: 150, seasonal: true },
+                        { id: 'badge5', name: 'Cloud Friend', icon: '☁️', price: 75, seasonal: false },
+                        { id: 'aura1', name: 'Golden Glow', icon: '✨', price: 300, seasonal: false }
                     ],
                     inventory: JSON.parse(localStorage.getItem('user_inventory')) || [],
                     equippedItem: localStorage.getItem('equipped_item'),
@@ -3308,11 +3308,11 @@
                      eventTokens: parseInt(localStorage.getItem('event_tokens')) || 0,
                      currentSeason: {
                          name: 'Spring Sprouts',
-                         icon: 'Œ¸',
+                         icon: '🌸',
                          color: 'text-pink-500',
                          bgColor: 'bg-pink-50',
                          borderColor: 'border-pink-200',
-                         tokenIcon: 'Œ¸'
+                         tokenIcon: '🌸'
                      },
                      seasonalQuests: JSON.parse(localStorage.getItem('seasonal_quests')) || [
                          { id: 'ask_3', title: 'Curious Explorer', desc: 'Ask 3 questions to your teacher', target: 3, progress: 0, reward: 50, type: 'questions' },
@@ -3329,11 +3329,11 @@
                     isMusicOn: localStorage.getItem('is_music_on') === 'true',
                     bgMusic: null,
                     musicPlaylist: [
-                        { name: '¦– Happy Dino', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-                        { name: 'âœ¨ Magic Forest', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-                        { name: 'â˜€ï¸ Sunny Day', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-                        { name: 'Ž’ Learning Fun', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' },
-                        { name: '­ Playtime Mix', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
+                        { name: '🦖 Happy Dino', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+                        { name: '✨ Magic Forest', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+                        { name: '☀️ Sunny Day', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+                        { name: '🎒 Learning Fun', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' },
+                        { name: '🍭 Playtime Mix', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
                     ],
                     currentMusicIndex: Math.floor(Math.random() * 5), 
                     quizQuestions: [],
@@ -3400,12 +3400,12 @@
                     verifyingCert: null,
 
                     availableBadges: [
-                        { id: 'first_question', name: 'Curious Explorer', icon: '”', desc: 'Asked your first question!' },
-                        { id: 'quiz_wizard', name: 'Quiz Wizard', icon: 'ª„', desc: 'Completed your first lesson quiz!' },
-                        { id: 'word_smith', name: 'Word Smith', icon: '“š', desc: 'Learned at least 10 words!' },
-                        { id: 'coin_collector', name: 'Coin Collector', icon: '’°', desc: 'Saved up 200 coins!' },
-                        { id: 'path_finder', name: 'Path Finder', icon: '—ºï¸', desc: 'Completed a full adventure path!' },
-                        { id: 'super_star', name: 'Super Star', icon: 'â­', desc: 'Reached Level 5!' }
+                        { id: 'first_question', name: 'Curious Explorer', icon: '🔍', desc: 'Asked your first question!' },
+                        { id: 'quiz_wizard', name: 'Quiz Wizard', icon: '🪄', desc: 'Completed your first lesson quiz!' },
+                        { id: 'word_smith', name: 'Word Smith', icon: '📚', desc: 'Learned at least 10 words!' },
+                        { id: 'coin_collector', name: 'Coin Collector', icon: '💰', desc: 'Saved up 200 coins!' },
+                        { id: 'path_finder', name: 'Path Finder', icon: '🗺️', desc: 'Completed a full adventure path!' },
+                        { id: 'super_star', name: 'Super Star', icon: '⭐', desc: 'Reached Level 5!' }
                     ],
 
                     checkAchievements() {
@@ -3444,7 +3444,7 @@
                                 type: 'OPEN_CAMERA'
                             }));
                         } else {
-                            alert("Camera is only available in the mobile app! “±");
+                            alert("Camera is only available in the mobile app! 📱");
                         }
                     },
 
@@ -3666,7 +3666,7 @@
 
                         // Toast-like notification logic could go here if we had one, 
                         // for now we'll just let the sticker book reflect it.
-                        console.log("† Achievement Unlocked: " + badge.name);
+                        console.log("🏆 Achievement Unlocked: " + badge.name);
                         this.syncData();
                     },
 
@@ -3683,7 +3683,7 @@
 
                     async generateBlockchainCertificate(path) {
                         if (!path) {
-                            console.error("âŒ Cannot generate certificate: Path is undefined. Use 'math', 'english', or 'science'.");
+                            console.error("❌ Cannot generate certificate: Path is undefined. Use 'math', 'english', or 'science'.");
                             alert("Oops! That path doesn't exist. Try 'math' or 'english'!");
                             return;
                         }
@@ -3709,11 +3709,11 @@
                             studentName: studentName,
                             date: new Date(timestamp).toLocaleDateString(),
                             timestamp: timestamp,
-                            icon: path.icon || '†'
+                            icon: path.icon || '🏆'
                         };
 
                         this.learningStats.blockchain_certificates.push(certificate);
-                        console.log("âœ¨ Blockchain Certificate Generated: ", certificate.id);
+                        console.log("✨ Blockchain Certificate Generated: ", certificate.id);
                         
                         // Notify user of Social Trophy
                         this.playPing();
@@ -3729,14 +3729,14 @@
 
                     dailyPathData: {
                         day1: { title: "Day 1: Magic Alphabets", type: "alphabet", content: "Let's learn our ABCs! A is for Apple, B is for Ball.", letters: ['A','B','C','D','E'] },
-                        day2: { title: "Day 2: Wonderful Words", type: "words", content: "Let's build some words!", words: [{word: "CAT", icon: "±"}, {word: "DOG", icon: "¶"}, {word: "SUN", icon: "â˜€ï¸"}] },
+                        day2: { title: "Day 2: Wonderful Words", type: "words", content: "Let's build some words!", words: [{word: "CAT", icon: "🐱"}, {word: "DOG", icon: "🐶"}, {word: "SUN", icon: "☀️"}] },
                         day3: { title: "Day 3: Pop Quiz!", type: "quiz", content: "Show me what you learned!", quiz: [{q: "What starts with A?", options: ["Apple", "Ball", "Cat"], correct: 0}, {q: "Which is an animal?", options: ["Car", "Dog", "Table"], correct: 1}] },
                         day7: { title: "Day 7: Weekly Report", type: "report", content: "You did great this week!" }
                     },
 
                     curriculum: [
                         { 
-                            id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '§®', color: 'bg-blue-500', premium: false,
+                            id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', premium: false,
                             levels: [
                                 { id: 1, title: 'Counting to 100', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] },
                                 { id: 2, title: 'Simple Adding', content: 'Adding means putting things together. 2 apples plus 2 apples makes 4!', quiz: [{q: '2 + 2 = ?', options:['3', '4', '5'], correct:1}, {q: '5 + 0 = ?', options:['5', '0', '50'], correct:0}, {q: '1 + 2 = ?', options:['2', '3', '4'], correct:1}] },
@@ -3746,7 +3746,7 @@
                             ]
                         },
                         { 
-                            id: 'english', name: 'English ABCs', grade: 'Basics', icon: '“', color: 'bg-green-500', premium: true,
+                            id: 'english', name: 'English ABCs', grade: 'Basics', icon: '📝', color: 'bg-green-500', premium: true,
                             levels: [
                                 { id: 1, title: 'The Vowels', content: 'Vowels are special letters: A, E, I, O, U. Every word needs one!', quiz: [{q: 'Which is a vowel?', options:['B', 'E', 'Z'], correct:1}, {q: 'Is "K" a vowel?', options:['Yes', 'No', 'Maybe'], correct:1}, {q: 'How many vowels?', options:['3', '5', '10'], correct:1}] },
                                 { id: 2, title: 'Rhyme Time', content: 'Rhyming words sound the same at the end. Cat, Hat, Bat!', quiz: [{q: 'Rhymes with Dog?', options:['Cat', 'Log', 'Pig'], correct:1}, {q: 'Rhymes with Sun?', options:['Moon', 'Fun', 'Hot'], correct:1}, {q: 'Do Tree and Bee rhyme?', options:['Yes', 'No', 'Maybe'], correct:0}] },
@@ -3754,7 +3754,7 @@
                             ]
                         },
                         { 
-                            id: 'science', name: 'Science Fun', grade: 'Fun Facts', icon: '”¬', color: 'bg-purple-500', premium: true,
+                            id: 'science', name: 'Science Fun', grade: 'Fun Facts', icon: '🔬', color: 'bg-purple-500', premium: true,
                             levels: [
                                 { id: 1, title: 'Solar System', content: 'We live on Earth! The Sun is a giant hot star in the middle.', quiz: [{q: 'We live on...', options:['Mars', 'Earth', 'Sun'], correct:1}, {q: 'Is the sun hot?', options:['Yes', 'No', 'Cold'], correct:0}, {q: 'The moon is made of cheese?', options:['Yes', 'No', 'Maybe'], correct:1}] },
                                 { id: 2, title: 'Dinosaurs', content: 'Dinosaurs lived long ago. The T-Rex was very big and scary!', quiz: [{q: 'T-Rex was...', options:['Small', 'Big', 'Tiny'], correct:1}, {q: 'Are dinos alive today?', options:['Yes', 'No', 'Birds are!'], correct:2}, {q: 'Did they eat pizza?', options:['Yes', 'No', 'Always'], correct:1}] },
@@ -3764,20 +3764,20 @@
                     ],
 
                     shopItems: [
-                        { id: 'sparkles', name: 'Magic Sparkles', icon: 'âœ¨', price: 100, effectType: 'sparkles' },
-                        { id: 'glow', name: 'Super Glow', icon: 'ŒŸ', price: 250, effectType: 'glow' },
-                        { id: 'fireflies', name: 'Fireflies', icon: '', price: 350, effectType: 'fireflies' },
-                        { id: 'stars', name: 'Star Orbit', icon: 'â­', price: 450, effectType: 'stars' },
-                        { id: 'dust', name: 'Magic Dust', icon: 'ª„', price: 500, effectType: 'dust' },
-                        { id: 'spring_aura', name: 'Spring Aura', icon: 'Œ¸', price: 200, effectType: 'bloom', seasonal: true },
-                        { id: 'flower_trail', name: 'Flower Trail', icon: 'Œ»', price: 350, effectType: 'flowers', seasonal: true }
+                        { id: 'sparkles', name: 'Magic Sparkles', icon: '✨', price: 100, effectType: 'sparkles' },
+                        { id: 'glow', name: 'Super Glow', icon: '🌟', price: 250, effectType: 'glow' },
+                        { id: 'fireflies', name: 'Fireflies', icon: '🐝', price: 350, effectType: 'fireflies' },
+                        { id: 'stars', name: 'Star Orbit', icon: '⭐', price: 450, effectType: 'stars' },
+                        { id: 'dust', name: 'Magic Dust', icon: '🪄', price: 500, effectType: 'dust' },
+                        { id: 'spring_aura', name: 'Spring Aura', icon: '🌸', price: 200, effectType: 'bloom', seasonal: true },
+                        { id: 'flower_trail', name: 'Flower Trail', icon: '🌻', price: 350, effectType: 'flowers', seasonal: true }
                     ],
                     characters: [
                         { 
                             nameKey: "char_dino_name", 
                             subjectKey: "history",
                             suggestionsKeys: ["suggest_pyramids", "suggest_mummy", "suggest_king"],
-                            icon: "¦–", mood_happy: "¦–", mood_think: "¦•", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", personalityKey: "char_dino_personality", introKey: "char_dino_intro", premium: false,
+                            icon: "🦖", mood_happy: "🦖", mood_think: "🦕", bg: "radial-gradient(circle, #fff9c4 0%, #ffecb3 100%)", accent: "#f59e0b", personalityKey: "char_dino_personality", introKey: "char_dino_intro", premium: false,
                             voiceId: "9740af7a-9674-4be1-967b-cf6daba06596",
                             preferredVoice: "Microsoft Steffan Online (Natural)"
                         },
@@ -3785,7 +3785,7 @@
                             nameKey: "char_milo_name", 
                             subjectKey: "robots",
                             suggestionsKeys: ["suggest_2plus2", "suggest_count10", "suggest_circle"],
-                            icon: "µ", mood_happy: "µ", mood_think: "¤”", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", personalityKey: "char_milo_personality", introKey: "char_milo_intro", premium: true,
+                            icon: "🐵", mood_happy: "🐵", mood_think: "🤔", bg: "radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%)", accent: "#0369a1", personalityKey: "char_milo_personality", introKey: "char_milo_intro", premium: true,
                             voiceId: "79005bb6-7ae3-4768-b2a0-efc774a3c7a9",
                             preferredVoice: "Microsoft Christopher Online (Natural)"
                         },
@@ -3793,7 +3793,7 @@
                             nameKey: "char_starry_name", 
                             subjectKey: "space",
                             suggestionsKeys: ["suggest_sun_hot", "suggest_black_hole", "suggest_planets"],
-                            icon: "‘¾", mood_happy: "›¸", mood_think: "‘ï¸", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", personalityKey: "char_starry_personality", introKey: "char_starry_intro", premium: true,
+                            icon: "👾", mood_happy: "🛸", mood_think: "👁️", bg: "radial-gradient(circle, #f3e8ff 0%, #e9d5ff 100%)", accent: "#9333ea", personalityKey: "char_starry_personality", introKey: "char_starry_intro", premium: true,
                             voiceId: "0062153d-dd11-4330-a6b1-87cd29187ed7",
                             preferredVoice: "Microsoft Jenny Online (Natural)"
                         },
@@ -3801,7 +3801,7 @@
                             nameKey: "char_cat_name", 
                             subjectKey: "science",
                             suggestionsKeys: ["suggest_ice_melt", "suggest_signature", "suggest_magnets"],
-                            icon: "±", mood_happy: "˜¸", mood_think: "ˆ", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", personalityKey: "char_cat_personality", introKey: "char_cat_intro", premium: true,
+                            icon: "🐱", mood_happy: "😸", mood_think: "🐈", bg: "radial-gradient(circle, #fce7f3 0%, #fbcfe8 100%)", accent: "#db2777", personalityKey: "char_cat_personality", introKey: "char_cat_intro", premium: true,
                             voiceId: "2c96d996-4e88-44e8-944a-303d5b063775",
                             preferredVoice: "Microsoft Aria Online (Natural)"
                         },
@@ -3809,7 +3809,7 @@
                             nameKey: "char_bee_name", 
                             subjectKey: "nature",
                             suggestionsKeys: ["suggest_honey", "suggest_flowers", "suggest_sky_blue"],
-                            icon: "", mood_happy: "Œ»", mood_think: "¯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", personalityKey: "char_bee_personality", introKey: "char_bee_intro", premium: true,
+                            icon: "🐝", mood_happy: "🌻", mood_think: "🍯", bg: "radial-gradient(circle, #fef9c3 0%, #fef08a 100%)", accent: "#854d0e", personalityKey: "char_bee_personality", introKey: "char_bee_intro", premium: true,
                             voiceId: "a09a1325-058b-4bc7-9105-b96b1cce27c5",
                             preferredVoice: "Microsoft Ana Online (Natural)"
                         }
@@ -3833,7 +3833,7 @@
                     async initI18n() {
                         const resources = {
                             'en': { translation: {
-                                adventure_map: 'Adventure Map —ºï¸', magic_auras: 'Magic Auras', daily_gift: 'Daily Gift',
+                                adventure_map: 'Adventure Map 🗺️', magic_auras: 'Magic Auras', daily_gift: 'Daily Gift',
                                 parent_portal: 'Parent Dashboard', says: 'says', challenge_me: 'Challenge Me!', listen: 'Listen',
                                 stop: 'Stop', ask: 'ASK!', ask_about: 'Ask about', listening: 'Listening',
                                 teacher_of: 'Teacher of', thinking: 'Thinking', correct: 'Correct', awesome: 'Awesome!',
@@ -3846,91 +3846,91 @@
                                 char_dino_name: 'Professor Dino', char_milo_name: 'Milo Monkey', char_starry_name: 'Starry Alien', char_cat_name: 'Magic Cat', char_bee_name: 'Bouncy Bee',
                                 char_dino_personality: 'History Teacher', char_milo_personality: 'Math Teacher', char_starry_personality: 'Space Teacher', char_cat_personality: 'Science Teacher', char_bee_personality: 'Nature Teacher',
                                 char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Let\'s count bananas! ', char_starry_intro: 'Greetings from the stars! ', char_cat_intro: 'Meow! ', char_bee_intro: 'Buzz buzz! ',
-                                suggest_pyramids: 'Who built the pyramids? œï¸', suggest_mummy: 'What is a mummy? ¤•', suggest_king: 'Who was the first king? ‘‘',
-                                suggest_2plus2: 'What is 2 + 2? Œ', suggest_count10: 'Count to 10! ”Ÿ', suggest_circle: 'What is a circle? ”µ',
-                                suggest_sun_hot: 'How hot is the sun? â˜€ï¸', suggest_black_hole: 'What is a black hole? •³ï¸', suggest_planets: 'How many planets are there? ª',
-                                suggest_ice_melt: 'Why does ice melt? §Š', suggest_signature: 'What is a signature? Ž', suggest_magnets: 'How do magnets work? §²',
-                                suggest_honey: 'Why do bees make honey? ¯', suggest_flowers: 'How do flowers grow? Œ»', suggest_sky_blue: 'Why is the sky blue? â˜ï¸'
+                                suggest_pyramids: 'Who built the pyramids? 🏜️', suggest_mummy: 'What is a mummy? 🤕', suggest_king: 'Who was the first king? 👑',
+                                suggest_2plus2: 'What is 2 + 2? 🍌', suggest_count10: 'Count to 10! 🔟', suggest_circle: 'What is a circle? 🔵',
+                                suggest_sun_hot: 'How hot is the sun? ☀️', suggest_black_hole: 'What is a black hole? 🕳️', suggest_planets: 'How many planets are there? 🪐',
+                                suggest_ice_melt: 'Why does ice melt? 🧊', suggest_signature: 'What is a signature? 🍎', suggest_magnets: 'How do magnets work? 🧲',
+                                suggest_honey: 'Why do bees make honey? 🍯', suggest_flowers: 'How do flowers grow? 🌻', suggest_sky_blue: 'Why is the sky blue? ☁️'
                             }},
                             'es': { translation: {
-                                adventure_map: 'Mapa de Aventuras —ºï¸', magic_auras: 'Auras MÃ¡gicas', daily_gift: 'Regalo Diario',
-                                parent_portal: 'Panel de Padres', says: 'dice', challenge_me: 'Â¡DesafÃ­ame!', listen: 'Escuchar',
-                                stop: 'Parar', ask: 'Â¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
-                                teacher_of: 'Profesor de', thinking: 'Pensando', correct: 'Â¡Correcto!', awesome: 'Â¡Genial!',
-                                daily_rewards: 'Â¡Premios Diarios!', claim: 'Reclamar',
-                                see_you_tomorrow: 'Â¡Hasta MaÃ±ana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
-                                personalized_mission: 'MisiÃ³n Personalizada', choose_journey: 'Â¡Elige tu viaje!', complete: 'Completo',
-                                read_to_me: 'LÃ©eme', start_quiz: 'Â¡Empezar Quiz!', type_here: 'Escribe aquÃ­',
+                                adventure_map: 'Mapa de Aventuras 🗺️', magic_auras: 'Auras Mágicas', daily_gift: 'Regalo Diario',
+                                parent_portal: 'Panel de Padres', says: 'dice', challenge_me: '¡Desafíame!', listen: 'Escuchar',
+                                stop: 'Parar', ask: '¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
+                                teacher_of: 'Profesor de', thinking: 'Pensando', correct: '¡Correcto!', awesome: '¡Genial!',
+                                daily_rewards: '¡Premios Diarios!', claim: 'Reclamar',
+                                see_you_tomorrow: '¡Hasta Mañana!', active: 'Activo', buy_now: 'Comprar', activate: 'Activar',
+                                personalized_mission: 'Misión Personalizada', choose_journey: '¡Elige tu viaje!', complete: 'Completo',
+                                read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí',
                                 story_about: 'Una historia especial sobre',
-                                history: 'Historia', robots: 'MatemÃ¡ticas', space: 'ExploraciÃ³n Espacial', science: 'Ciencia', nature: 'Naturaleza',
-                                char_dino_name: 'Profesor Dino', char_milo_name: 'Milo Mono', char_starry_name: 'AlienÃ­gena Estrellado', char_cat_name: 'Gato MÃ¡gico', char_bee_name: 'Abeja Saltarina',
-                                char_dino_personality: 'Profesor de Historia', char_milo_personality: 'Profesor de MatemÃ¡ticas', char_starry_personality: 'Profesor del Espacio', char_cat_personality: 'Profesor de Ciencias', char_bee_personality: 'Profesor de la Naturaleza',
-                                char_dino_intro: 'Â¡Rawr! ', char_milo_intro: 'Â¡Ooh ooh! Â¡Contemos plÃ¡tanos! ', char_starry_intro: 'Â¡Saludos desde las estrellas! ', char_cat_intro: 'Â¡Miau! ', char_bee_intro: 'Â¡Buzz buzz! ',
-                                suggest_pyramids: 'Â¿QuiÃ©n construyÃ³ las pirÃ¡mides? œï¸', suggest_mummy: 'Â¿QuÃ© es una momia? ¤•', suggest_king: 'Â¿QuiÃ©n fue el primer rey? ‘‘',
-                                suggest_2plus2: 'Â¿CuÃ¡nto es 2 + 2? Œ', suggest_count10: 'Â¡Cuenta hasta 10! ”Ÿ', suggest_circle: 'Â¿QuÃ© es un cÃ­rculo? ”µ',
-                                suggest_sun_hot: 'Â¿QuÃ© tan caliente es el sol? â˜€ï¸', suggest_black_hole: 'Â¿QuÃ© es un agujero negro? •³ï¸', suggest_planets: 'Â¿CuÃ¡ntos planetas hay? ª',
-                                suggest_ice_melt: 'Â¿Por quÃ© se derrite el hielo? §Š', suggest_signature: 'Â¿QuÃ© es una firma? Ž', suggest_magnets: 'Â¿CÃ³mo funcionan los imanes? §²',
-                                suggest_honey: 'Â¿Por quÃ© las abejas hacen miel? ¯', suggest_flowers: 'Â¿CÃ³mo crecen las flores? Œ»', suggest_sky_blue: 'Â¿Por quÃ© el cielo es azul? â˜ï¸'
+                                history: 'Historia', robots: 'Matemáticas', space: 'Exploración Espacial', science: 'Ciencia', nature: 'Naturaleza',
+                                char_dino_name: 'Profesor Dino', char_milo_name: 'Milo Mono', char_starry_name: 'Alienígena Estrellado', char_cat_name: 'Gato Mágico', char_bee_name: 'Abeja Saltarina',
+                                char_dino_personality: 'Profesor de Historia', char_milo_personality: 'Profesor de Matemáticas', char_starry_personality: 'Profesor del Espacio', char_cat_personality: 'Profesor de Ciencias', char_bee_personality: 'Profesor de la Naturaleza',
+                                char_dino_intro: '¡Rawr! ', char_milo_intro: '¡Ooh ooh! ¡Contemos plátanos! ', char_starry_intro: '¡Saludos desde las estrellas! ', char_cat_intro: '¡Miau! ', char_bee_intro: '¡Buzz buzz! ',
+                                suggest_pyramids: '¿Quién construyó las pirámides? 🏜️', suggest_mummy: '¿Qué es una momia? 🤕', suggest_king: '¿Quién fue el primer rey? 👑',
+                                suggest_2plus2: '¿Cuánto es 2 + 2? 🍌', suggest_count10: '¡Cuenta hasta 10! 🔟', suggest_circle: '¿Qué es un círculo? 🔵',
+                                suggest_sun_hot: '¿Qué tan caliente es el sol? ☀️', suggest_black_hole: '¿Qué es un agujero negro? 🕳️', suggest_planets: '¿Cuántos planetas hay? 🪐',
+                                suggest_ice_melt: '¿Por qué se derrite el hielo? 🧊', suggest_signature: '¿Qué es una firma? 🍎', suggest_magnets: '¿Cómo funcionan los imanes? 🧲',
+                                suggest_honey: '¿Por qué las abejas hacen miel? 🍯', suggest_flowers: '¿Cómo crecen las flores? 🌻', suggest_sky_blue: '¿Por qué el cielo es azul? ☁️'
                             }},
                             'fr': { translation: {
-                                adventure_map: 'Carte d\'Aventure —ºï¸', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
-                                parent_portal: 'Tableau de Bord', says: 'dit', challenge_me: 'DÃ©fie-moi!', listen: 'Ã‰couter',
-                                stop: 'ArrÃªter', ask: 'DEMANDER!', ask_about: 'Demander sur', listening: 'Ã‰coute',
-                                teacher_of: 'Professeur de', thinking: 'RÃ©flexion', correct: 'Correct!', awesome: 'GÃ©nial!',
-                                daily_rewards: 'RÃ©compenses Quotidiennes!', claim: 'RÃ©clamer',
-                                see_you_tomorrow: 'Ã€ Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
-                                personalized_mission: 'Mission PersonnalisÃ©e', choose_journey: 'Choisis ton voyage!', complete: 'TerminÃ©',
-                                read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Ã‰cris ici',
-                                story_about: 'Une histoire spÃ©ciale sur',
+                                adventure_map: 'Carte d\'Aventure 🗺️', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
+                                parent_portal: 'Tableau de Bord', says: 'dit', challenge_me: 'Défie-moi!', listen: 'Écouter',
+                                stop: 'Arrêter', ask: 'DEMANDER!', ask_about: 'Demander sur', listening: 'Écoute',
+                                teacher_of: 'Professeur de', thinking: 'Réflexion', correct: 'Correct!', awesome: 'Génial!',
+                                daily_rewards: 'Récompenses Quotidiennes!', claim: 'Réclamer',
+                                see_you_tomorrow: 'À Demain!', active: 'Actif', buy_now: 'Acheter', activate: 'Activer',
+                                personalized_mission: 'Mission Personnalisée', choose_journey: 'Choisis ton voyage!', complete: 'Terminé',
+                                read_to_me: 'Lis pour moi', start_quiz: 'Commencer le Quiz!', type_here: 'Écris ici',
+                                story_about: 'Une histoire spéciale sur',
                                 history: 'Histoire', robots: 'Maths', space: 'Exploration Spatiale', science: 'Science', nature: 'Nature',
-                                char_dino_name: 'Professeur Dino', char_milo_name: 'Milo le Singe', char_starry_name: 'Extraterrestre Ã‰toilÃ©', char_cat_name: 'Chat Magique', char_bee_name: 'Abeille Bondissante',
+                                char_dino_name: 'Professeur Dino', char_milo_name: 'Milo le Singe', char_starry_name: 'Extraterrestre Étoilé', char_cat_name: 'Chat Magique', char_bee_name: 'Abeille Bondissante',
                                 char_dino_personality: 'Professeur d\'Histoire', char_milo_personality: 'Professeur de Maths', char_starry_personality: 'Professeur de l\'Espace', char_cat_personality: 'Professeur de Science', char_bee_personality: 'Professeur de Nature',
-                                char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Comptons les bananes! ', char_starry_intro: 'Salutations des Ã©toiles! ', char_cat_intro: 'Miaou! ', char_bee_intro: 'Buzz buzz! ',
-                                suggest_pyramids: 'Qui a construit les pyramides? œï¸', suggest_mummy: 'Qu\'est-ce qu\'une momie? ¤•', suggest_king: 'Qui Ã©tait le premier roi? ‘‘',
-                                suggest_2plus2: 'Combien font 2 + 2? Œ', suggest_count10: 'Compte jusqu\'Ã  10! ”Ÿ', suggest_circle: 'Qu\'est-ce qu\'un cercle? ”µ',
-                                suggest_sun_hot: 'Quelle est la tempÃ©rature du soleil? â˜€ï¸', suggest_black_hole: 'Qu\'est-ce qu\'un trou noir? •³ï¸', suggest_planets: 'Combien y a-t-il de planÃ¨tes? ª',
-                                suggest_ice_melt: 'Pourquoi la glace fond-elle? §Š', suggest_signature: 'Qu\'est-ce qu\'une signature? Ž', suggest_magnets: 'Comment fonctionnent les aimants? §²',
-                                suggest_honey: 'Pourquoi les abeilles font-elles du miel? ¯', suggest_flowers: 'Comment poussent les fleurs? Œ»', suggest_sky_blue: 'Pourquoi le ciel est-il bleu? â˜ï¸'
+                                char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Comptons les bananes! ', char_starry_intro: 'Salutations des étoiles! ', char_cat_intro: 'Miaou! ', char_bee_intro: 'Buzz buzz! ',
+                                suggest_pyramids: 'Qui a construit les pyramides? 🏜️', suggest_mummy: 'Qu\'est-ce qu\'une momie? 🤕', suggest_king: 'Qui était le premier roi? 👑',
+                                suggest_2plus2: 'Combien font 2 + 2? 🍌', suggest_count10: 'Compte jusqu\'à 10! 🔟', suggest_circle: 'Qu\'est-ce qu\'un cercle? 🔵',
+                                suggest_sun_hot: 'Quelle est la température du soleil? ☀️', suggest_black_hole: 'Qu\'est-ce qu\'un trou noir? 🕳️', suggest_planets: 'Combien y a-t-il de planètes? 🪐',
+                                suggest_ice_melt: 'Pourquoi la glace fond-elle? 🧊', suggest_signature: 'Qu\'est-ce qu\'une signature? 🍎', suggest_magnets: 'Comment fonctionnent les aimants? 🧲',
+                                suggest_honey: 'Pourquoi les abeilles font-elles du miel? 🍯', suggest_flowers: 'Comment poussent les fleurs? 🌻', suggest_sky_blue: 'Pourquoi le ciel est-il bleu? ☁️'
                             }},
                             'de': { translation: {
-                                adventure_map: 'Abenteuerkarte —ºï¸', magic_auras: 'Magische Auren', daily_gift: 'TÃ¤gliches Geschenk',
-                                parent_portal: 'Eltern-Dashboard', says: 'sagt', challenge_me: 'Fordere mich heraus!', listen: 'HÃ¶ren',
-                                stop: 'Stopp', ask: 'FRAGEN!', ask_about: 'Fragen Ã¼ber', listening: 'HÃ¶ren',
-                                teacher_of: 'Lehrer fÃ¼r', thinking: 'Nachdenken', correct: 'Richtig!', awesome: 'Super!',
-                                daily_rewards: 'TÃ¤gliche Belohnungen!', claim: 'Abholen',
+                                adventure_map: 'Abenteuerkarte 🗺️', magic_auras: 'Magische Auren', daily_gift: 'Tägliches Geschenk',
+                                parent_portal: 'Eltern-Dashboard', says: 'sagt', challenge_me: 'Fordere mich heraus!', listen: 'Hören',
+                                stop: 'Stopp', ask: 'FRAGEN!', ask_about: 'Fragen über', listening: 'Hören',
+                                teacher_of: 'Lehrer für', thinking: 'Nachdenken', correct: 'Richtig!', awesome: 'Super!',
+                                daily_rewards: 'Tägliche Belohnungen!', claim: 'Abholen',
                                 see_you_tomorrow: 'Bis morgen!', active: 'Aktiv', buy_now: 'Kaufen', activate: 'Aktivieren',
-                                personalized_mission: 'Personalisierte Mission', choose_journey: 'WÃ¤hle deine Reise!', complete: 'Abgeschlossen',
+                                personalized_mission: 'Personalisierte Mission', choose_journey: 'Wähle deine Reise!', complete: 'Abgeschlossen',
                                 read_to_me: 'Lies mir vor', start_quiz: 'Quiz starten!', type_here: 'Hier tippen',
-                                story_about: 'Eine besondere Geschichte Ã¼ber',
+                                story_about: 'Eine besondere Geschichte über',
                                 history: 'Geschichte', robots: 'Mathe', space: 'Weltraumforschung', science: 'Wissenschaft', nature: 'Natur',
-                                char_dino_name: 'Professor Dino', char_milo_name: 'Milo Affe', char_starry_name: 'Sternen-Alien', char_cat_name: 'Zauberkatze', char_bee_name: 'HÃ¼pfbiene',
+                                char_dino_name: 'Professor Dino', char_milo_name: 'Milo Affe', char_starry_name: 'Sternen-Alien', char_cat_name: 'Zauberkatze', char_bee_name: 'Hüpfbiene',
                                 char_dino_personality: 'Geschichtslehrer', char_milo_personality: 'Mathelehrer', char_starry_personality: 'Weltraumlehrer', char_cat_personality: 'Wissenschaftslehrer', char_bee_personality: 'Naturlehrer',
-                                char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Lass uns Bananen zÃ¤hlen! ', char_starry_intro: 'GrÃ¼ÃŸe von den Sternen! ', char_cat_intro: 'Miau! ', char_bee_intro: 'Buzz buzz! ',
-                                suggest_pyramids: 'Wer hat die Pyramiden gebaut? œï¸', suggest_mummy: 'Was ist eine Mumie? ¤•', suggest_king: 'Wer war der erste KÃ¶nig? ‘‘',
-                                suggest_2plus2: 'Was ist 2 + 2? Œ', suggest_count10: 'ZÃ¤hle bis 10! ”Ÿ', suggest_circle: 'Was ist ein Kreis? ”µ',
-                                suggest_sun_hot: 'Wie heiÃŸ ist die Sonne? â˜€ï¸', suggest_black_hole: 'Was ist ein Schwarzes Loch? •³ï¸', suggest_planets: 'Wie viele Planeten gibt es? ª',
-                                suggest_ice_melt: 'Warum schmilzt Eis? §Š', suggest_signature: 'Was ist eine Unterschrift? Ž', suggest_magnets: 'Wie funktionieren Magnete? §²',
-                                suggest_honey: 'Warum machen Bienen Honig? ¯', suggest_flowers: 'Wie wachsen Blumen? Œ»', suggest_sky_blue: 'Warum ist der Himmel blau? â˜ï¸'
+                                char_dino_intro: 'Rawr! ', char_milo_intro: 'Ooh ooh! Lass uns Bananen zählen! ', char_starry_intro: 'Grüße von den Sternen! ', char_cat_intro: 'Miau! ', char_bee_intro: 'Buzz buzz! ',
+                                suggest_pyramids: 'Wer hat die Pyramiden gebaut? 🏜️', suggest_mummy: 'Was ist eine Mumie? 🤕', suggest_king: 'Wer war der erste König? 👑',
+                                suggest_2plus2: 'Was ist 2 + 2? 🍌', suggest_count10: 'Zähle bis 10! 🔟', suggest_circle: 'Was ist ein Kreis? 🔵',
+                                suggest_sun_hot: 'Wie heiß ist die Sonne? ☀️', suggest_black_hole: 'Was ist ein Schwarzes Loch? 🕳️', suggest_planets: 'Wie viele Planeten gibt es? 🪐',
+                                suggest_ice_melt: 'Warum schmilzt Eis? 🧊', suggest_signature: 'Was ist eine Unterschrift? 🍎', suggest_magnets: 'Wie funktionieren Magnete? 🧲',
+                                suggest_honey: 'Warum machen Bienen Honig? 🍯', suggest_flowers: 'Wie wachsen Blumen? 🌻', suggest_sky_blue: 'Warum ist der Himmel blau? ☁️'
                             }},
                             'ar': { translation: {
-                                adventure_map: 'Ø®Ø±ÙŠØ·Ø© Ø§Ù„Ù…ØºØ§Ù…Ø±Ø© —ºï¸', magic_auras: 'Ø§Ù„Ù‡Ø§Ù„Ø§Øª Ø§Ù„Ø³Ø­Ø±ÙŠØ©', daily_gift: 'Ù‡Ø¯ÙŠØ© ÙŠÙˆÙ…ÙŠØ©',
-                                parent_portal: 'Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„ÙˆØ§Ù„Ø¯ÙŠÙ†', says: 'ÙŠÙ‚ÙˆÙ„', challenge_me: 'ØªØ­Ø¯Ø§Ù†ÙŠ!', listen: 'Ø§Ø³ØªÙ…Ø¹',
-                                stop: 'ØªÙˆÙ‚Ù', ask: 'Ø§Ø³Ø£Ù„!', ask_about: 'Ø§Ø³Ø£Ù„ Ø¹Ù†', listening: 'Ø£Ø³Ù…Ø¹Ùƒ',
-                                teacher_of: 'Ù…Ø¯Ø±Ø³', thinking: 'ÙŠÙÙƒØ±', correct: 'ØµØ­ÙŠØ­!', awesome: 'Ø±Ø§Ø¦Ø¹!',
-                                daily_rewards: 'Ù…ÙƒØ§ÙØ¢Øª ÙŠÙˆÙ…ÙŠØ©!', claim: 'Ø§Ø­ØµÙ„ Ø¹Ù„ÙŠÙ‡Ø§',
-                                see_you_tomorrow: 'Ø£Ø±Ø§Ùƒ ØºØ¯Ø§Ù‹!', active: 'Ù†Ø´Ø·', buy_now: 'Ø´Ø±Ø§Ø¡', activate: 'ØªÙØ¹ÙŠÙ„',
-                                personalized_mission: 'Ù…Ù‡Ù…Ø© Ù…Ø®ØµØµØ©', choose_journey: 'Ø§Ø®ØªØ± Ø±Ø­Ù„ØªÙƒ!', complete: 'Ù…ÙƒØªÙ…Ù„',
-                                read_to_me: 'Ø§Ù‚Ø±Ø£ Ù„ÙŠ', start_quiz: 'Ø§Ø¨Ø¯Ø£ Ø§Ù„Ø§Ø®ØªØ¨Ø§Ø±!', type_here: 'Ø§ÙƒØªØ¨ Ù‡Ù†Ø§',
-                                story_about: 'Ù‚ØµØ© Ø®Ø§ØµØ© Ø¹Ù†',
-                                history: 'Ø§Ù„ØªØ§Ø±ÙŠØ®', robots: 'Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª', space: 'Ø§Ø³ØªÙƒØ´Ø§Ù Ø§Ù„ÙØ¶Ø§Ø¡', science: 'Ø§Ù„Ø¹Ù„ÙˆÙ…', nature: 'Ø§Ù„Ø·Ø¨ÙŠØ¹Ø©',
-                                char_dino_name: 'Ø§Ù„Ø¨Ø±ÙˆÙÙŠØ³ÙˆØ± Ø¯ÙŠÙ†Ùˆ', char_milo_name: 'Ù…ÙŠÙ„Ùˆ Ø§Ù„Ù‚Ø±Ø¯', char_starry_name: 'Ø§Ù„ÙØ¶Ø§Ø¦ÙŠ Ø§Ù„Ù†Ø¬Ù…ÙŠ', char_cat_name: 'Ø§Ù„Ù‚Ø·Ø© Ø§Ù„Ø³Ø­Ø±ÙŠØ©', char_bee_name: 'Ø§Ù„Ù†Ø­Ù„Ø© Ø§Ù„Ù‚Ø§ÙØ²Ø©',
-                                char_dino_personality: 'Ù…Ø¯Ø±Ø³ Ø§Ù„ØªØ§Ø±ÙŠØ®', char_milo_personality: 'Ù…Ø¯Ø±Ø³ Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª', char_starry_personality: 'Ù…Ø¯Ø±Ø³ Ø§Ù„ÙØ¶Ø§Ø¡', char_cat_personality: 'Ù…Ø¯Ø±Ø³ Ø§Ù„Ø¹Ù„ÙˆÙ…', char_bee_personality: 'Ù…Ø¯Ø±Ø³ Ø§Ù„Ø·Ø¨ÙŠØ¹Ø©',
-                                char_dino_intro: 'Ø±Ø§ÙˆØ±! ', char_milo_intro: 'Ø£ÙˆÙ‡ Ø£ÙˆÙ‡! Ù„Ù†Ø¹Ø¯ Ø§Ù„Ù…ÙˆØ²! ', char_starry_intro: 'ØªØ­ÙŠØ§ØªÙŠ Ù…Ù† Ø§Ù„Ù†Ø¬ÙˆÙ…! ', char_cat_intro: 'Ù…ÙŠØ§Ùˆ! ', char_bee_intro: 'Ø¨Ø² Ø¨Ø²! ',
-                                suggest_pyramids: 'Ù…Ù† Ø¨Ù†Ù‰ Ø§Ù„Ø£Ù‡Ø±Ø§Ù…Ø§ØªØŸ œï¸', suggest_mummy: 'Ù…Ø§ Ù‡ÙŠ Ø§Ù„Ù…ÙˆÙ…ÙŠØ§Ø¡ØŸ ¤•', suggest_king: 'Ù…Ù† ÙƒØ§Ù† Ø£ÙˆÙ„ Ù…Ù„ÙƒØŸ ‘‘',
-                                suggest_2plus2: 'ÙƒÙ… ÙŠØ³Ø§ÙˆÙŠ 2 + 2ØŸ Œ', suggest_count10: 'Ø¹Ø¯ Ø¥Ù„Ù‰ 10! ”Ÿ', suggest_circle: 'Ù…Ø§ Ù‡ÙŠ Ø§Ù„Ø¯Ø§Ø¦Ø±Ø©ØŸ ”µ',
-                                suggest_sun_hot: 'ÙƒÙ… ØªØ¨Ù„Øº Ø­Ø±Ø§Ø±Ø© Ø§Ù„Ø´Ù…Ø³ØŸ â˜€ï¸', suggest_black_hole: 'Ù…Ø§ Ù‡Ùˆ Ø§Ù„Ø«Ù‚Ø¨ Ø§Ù„Ø£Ø³ÙˆØ¯ØŸ •³ï¸', suggest_planets: 'ÙƒÙ… Ø¹Ø¯Ø¯ Ø§Ù„ÙƒÙˆØ§ÙƒØ¨ØŸ ª',
-                                suggest_ice_melt: 'Ù„Ù…Ø§Ø°Ø§ ÙŠØ°ÙˆØ¨ Ø§Ù„Ø¬Ù„ÙŠØ¯ØŸ §Š', suggest_signature: 'Ù…Ø§ Ù‡Ùˆ Ø§Ù„ØªÙˆÙ‚ÙŠØ¹ØŸ Ž', suggest_magnets: 'ÙƒÙŠÙ ØªØ¹Ù…Ù„ Ø§Ù„Ù…ØºÙ†Ø§Ø·ÙŠØ³Ø§ØªØŸ §²',
-                                suggest_honey: 'Ù„Ù…Ø§Ø°Ø§ ÙŠØµÙ†Ø¹ Ø§Ù„Ù†Ø­Ù„ Ø§Ù„Ø¹Ø³Ù„ØŸ ¯', suggest_flowers: 'ÙƒÙŠÙ ØªÙ†Ù…Ùˆ Ø§Ù„Ø²Ù‡ÙˆØ±ØŸ Œ»', suggest_sky_blue: 'Ù„Ù…Ø§Ø°Ø§ Ø§Ù„Ø³Ù…Ø§Ø¡ Ø²Ø±Ù‚Ø§Ø¡ØŸ â˜ï¸'
+                                adventure_map: 'خريطة المغامرة 🗺️', magic_auras: 'الهالات السحرية', daily_gift: 'هدية يومية',
+                                parent_portal: 'لوحة تحكم الوالدين', says: 'يقول', challenge_me: 'تحداني!', listen: 'استمع',
+                                stop: 'توقف', ask: 'اسأل!', ask_about: 'اسأل عن', listening: 'أسمعك',
+                                teacher_of: 'مدرس', thinking: 'يفكر', correct: 'صحيح!', awesome: 'رائع!',
+                                daily_rewards: 'مكافآت يومية!', claim: 'احصل عليها',
+                                see_you_tomorrow: 'أراك غداً!', active: 'نشط', buy_now: 'شراء', activate: 'تفعيل',
+                                personalized_mission: 'مهمة مخصصة', choose_journey: 'اختر رحلتك!', complete: 'مكتمل',
+                                read_to_me: 'اقرأ لي', start_quiz: 'ابدأ الاختبار!', type_here: 'اكتب هنا',
+                                story_about: 'قصة خاصة عن',
+                                history: 'التاريخ', robots: 'الرياضيات', space: 'استكشاف الفضاء', science: 'العلوم', nature: 'الطبيعة',
+                                char_dino_name: 'البروفيسور دينو', char_milo_name: 'ميلو القرد', char_starry_name: 'الفضائي النجمي', char_cat_name: 'القطة السحرية', char_bee_name: 'النحلة القافزة',
+                                char_dino_personality: 'مدرس التاريخ', char_milo_personality: 'مدرس الرياضيات', char_starry_personality: 'مدرس الفضاء', char_cat_personality: 'مدرس العلوم', char_bee_personality: 'مدرس الطبيعة',
+                                char_dino_intro: 'راور! ', char_milo_intro: 'أوه أوه! لنعد الموز! ', char_starry_intro: 'تحياتي من النجوم! ', char_cat_intro: 'مياو! ', char_bee_intro: 'بز بز! ',
+                                suggest_pyramids: 'من بنى الأهرامات؟ 🏜️', suggest_mummy: 'ما هي المومياء؟ 🤕', suggest_king: 'من كان أول ملك؟ 👑',
+                                suggest_2plus2: 'كم يساوي 2 + 2؟ 🍌', suggest_count10: 'عد إلى 10! 🔟', suggest_circle: 'ما هي الدائرة؟ 🔵',
+                                suggest_sun_hot: 'كم تبلغ حرارة الشمس؟ ☀️', suggest_black_hole: 'ما هو الثقب الأسود؟ 🕳️', suggest_planets: 'كم عدد الكواكب؟ 🪐',
+                                suggest_ice_melt: 'لماذا يذوب الجليد؟ 🧊', suggest_signature: 'ما هو التوقيع؟ 🍎', suggest_magnets: 'كيف تعمل المغناطيسات؟ 🧲',
+                                suggest_honey: 'لماذا يصنع النحل العسل؟ 🍯', suggest_flowers: 'كيف تنمو الزهور؟ 🌻', suggest_sky_blue: 'لماذا السماء زرقاء؟ ☁️'
                             }}
                         };
 
@@ -3994,7 +3994,7 @@
                             }
                         }, 4000); // Reduced from 15s to 4s
 
-                        this.currentMoodIcon = this.currentChar?.icon || '¦–';
+                        this.currentMoodIcon = this.currentChar?.icon || '🦖';
                         this.isLoading = true;
 
                         this.generateGateQuestion();
@@ -4007,7 +4007,7 @@
 
                         try {
                             console.log("Fetching configuration...");
-                            // Timeout fetch after 5s â€” more generous for slow connections
+                            // Timeout fetch after 5s — more generous for slow connections
                             const configController = new AbortController();
                             const configTimeout = setTimeout(() => configController.abort(), 5000);
                             let res;
@@ -4090,7 +4090,7 @@
                                 console.log("Received native message:", data);
 
                                 if (data.type === 'PREMIUM_ACTIVATED') {
-                                    console.log("’Ž Premium Activated via Native IAP!");
+                                    console.log("💎 Premium Activated via Native IAP!");
                                     this.isPremium = true;
                                     this.premiumExpiry = new Date().getTime() + (30 * 24 * 60 * 60 * 1000); // 30 days
                                     this.coins = Number(this.coins) + 500; // Bonus coins
@@ -4129,14 +4129,14 @@
                                 }
 
                                 if (data.type === 'CAMERA_CAPTURE_SUCCESS') {
-                                    console.log("“¸ Camera Capture Success from Native!");
+                                    console.log("📸 Camera Capture Success from Native!");
                                     if (this.showScavengerModal) {
                                         this.analyzeScavengerHunt(data.base64);
                                     }
                                 }
 
                                 if (data.type === 'CAMERA_CAPTURE_CANCELLED') {
-                                    console.log("“¸ Camera Capture Cancelled from Native");
+                                    console.log("📸 Camera Capture Cancelled from Native");
                                     this.isAnalyzingScavenger = false;
                                 }
                             } catch (e) {
@@ -4179,7 +4179,7 @@
                                 applicationServerKey: this.urlBase64ToUint8Array(publicKey)
                             });
 
-                            console.log("âœ… Push Subscription successful:", subscription);
+                            console.log("✅ Push Subscription successful:", subscription);
 
                             // Save to Supabase via backend
                             await fetch('/api/save-subscription', {
@@ -4192,7 +4192,7 @@
                             });
 
                         } catch (err) {
-                            console.error("âŒ Push subscription failed:", err);
+                            console.error("❌ Push subscription failed:", err);
                         }
                     },
 
@@ -4331,10 +4331,10 @@
                                     if (samples > 10) {
                                         if (highPitchCount > samples * 0.6 && fastVolumeCount > samples * 0.5) {
                                             this.voiceSentiment = 'frustrated';
-                                            console.log("Sentiment: Frustrated ˜¤");
+                                            console.log("Sentiment: Frustrated 😤");
                                         } else if (highPitchCount > samples * 0.5) {
                                             this.voiceSentiment = 'excited';
-                                            console.log("Sentiment: Excited ¤©");
+                                            console.log("Sentiment: Excited 🤩");
                                         } else {
                                             this.voiceSentiment = 'neutral';
                                         }
@@ -4494,7 +4494,7 @@
                     },
 
                     speakNative(text) {
-                        console.log("“¢ Using Browser Native Speech Synthesis Fallback");
+                        console.log("📢 Using Browser Native Speech Synthesis Fallback");
                         this.unlockAudio(); // Ensure context is ready
                         this.stopSpeaking();
                         this.isSpeaking = true;
@@ -4575,7 +4575,7 @@
                         }
 
                         if (this.monthlyQuestsUsed >= this.maxMonthlyQuests) {
-                            alert(`ŒŸ You've reached your monthly limit of ${this.maxMonthlyQuests} AI quests! This helps us keep the app running for everyone. Try again next month!`);
+                            alert(`🌟 You've reached your monthly limit of ${this.maxMonthlyQuests} AI quests! This helps us keep the app running for everyone. Try again next month!`);
                             return;
                         }
 
@@ -4754,16 +4754,16 @@
                                 Student: ${this.childProfile.name}
                                 Report Date: ${today.toLocaleDateString()}
                                 
-                                † LEARNING MILESTONES
+                                🏆 LEARNING MILESTONES
                                 - Active Learning Time: ${this.totalMinutesLearned} minutes
                                 - New Words Mastered: ${this.learningStats.wordsLearned}
                                 - Total XP Gained: ${this.xp}
                                 - Questions Asked Today: ${this.parentLogs.length}
 
-                                “š SUBJECT BREAKDOWN
+                                📚 SUBJECT BREAKDOWN
                                 ${Object.entries(this.getTopSubjects()).map(([k,v]) => `- ${k}: ${v} pts`).join('\n')}
 
-                                “ RECENT CURIOSITY
+                                📝 RECENT CURIOSITY
                                 ${this.parentLogs.slice(-5).reverse().map(l => `- Asked "${l.query}"`).join('\n')}
                                 
                                 This report verifies daily engagement with the AI Tutor curriculum.
@@ -4802,7 +4802,7 @@
                         this.sharingBadge = {
                             id: cert.id,
                             name: cert.pathName + ' (Blockchain Verified)',
-                            icon: cert.icon || '†',
+                            icon: cert.icon || '🏆',
                             desc: 'Verifiable Proof of Accomplishment',
                             isBlockchain: true,
                             certId: cert.id
@@ -4822,7 +4822,7 @@
                         let text = `I'm so proud! ${name} just earned the "${badge.name}" badge on AI Tutor! \u2728 Check it out here: ${window.location.host === 'localhost' ? 'https://ai-tutor-murex.vercel.app' : window.location.origin}`;
                         
                         if (badge.isBlockchain) {
-                            text = `† Verifiable Achievement! ${name} completed the "${badge.name}" path! \nProof Hash: ${badge.id} \nVerify here: ${window.location.host === 'localhost' ? 'https://ai-tutor-murex.vercel.app' : window.location.origin}/verify/${badge.id}`;
+                            text = `🏆 Verifiable Achievement! ${name} completed the "${badge.name}" path! \nProof Hash: ${badge.id} \nVerify here: ${window.location.host === 'localhost' ? 'https://ai-tutor-murex.vercel.app' : window.location.origin}/verify/${badge.id}`;
                         }
 
                         if (platform === 'whatsapp') {
@@ -4838,10 +4838,10 @@
                     async copyShareLink(badge) {
                         if (!badge) return;
                         const name = this.childProfile.name || 'My child';
-                        let text = `I'm so proud! ${name} just earned the "${badge.name}" badge on AI Tutor! âœ¨ \n\nCheck it out here: ${window.location.host === 'localhost' ? 'https://ai-tutor-murex.vercel.app' : window.location.origin}`;
+                        let text = `I'm so proud! ${name} just earned the "${badge.name}" badge on AI Tutor! ✨ \n\nCheck it out here: ${window.location.host === 'localhost' ? 'https://ai-tutor-murex.vercel.app' : window.location.origin}`;
                         
                         if (badge.isBlockchain) {
-                            text = `† Verifiable Achievement! ${name} just completed the "${badge.name}" path on AI Tutor!\n\nVerified ID: ${badge.id}\nProof of Brilliance: ${window.location.host === 'localhost' ? 'https://ai-tutor-murex.vercel.app' : window.location.origin}/verify/${badge.id}`;
+                            text = `🏆 Verifiable Achievement! ${name} just completed the "${badge.name}" path on AI Tutor!\n\nVerified ID: ${badge.id}\nProof of Brilliance: ${window.location.host === 'localhost' ? 'https://ai-tutor-murex.vercel.app' : window.location.origin}/verify/${badge.id}`;
                         }
 
                         try {
@@ -5036,7 +5036,7 @@
                         // Check for Path Completion (Blockchain Certificate)
                         const totalLevels = this.curriculum.find(p => p.id === pathId).levels.length;
                         if (this.pathProgress[pathId] >= totalLevels) {
-                            console.log("Ž“ Path Completed! Generating Blockchain Certificate...");
+                            console.log("🎓 Path Completed! Generating Blockchain Certificate...");
                             await this.generateBlockchainCertificate(this.curriculum.find(p => p.id === pathId));
                         }
 
@@ -5073,13 +5073,13 @@
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 to: this.registeredEmail,
-                                subject: "New Dual Quest Mission! Ž¯",
-                                body: `Hi Parent! ŒŸ\n\nA new mission is waiting for you and ${this.childProfile.name || 'your child'}: \n\n"${randomMission}"\n\nOnce completed, give this SECRET CODE to them to unlock DOUBLE REWARDS: ${code}\n\nHave fun learning together!`
+                                subject: "New Dual Quest Mission! 🎯",
+                                body: `Hi Parent! 🌟\n\nA new mission is waiting for you and ${this.childProfile.name || 'your child'}: \n\n"${randomMission}"\n\nOnce completed, give this SECRET CODE to them to unlock DOUBLE REWARDS: ${code}\n\nHave fun learning together!`
                             })
                         });
                         
                         this.syncData();
-                        alert("Quest Generated! Check your email for the secret code. “©");
+                        alert("Quest Generated! Check your email for the secret code. 📩");
                     },
 
                     verifyQuestCode() {
@@ -5089,7 +5089,7 @@
                             this.questCodeInput = '';
                             this.playPing();
                             confetti({ particleCount: 200, spread: 100 });
-                            alert("† QUEST UNLOCKED! Your next lesson will give DOUBLE COINS!");
+                            alert("🏆 QUEST UNLOCKED! Your next lesson will give DOUBLE COINS!");
                             this.syncData();
                         } else {
                             alert("Oops! That's not the right code. Ask your parent for help!");
@@ -5143,7 +5143,7 @@
                         this.showLeaderboardRewardModal = false;
                         this.leaderboardRewardData = null;
                         this.currentChar = this.characters[0];
-                        this.displayText = `Hi friend! ŒŸ I'm Professor Dino. I teach History! What do you want to know about the past?`;
+                        this.displayText = `Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?`;
                         this.isChildOnboarding = false;
                         this.childOnboardingStep = 0;
                     },
@@ -5182,7 +5182,7 @@
                             timeUsedToday: 0,
                             curriculum: [
                                 { 
-                                    id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '§®', color: 'bg-blue-500', premium: false,
+                                    id: 'math', name: 'Math Geniuses', grade: 'Grade 2', icon: '🧮', color: 'bg-blue-500', premium: false,
                                     levels: [
                                         { id: 1, title: 'Counting to 100', content: 'Numbers help us count toys! Can you count to 100? 1, 2, 3...', quiz: [{q: 'What comes after 9?', options:['8', '10', '11'], correct:1}, {q: 'Which number is biggest?', options:['5', '50', '2'], correct:1}, {q: '1 + 1 is?', options:['2', '3', '11'], correct:0}] }
                                     ]
@@ -5288,7 +5288,7 @@
                         if (!window.ReactNativeWebView) return; // Only for mobile
                         if (this.isARCelebrating) return;
                         
-                        console.log("š€ Triggering AR Celebration Milestone!");
+                        console.log("🚀 Triggering AR Celebration Milestone!");
                         this.isARCelebrating = true;
                         
                         // 1. Tell Native to open Camera and make WebView transparent
@@ -5342,12 +5342,12 @@
                     getCharacterImage(icon) {
                         // Simple map to get high-res character assets or emojis if assets not available
                         const maps = {
-                            "¦–": "https://cdn-icons-png.flaticon.com/512/1998/1998614.png",
-                            "µ": "https://cdn-icons-png.flaticon.com/512/1998/1998592.png",
-                            "›¸": "https://cdn-icons-png.flaticon.com/512/1998/1998617.png",
-                            "‘¾": "https://cdn-icons-png.flaticon.com/512/1998/1998617.png",
-                            "±": "https://cdn-icons-png.flaticon.com/512/1998/1998592.png",
-                            "": "https://cdn-icons-png.flaticon.com/512/1998/1998604.png"
+                            "🦖": "https://cdn-icons-png.flaticon.com/512/1998/1998614.png",
+                            "🐵": "https://cdn-icons-png.flaticon.com/512/1998/1998592.png",
+                            "🛸": "https://cdn-icons-png.flaticon.com/512/1998/1998617.png",
+                            "👾": "https://cdn-icons-png.flaticon.com/512/1998/1998617.png",
+                            "🐱": "https://cdn-icons-png.flaticon.com/512/1998/1998592.png",
+                            "🐝": "https://cdn-icons-png.flaticon.com/512/1998/1998604.png"
                         };
                         return maps[icon] || "https://cdn-icons-png.flaticon.com/512/1998/1998614.png";
                     },
@@ -6390,7 +6390,7 @@
                         if (level === 2) return 'Learner';
                         if (level === 3) return 'Rising Star';
                         if (level === 4) return 'Expert';
-                        return 'Mastered! †';
+                        return 'Mastered! 🏆';
                     },
 
                     checkReviewsDue() {
@@ -6494,7 +6494,7 @@
 
                     async handleSignup() {
                         if (!this.supabase) {
-                            alert("âš ï¸ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
+                            alert("⚠️ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
                             console.error("Signup blocked: this.supabase is null");
                             return;
                         }
@@ -6609,11 +6609,11 @@
                     async handleDeleteAccount() {
                         // Step 1: First confirmation
                         const firstConfirm = confirm(
-                            "âš ï¸ Are you sure you want to permanently delete your account?\n\n" +
+                            "⚠️ Are you sure you want to permanently delete your account?\n\n" +
                             "This will erase ALL your data including:\n" +
-                            "â€¢ Learning progress & stats\n" +
-                            "â€¢ Coins & inventory\n" +
-                            "â€¢ All child profiles\n\n" +
+                            "• Learning progress & stats\n" +
+                            "• Coins & inventory\n" +
+                            "• All child profiles\n\n" +
                             "This action CANNOT be undone."
                         );
                         if (!firstConfirm) return;
@@ -6639,7 +6639,7 @@
                             const result = await response.json();
                             if (!response.ok) throw new Error(result.error || 'Deletion failed');
 
-                            alert("âœ… Your account has been permanently deleted. Goodbye!");
+                            alert("✅ Your account has been permanently deleted. Goodbye!");
                             await this.supabase.auth.signOut();
                             this.refreshAppState();
                             this.closeParentPortal();
@@ -6654,7 +6654,7 @@
 
                     async handleLogin() {
                         if (!this.supabase) {
-                            alert("âš ï¸ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
+                            alert("⚠️ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
                             console.error("Login blocked: this.supabase is null");
                             return;
                         }
@@ -7078,11 +7078,11 @@
                         // Normalize emotion string for logs
                         let normEmotion = String(emotion || 'neutral').toLowerCase().trim();
                         const emotionMap = {
-                            'happy': 'happy', '˜Š': 'happy', '˜„': 'happy', '™‚': 'happy',
-                            'excited': 'excited', '¤©': 'excited', '˜ƒ': 'excited', '”¥': 'excited',
-                            'curious': 'curious', '¤”': 'curious', '§': 'curious', '˜®': 'curious',
-                            'frustrated': 'frustrated', '˜¤': 'frustrated', '˜ ': 'frustrated', '˜Ÿ': 'frustrated',
-                            'neutral': 'neutral', '˜': 'neutral', '˜¶': 'neutral'
+                            'happy': 'happy', '😊': 'happy', '😄': 'happy', '🙂': 'happy',
+                            'excited': 'excited', '🤩': 'excited', '😃': 'excited', '🔥': 'excited',
+                            'curious': 'curious', '🤔': 'curious', '🧐': 'curious', '😮': 'curious',
+                            'frustrated': 'frustrated', '😤': 'frustrated', '😠': 'frustrated', '😟': 'frustrated',
+                            'neutral': 'neutral', '😐': 'neutral', '😶': 'neutral'
                         };
                         normEmotion = emotionMap[normEmotion] || 'neutral';
 
@@ -7096,8 +7096,8 @@
                         this.updateSeasonalProgress('questions', 1); // Seasonal Quest Tracking
                     },
                     getEmotionIcon(emotion) {
-                        const map = { excited: '¤©', curious: '¤”', frustrated: '˜¤', happy: '˜Š', neutral: '˜' };
-                        return map[emotion] || '˜';
+                        const map = { excited: '🤩', curious: '🤔', frustrated: '😤', happy: '😊', neutral: '😐' };
+                        return map[emotion] || '😐';
                     },
                     getEmotionalInsights() {
                         const logs = this.parentLogs.slice(-10);
@@ -7116,14 +7116,14 @@
                             if (data.frustrated > data.total / 3) {
                                 insights.push({ 
                                     subject: sub, 
-                                    icon: '˜¤', 
+                                    icon: '😤', 
                                     text: `Child seems a bit frustrated with ${sub}. Try a simpler level?`,
                                     color: 'bg-red-50 text-red-700'
                                 });
                             } else if (data.happy > data.total / 2) {
                                 insights.push({ 
                                     subject: sub, 
-                                    icon: 'š€', 
+                                    icon: '🚀', 
                                     text: `Great news! Child is very excited about ${sub}!`,
                                     color: 'bg-green-50 text-green-700'
                                 });
@@ -7321,7 +7321,7 @@
                                 console.error("Vision API Error:", err);
                                 this.closeVisionModal();
                                 if (err.message === "RATE_LIMIT") {
-                                    this.finishThinking("Whoa, slow down! ¦• My magic eyes are tired. Let's take a little break and try again in a minute.", "Vision Rate Limit");
+                                    this.finishThinking("Whoa, slow down! 🦕 My magic eyes are tired. Let's take a little break and try again in a minute.", "Vision Rate Limit");
                                 } else {
                                     this.finishThinking("My magic eyes are a bit blurry right now. Can we try another photo?", "Vision Error");
                                 }
@@ -7376,9 +7376,9 @@
                             return;
                         }
                         if (!this.isQuerySafe(this.userQuery)) {
-                            this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! Œˆâœ¨";
+                            this.displayText = "Oops! That's a bit too serious. Let's talk about something fun like space or dinosaurs instead! 🌈✨";
                             this.userQuery = '';
-                            this.currentMoodIcon = '¤”';
+                            this.currentMoodIcon = '🤔';
                             return;
                         }
 
@@ -7390,7 +7390,7 @@
                         this.stopSpeaking();
                         this.isThinking = true;
                         this.hasAnswered = false;
-                        this.displayText = "Thinking... § âœ¨";
+                        this.displayText = "Thinking... 🧠✨";
                         this.currentMoodIcon = this.currentChar.mood_think;
 
                         const ageLogicInstruction = this.getAgeLogic();
@@ -7439,7 +7439,7 @@
                                 if (response.status === 429) {
                                     throw new Error("RATE_LIMIT");
                                 }
-                                // 451 = content moderation block â€” show the kid-friendly message
+                                // 451 = content moderation block — show the kid-friendly message
                                 if (response.status === 451 && errData.blocked && errData.response) {
                                     const blocked = JSON.parse(errData.response);
                                     this.finishThinking(blocked.response, savedQuery);
@@ -7475,9 +7475,9 @@
                             this.logActivity(savedQuery, 'neutral');
                             if (this.currentChar.nameKey === activeCharKey) {
                                 if (error.message === "RATE_LIMIT") {
-                                    this.finishThinking("Whoa, slow down! ¦• You're asking questions too fast! Take a breath and try again in a minute.", savedQuery);
+                                    this.finishThinking("Whoa, slow down! 🦕 You're asking questions too fast! Take a breath and try again in a minute.", savedQuery);
                                 } else {
-                                    this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? ”Œ", savedQuery);
+                                    this.finishThinking("Oh no! My brain is fuzzy. Can you ask again? 🔌", savedQuery);
                                 }
                             } else {
                                 this.isThinking = false;
@@ -7775,7 +7775,7 @@
                          });
                          // --- AR Celebration: seasonal quest milestone ---
                          this.triggerARCelebration();
-                          console.log(`Ž Seasonal Reward: ${quest.reward} tokens earned for ${quest.title}!`);
+                          console.log(`🎁 Seasonal Reward: ${quest.reward} tokens earned for ${quest.title}!`);
                       },
 
                      // --- AR Tutor Projection: send milestone trigger to native app ---
@@ -7787,8 +7787,8 @@
                                  character: this.t(this.currentChar?.nameKey) || 'Professor Dino'
                              }));
                          } else {
-                             // Web browser fallback â€” AR not available, confetti already runs
-                             console.log('[AR] Native bridge not available â€” AR celebration skipped (web mode).');
+                             // Web browser fallback — AR not available, confetti already runs
+                             console.log('[AR] Native bridge not available — AR celebration skipped (web mode).');
                          }
                      },
 
@@ -7869,7 +7869,7 @@
                           this.toggleScroll(false);
                           
                           // Navigate to lesson or start AI session
-                          this.displayText = `Welcome to ${path.name}! Let's start our adventure! ŒŸ`;
+                          this.displayText = `Welcome to ${path.name}! Let's start our adventure! 🌟`;
                           this.speak(this.displayText);
                       },
 
@@ -7882,7 +7882,7 @@
                               confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                               this.syncData();
                           } else {
-                              alert("You need more magic coins! Keep learning to earn them! ’°");
+                              alert("You need more magic coins! Keep learning to earn them! 💰");
                           }
                       },
 
@@ -7891,10 +7891,10 @@
                           this.showLeaderboardRewardModal = true;
                           setTimeout(() => {
                               this.leaderboardRewardData = [
-                                  { name: this.childProfile.name || 'You', xp: this.xp, rank: 1, avatar: '¦–' },
-                                  { name: 'Alex', xp: 1200, rank: 2, avatar: '¤–' },
-                                  { name: 'Sam', xp: 1100, rank: 3, avatar: 'š€' },
-                                  { name: 'Jordan', xp: 950, rank: 4, avatar: '¦' }
+                                  { name: this.childProfile.name || 'You', xp: this.xp, rank: 1, avatar: '🦖' },
+                                  { name: 'Alex', xp: 1200, rank: 2, avatar: '🤖' },
+                                  { name: 'Sam', xp: 1100, rank: 3, avatar: '🚀' },
+                                  { name: 'Jordan', xp: 950, rank: 4, avatar: '🦁' }
                               ];
                               this.isModalLoading = false;
                           }, 1000);
@@ -7944,9 +7944,9 @@
                 try {
                     const data = JSON.parse(event.data);
                     if (data.type === 'AR_PERMISSION_DENIED') {
-                        console.log('[AR] Camera permission denied â€” AR overlay skipped. Web celebration continues normally.');
+                        console.log('[AR] Camera permission denied — AR overlay skipped. Web celebration continues normally.');
                     } else if (data.type === 'AR_CELEBRATION_DONE') {
-                        console.log('[AR] AR Celebration completed! Welcome back to the classroom Ž‰');
+                        console.log('[AR] AR Celebration completed! Welcome back to the classroom 🎉');
                     }
                 } catch (e) { /* ignore non-JSON messages */ }
             });
@@ -7955,7 +7955,7 @@
                 try {
                     const data = JSON.parse(event.data);
                     if (data.type === 'AR_PERMISSION_DENIED') {
-                        console.log('[AR] Camera permission denied â€” AR overlay skipped.');
+                        console.log('[AR] Camera permission denied — AR overlay skipped.');
                     } else if (data.type === 'AR_CELEBRATION_DONE') {
                         console.log('[AR] AR Celebration completed!');
                     }
