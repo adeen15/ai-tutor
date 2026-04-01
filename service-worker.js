@@ -1,6 +1,7 @@
 const CACHE_NAME = 'ai-tutor-v3';
 const PRECACHE_URLS = [
   '/',
+  '2nd gemini app.html',
   'manifest.json',
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js',
