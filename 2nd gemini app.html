@@ -3957,11 +3957,7 @@
 
                         // --- Offline Detection: Don't show spinner if no internet ---
                         if (!navigator.onLine) {
-                            console.warn("App loaded offline — skipping Supabase init.");
-                            this.isLoading = false;
-                            this.currentMoodIcon = this.currentChar?.icon || '🦖';
-                            this.generateGate();
-                            return; // Skip all network calls
+                            console.warn("Browser reports offline, but we will still attempt to reach the server...");
                         }
 
                         // Safety Timeout: Force loading off after 4 seconds if still stuck
@@ -3985,19 +3981,30 @@
                         }, 60000);
 
                         try {
-                            // Timeout fetch after 3s — if offline, fail fast instead of hanging
+                            console.log("Fetching configuration...");
+                            // Timeout fetch after 5s — more generous for slow connections
                             const configController = new AbortController();
-                            const configTimeout = setTimeout(() => configController.abort(), 3000);
+                            const configTimeout = setTimeout(() => configController.abort(), 5000);
                             let res;
                             try {
                                 res = await fetch('/api/config', { signal: configController.signal });
                                 clearTimeout(configTimeout);
+                                if (!res.ok) throw new Error("Config endpoint returned status " + res.status);
                             } catch (fetchErr) {
                                 clearTimeout(configTimeout);
-                                throw new Error('offline_or_unreachable');
+                                console.error("Config fetch failed:", fetchErr);
+                                throw new Error('config_unreachable');
                             }
+                            
                             const config = await res.json();
+                            console.log("Config loaded:", !!config.supabaseUrl ? "Has URL" : "No URL", !!config.supabaseKey ? "Has Key" : "No Key");
+                            
+                            if (!config.supabaseUrl || !config.supabaseKey) {
+                                throw new Error("Supabase credentials missing in config. Check Vercel environment variables.");
+                            }
+
                             this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
+                            console.log("Supabase client created successfully.");
 
                             // 1. Check for existing session immediately before showing ANY UI
                             const { data: { session } } = await this.supabase.auth.getSession();
@@ -6461,9 +6468,14 @@
                     },
 
                     async handleSignup() {
-                        if (!this.supabase || !navigator.onLine) {
-                            alert("⚠️ You're offline! Please connect to the internet to create an account.");
+                        if (!this.supabase) {
+                            alert("⚠️ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
+                            console.error("Signup blocked: this.supabase is null");
                             return;
+                        }
+                        
+                        if (!navigator.onLine) {
+                            console.warn("navigator.onLine is false, but attempting signup anyway...");
                         }
                         if (!this.loginForm.name || !this.loginForm.email || !this.loginForm.password) {
                             alert("Please fill in all fields.");
@@ -6616,9 +6628,14 @@
                     },
 
                     async handleLogin() {
-                        if (!this.supabase || !navigator.onLine) {
-                            alert("⚠️ You're offline! Please connect to the internet to login.");
+                        if (!this.supabase) {
+                            alert("⚠️ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
+                            console.error("Login blocked: this.supabase is null");
                             return;
+                        }
+                        
+                        if (!navigator.onLine) {
+                            console.warn("navigator.onLine is false, but attempting login anyway...");
                         }
                         console.log("Attempting Login..."); // Log start
                         this.isLoading = true;
