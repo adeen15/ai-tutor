@@ -592,8 +592,14 @@
                     <span class="text-xl sm:text-3xl">🔍</span>
                 </button>
 
-                <!-- Magic Auras (Row 2 Desktop) -->
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
+                <!-- NEW: AI Sprints Button (⚡) -->
+                <button @click="startSprint()" class="bg-indigo-500 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
+                    <span class="text-xl sm:text-3xl animate__animated animate__pulse animate__infinite">⚡</span>
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                </button>
+
+                <!-- Magic Auras -->
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('magic_auras')">
                     <span class="text-xl sm:text-3xl">🪄</span>
                 </button>
             </div>
@@ -3661,7 +3667,7 @@
                         </div>
                         <div>
                             <h3 class="font-kids text-2xl text-pink-600">Story Time!</h3>
-                            <p class="text-xs font-bold text-pink-400 uppercase tracking-widest" x-text="t('story_about') + ' ' + t(currentChar.subjectKey)"></p>
+                            <p class="text-xs font-bold text-pink-400 uppercase tracking-widest" x-text="'Story about ' + currentChar.name"></p>
                         </div>
                     </div>
                     <button @click="showStoryModal = false; toggleScroll(false)" class="text-pink-300 hover:text-pink-500 text-3xl transition-colors"><i class="fas fa-times-circle"></i></button>
@@ -3695,10 +3701,69 @@
             </div>
         </div>
 
+        <!-- AI Sprint Overlay (Feature #5) -->
+        <div x-show="isSprintActive" x-cloak class="fixed inset-0 z-[200] bg-indigo-900 flex flex-col items-center p-4 sm:p-12 overflow-hidden" x-transition.opacity>
+            <!-- Ticking Header -->
+            <div class="w-full max-w-2xl flex justify-between items-center mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="bg-indigo-800 rounded-2xl px-6 py-3 border-2 border-indigo-400 shadow-lg">
+                        <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest block">Time Left</span>
+                        <span class="text-4xl font-kids text-white" :class="sprintTimeLeft <= 10 ? 'text-red-400 animate-pulse' : ''" x-text="sprintTimeLeft + 's'"></span>
+                    </div>
+                    <div class="bg-indigo-800 rounded-2xl px-6 py-3 border-2 border-indigo-400 shadow-lg">
+                        <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest block">Score</span>
+                        <span class="text-4xl font-kids text-indigo-400" x-text="sprintScore"></span>
+                    </div>
+                </div>
+                
+                <!-- Combo Meter -->
+                <div class="flex flex-col items-end">
+                    <div class="text-right">
+                        <span class="text-xs font-bold text-yellow-500 uppercase tracking-widest block">Multiplier</span>
+                        <span class="text-5xl font-kids text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]" x-text="sprintCombo + 'x'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="flex-1 w-full max-w-3xl flex flex-col justify-center items-center gap-8 translate-y-[-20px]">
+                <template x-if="isSprintLoading">
+                    <div class="flex flex-col items-center animate__animated animate__fadeIn">
+                        <div class="spinner border-white mb-4 w-12 h-12"></div>
+                        <p class="text-white font-kids text-2xl">Generating Next Challenge...</p>
+                    </div>
+                </template>
+
+                <template x-if="!isSprintLoading && sprintCurrentQuestion">
+                    <div class="w-full animate__animated animate__backInRight">
+                        <div class="bg-white rounded-[3rem] p-8 sm:p-12 shadow-2xl border-b-[8px] border-indigo-200 mb-8 max-h-[40vh] overflow-y-auto">
+                            <h2 class="text-3xl sm:text-5xl font-kids text-indigo-900 text-center leading-tight" x-text="sprintCurrentQuestion.question"></h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <template x-for="(option, index) in sprintCurrentQuestion.options" :key="index">
+                                <button @click="answerSprint(index)" 
+                                        class="py-6 sm:py-8 bg-indigo-500 hover:bg-indigo-400 text-white rounded-3xl font-kids text-3xl shadow-xl transition-all active:scale-90 border-b-8 border-indigo-700 active:border-b-0 hover:translate-y-[-4px]"
+                                        x-text="option">
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Ticking Footer Bar -->
+            <div class="w-full max-w-2xl h-4 bg-indigo-950 rounded-full mt-12 overflow-hidden border-2 border-indigo-800">
+                <div class="h-full bg-indigo-400 transition-all duration-1000 ease-linear" :style="'width: ' + (sprintTimeLeft / 60 * 100) + '%'"></div>
+            </div>
+
+            <!-- Emergency Quit -->
+            <button @click="if(confirm('Quit Sprint?')) endSprint()" class="mt-8 text-indigo-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest">
+                Cancel Challenge
+            </button>
+        </div>
+
         <script>
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("service-worker.js");
-            }
 
             function aiTutor() {
                 return {
@@ -3851,6 +3916,113 @@
                     isTimeUp: false,
                     lastTimeUpdate: Date.now(),
                     timeCheckInterval: null,
+
+                    // Adaptive AI Sprint State (Feature #5)
+                    isSprintActive: false,
+                    sprintTimeLeft: 0,
+                    sprintScore: 0,
+                    sprintCombo: 1,
+                    sprintDifficulty: 1,
+                    sprintCorrectStreak: 0,
+                    sprintCurrentQuestion: null,
+                    sprintInterval: null,
+                    sprintTotalCorrect: 0,
+                    isSprintLoading: false,
+
+                    async startSprint() {
+                        this.isSprintMode = true; // Use common naming for overlays
+                        this.isSprintActive = true;
+                        this.sprintTimeLeft = 60;
+                        this.sprintScore = 0;
+                        this.sprintCombo = 1;
+                        this.sprintDifficulty = 1;
+                        this.sprintCorrectStreak = 0;
+                        this.sprintTotalCorrect = 0;
+                        this.toggleScroll(true);
+                        
+                        await this.getSprintQuestion();
+                        
+                        this.sprintInterval = setInterval(() => {
+                            this.sprintTimeLeft--;
+                            if (this.sprintTimeLeft <= 0) {
+                                this.endSprint();
+                            }
+                        }, 1000);
+                    },
+
+                    async getSprintQuestion() {
+                        this.isSprintLoading = true;
+                        const difficulty = this.sprintDifficulty;
+                        const subject = this.currentChar.subjectKey;
+                        
+                        try {
+                            const systemPrompt = `You are an AI Sprint Generator.
+                            Generate ONE fast-fire multiple_choice question about ${subject}.
+                            DIFFICULTY TIER: ${difficulty} (1-5).
+                            LANGUAGE: ${this.currentLanguage}.
+                            Format: {"question": "...", "options": ["A", "B", "C"], "correctIndex": 0}`;
+
+                            const response = await fetch("/api/chat", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    "messages": [
+                                        { "role": "system", "content": systemPrompt },
+                                        { "role": "user", "content": "Next sprint question please!" }
+                                    ]
+                                })
+                            });
+
+                            const data = await response.json();
+                            let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
+                            this.sprintCurrentQuestion = JSON.parse(cleanJson);
+                        } catch (e) {
+                            console.error("Sprint AI Error", e);
+                            this.sprintCurrentQuestion = { question: "1 + 1?", options: ["1", "2", "3"], correctIndex: 1 };
+                        } finally {
+                            this.isSprintLoading = false;
+                        }
+                    },
+
+                    answerSprint(index) {
+                        if (this.isSprintLoading) return;
+                        
+                        const isCorrect = index === this.sprintCurrentQuestion.correctIndex;
+                        if (isCorrect) {
+                            this.sprintScore += (10 * this.sprintCombo);
+                            this.sprintCombo = Math.min(this.sprintCombo + 1, 5);
+                            this.sprintCorrectStreak++;
+                            this.sprintTotalCorrect++;
+                            this.playPing();
+                            if (this.sprintCorrectStreak >= 3 && this.sprintDifficulty < 5) {
+                                this.sprintDifficulty++;
+                                this.sprintCorrectStreak = 0;
+                            }
+                        } else {
+                            this.sprintCombo = 1;
+                            this.sprintCorrectStreak = 0;
+                            if (this.sprintDifficulty > 1) this.sprintDifficulty--;
+                        }
+                        
+                        this.getSprintQuestion();
+                    },
+
+                    endSprint() {
+                        clearInterval(this.sprintInterval);
+                        this.isSprintActive = false;
+                        const finalXp = Math.round(this.sprintScore / 2);
+                        const finalCoins = Math.round(this.sprintScore / 5);
+                        
+                        this.xp += finalXp;
+                        this.coins += finalCoins;
+                        this.incrementWeeklyXP(finalXp);
+                        
+                        this.playPing();
+                        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                        
+                        this.syncData();
+                        this.toggleScroll(false);
+                    },
 
                     // Spaced Repetition State
                     reviewQuestions: [],
