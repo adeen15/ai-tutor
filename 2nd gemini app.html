@@ -1433,7 +1433,49 @@
                     </div>
                 </div>
 
-                <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                    <div class="mb-8 px-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-kids text-xl text-slate-700">Today's Missions 🎯</h3>
+                            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest" 
+                                 x-text="dailyQuests.filter(q => q.claimed).length + ' / ' + dailyQuests.length + ' Complete'"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <template x-for="quest in dailyQuests">
+                                <div class="bg-white border-2 p-4 rounded-2xl flex flex-col gap-3 transition-all shadow-sm"
+                                     :class="quest.claimed ? 'border-green-100 bg-green-50/30' : 'border-slate-100 hover:border-blue-100'">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-xl" 
+                                             x-text="quest.icon"
+                                             :class="quest.completed ? 'bg-green-100 text-green-600' : ''"></div>
+                                        <div class="flex-1">
+                                            <p class="text-xs font-bold text-slate-700 leading-tight" x-text="quest.text"></p>
+                                            <p class="text-[10px] font-bold text-amber-500 mt-0.5" x-text="'+' + quest.reward + ' Coins'"></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden position-relative">
+                                        <div class="h-full bg-blue-400 transition-all duration-500"
+                                             :class="quest.completed ? 'bg-green-400' : ''"
+                                             :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
+                                    </div>
+
+                                    <button @click="claimQuestReward(quest)"
+                                            class="w-full py-2 rounded-xl font-kids text-xs shadow-sm transition-all active:scale-95"
+                                            :disabled="!quest.completed || quest.claimed"
+                                            :class="[
+                                                !quest.completed ? 'bg-slate-50 text-slate-300' : '',
+                                                quest.completed && !quest.claimed ? 'bg-amber-400 text-amber-900 hover:bg-amber-500' : '',
+                                                quest.claimed ? 'bg-green-500 text-white' : ''
+                                            ]">
+                                        <span x-show="!quest.completed">Locked</span>
+                                        <span x-show="quest.completed && !quest.claimed">Claim Reward!</span>
+                                        <span x-show="quest.claimed">Awarded <i class="fas fa-check ml-1"></i></span>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
                     <div x-show="isPremium" class="mb-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 text-white shadow-xl animate__animated animate__fadeIn">
                         <div class="flex items-center gap-4">
                             <div class="text-4xl bg-white/20 p-3 rounded-2xl">🎯</div>
@@ -4040,6 +4082,51 @@
                         { id: 'spring_aura', name: 'Spring Aura', icon: '🌸', price: 200, effectType: 'bloom', seasonal: true },
                         { id: 'flower_trail', name: 'Flower Trail', icon: '🌻', price: 350, effectType: 'flowers', seasonal: true }
                     ],
+
+                    dailyQuests: [
+                        { id: 'ask_ai', text: 'Ask the Professor a question', progress: 0, target: 1, completed: false, reward: 50, icon: '💬', claimed: false },
+                        { id: 'complete_quiz', text: 'Complete any Lesson Quiz', progress: 0, target: 1, completed: false, reward: 100, icon: '📝', claimed: false },
+                        { id: 'generate_story', text: 'Generate a Magic Story', progress: 0, target: 1, completed: false, reward: 75, icon: '📖', claimed: false }
+                    ],
+
+                    updateQuest(id) {
+                        const quest = this.dailyQuests.find(q => q.id === id);
+                        if (quest && !quest.completed) {
+                            quest.progress++;
+                            if (quest.progress >= quest.target) {
+                                quest.completed = true;
+                                this.playPing();
+                                // Optional: Auto-claim or show notification
+                            }
+                        }
+                    },
+
+                    claimQuestReward(quest) {
+                        if (quest.completed && !quest.claimed) {
+                            this.coins += quest.reward;
+                            quest.claimed = true;
+                            this.playPing();
+                            confetti({
+                                particleCount: 100,
+                                spread: 70,
+                                origin: { y: 0.6 }
+                            });
+                            this.syncData();
+                        }
+                    },
+
+                    resetDailyQuests() {
+                        const lastReset = localStorage.getItem('last_quest_reset');
+                        const today = new Date().toDateString();
+                        if (lastReset !== today) {
+                            this.dailyQuests.forEach(q => {
+                                q.progress = 0;
+                                q.completed = false;
+                                q.claimed = false;
+                            });
+                            localStorage.setItem('last_quest_reset', today);
+                        }
+                    },
                     characters: [
                         { 
                             nameKey: "char_dino_name", 
@@ -4225,6 +4312,7 @@
                         window.app = this; // Expose for easy console testing
                         await this.initI18n();
                         this.initializeCurrentChar();
+                        this.resetDailyQuests();
                         this.loadHearts(); // Load hearts for guests/on load
                         this.startTimeTracking();
                         
@@ -5416,6 +5504,7 @@
                         }
 
                         await this.syncData();
+                        this.updateQuest('complete_quiz');
                         this.predictiveDownloadNextLessons();
                         this.closeLesson();
                         
@@ -6381,6 +6470,7 @@
                             let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
                             this.currentStory = JSON.parse(cleanJson);
                             this.isStoryThinking = false;
+                            this.updateQuest('generate_story');
 
                         } catch (e) {
                             console.error("Story Error", e);
@@ -7638,6 +7728,8 @@
 
                     async askTutor() {
                         if (!this.userQuery.trim()) return;
+
+                        this.updateQuest('ask_ai');
 
                         // --- NEW: Offline Generative AI Fallback ---
                         if (!navigator.onLine) {
