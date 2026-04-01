@@ -462,7 +462,6 @@ app.get('/api/debug', (req, res) => {
         keys: {
             OPENROUTER_API_KEY: checkKey('OPENROUTER_API_KEY'),
             OPENAI_API_KEY: checkKey('OPENAI_API_KEY'),
-            ELEVENLABS_API_KEY: checkKey('ELEVENLABS_API_KEY'),
             SUPABASE_URL: checkKey('SUPABASE_URL'),
             SUPABASE_ANON_KEY: checkKey('SUPABASE_ANON_KEY'),
             SUPABASE_SERVICE_ROLE_KEY: checkKey('SUPABASE_SERVICE_ROLE_KEY'),
@@ -690,51 +689,7 @@ app.post('/api/tts', ttsLimit, async (req, res) => {
         const { text, voiceId } = req.body;
         const vId = voiceId ? voiceId.trim() : "voice_placeholder_id";
 
-        // --- Provider 1: ElevenLabs TTS (Preferred for HIGH FIDELITY) ---
-        const elevenLabsKey = normalizeKey(process.env.ELEVENLABS_API_KEY);
-        if (elevenLabsKey && elevenLabsKey !== 'your_elevenlabs_key_here') {
-            try {
-                // Determine voice. Fallback to a default if unknown.
-                const voiceMap = {
-                    "9740af7a-9674-4be1-967b-cf6daba06596": "pNInz6obpgDQGcFmaJcg",   // Professor Dino (Adam)
-                    "79005bb6-7ae3-4768-b2a0-efc774a3c7a9": "t0jbNlBVZ17f02VDIeMI",    // Milo Monkey (Rachel)
-                    "0062153d-dd11-4330-a6b1-87cd29187ed7": "VR6AewLTigWG4xSOukaG",    // Starry Alien (Antoni)
-                    "2c96d996-4e88-44e8-944a-303d5b063775": "EXAVITQu4vr4xnSDxMaL",    // Magic Cat (Bella)
-                    "a09a1325-058b-4bc7-9105-b96b1cce27c5": "MF3mGyEYCl7XYWbV9V6O"     // Bouncy Bee (Elli)
-                };
-                const elVoice = voiceMap[vId] || "EXAVITQu4vr4xnSDxMaL";
-
-                console.log(`🎙️ ElevenLabs TTS. Voice: ${elVoice}`);
-                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${elVoice}?output_format=mp3_44100_128`, {
-                    method: 'POST',
-                    headers: {
-                        'xi-api-key': elevenLabsKey,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        text: text,
-                        model_id: "eleven_multilingual_v2",
-                        voice_settings: {
-                            stability: 0.5,
-                            similarity_boost: 0.75
-                        }
-                    })
-                });
-
-                if (response.ok) {
-                    const audioBuffer = await response.arrayBuffer();
-                    res.set('Content-Type', 'audio/mpeg');
-                    return res.send(Buffer.from(audioBuffer));
-                } else {
-                    const errTxt = await response.text();
-                    console.warn(`⚠️ ElevenLabs returned ${response.status}:`, errTxt);
-                }
-            } catch (err) {
-                console.warn("⚠️ ElevenLabs TTS Exception (Falling back to OpenAI):", err.message);
-            }
-        }
-
-        // --- Provider 2: OpenAI TTS (Fallback) ---
+        // --- Provider 1: OpenAI TTS (Preferred if Key exists) ---
         const openAiKey = normalizeKey(process.env.OPENAI_API_KEY);
         if (openAiKey && openAiKey !== 'your_openai_key_here') {
             try {
