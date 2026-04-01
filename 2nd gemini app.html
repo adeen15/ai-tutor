@@ -544,6 +544,11 @@
                     <span class="text-xl sm:text-3xl">🗺️</span>
                 </button>
 
+                <!-- Skill Tree Button -->
+                <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
+                    <span class="text-xl sm:text-3xl">🌳</span>
+                </button>
+
                 <!-- Scavenger Hunt (Row 2 Desktop) -->
                 <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
                     <span class="text-xl sm:text-3xl">🔍</span>
@@ -748,14 +753,14 @@
                         </button>
                     </template>
 
-                    <!-- Hardcoded Curriculum Banner -->
+                    <!-- 30-Day Path Banner -->
                     <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">🗺️</div>
+                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">📅</div>
                             <div>
                                 <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Your Learning Plan</div>
-                                <div class="text-xl sm:text-3xl font-kids">Adventure Map</div>
-                                <div class="text-xs font-bold opacity-90 mt-1 text-blue-100">Continue your educational journey!</div>
+                                <div class="text-xl sm:text-3xl font-kids" x-text="getDailyContent().title">Start Day 1</div>
+                                <div class="text-xs font-bold opacity-90 mt-1 text-blue-100" x-text="getDailyContent().content.substring(0,30) + '...'"></div>
                             </div>
                         </div>
                         <div class="bg-white text-blue-600 px-3 py-2 sm:px-6 sm:py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors text-sm sm:text-base">
@@ -770,6 +775,13 @@
                         </div>
                         
                         <div class="flex flex-wrap justify-end gap-3 mt-6" x-show="hasAnswered && !isThinking">
+                            <button 
+                                @click="startQuiz()"
+                                class="flex items-center gap-2 px-5 py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4 bg-yellow-400 border-yellow-600 text-yellow-900 shadow-md"
+                            >
+                                <span class="text-xl">🏆</span> <span x-text="t('challenge_me')">Challenge Me!</span>
+                            </button>
+
                             <button 
                                 @click="isSpeaking ? stopSpeaking() : speak(displayText)"
                                 class="flex items-center gap-3 px-5 sm:px-6 py-2 sm:py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4"
@@ -909,6 +921,14 @@
                         </div>
 
                         <!-- Action Buttons -->
+                        <button 
+                            x-show="visionPreview && !isThinking && !isCameraActive"
+                            @click="generateToyLesson()"
+                            class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
+                        >
+                            Magic Lesson! 🪄
+                        </button>
+
                         <button 
                             x-show="visionPreview && !isCameraActive"
                             @click="analyzeImage()"
@@ -1412,6 +1432,21 @@
                                 </template>
                             </button>
                         </template>
+
+                        <button @click="generateNewPath()" 
+                                class="bg-white rounded-[2rem] p-8 border-4 border-dashed border-purple-200 hover:border-purple-400 group transition-all flex flex-col items-center text-center relative overflow-hidden"
+                                :disabled="isGeneratingPath">
+                            <div x-show="isGeneratingPath" class="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center">
+                                <div class="spinner border-purple-500 mb-4"></div>
+                                <p class="font-kids text-purple-600 animate-pulse text-sm">Magic in progress...</p>
+                            </div>
+                            <div class="w-24 h-24 rounded-full bg-purple-50 flex items-center justify-center text-5xl mb-6 group-hover:rotate-12 transition-transform">
+                            ✨
+                            </div>
+                            <h3 class="text-2xl font-kids text-purple-600 mb-2">Magic Wand</h3>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Generate New Quest</p>
+                            <div class="mt-6 text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-full font-bold">Powered by AI 🪄</div>
+                        </button>
                     </div>
                 </div>
 
@@ -6106,8 +6141,21 @@
 
 
 
+                    getDailyContent() {
+                        // Fallback for days without specific data
+                        const dayKey = 'day' + this.learningPathDay;
+                        return this.dailyPathData[dayKey] || { 
+                            title: "Day " + this.learningPathDay + ": Daily Adventure", 
+                            type: "generic", 
+                            content: "Keep learning! Today is a great day to ask Professor Dino a question.",
+                            task: "Ask 3 questions to your AI Tutor!"
+                        };
+                    },
+
                     startDailyLesson() {
-                        this.showLearningPath = true;
+                        this.currentChar = this.characters[0]; // Force Professor Dino
+                        this.currentMoodIcon = this.currentChar.icon;
+                        this.showDailyPath = true;
                         this.toggleScroll(true);
                     },
 
