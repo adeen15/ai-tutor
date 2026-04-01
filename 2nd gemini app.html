@@ -3,11 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Animated Friends - Structured Learning with AI Support</title>
+        <title>AI Tutor - Animated Friends</title>
         
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="Structured Learning">
+        <meta name="apple-mobile-web-app-title" content="AI Tutor">
         <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1998/1998614.png">
         
         <link rel="manifest" href="manifest.json">
@@ -198,7 +198,7 @@
 
         <div id="worksheet-print-area" class="hidden">
             <div style="border: 4px solid black; padding: 20px;">
-                <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">Animated Friends: Learning Worksheet</h1>
+                <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">AI Tutor: Learning Worksheet</h1>
                 <p><strong>Student Name:</strong> <span x-text="childProfile.name"></span> ____________________</p>
                 <p><strong>Date:</strong> ____________________</p>
                 <hr style="margin: 20px 0;">
@@ -227,7 +227,7 @@
 
                     <div class="relative z-10">
                         <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
-                        <h1 class="text-4xl font-kids text-slate-800 mb-2">Animated Friends</h1>
+                        <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
                         <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
 
                         <div x-show="!hasAccount" class="space-y-4 text-left">
@@ -475,14 +475,11 @@
         </div>
 
         <div class="absolute top-4 right-4 flex flex-col items-end gap-2 sm:gap-4 z-40">
-            <!-- Row 1 -->
             <div class="flex flex-row gap-2 sm:gap-4">
+
+
                 <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
                     <span class="text-xl sm:text-3xl">📕</span>
-                </button>
-
-                <button @click="showSkillsModal = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="My Skills">
-                    <span class="text-xl sm:text-3xl">🏆</span>
                 </button>
 
                 <!-- Profile Switcher: Hidden on mobile here, moved to Row 4 -->
@@ -512,10 +509,7 @@
                 <button @click="openParentPortal()" class="bg-white p-2 border-b-4 border-gray-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform">
                     <span class="text-xl sm:text-2xl">🔒</span>
                 </button>
-            </div>
 
-            <!-- Row 2 -->
-            <div class="flex flex-row gap-2 sm:gap-4">
                 <!-- Social Button -->
                 <button @click="socialTab = 'friends'; showSocialModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-pink-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Friends & Social">
                     <span class="text-xl sm:text-2xl">👫</span>
@@ -529,7 +523,9 @@
                         <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                     </span>
                 </button>
+            </div>
 
+            <div class="flex flex-row gap-2 sm:gap-4">
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
                     <span class="text-xl sm:text-3xl">📖</span>
                 </button>
@@ -542,10 +538,7 @@
                 <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-indigo-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
                     <span class="text-xl sm:text-3xl">📥</span>
                 </button>
-            </div>
 
-            <!-- Row 3 -->
-            <div class="flex flex-row gap-2 sm:gap-4">
                 <!-- Adventure Map -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl sm:text-3xl">🗺️</span>
@@ -575,12 +568,9 @@
                     <span class="text-xl">🔍</span>
                 </button>
 
+                <!-- Sticker Book (Mobile Only - Aligned in Third Row) -->
                 <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
                     <span class="text-xl">📕</span>
-                </button>
-
-                <button @click="showSkillsModal = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="My Skills">
-                    <span class="text-xl">🏆</span>
                 </button>
 
                 <!-- Dual Quest (Mobile Only - Row 3) -->
@@ -616,7 +606,7 @@
             </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[280px] sm:pt-44 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[280px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
@@ -746,36 +736,19 @@
                 </div>
 
                 <div class="w-full max-w-2xl order-1 lg:order-2">
-                    <!-- Spaced Repetition Banner (Duolingo Style) -->
+                    <!-- Spaced Repetition Banner -->
                     <template x-if="showReviewBanner">
-                        <button @click="startReviewQuiz()" class="w-full bg-gradient-to-br from-indigo-500 via-purple-600 to-fuchsia-500 rounded-[2.5rem] p-5 sm:p-7 mb-8 shadow-2xl shadow-indigo-200 flex items-center justify-between text-white transform hover:scale-[1.02] active:scale-95 transition-all text-left group border-b-[8px] border-indigo-800 relative overflow-hidden">
-                            <!-- Background Decoration -->
-                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all"></div>
-                            
-                            <div class="flex items-center gap-4 sm:gap-6 relative z-10">
-                                <div class="bg-white p-4 rounded-3xl text-3xl sm:text-4xl shadow-xl transform group-hover:rotate-12 transition-transform duration-500 animate__animated animate__bounceIn">
-                                    <span x-show="reviewQuestions.length > 3">🔥</span>
-                                    <span x-show="reviewQuestions.length <= 3">🧠</span>
-                                </div>
+                        <button @click="startReviewQuiz()" class="w-full bg-gradient-to-r from-orange-400 to-red-500 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-orange-300">
+                            <div class="flex items-center gap-3 sm:gap-4">
+                                <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">🧠</div>
                                 <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <div class="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
-                                        <div class="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-indigo-100">Ready to Review</div>
-                                    </div>
-                                    <div class="text-2xl sm:text-4xl font-kids drop-shadow-md">
-                                        <span x-text="reviewQuestions.length"></span> Skills to Master!
-                                    </div>
-                                    <div class="text-xs sm:text-sm font-bold mt-1.5 text-indigo-100/80 flex items-center gap-2">
-                                        <i class="fas fa-clock"></i> 1 day • 3 days • 7 days loop active
-                                    </div>
+                                    <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Mastery Challenge</div>
+                                    <div class="text-xl sm:text-3xl font-kids">Let's practice something you found hard yesterday!</div>
+                                    <div class="text-xs font-bold opacity-90 mt-1 text-orange-100">Quick 3-question review to become a master!</div>
                                 </div>
                             </div>
-                            
-                            <div class="relative z-10 flex flex-col items-center gap-2">
-                                <div class="bg-white text-indigo-600 px-6 py-3 sm:px-8 sm:py-4 rounded-2xl font-black font-kids shadow-[0_4px_0_#c7d2fe] hover:shadow-none hover:translate-y-1 transition-all text-sm sm:text-lg flex items-center gap-2">
-                                    GO! <i class="fas fa-arrow-right"></i>
-                                </div>
-                                <div class="text-[9px] font-bold text-indigo-100 uppercase tracking-widest">+50 Bonus Coins</div>
+                            <div class="bg-white text-orange-600 px-3 py-2 sm:px-6 sm:py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors text-sm sm:text-base">
+                                REVIEW <i class="fas fa-bolt ml-1"></i>
                             </div>
                         </button>
                     </template>
@@ -1034,8 +1007,143 @@
             </div>
         </div>
 
+        <div x-show="showStickerBook" x-cloak class="fixed inset-0 z-[65] bg-slate-900 bg-opacity-95 flex items-center justify-center p-0 sm:p-6" x-transition.opacity>
+            <div class="bg-white rounded-none sm:rounded-[2.5rem] w-full h-full sm:h-auto sm:max-h-[90vh] max-w-4xl flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
+                <div class="p-6 sm:p-8 border-b-4 border-gray-100 flex justify-between items-center bg-white z-10">
+                    <div>
+                        <h2 class="text-3xl font-kids text-slate-800">Sticker Book 📕</h2>
+                        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Collect them all, <span x-text="childProfile.name"></span>!</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button @click="if(confirm('Are you sure you want to restart your collection?')){ learningStats.achievements = []; syncData(); playPing(); }" class="bg-gray-100 p-3 rounded-full hover:bg-orange-100 text-gray-500 hover:text-orange-500 transition-colors" title="Restart Collection">
+                            <i class="fas fa-undo-alt text-2xl"></i>
+                        </button>
+                        <button @click="showStickerBook = false; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
 
+                <div class="flex-1 overflow-y-auto p-6 sm:p-10 bg-slate-50">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+                        <template x-for="badge in availableBadges" :key="badge.id">
+                            <div class="relative group">
+                                <div class="bg-white rounded-3xl p-2 sm:p-6 shadow-md sm:shadow-lg flex flex-col items-center justify-center text-center aspect-square transition-all transform hover:scale-105"
+                                     :class="learningStats.achievements.includes(badge.id) ? 'border-4 border-yellow-400 opacity-100' : 'border-4 border-dashed border-gray-200 opacity-50 grayscale'">
+                                    
+                                    <div class="w-10 h-10 sm:w-20 sm:h-20 rounded-full bg-slate-50 flex items-center justify-center text-2xl sm:text-5xl mb-1 sm:mb-4 shadow-inner">
+                                        <span x-text="learningStats.achievements.includes(badge.id) ? badge.icon : '❓'"></span>
+                                    </div>
+                                    
+                                    <h3 class="font-kids text-[10px] sm:text-xl text-slate-800 mb-0.5 sm:mb-1" x-text="learningStats.achievements.includes(badge.id) ? badge.name : 'Unknown'"></h3>
+                                    <p class="text-[8px] sm:text-xs font-bold text-slate-400 leading-tight uppercase tracking-wider" x-text="badge.desc"></p>
+                                    
+                                    <template x-if="learningStats.achievements.includes(badge.id)">
+                                        <button @click.stop="shareAchievement(badge.id)" class="absolute -bottom-2 -left-2 bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95 z-20" title="Share Proud Moment">
+                                            <i class="fas fa-share-alt text-sm"></i>
+                                        </button>
+                                    </template>
+                                    
+                                    <template x-if="learningStats.achievements.includes(badge.id)">
+                                        <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 w-8 h-8 rounded-full flex items-center justify-center shadow-lg animate__animated animate__bounceIn">
+                                            <i class="fas fa-check text-sm"></i>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
 
+                    <div class="mt-12 bg-white/50 rounded-3xl p-6 border-2 border-dashed border-gray-200 flex flex-col items-center">
+                        <p class="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">Progress</p>
+                        <div class="w-full max-w-xs bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+                            <div class="h-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-1000" 
+                                 :style="'width: ' + (learningStats.achievements.length / availableBadges.length * 100) + '%'"></div>
+                        </div>
+                        <p class="mt-3 font-kids text-slate-600" x-text="learningStats.achievements.length + ' / ' + availableBadges.length + ' Badges Earned'"></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Verified Trophy Room Modal -->
+        <div x-show="showTrophyRoom" x-cloak class="fixed inset-0 z-[65] bg-slate-900 bg-opacity-95 flex items-center justify-center p-0 sm:p-6" x-transition.opacity>
+            <div class="bg-white rounded-none sm:rounded-[3rem] w-full h-full sm:h-auto sm:max-h-[90vh] max-w-5xl flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
+                <div class="p-4 sm:p-8 border-b-4 border-blue-50 flex justify-between items-center bg-white z-10">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-10 h-10 sm:w-14 sm:h-14 bg-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl text-white shadow-lg shadow-blue-200">💎</div>
+                        <div>
+                            <h2 class="text-xl sm:text-3xl font-kids text-slate-800">Verified Trophy Room</h2>
+                            <p class="text-blue-400 font-bold uppercase tracking-[0.2em] text-[8px] sm:text-[10px] mt-1">Official Cryptographic Records</p>
+                        </div>
+                    </div>
+                    <button @click="showTrophyRoom = false; toggleScroll(false)" class="bg-slate-50 p-2 sm:p-4 rounded-full hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all">
+                        <i class="fas fa-times text-xl sm:text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-8 sm:p-12 bg-slate-50/50">
+                    <!-- Empty State -->
+                    <div x-show="!learningStats.blockchain_certificates || learningStats.blockchain_certificates.length === 0" class="text-center py-20 px-10">
+                        <div class="text-8xl mb-6 opacity-20">🏆</div>
+                        <h3 class="text-3xl font-kids text-slate-300 mb-4">No Trophies Yet!</h3>
+                        <p class="text-slate-400 max-w-sm mx-auto font-medium">Complete an entire Adventure Path (Grade Level) to earn your first **Blockchain Verified Trophy**!</p>
+                        <button @click="showTrophyRoom = false; showLearningPath = true" class="mt-8 px-8 py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-xl hover:scale-105 transition-transform">
+                            Go to Adventure Map! 🗺️
+                        </button>
+                    </div>
+
+                    <!-- Trophy Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8" x-show="learningStats.blockchain_certificates && learningStats.blockchain_certificates.length > 0">
+                        <template x-for="cert in learningStats.blockchain_certificates" :key="cert.id">
+                            <div class="bg-white rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-10 border-4 border-blue-50 shadow-2xl relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between min-h-[350px] sm:min-h-[400px]">
+                                <!-- Premium background glow -->
+                                <div class="absolute -top-20 -right-20 w-64 h-64 bg-blue-100/40 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-1000"></div>
+                                
+                                <div>
+                                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 relative z-10">
+                                        <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-[1.5rem] sm:rounded-[2rem] bg-white shadow-2xl flex items-center justify-center text-5xl sm:text-7xl transform group-hover:rotate-6 transition-transform border-4 border-blue-50/50">
+                                            <span x-text="cert.icon"></span>
+                                        </div>
+                                        <div class="flex-1 text-center sm:text-left">
+                                            <div class="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                                                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                                <p class="text-[8px] sm:text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Immutable Record</p>
+                                            </div>
+                                            <h4 class="font-kids text-2xl sm:text-3xl text-slate-800 leading-tight" x-text="cert.pathName"></h4>
+                                            <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-2" x-text="'Verified: ' + cert.date"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-10 p-6 bg-slate-50 rounded-3xl border border-blue-100/50 relative z-10 box-decoration-clone">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Digital Ledger Fingerprint</p>
+                                            <i class="fas fa-lock text-blue-200 text-xs"></i>
+                                        </div>
+                                        <code class="text-xs text-blue-600 font-mono font-bold break-all block leading-relaxed select-all" x-text="cert.id"></code>
+                                    </div>
+                                </div>
+
+                                <div class="mt-8 sm:mt-10 grid grid-cols-1 gap-3 sm:gap-4 relative z-10">
+                                    <button @click="verifyOnChain(cert)" class="w-full py-4 sm:py-5 bg-slate-900 text-white rounded-[1.2rem] sm:rounded-[1.5rem] font-kids text-xl sm:text-2xl shadow-2xl hover:bg-black transition-all flex items-center justify-center gap-3 sm:gap-4 group/btn hover:scale-[1.02] active:scale-100">
+                                        <i class="fas fa-shield-alt text-blue-400 group-hover/btn:scale-125 transition-transform text-lg sm:text-2xl"></i>
+                                        <span>Verify Truth</span>
+                                    </button>
+                                    <button @click="shareBlockchainCert(cert)" class="w-full py-3 sm:py-4 bg-blue-50 text-blue-600 rounded-[1.2rem] sm:rounded-[1.5rem] font-bold text-[10px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.2em] hover:bg-blue-100 transition-all flex items-center justify-center gap-2 sm:gap-3">
+                                        <i class="fas fa-share-alt"></i> Share Verified Proof
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-blue-50/30 border-t-2 border-blue-50/50 text-center">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Generated by AI Tutor Cryptographic Engine v1.0</p>
+                </div>
+            </div>
+        </div>
 
         <!-- Advanced Share Menu -->
         <div x-show="showShareMenu" x-cloak class="fixed inset-0 z-[75] bg-slate-900 bg-opacity-80 flex items-center justify-center p-6" x-transition.opacity>
@@ -1091,9 +1199,486 @@
             </div>
         </div>
 
+        <!-- Skill Tree Modal -->
+        <div x-show="showSkillTree" x-cloak class="fixed inset-0 z-[65] bg-slate-900/95 flex items-center justify-center p-0" x-transition.opacity>
+            <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
 
+                <!-- Header -->
+                <div class="p-5 sm:p-7 bg-gradient-to-r from-amber-500 to-orange-500 flex justify-between items-center z-20 shadow-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">🌳</div>
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-kids text-white">Skill Tree</h2>
+                            <p class="text-amber-100 font-bold text-[10px] sm:text-xs uppercase tracking-widest">Unlock your knowledge path!</p>
+                        </div>
+                    </div>
+                    <button @click="toggleSkillTree(false)" class="bg-white/20 hover:bg-white/30 p-3 rounded-2xl text-white transition-all">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
 
+                <!-- Subject Tabs -->
+                <div class="flex overflow-x-auto gap-2 px-4 sm:px-8 py-4 bg-white border-b-2 border-gray-100 min-h-[72px] items-center">
+                    <template x-for="subj in [{key:'history',label:'History',icon:'🦖',color:'bg-orange-500'},{key:'robots',label:'Math',icon:'🐒',color:'bg-blue-600'},{key:'space',label:'Space',icon:'👾',color:'bg-purple-600'},{key:'science',label:'Science',icon:'🐱',color:'bg-pink-500'},{key:'nature',label:'Nature',icon:'🐝',color:'bg-green-500'}]">
+                        <button @click="skillTreeSubject = subj.key" 
+                            class="flex-shrink-0 flex flex-col items-center gap-1 px-3 sm:px-5 py-2 rounded-2xl font-bold text-xs sm:text-sm transition-all border-b-4"
+                            :class="skillTreeSubject === subj.key ? subj.color + ' text-white border-black/20 scale-105' : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'">
+                            <span class="text-lg sm:text-2xl" x-text="subj.icon"></span>
+                            <span x-text="subj.label"></span>
+                        </button>
+                    </template>
+                </div>
 
+                <!-- Main Content -->
+                <div class="flex-1 overflow-y-auto bg-slate-50 px-4 sm:px-8 py-6">
+
+                    <!-- Empty State: No Tree Generated Yet -->
+                    <div x-show="!skillTreeData[skillTreeSubject]" class="flex flex-col items-center justify-center text-center py-16 px-6">
+                        <div class="text-7xl sm:text-9xl mb-6 animate__animated animate__pulse animate__infinite">🌱</div>
+                        <h3 class="text-2xl sm:text-3xl font-kids text-slate-700 mb-3">No Skill Tree Yet!</h3>
+                        <p class="text-slate-400 font-bold max-w-xs mb-8 text-sm sm:text-base">
+                            Let the AI generate a personalised skill path for 
+                            <span class="capitalize" x-text="skillTreeSubject"></span> 
+                            based on <span x-text="childProfile.name || 'your child'"></span>'s level!
+                        </p>
+                        <button @click="generateSkillTree(skillTreeSubject)"
+                            :disabled="isGeneratingSkillTree"
+                            class="relative px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl font-kids text-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all border-b-4 border-orange-700 disabled:opacity-60 disabled:cursor-not-allowed">
+                            <span x-show="!isGeneratingSkillTree">✨ Generate My Skill Tree</span>
+                            <span x-show="isGeneratingSkillTree" class="flex items-center gap-3">
+                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                Growing your tree...
+                            </span>
+                        </button>
+                        <p class="text-[10px] text-slate-300 mt-4 uppercase tracking-widest font-bold">Powered by AI ✨</p>
+                    </div>
+
+                    <!-- Skill Nodes Tree -->
+                    <div x-show="skillTreeData[skillTreeSubject]" class="max-w-lg mx-auto">
+
+                        <!-- Tree Header -->
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 class="font-kids text-2xl text-slate-800" x-text="skillTreeData[skillTreeSubject]?.title || 'Skill Tree'"></h3>
+                                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                    <span x-text="Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length"></span>
+                                    / <span x-text="(skillTreeData[skillTreeSubject]?.nodes || []).length"></span> skills mastered
+                                </p>
+                            </div>
+                            <button @click="if(confirm('Regenerate this skill tree? Your progress for this subject will be reset.')) { delete skillTreeData[skillTreeSubject]; if(skillTreeNodeProgress[skillTreeSubject]) delete skillTreeNodeProgress[skillTreeSubject]; localStorage.setItem('skill_tree_data', JSON.stringify(skillTreeData)); localStorage.setItem('skill_tree_progress', JSON.stringify(skillTreeNodeProgress)); generateSkillTree(skillTreeSubject); }" 
+                                class="bg-gray-100 hover:bg-amber-100 text-gray-400 hover:text-amber-600 p-2.5 rounded-xl transition-all" title="Regenerate Tree">
+                                <i class="fas fa-redo-alt"></i>
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-10 overflow-hidden shadow-inner">
+                            <div class="h-full bg-gradient-to-r from-amber-400 to-green-500 transition-all duration-1000 rounded-full"
+                                :style="'width: ' + (Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length / Math.max(1, (skillTreeData[skillTreeSubject]?.nodes || []).length) * 100) + '%'">
+                            </div>
+                        </div>
+
+                        <!-- Nodes -->
+                        <div class="flex flex-col items-center gap-0">
+                            <template x-for="(node, index) in (skillTreeData[skillTreeSubject]?.nodes || [])" :key="node.id">
+                                <div class="flex flex-col items-center w-full">
+
+                                    <!-- Connector Line (between nodes) -->
+                                    <div x-show="index > 0" class="w-1 h-8 rounded-full transition-colors duration-500"
+                                        :class="getSkillNodeStatus(skillTreeSubject, node.id) !== 'locked' ? 'bg-gradient-to-b from-amber-400 to-green-400' : 'bg-gray-200'">
+                                    </div>
+
+                                    <!-- Node Card -->
+                                    <button 
+                                        @click="startSkillNode(skillTreeSubject, node)"
+                                        :disabled="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'"
+                                        class="w-full max-w-sm rounded-3xl p-4 sm:p-5 border-4 shadow-lg transition-all duration-300 flex items-center gap-4 text-left group relative overflow-hidden"
+                                        :class="{
+                                            'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-400 hover:scale-[1.02] hover:shadow-xl': getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked',
+                                            'bg-gradient-to-br from-green-50 to-emerald-50 border-green-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'completed',
+                                            'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed': getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'
+                                        }">
+
+                                        <!-- Node Icon/Status Badge -->
+                                        <div class="flex-shrink-0 relative">
+                                            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-md"
+                                                :class="{
+                                                    'bg-amber-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked',
+                                                    'bg-green-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'completed',
+                                                    'bg-gray-300': getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'
+                                                }">
+                                                <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) !== 'locked'" x-text="node.emoji || '⭐'"></span>
+                                                <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'">🔒</span>
+                                            </div>
+                                            <!-- Completed checkmark -->
+                                            <div x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'" 
+                                                class="absolute -top-1.5 -right-1.5 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white shadow">
+                                                <i class="fas fa-check text-white text-[10px]"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Node Content -->
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2 mb-0.5">
+                                                <span class="text-[10px] font-bold uppercase tracking-widest"
+                                                    :class="{
+                                                        'text-amber-500': getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked',
+                                                        'text-green-600': getSkillNodeStatus(skillTreeSubject, node.id) === 'completed',
+                                                        'text-gray-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'
+                                                    }">
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'">✅ Mastered</span>
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked'">▶ Ready</span>
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'">🔒 Locked</span>
+                                                </span>
+                                            </div>
+                                            <h4 class="font-kids text-base sm:text-xl text-slate-800 leading-tight" x-text="'Skill ' + (node.id + 1) + ': ' + node.title"></h4>
+                                            <p class="text-[11px] sm:text-xs text-slate-500 font-semibold mt-1 leading-snug" x-text="node.description"></p>
+                                        </div>
+
+                                        <!-- Right Arrow for unlocked -->
+                                        <div x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked'" 
+                                            class="flex-shrink-0 w-8 h-8 bg-amber-400 rounded-xl flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                            <i class="fas fa-play text-white text-sm"></i>
+                                        </div>
+
+                                        <!-- Stars for completed -->
+                                        <div x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'" class="flex-shrink-0 text-yellow-400 text-sm">
+                                            ⭐⭐⭐
+                                        </div>
+                                    </button>
+                                </div>
+                            </template>
+
+                            <!-- All Complete Banner -->
+                            <template x-if="skillTreeData[skillTreeSubject] && (skillTreeData[skillTreeSubject]?.nodes || []).length > 0 && Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length === (skillTreeData[skillTreeSubject]?.nodes || []).length">
+                                <div class="mt-10 w-full max-w-sm bg-gradient-to-r from-yellow-400 to-amber-500 rounded-3xl p-6 text-white text-center shadow-2xl animate__animated animate__bounceIn">
+                                    <div class="text-5xl mb-3">🏆</div>
+                                    <h3 class="font-kids text-2xl mb-1">Tree Complete!</h3>
+                                    <p class="text-yellow-100 text-sm font-bold">You mastered all skills in this subject!</p>
+                                </div>
+                            </template>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="p-4 sm:p-6 bg-white border-t-2 border-gray-100 flex items-center justify-between">
+                    <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">AI-Generated • Progress Saved</p>
+                    <button x-show="skillTreeData[skillTreeSubject]" 
+                        @click="generateSkillTree(skillTreeSubject)" 
+                        :disabled="isGeneratingSkillTree"
+                        class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50">
+                        <i class="fas fa-magic mr-1"></i> Regenerate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[65] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
+            <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
+                
+                <div class="p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
+                    <div>
+                        <h2 class="text-3xl font-kids text-slate-800" x-text="t('adventure_map')">Adventure Map 🗺️</h2>
+                        <p class="text-gray-500 font-bold" x-show="!currentPath" x-text="t('choose_journey')">Choose your journey!</p>
+                        <p class="text-gray-500 font-bold" x-show="currentPath" x-text="currentPath ? currentPath.name : ''"></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button @click="resetMapProgress()" class="bg-red-100 p-3 rounded-full hover:bg-red-200 text-red-500 transition-colors" title="Reset Progress">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button @click="showLearningPath = false; currentPath = null; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="!currentPath" class="flex-1 overflow-y-auto p-8 bg-slate-50">
+                    <div x-show="isPremium" class="mb-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 text-white shadow-xl animate__animated animate__fadeIn">
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl bg-white/20 p-3 rounded-2xl">🎯</div>
+                            <div>
+                                <h3 class="font-kids text-2xl" x-text="t('personalized_mission')">Personalized Mission</h3>
+                                <p class="font-bold opacity-90" x-text="'Goal: Complete ' + (childProfile.ageRange === '4-5' ? '10 simple counts' : '5 Science lessons') + ' this week!'"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 pb-12">
+                        <template x-for="path in curriculum">
+                            <button @click="currentPath = path" class="bg-white rounded-[2rem] p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 border-b-8 border-gray-200 group flex flex-col items-center text-center relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-2 group-hover:h-full transition-all duration-500 opacity-10" :class="path.color"></div>
+                                
+                                <div class="w-24 h-24 rounded-full bg-gray-50 flex items-center justify-center text-5xl mb-6 shadow-inner group-hover:scale-110 transition-transform">
+                                    <span x-text="path.icon"></span>
+                                </div>
+                                
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="text-2xl font-kids text-gray-800" x-text="path.name"></h3>
+                                    <i x-show="path.premium && !isPremium" class="fas fa-lock text-slate-400 text-sm"></i>
+                                </div>
+                                <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4" x-text="path.grade"></span>
+                                
+                                <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="h-full rounded-full transition-all duration-1000" :class="path.color" :style="'width: ' + getPathProgress(path.id) + '%'"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 font-bold mt-2" x-text="Math.round(getPathProgress(path.id)) + '% ' + t('complete')"></p>
+
+                                <template x-if="isPremium && getPathProgress(path.id) === 100">
+                                    <button @click.stop="printCertificate(path)" class="mt-4 bg-amber-400 text-amber-900 px-4 py-2 rounded-xl text-xs font-kids shadow-lg hover:scale-105 transition-transform">
+                                        🎓 Claim Certificate
+                                    </button>
+                                </template>
+                            </button>
+                        </template>
+
+                        <button @click="generateNewPath()" 
+                                class="bg-white rounded-[2rem] p-8 border-4 border-dashed border-purple-200 hover:border-purple-400 group transition-all flex flex-col items-center text-center relative overflow-hidden"
+                                :disabled="isGeneratingPath">
+                            <div x-show="isGeneratingPath" class="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center">
+                                <div class="spinner border-purple-500 mb-4"></div>
+                                <p class="font-kids text-purple-600 animate-pulse text-sm">Magic in progress...</p>
+                            </div>
+                            <div class="w-24 h-24 rounded-full bg-purple-50 flex items-center justify-center text-5xl mb-6 group-hover:rotate-12 transition-transform">
+                            ✨
+                            </div>
+                            <h3 class="text-2xl font-kids text-purple-600 mb-2">Magic Wand</h3>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Generate New Quest</p>
+                            <div class="mt-6 text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-full font-bold">Powered by AI 🪄</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="currentPath" class="flex-1 overflow-y-auto relative bg-slate-50 custom-scroll">
+                    <button @click="currentPath = null" class="absolute top-4 left-4 z-20 bg-white px-4 py-2 rounded-xl shadow-md font-bold text-gray-600 hover:text-blue-500">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </button>
+
+                    <div x-show="currentPath && currentPath.premium && !isPremium" class="absolute inset-0 z-30 bg-white/90 flex flex-col items-center justify-center text-center p-8 backdrop-blur-sm">
+                        <div class="text-6xl mb-4">👑</div>
+                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Premium Curriculum</h2>
+                        <p class="text-slate-500 font-bold max-w-sm mb-6">Unlock all Adventure Paths, Personalized Plans, and Certificates for just $4.99/mo!</p>
+                        <button @click="showPremiumModal = true; showLearningPath = false" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600">Upgrade Now</button>
+                    </div>
+
+                    <div class="flex flex-col items-center py-20 px-4 min-h-full">
+                        <template x-for="(level, index) in currentPath ? currentPath.levels : []">
+                            <div class="relative flex flex-col items-center w-full max-w-md z-10">
+                                
+                                <div x-show="index < currentPath.levels.length - 1" 
+                                    class="level-connector h-24 top-16 w-3"
+                                    :class="isLevelUnlocked(currentPath.id, index + 2) ? currentPath.color : 'bg-gray-200'">
+                                </div>
+
+                                <button 
+                                    @click="isLevelUnlocked(currentPath.id, level.id) ? openLesson(level) : null"
+                                    class="w-20 h-20 rounded-full flex items-center justify-center border-4 shadow-xl relative transition-transform hover:scale-110 z-10 bg-white"
+                                    :class="[
+                                        isLevelUnlocked(currentPath.id, level.id) ? ('border-white ' + currentPath.color + ' text-white') : 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed',
+                                        isLevelComplete(currentPath.id, level.id) ? 'ring-4 ring-green-400 ring-offset-2' : ''
+                                    ]"
+                                >
+                                    <span x-show="isLevelComplete(currentPath.id, level.id)" class="text-3xl">🏆</span>
+                                    <span x-show="!isLevelComplete(currentPath.id, level.id) && isLevelUnlocked(currentPath.id, level.id)" class="text-2xl font-bold" x-text="level.id"></span>
+                                    <i x-show="!isLevelUnlocked(currentPath.id, level.id)" class="fas fa-lock"></i>
+                                </button>
+
+                                <div class="relative z-10 bg-white px-4 py-2 rounded-xl shadow-md mt-3 mb-16 text-center border-2" 
+                                    :class="isLevelUnlocked(currentPath.id, level.id) ? 'border-gray-100' : 'border-transparent opacity-50'">
+                                    <h4 class="font-bold text-slate-700 text-sm" x-text="level.title"></h4>
+                                    
+                                    <!-- Download Lesson Button -->
+                                    <button x-show="isLevelUnlocked(currentPath.id, level.id)"
+                                            @click.stop="downloadLesson(level)"
+                                            class="mt-2 text-[9px] font-bold uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1 mx-auto transition-transform active:scale-95">
+                                        <i class="fas" :class="downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title)) ? 'fa-check-circle text-green-500' : 'fa-download'"></i>
+                                        <span x-text="downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title)) ? 'Saved' : 'Download'"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- SKILL TREE MODAL --- -->
+        <div x-show="showSkillTree" x-cloak class="fixed inset-0 z-[65] bg-slate-900 bg-opacity-95 flex items-center justify-center p-0 sm:p-6" x-transition.opacity>
+            <div class="bg-white rounded-none sm:rounded-[3rem] w-full h-full max-w-5xl flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
+                <!-- Header -->
+                <div class="p-6 sm:p-8 border-b-4 border-amber-100 flex justify-between items-center bg-white z-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-amber-500 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl text-white shadow-lg">🌳</div>
+                        <div>
+                            <h2 class="text-2xl sm:text-4xl font-kids text-slate-800">Learning Skill Tree</h2>
+                            <p class="text-amber-500 font-bold uppercase tracking-widest text-[10px] sm:text-xs mt-1">Watch your knowledge grow, <span x-text="childProfile.name"></span>!</p>
+                        </div>
+                    </div>
+                    <button @click="toggleSkillTree(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-400 hover:text-red-500 transition-all">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Tree Content -->
+                <div class="flex-1 overflow-x-auto overflow-y-auto p-6 sm:p-12 bg-slate-50 relative custom-scroll">
+                    <div class="min-w-[800px] flex flex-row justify-around items-start gap-12 pb-20">
+                        <template x-for="path in curriculum" :key="path.id">
+                            <div class="flex flex-col items-center flex-1">
+                                <!-- Path Header -->
+                                <div class="mb-12 text-center group">
+                                    <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-[2rem] flex items-center justify-center text-5xl mb-4 shadow-xl transition-all group-hover:scale-110" :class="path.color">
+                                        <span x-text="path.icon"></span>
+                                    </div>
+                                    <h3 class="font-kids text-2xl sm:text-3xl text-slate-800" x-text="path.name"></h3>
+                                    <div class="mt-2 flex items-center justify-center gap-2">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" x-text="path.grade"></span>
+                                        <i x-show="path.premium && !isPremium" class="fas fa-lock text-amber-500 text-xs shadow-sm"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Levels (Nodes) -->
+                                <div class="flex flex-col items-center gap-16 relative w-full">
+                                    <template x-for="(level, lIdx) in path.levels" :key="level.id">
+                                        <div class="flex flex-col items-center relative z-10 w-full">
+                                            <!-- Connector Line (Vertical) -->
+                                            <template x-if="lIdx > 0">
+                                                <div class="absolute -top-16 w-1 rounded-full bg-gray-200 h-16"
+                                                     :class="isLevelUnlocked(path.id, level.id) ? (path.color.replace('bg-', 'bg-') + ' opacity-50') : 'bg-gray-200'"></div>
+                                            </template>
+
+                                            <!-- Node Button -->
+                                            <button 
+                                                @click="if(!path.premium || isPremium) { if(isLevelUnlocked(path.id, level.id)) { openLesson(level); currentPath = path; showSkillTree = false; } else { playPing(); alert('Complete the previous level first! ✨'); } } else { showPremiumModal = true; toggleSkillTree(false); }"
+                                                class="w-16 h-16 sm:w-24 sm:h-24 rounded-full flex items-center justify-center border-4 shadow-xl transition-all relative group/node"
+                                                :class="[
+                                                    isLevelComplete(path.id, level.id) ? (path.color + ' border-white scale-110 ring-4 ring-amber-300 ring-offset-2') : 
+                                                    (isLevelUnlocked(path.id, level.id) ? 'bg-white border-dashed ' + (path.color.replace('bg-', 'border-')) : 'bg-gray-100 border-gray-200 grayscale opacity-80 cursor-not-allowed')
+                                                ]"
+                                            >
+                                                <!-- Level Number/Status -->
+                                                <div class="relative flex items-center justify-center w-full h-full">
+                                                    <span x-show="isLevelComplete(path.id, level.id)" class="text-3xl sm:text-4xl animate__animated animate__bounceIn">⭐</span>
+                                                    <span x-show="!isLevelComplete(path.id, level.id) && isLevelUnlocked(path.id, level.id)" 
+                                                          class="text-2xl sm:text-3xl font-kids" :class="path.color.replace('bg-', 'text-')" x-text="level.id"></span>
+                                                    <i x-show="!isLevelUnlocked(path.id, level.id)" class="fas fa-lock text-gray-400"></i>
+                                                </div>
+
+                                                <!-- Hover Label -->
+                                                <div class="absolute -bottom-10 whitespace-nowrap bg-slate-800 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/node:opacity-100 pointer-events-none transition-all transform translate-y-2 group-hover/node:translate-y-0 shadow-xl z-20">
+                                                    <span x-text="level.title"></span>
+                                                </div>
+                                            </button>
+
+                                            <!-- Visual Path indicator (Horizontal connection to other branches could be added here if needed) -->
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Interactive background elements -->
+                    <div class="absolute inset-0 pointer-events-none opacity-5 overflow-hidden">
+                        <div class="absolute top-20 left-10 text-9xl">🌿</div>
+                        <div class="absolute bottom-20 right-10 text-9xl">🍃</div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[30rem] grayscale">🌳</div>
+                    </div>
+                </div>
+
+                <!-- Footer / Legend -->
+                <div class="p-6 bg-slate-100 border-t-2 border-slate-200 flex flex-wrap justify-center gap-6 sm:gap-12">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full bg-amber-400 shadow-sm border-2 border-white"></div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Completed</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full bg-white border-2 border-dashed border-gray-400"></div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">In Progress</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full bg-gray-200 border-2 border-gray-300"></div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Locked</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="activeLesson" x-cloak class="absolute inset-0 z-[70] bg-white flex flex-col w-full h-full" x-transition.opacity>
+            <div class="flex-1 w-full h-full flex flex-col overflow-y-auto animate__animated animate__zoomIn">
+                
+                <div class="bg-slate-100 p-4 sm:p-6 flex justify-between items-center sticky top-0 z-10 shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl text-white shadow-sm" :class="currentPath ? currentPath.color : 'bg-gray-500'">
+                            <span x-text="activeLesson ? activeLesson.id : ''"></span>
+                        </div>
+                        <h3 class="font-bold text-xl text-slate-800" x-text="activeLesson ? activeLesson.title : ''"></h3>
+                    </div>
+                    <button @click="closeLesson()" class="text-gray-400 hover:text-red-500 text-2xl"><i class="fas fa-times-circle"></i></button>
+                </div>
+
+                <div class="p-4 sm:p-8 flex-1 flex flex-col">
+                    <div x-show="lessonStep === 'learn'" class="text-center">
+                        <div class="text-6xl mb-6 bounce">👨‍🏫</div>
+                        <p class="text-xl sm:text-2xl text-slate-700 font-medium leading-relaxed mb-8" x-text="activeLesson ? activeLesson.content : ''"></p>
+                        
+                        <button @click="speak(activeLesson.content)" class="mb-8 text-blue-500 font-bold hover:underline"><i class="fas fa-volume-up mr-2"></i> <span x-text="t('read_to_me')">Read to me</span></button>
+
+                        <button @click="lessonStep = 'quiz'" class="w-full py-4 bg-green-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105">
+                            <span x-text="t('start_quiz')">Start Quiz!</span> 📝
+                        </button>
+                    </div>
+
+                    <div x-show="lessonStep === 'quiz'" class="text-left">
+                        <div class="mb-4 flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase text-gray-400">Question <span x-text="currentLessonQuizIndex + 1"></span>/3</span>
+                            <div class="flex gap-1">
+                                <template x-for="i in 3">
+                                    <div class="w-2 h-2 rounded-full transition-colors" :class="i <= currentLessonQuizIndex ? 'bg-blue-500' : 'bg-gray-200'"></div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6" x-text="getCurrentLessonQuestion().q"></h3>
+
+                        <div class="space-y-3">
+                            <template x-for="(opt, idx) in getCurrentLessonQuestion().options">
+                                <button 
+                                    @click="checkLessonAnswer(idx)"
+                                    class="w-full p-4 rounded-xl border-2 border-gray-100 hover:bg-blue-50 hover:border-blue-300 text-left font-bold text-gray-700 transition-all flex items-center gap-3"
+                                >
+                                    <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500" x-text="['A','B','C'][idx]"></span>
+                                    <span x-text="opt"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div x-show="lessonStep === 'success'" class="flex-1 flex flex-col items-center justify-center text-center py-8">
+                        <div class="text-8xl mb-4 animate__animated animate__tada">🎉</div>
+                        <h2 class="text-4xl font-kids text-green-500 mb-2">Lesson Complete!</h2>
+                        <p class="text-gray-500 font-bold mb-8">You are getting smarter!</p>
+                        
+                        <div class="flex justify-center gap-4 mb-8">
+                            <div class="bg-yellow-50 px-6 py-3 rounded-2xl border border-yellow-200 shadow-sm flex flex-col">
+                                <span class="font-bold text-yellow-700 text-lg mb-1">💰 +50</span>
+                                <span class="text-xs text-yellow-600 font-bold uppercase">Coins</span>
+                            </div>
+                            <div class="bg-purple-50 px-6 py-3 rounded-2xl border border-purple-200 shadow-sm flex flex-col">
+                                <span class="font-bold text-purple-700 text-lg mb-1">⭐ +100</span>
+                                <span class="text-xs text-purple-600 font-bold uppercase">XP</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto w-full pt-4">
+                            <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105 active:scale-95">
+                                Continue Journey 🚀
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div x-show="showQuiz" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
             <div @click.away="showQuiz = false; toggleScroll(false)" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn">
@@ -1637,7 +2222,7 @@
                 <div class="p-8">
                     <div class="flex justify-between items-center mb-8">
                         <div>
-                            <h2 class="text-3xl font-kids text-slate-800">Family Management ‘¨â€‘©â€‘§â€‘¦</h2>
+                            <h2 class="text-3xl font-kids text-slate-800">Family Management 👨‍👩‍👧‍👦</h2>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="text-[10px] font-bold uppercase py-1 px-2 rounded-md tracking-widest" 
                                       :class="isFamilyPlan ? 'bg-indigo-100 text-indigo-600' : (isPremium ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-500')"
@@ -1740,7 +2325,7 @@
             <div class="bg-white rounded-3xl sm:rounded-[50px] w-full max-w-xl overflow-hidden shadow-2xl border-4 sm:border-8 border-blue-400 transform animate__animated animate__bounceIn text-center p-6 sm:p-12 relative mx-2">
                 <div class="text-6xl sm:text-8xl mb-4 sm:mb-8 animate-bounce">🦉</div>
                 <h2 class="text-2xl sm:text-4xl font-kids text-slate-800 mb-2 sm:mb-4">Time for a Break!</h2>
-                <p class="text-lg sm:text-xl text-slate-500 mb-6 sm:mb-8 font-semibold">You've done an amazing job learning today! Time to rest your eyes and play outside.  Œ³</p>
+                <p class="text-lg sm:text-xl text-slate-500 mb-6 sm:mb-8 font-semibold">You've done an amazing job learning today! Time to rest your eyes and play outside. 🏠🌳</p>
                 
                 <div x-show="!parentVerified" class="space-y-4 sm:space-y-6">
                     <div class="bg-blue-50 p-4 sm:p-6 rounded-3xl border-2 border-blue-100">
@@ -1852,7 +2437,7 @@
                     <!-- Family Plan -->
                     <div class="bg-indigo-600 rounded-3xl p-6 shadow-xl border-4 border-indigo-400 flex flex-col text-white transform md:scale-105">
                         <div class="absolute -top-4 -right-4 bg-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">Popular</div>
-                        <div class="text-4xl mb-2">‘¨â€‘©â€‘§â€‘¦</div>
+                        <div class="text-4xl mb-2">👨‍👩‍👧‍👦</div>
                         <h3 class="text-2xl font-kids">Family Plan</h3>
                         <p class="text-indigo-200 text-sm font-bold uppercase mb-4">Up to 5 Kids + Siblings</p>
                         <ul class="text-indigo-100 text-sm space-y-3 mb-8 flex-1">
@@ -1919,46 +2504,6 @@
 
                     <template x-if="parentVerified">
                         <div class="animate__animated animate__fadeIn">
-                            <!-- Weekly Insights Section (Auto-generated) -->
-                            <div class="bg-indigo-600 rounded-[2.5rem] p-6 sm:p-10 mb-8 border-b-[8px] border-indigo-800 shadow-2xl relative overflow-hidden text-white">
-                                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-                                
-                                <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                                    <div class="flex-1 space-y-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center text-xl">💡</div>
-                                            <h3 class="text-xl sm:text-2xl font-kids">Weekly Learning Snapshot</h3>
-                                        </div>
-                                        
-                                        <div class="flex flex-wrap gap-3">
-                                            <div class="bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
-                                                <span class="text-[10px] font-black uppercase tracking-widest text-indigo-100/60 block mb-1">Top Strength</span>
-                                                <span class="text-lg font-bold" x-text="getWeeklyReport().strongArea">Calculating...</span>
-                                            </div>
-                                            <div class="bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
-                                                <span class="text-[10px] font-black uppercase tracking-widest text-indigo-100/60 block mb-1">Focus For Next Week</span>
-                                                <span class="text-lg font-bold" x-text="getWeeklyReport().growthArea">Calculating...</span>
-                                            </div>
-                                        </div>
-
-                                        <p class="text-indigo-50 font-medium leading-relaxed max-w-lg" x-text="getWeeklyReport().summaryText"></p>
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
-                                        <div class="bg-white text-indigo-600 p-4 rounded-3xl text-center shadow-lg transform hover:-translate-y-1 transition-transform">
-                                            <div class="text-xs font-black uppercase tracking-widest opacity-60 mb-1">New Words</div>
-                                            <div class="text-3xl font-kids font-black" x-text="'+' + getWeeklyReport().wordsNew"></div>
-                                            <div class="text-[10px] font-bold mt-1 text-green-500">Growth! 📈</div>
-                                        </div>
-                                        <div class="bg-indigo-400 text-white p-4 rounded-3xl text-center shadow-lg transform hover:-translate-y-1 transition-transform">
-                                            <div class="text-xs font-black uppercase tracking-widest opacity-70 mb-1">Accuracy</div>
-                                            <div class="text-3xl font-kids font-black" x-text="getWeeklyReport().accuracy + '%'"></div>
-                                            <div class="text-[10px] font-bold mt-1" :class="getWeeklyReport().accuracyTrend > 0 ? 'text-green-300' : 'text-indigo-200'" x-text="getWeeklyReport().accuracyTrend > 0 ? 'Improving! ✨' : 'Steady Progress'"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                                     <div class="flex justify-between items-start mb-4">
@@ -2044,8 +2589,8 @@
                                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Regional Curriculum</label>
                                             <select x-model="currentCurriculumRegion" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
                                                 <option value="Global">Global Standards 🌍</option>
-                                                <option value="US">US (Common Core) ‡º‡¸</option>
-                                                <option value="UK">UK (National Curriculum) ‡¬‡§</option>
+                                                <option value="US">US (Common Core) 🇺🇸</option>
+                                                <option value="UK">UK (National Curriculum) 🇬🇧</option>
                                             </select>
                                         </div>
 
@@ -2206,50 +2751,6 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Skill Mastery Section -->
-                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8 relative overflow-hidden">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h3 class="font-bold text-slate-800 text-xl flex items-center gap-2">
-                                        <i class="fas fa-trophy text-amber-500"></i> Skill Mastery (Levels 0-5)
-                                    </h3>
-                                    <div x-show="showReviewBanner" class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate__animated animate__pulse animate__infinite">
-                                        <i class="fas fa-clock mr-1"></i> <span x-text="reviewQuestions.length"></span> Reviews Due
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <template x-if="Object.keys(learningStats.mastery_levels || {}).length === 0">
-                                        <div class="col-span-full py-10 text-center text-gray-400 italic bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
-                                            No skills tracked yet. Start learning to see mastery levels!
-                                        </div>
-                                    </template>
-                                    
-                                    <template x-for="[skill, data] in Object.entries(learningStats.mastery_levels || {})" :key="skill">
-                                        <div class="p-4 rounded-2xl border border-gray-50 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all group">
-                                            <div class="flex justify-between items-start mb-2">
-                                                <div class="min-w-0 flex-1">
-                                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1" x-text="getMasteryLevelName(data.level)"></p>
-                                                    <h4 class="font-bold text-slate-700 truncate" x-text="skill"></h4>
-                                                </div>
-                                                <div x-show="data.level >= 5" class="ml-2 bg-amber-100 text-amber-600 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 animate__animated animate__tada">
-                                                    <i class="fas fa-crown text-xs"></i>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="flex items-center gap-3">
-                                                <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                                    <div class="h-full transition-all duration-1000" 
-                                                         :class="getMasteryColor(data.level)"
-                                                         :style="'width: ' + (data.level / 5 * 100) + '%'"></div>
-                                                </div>
-                                                <span class="text-xs font-bold text-slate-500" x-text="data.level + '/5'"></span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                                <p class="text-[10px] text-gray-400 mt-4 text-center italic">Each skill levels up from 0 to 5 as your child practices!</p>
                             </div>
 
                             <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8 relative overflow-hidden">
@@ -2434,7 +2935,7 @@
                 <!-- Step 1: Meet Your Teachers -->
                 <div x-show="onboardingStep === 1" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
-                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">‘¨â€«</div>
+                        <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">👨‍🏫</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Meet Your Teachers!</h2>
                         <p class="text-sm sm:text-base text-gray-600">Each teacher is an expert in their subject. Click on them to switch!</p>
                     </div>
@@ -2848,276 +3349,6 @@
             </div>
         </div>
 
-        <!-- Stickers Modal -->
-        <div x-show="showStickerBook" x-cloak class="fixed inset-0 z-[160] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
-            <div @click.away="showStickerBook = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-yellow-200">
-                <div class="bg-gradient-to-r from-yellow-400 to-orange-400 p-6 flex justify-between items-center text-white border-b-4 border-yellow-600">
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">📗</span>
-                        <h2 class="text-3xl font-kids tracking-wide">My Sticker Book</h2>
-                    </div>
-                    <button @click="showStickerBook = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-times-circle text-3xl"></i>
-                    </button>
-                </div>
-                <div class="p-8 overflow-y-auto flex-1 custom-scroll bg-amber-50/30">
-                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6">
-                        <template x-if="inventory.length === 0">
-                            <div class="col-span-full py-12 text-center">
-                                <div class="text-7xl mb-4 grayscale opacity-30">✨</div>
-                                <h3 class="text-2xl font-kids text-slate-400">Your sticker book is empty!</h3>
-                                <p class="text-slate-400 mt-2">Earn coins and visit the Magic Shop to collect stickers!</p>
-                            </div>
-                        </template>
-                        <template x-for="item in inventory" :key="item.id">
-                            <div class="aspect-square bg-white rounded-3xl p-4 shadow-md flex flex-col items-center justify-center border-2 border-yellow-100 hover:scale-110 transition-transform cursor-pointer relative group">
-                                <span class="text-5xl group-hover:animate-bounce" x-text="item.icon"></span>
-                                <p class="mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-tighter" x-text="item.name"></p>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Skills Modal -->
-        <div x-show="showSkillsModal || showTrophyRoom" x-cloak class="fixed inset-0 z-[160] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
-            <div @click.away="showSkillsModal = false; showTrophyRoom = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-blue-200">
-                <div class="bg-gradient-to-r from-blue-500 to-indigo-500 p-6 flex justify-between items-center text-white border-b-4 border-blue-700">
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">🏆</span>
-                        <h2 class="text-3xl font-kids tracking-wide">My Achievements</h2>
-                    </div>
-                    <button @click="showSkillsModal = false; showTrophyRoom = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-times-circle text-3xl"></i>
-                    </button>
-                </div>
-                <div class="p-8 overflow-y-auto flex-1 custom-scroll bg-blue-50/30">
-                    <div class="mb-8 p-6 bg-white rounded-3xl border-2 border-blue-100 flex items-center justify-around shadow-sm">
-                        <div class="text-center">
-                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-1">Current Level</p>
-                            <p class="text-4xl font-kids text-blue-600" x-text="'Level ' + level"></p>
-                        </div>
-                        <div class="h-12 w-0.5 bg-blue-100"></div>
-                        <div class="text-center">
-                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-1">Total XP</p>
-                            <p class="text-4xl font-kids text-blue-600" x-text="xp"></p>
-                        </div>
-                        <div class="h-12 w-0.5 bg-blue-100"></div>
-                        <div class="text-center">
-                            <p class="text-[10px] font-bold text-blue-400 uppercase mb-1">Total Coins</p>
-                            <p class="text-4xl font-kids text-blue-600" x-text="coins"></p>
-                        </div>
-                    </div>
-
-                    <h3 class="text-xl font-kids text-blue-900 mb-4 flex items-center gap-2">
-                        <i class="fas fa-medal"></i> My Badges
-                    </h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        <template x-for="badge in availableBadges" :key="badge.id">
-                            <div class="bg-white p-4 rounded-3xl border-2 transition-all flex flex-col items-center"
-                                 :class="learningStats.achievements.includes(badge.id) ? 'border-yellow-300 shadow-md scale-100 opacity-100' : 'border-gray-100 grayscale opacity-40 scale-95'">
-                                <span class="text-4xl mb-2" x-text="badge.icon"></span>
-                                <p class="text-xs font-bold text-slate-700 text-center" x-text="badge.name"></p>
-                                <p class="text-[8px] text-gray-400 text-center mt-1" x-text="badge.desc"></p>
-                            </div>
-                        </template>
-                    </div>
-
-                    <template x-if="learningStats.blockchain_certificates && learningStats.blockchain_certificates.length > 0">
-                        <div class="mt-10">
-                            <h3 class="text-xl font-kids text-blue-900 mb-4 flex items-center gap-2">
-                                <i class="fas fa-award"></i> Special Certificates
-                            </h3>
-                            <div class="grid gap-4">
-                                <template x-for="cert in learningStats.blockchain_certificates" :key="cert.id">
-                                    <div class="bg-white p-4 rounded-3xl border-2 border-indigo-100 flex items-center justify-between shadow-sm">
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-3xl" x-text="cert.icon"></span>
-                                            <div>
-                                                <h4 class="font-kids text-indigo-900" x-text="cert.pathName"></h4>
-                                                <p class="text-[10px] text-gray-400 uppercase" x-text="'Verified on ' + cert.date"></p>
-                                            </div>
-                                        </div>
-                                        <button @click="printCertificate({id: cert.pathId, name: cert.pathName, icon: cert.icon})" class="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors">
-                                            VIEW & PRINT
-                                        </button>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-        </div>
-
-        <!-- Learning Path Modal -->
-        <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[160] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
-            <div @click.away="showLearningPath = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-green-200">
-                <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-6 flex justify-between items-center text-white border-b-4 border-green-700">
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">🗺️</span>
-                        <h2 class="text-3xl font-kids tracking-wide">Adventure Map</h2>
-                    </div>
-                    <button @click="showLearningPath = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-times-circle text-3xl"></i>
-                    </button>
-                </div>
-                <div class="p-8 overflow-y-auto flex-1 custom-scroll bg-green-50/30">
-                    <div class="grid gap-6">
-                        <template x-for="path in curriculum" :key="path.id">
-                            <div class="bg-white rounded-3xl border-2 border-green-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                                <div class="p-4 flex items-center justify-between border-b-2 border-green-50" :class="path.color">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-2xl" x-text="path.icon"></span>
-                                        <h3 class="font-kids text-xl text-white" x-text="path.name"></h3>
-                                    </div>
-                                    <span class="text-[10px] bg-white/20 text-white px-3 py-1 rounded-full font-bold" x-text="path.grade"></span>
-                                </div>
-                                <div class="p-6">
-                                    <div class="flex items-center gap-2 mb-4">
-                                        <template x-for="level in path.levels" :key="level.id">
-                                            <div class="flex-1 h-3 rounded-full bg-slate-100 overflow-hidden">
-                                                <div class="h-full bg-green-500 transition-all duration-1000"
-                                                     :style="'width: ' + ((pathProgress[path.id] || 0) >= level.id ? '100%' : '0%')"></div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <p class="text-sm font-kids text-slate-500" x-text="'Completed: ' + (pathProgress[path.id] || 0) + ' / ' + path.levels.length"></p>
-                                        <button @click="startLesson(path)" 
-                                                class="px-6 py-2 rounded-xl text-white font-bold uppercase text-xs tracking-widest shadow-md transition-transform active:scale-95"
-                                                :class="path.premium && !isPremium ? 'bg-orange-500' : 'bg-green-500'"
-                                                x-text="path.premium && !isPremium ? 'Unlock with Premium ✨' : (pathProgress[path.id] ? 'Continue Adventure' : 'Start Journey')">
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="mt-8">
-                        <button @click="generateNewPath()" 
-                                class="w-full py-6 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl text-white font-kids text-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95 relative overflow-hidden"
-                                :disabled="isGeneratingPath">
-                            <span x-show="!isGeneratingPath">Generate New AI Path ✨</span>
-                            <span x-show="isGeneratingPath" class="flex items-center justify-center gap-3">
-                                <i class="fas fa-magic animate-spin"></i> Waving Wand...
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Shop Modal -->
-        <div x-show="showShop" x-cloak class="fixed inset-0 z-[160] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
-            <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-purple-200">
-                <div class="bg-gradient-to-r from-purple-600 to-pink-500 p-6 flex justify-between items-center text-white border-b-4 border-purple-800">
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">🛍️</span>
-                        <h2 class="text-3xl font-kids tracking-wide text-white">Magic Shop</h2>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <div class="bg-white/20 px-4 py-2 rounded-2xl flex items-center gap-2 border-2 border-white/30">
-                            <span class="text-xl">💰</span>
-                            <span class="font-kids text-xl" x-text="coins"></span>
-                        </div>
-                        <button @click="showShop = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-times-circle text-3xl"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="p-8 overflow-y-auto flex-1 custom-scroll bg-purple-50/30">
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                        <template x-for="item in shopItems" :key="item.id">
-                            <div class="bg-white p-6 rounded-[2.5rem] border-2 border-purple-100 flex flex-col items-center shadow-sm hover:shadow-md transition-all group overflow-hidden relative"
-                                 :class="inventory.some(i => i.id === item.id) ? 'grayscale opacity-70' : ''">
-                                <span class="text-6xl mb-4 group-hover:scale-125 transition-transform" x-text="item.icon"></span>
-                                <h3 class="font-kids text-lg text-purple-900" x-text="item.name"></h3>
-                                <div class="mt-4 w-full">
-                                    <template x-if="inventory.some(i => i.id === item.id)">
-                                        <span class="w-full block py-2 text-center bg-gray-100 text-gray-400 rounded-xl font-bold uppercase text-[10px]">Owned</span>
-                                    </template>
-                                    <template x-if="!inventory.some(i => i.id === item.id)">
-                                        <button @click="buyShopItem(item)" 
-                                                class="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-kids text-lg border-b-4 border-purple-700 active:border-b-0 active:translate-y-1 transition-all"
-                                                :class="coins < item.price ? 'opacity-50 cursor-not-allowed' : ''">
-                                            <span x-text="item.price"></span> 💰
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Event Hub Modal -->
-        <div x-show="showEventHub" x-cloak class="fixed inset-0 z-[160] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
-            <div @click.away="showEventHub = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-pink-200">
-                <div class="bg-gradient-to-r from-pink-400 to-pink-600 p-6 flex justify-between items-center text-white border-b-4 border-pink-700">
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md" x-text="currentSeason.icon"></span>
-                        <h2 class="text-3xl font-kids tracking-wide text-white" x-text="currentSeason.name"></h2>
-                    </div>
-                    <button @click="showEventHub = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-times-circle text-3xl"></i>
-                    </button>
-                </div>
-                <div class="p-8 overflow-y-auto flex-1 custom-scroll bg-pink-50/30">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h3 class="text-xl font-kids text-pink-900 mb-4">Seasonal Quests</h3>
-                            <div class="space-y-4">
-                                <template x-for="quest in seasonalQuests" :key="quest.id">
-                                    <div class="bg-white p-5 rounded-3xl border-2 border-pink-100 shadow-sm transition-transform hover:scale-[1.02]">
-                                        <h4 class="font-kids text-lg text-slate-800" x-text="quest.title"></h4>
-                                        <p class="text-xs text-gray-400 mt-1" x-text="quest.desc"></p>
-                                        <div class="mt-4 flex justify-between items-center">
-                                            <div class="w-2/3 h-2 bg-pink-50 rounded-full overflow-hidden">
-                                                <div class="h-full bg-pink-500" :style="'width: ' + ((quest.progress/quest.target)*100) + '%'"></div>
-                                            </div>
-                                            <span class="text-xs font-bold text-pink-500" x-text="quest.progress + ' / ' + quest.target"></span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Skill Tree Modal -->
-        <div x-show="showSkillTree" x-cloak class="fixed inset-0 z-[160] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
-            <div @click.away="showSkillTree = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative animate__animated animate__zoomIn flex flex-col border-4 border-indigo-200">
-                <div class="bg-gradient-to-r from-indigo-500 to-indigo-700 p-6 flex justify-between items-center text-white border-b-4 border-indigo-800">
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl text-white drop-shadow-md">🌳</span>
-                        <h2 class="text-3xl font-kids tracking-wide text-white">Skill Tree</h2>
-                    </div>
-                    <button @click="showSkillTree = false; toggleScroll(false)" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-times-circle text-3xl"></i>
-                    </button>
-                </div>
-                <div class="p-8 overflow-y-auto flex-1 custom-scroll bg-indigo-50/20">
-                    <template x-if="!skillTreeData[skillTreeSubject]">
-                        <div class="text-center py-20">
-                            <div class="text-8xl mb-6 opacity-30">🌳</div>
-                            <h3 class="text-2xl font-kids text-slate-600">Grow Your Skills</h3>
-                            <p class="text-slate-400 mt-2 mb-8">Click below to start your learning tree!</p>
-                            <button @click="generateSkillTree(skillTreeSubject)" class="px-10 py-4 bg-indigo-500 text-white rounded-3xl font-kids text-2xl shadow-xl hover:scale-105 active:scale-95 transition-all">
-                                Start Growing ✨
-                            </button>
-                        </div>
-                    </template>
-                </div>
-            </div>
-        </div>
-
-
         <script>
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("service-worker.js");
@@ -3136,6 +3367,7 @@
                     questCodeInput: '',
                     showQuestModal: false,
 
+                    isLoggedIn: false,
                     hasAccount: false,
                     savedProfile: null,
                     loginForm: { name: '', email: '', password: '', ageRange: '6-7' },
@@ -3171,31 +3403,6 @@
                     voiceSentiment: 'neutral', // Real-time sentiment detected from voice
                     isPremium: false,
                     premiumExpiry: null,
-                    showReviewBanner: false,
-                    isFamilyPlan: false,
-                    isTimeUp: false,
-                    showOnboarding: false,
-                    onboardingStep: 1,
-                    showDownloadsModal: false,
-                    downloadedLessons: [],
-                    showStoryModal: false,
-                    isStoryThinking: false,
-                    currentStory: { story: '', questions: [] },
-                    showAdventureMap: false,
-                    showTrophyRoom: false,
-                    showSkillsModal: false,
-                    showStickerBook: false,
-                    showDailyPath: false,
-                    learningStats: {
-                        wordsLearned: 0,
-                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                        recent_mistakes: [],
-                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
-                        achievements: [],
-                        quizzesCompleted: 0,
-                        quizHistory: [],
-                        learningScoreInitialized: true
-                    },
                     showCheckout: false,
                     checkoutForm: { name: '', card: '', expiry: '', cvv: '' },
                     maxFreeQuestions: 5,
@@ -3227,9 +3434,6 @@
                     },
                     
                     showParentPortal: false,
-                    isModalLoading: false, // Performance: global loading state for heavy modals
-                    weeklyReportData: null, // Cache for insight report
-                    showSkillsModal: false,
                     parentVerified: false,
                     masterPin: '', 
                     pinInput: '',
@@ -3262,46 +3466,55 @@
                     showHighFiveAnimation: false,
                     lastHighFiveFrom: '',
 
-                    curriculum: JSON.parse(localStorage.getItem('saved_curriculum')) || [],
-                    curriculumTab: 'core', // Default to structured choice
-                    coreCurriculum: [
-                        {
-                            id: 'math1', title: 'Math 101', icon: '🔢',
-                            lessons: [
-                                { 
-                                    id: 'counting', title: 'Counting to 10', 
-                                    questions: [
-                                        { type: 'multiple_choice', question: "How many apples are there? ŽŽŽ", options: ["2", "3", "4"], correctIndex: 1 },
-                                        { type: 'multiple_choice', question: "What number comes after 5?", options: ["4", "6", "7"], correctIndex: 1 },
-                                        { type: 'fill_blank', question: "1, 2, __, 4", options: ["3", "5", "0"], correctIndex: 0 },
-                                        { type: 'true_false', question: "Is 10 more than 5?", answer: true },
-                                        { type: 'multiple_choice', question: "Pick the number Eight!", options: ["8", "7", "9"], correctIndex: 0 }
-                                    ]
-                                },
-                                {
-                                    id: 'addition', title: 'Start Adding!',
-                                    questions: [
-                                        { type: 'multiple_choice', question: "1 + 1 = ?", options: ["1", "2", "3"], correctIndex: 1 },
-                                        { type: 'true_false', question: "2 + 2 is 4?", answer: true },
-                                        { type: 'fill_blank', question: "3 + 1 = __", options: ["2", "4", "5"], correctIndex: 1 }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    shopItems: [
-                        { id: 'badge1', name: 'Magic Star', icon: '⭐', price: 50, seasonal: false },
-                        { id: 'badge2', name: 'Rainbow Cat', icon: '🌈', price: 100, seasonal: false },
-                        { id: 'badge3', name: 'Rocket Ship', icon: '🚀', price: 200, seasonal: false },
-                        { id: 'badge4', name: 'Dino Egg', icon: '🥚', price: 150, seasonal: true },
-                        { id: 'badge5', name: 'Cloud Friend', icon: '☁️', price: 75, seasonal: false },
-                        { id: 'aura1', name: 'Golden Glow', icon: '✨', price: 300, seasonal: false }
-                    ],
-                    inventory: JSON.parse(localStorage.getItem('user_inventory')) || [],
-                    equippedItem: localStorage.getItem('equipped_item'),
+                    // Offline Lessons State
+                    showDownloadsModal: false,
+                    downloadedLessons: [],
+                    isOfflineMode: false,
+                    isWifi: window.isWifiAttached || false,
+
+                    // Family Plan State
+                    isFamilyPlan: false,
+
+                    // Onboarding State
+                    showOnboarding: false,
+                    onboardingStep: 0,
+                    hasCompletedOnboarding: false,
+
+                    // Time Tracking State
+                    timeUsedToday: 0,
+                    dailyTimeLimit: 0, // 0 = Unlimited
+                    isTimeUp: false,
+                    lastTimeUpdate: Date.now(),
+                    timeCheckInterval: null,
+
+                    // Spaced Repetition State
+                    reviewQuestions: [],
+                    showReviewBanner: false,
+                    isReviewMode: false,
+
+                    learningStats: {
+                        wordsLearned: 0,
+                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                        child_profile: null,
+                        recent_mistakes: [],
+                        review_queue: [], // Spaced Repetition Queue
+                        mastery_levels: {}, // Spaced Repetition Engine (Word Tracking)
+                        achievements: [],
+                        quizzesCompleted: 0,
+                        blockchain_certificates: []
+                    },
+                    // Adventure Stories Mode State
+                    showStoryModal: false,
+                    isStoryThinking: false,
+                    currentStory: { story: '', questions: [] },
+                    isStoryQuiz: false,
+                    coins: 0, 
                     xp: 0,
                     level: 1,
-                    showShop: false,
+
+                     showShop: false,
+                     inventory: [],
+                     equippedItem: null,
                      
                      // --- Seasonal Events State ---
                      showEventHub: false,
@@ -3503,34 +3716,11 @@
 
                     // --- SKILL TREE METHODS ---
                     toggleSkillTree(show) {
-                        if (show) {
-                            this.isModalLoading = true;
-                            // Use setTimeout to allow the browser to show a loading state/button active state
-                            // before the heavy SVG/Tree render processes synchronously.
-                            setTimeout(() => {
-                                this.showSkillTree = true;
-                                this.toggleScroll(true);
-                                if (!this.skillTreeSubject) {
-                                    this.skillTreeSubject = 'history'; 
-                                }
-                                this.isModalLoading = false;
-                            }, 50);
-                        } else {
-                            this.showSkillTree = false;
-                            this.toggleScroll(false);
+                        this.showSkillTree = show;
+                        this.toggleScroll(show);
+                        if (show && !this.skillTreeSubject) {
+                            this.skillTreeSubject = 'history'; // default to first subject
                         }
-                    },
-
-                    openParentPortal() {
-                        this.isModalLoading = true;
-                        // De-blocking the click event
-                        setTimeout(() => {
-                            // Calculate weekly stats only once when opening
-                            this.weeklyReportData = this.getWeeklyReport();
-                            this.showParentPortal = true;
-                            // No toggleScroll here as Parent Portal usually handles it or is smaller
-                            this.isModalLoading = false;
-                        }, 50);
                     },
 
                     async generateSkillTree(subject) {
@@ -3670,7 +3860,11 @@
                         this.syncData();
                     },
 
-
+                    toggleSkillTree(show) {
+                        this.showSkillTree = show;
+                        this.toggleScroll(show);
+                        if (show) this.playPing();
+                    },
 
                     // --- BLOCKCHAIN CERTIFICATE ENGINE ---
                     async generateHash(data) {
@@ -3955,16 +4149,10 @@
                     isProfileLoading: false,
                     async init() {
                         window.app = this; // Expose for easy console testing
-                        this.generateGateQuestion(); // REQUIRED for Parent Login visibility
                         await this.initI18n();
                         this.initializeCurrentChar();
                         this.loadHearts(); // Load hearts for guests/on load
                         this.startTimeTracking();
-
-                        // Populate curriculum from core if empty
-                        if (this.curriculum.length === 0) {
-                            this.curriculum = [...this.coreCurriculum];
-                        }
                         
                         // Start music if enabled
                         setTimeout(() => this.playBgMusic(), 1000);
@@ -3982,7 +4170,11 @@
 
                         // --- Offline Detection: Don't show spinner if no internet ---
                         if (!navigator.onLine) {
-                            console.warn("Browser reports offline, but we will still attempt to reach the server...");
+                            console.warn("App loaded offline — skipping Supabase init.");
+                            this.isLoading = false;
+                            this.currentMoodIcon = this.currentChar?.icon || '🦖';
+                            this.generateGate();
+                            return; // Skip all network calls
                         }
 
                         // Safety Timeout: Force loading off after 4 seconds if still stuck
@@ -3997,7 +4189,7 @@
                         this.currentMoodIcon = this.currentChar?.icon || '🦖';
                         this.isLoading = true;
 
-                        this.generateGateQuestion();
+                        this.generateGate();
 
                         this.sessionStartTime = Date.now();
                         setInterval(() => {
@@ -4006,30 +4198,19 @@
                         }, 60000);
 
                         try {
-                            console.log("Fetching configuration...");
-                            // Timeout fetch after 5s — more generous for slow connections
+                            // Timeout fetch after 3s — if offline, fail fast instead of hanging
                             const configController = new AbortController();
-                            const configTimeout = setTimeout(() => configController.abort(), 5000);
+                            const configTimeout = setTimeout(() => configController.abort(), 3000);
                             let res;
                             try {
                                 res = await fetch('/api/config', { signal: configController.signal });
                                 clearTimeout(configTimeout);
-                                if (!res.ok) throw new Error("Config endpoint returned status " + res.status);
                             } catch (fetchErr) {
                                 clearTimeout(configTimeout);
-                                console.error("Config fetch failed:", fetchErr);
-                                throw new Error('config_unreachable');
+                                throw new Error('offline_or_unreachable');
                             }
-                            
                             const config = await res.json();
-                            console.log("Config loaded:", !!config.supabaseUrl ? "Has URL" : "No URL", !!config.supabaseKey ? "Has Key" : "No Key");
-                            
-                            if (!config.supabaseUrl || !config.supabaseKey) {
-                                throw new Error("Supabase credentials missing in config. Check Vercel environment variables.");
-                            }
-
                             this.supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
-                            console.log("Supabase client created successfully.");
 
                             // 1. Check for existing session immediately before showing ANY UI
                             const { data: { session } } = await this.supabase.auth.getSession();
@@ -4106,7 +4287,7 @@
                                 }
 
                                 if (data.type === 'PREMIUM_FAMILY_ACTIVATED') {
-                                    console.log("‘¨â€‘©â€‘§â€‘¦ Family Premium Activated via Native IAP!");
+                                    console.log("👨‍👩‍👧‍👦 Family Premium Activated via Native IAP!");
                                     this.isPremium = true;
                                     this.isFamilyPlan = true;
                                     this.premiumExpiry = new Date().getTime() + (30 * 24 * 60 * 60 * 1000);
@@ -4196,6 +4377,22 @@
                         }
                     },
 
+                    generateGate() {
+                        const num1 = Math.floor(Math.random() * 20) + 10;
+                        const num2 = Math.floor(Math.random() * 15) + 5;
+                        this.gateQuestion = `${num1} + ${num2}`;
+                        this.correctGateResult = num1 + num2;
+                    },
+                    verifyGate() {
+                        if (parseInt(this.gateAnswer) === this.correctGateResult) {
+                            this.gateVerified = true;
+                            this.playPing();
+                        } else {
+                            alert("Incorrect. Please try again or ask an adult for help.");
+                            this.gateAnswer = '';
+                            this.generateGate();
+                        }
+                    },
 
                     startVoiceMode() {
                         this.isVoiceNativeMode = true;
@@ -5269,7 +5466,9 @@
                     // that handles level progression or lesson completion.
                     // As per the instruction, I'm inserting the provided block as-is, assuming it's a new method or part of one.
                     // If this is meant to be inside an existing method, the user would need to specify which one.
-                    handleLevelUp(newLevel) {
+                    // For now, I'll create a dummy method `_handleLevelUpOrLessonComplete` to contain it,
+                    // as the diff implies a method boundary with the closing `}`.
+                    _handleLevelUpOrLessonComplete(newLevel) { // Placeholder method name
                         this.level = newLevel;
                         this.playPing();
                         confetti({
@@ -5279,9 +5478,7 @@
                         });
                         
                         // AR Celebration Trigger
-                        if (window.ReactNativeWebView) {
-                            setTimeout(() => this.triggerARCelebration(), 1000);
-                        }
+                        setTimeout(() => this.triggerARCelebration(), 1000);
                     },
                     
                     async triggerARCelebration() {
@@ -5613,12 +5810,9 @@
                              mastery_levels: {} 
                          };
 
-                        // Ensure mastery_levels exists and set Weekly Benchmarks for Parent Reports
-                        if (!this.learningStats.mastery_levels) this.learningStats.mastery_levels = {};
-                        if (!this.learningStats.benchmarksUpdated || (Date.now() - (this.learningStats.benchmarksUpdated || 0) > 7 * 24 * 60 * 60 * 1000)) {
-                            this.learningStats.lastWeekWords = (this.learningStats.wordsLearned || 0);
-                            this.learningStats.lastWeekAccuracy = 70; 
-                            this.learningStats.benchmarksUpdated = Date.now();
+                        // Ensure mastery_levels exists for existing users
+                        if (!this.learningStats.mastery_levels) {
+                            this.learningStats.mastery_levels = {};
                         }
  
                          // --- Hydrate Seasonal State ---
@@ -5757,16 +5951,14 @@
                         this.updateLevel();
                         this.checkPremiumExpiration();
 
-                        // Spaced Repetition: Check through the new Mastery System
-                        this.checkReviewsDue();
-
-                        // Fallback: Also check the old review_queue for immediate mistakes
-                        if (!this.showReviewBanner && this.learningStats.review_queue && this.learningStats.review_queue.length > 0) {
+                        // Spaced Repetition: Check review queue
+                        if (this.learningStats.review_queue && this.learningStats.review_queue.length > 0) {
                             const now = Date.now();
-                            const oneHour = 60 * 60 * 1000;
-                            const reviewItems = this.learningStats.review_queue.filter(q => (now - (q.timestamp || 0)) > oneHour);
+                            const oneDay = 24 * 60 * 60 * 1000;
+                            const reviewItems = this.learningStats.review_queue.filter(q => (now - q.timestamp) > oneDay);
                             
                             if (reviewItems.length > 0) {
+                                // Take up to 3 random items for the review
                                 this.reviewQuestions = reviewItems.sort(() => 0.5 - Math.random()).slice(0, 3);
                                 this.showReviewBanner = true;
                             }
@@ -6020,20 +6212,6 @@
                         this.showQuiz = true;
                         this.quizState = 'active';
                         this.loadQuizQuestion();
-                    },
-
-                    startFixedLesson(lesson) {
-                        this.showQuiz = true;
-                        this.quizState = 'active';
-                        this.toggleScroll(true);
-                        
-                        this.isStoryQuiz = false;
-                        this.currentQuizIndex = 0;
-                        this.quizQuestions = JSON.parse(JSON.stringify(lesson.questions));
-                        this.quizCoinsEarned = 0;
-                        
-                        this.loadQuizQuestion();
-                        this.showSkillTree = false;
                     },
 
                     async startQuiz() {
@@ -6313,6 +6491,8 @@
                         try {
                             if (!this.learningStats.mastery_levels) this.learningStats.mastery_levels = {};
                             
+                            // Extract a "word" or "concept" from the question to track.
+                            // If it's a fill-in-the-blank or matching, use the target word. Otherwise, use the question text itself as a fallback concept identifier.
                             let conceptKey = questionObj.question; 
                             if (questionObj.type === 'matching' && questionObj.pairs && questionObj.pairs.length > 0) {
                                 conceptKey = questionObj.pairs[0].word;
@@ -6320,6 +6500,7 @@
                                 conceptKey = questionObj.options[questionObj.correctIndex] || conceptKey;
                             }
                             
+                            // Clean up the key to avoid massive strings as object keys
                             conceptKey = conceptKey.substring(0, 50).trim();
 
                             let currentMastery = this.learningStats.mastery_levels[conceptKey];
@@ -6327,13 +6508,16 @@
                             const oneDayMs = 24 * 60 * 60 * 1000;
 
                             if (!currentMastery) {
+                                // First time encountering this word/concept
                                 if (isCorrect) {
+                                    // Start at Level 1
                                     this.learningStats.mastery_levels[conceptKey] = {
                                         level: 1,
-                                        next_review: now + (1 * oneDayMs),
-                                        question_data: questionObj
+                                        next_review: now + (1 * oneDayMs), // Review in 1 day
+                                        question_data: questionObj // Store question for the review generator
                                     };
                                 } else {
+                                    // If they got it wrong the very first time, review it even sooner (e.g. 12 hours)
                                     this.learningStats.mastery_levels[conceptKey] = {
                                         level: 0,
                                         next_review: now + (0.5 * oneDayMs), 
@@ -6341,28 +6525,30 @@
                                     };
                                 }
                             } else {
-                                if (isCorrect) {
-                                    // Increment level on correct answer (max 5)
-                                    if (currentMastery.level < 5) {
-                                        currentMastery.level += 1;
-                                    }
+                                // Already exists, update mastery
+                                if (isCorrect && this.isReviewMode) {
+                                    // Only increase level if they get it right during a REVIEW, not regular play
+                                    currentMastery.level += 1;
                                     
+                                    // Calculate next interval based on SR multiplier (roughly 2.5x)
                                     let daysToAdd = 1;
                                     if (currentMastery.level === 2) daysToAdd = 3;
                                     else if (currentMastery.level === 3) daysToAdd = 7;
                                     else if (currentMastery.level === 4) daysToAdd = 14;
-                                    else if (currentMastery.level >= 5) daysToAdd = 30;
+                                    else if (currentMastery.level >= 5) daysToAdd = 30; // Mastered
                                     
                                     currentMastery.next_review = now + (daysToAdd * oneDayMs);
                                     
+                                    // Remove from immediate review queue since they answered it right
                                     if (this.learningStats.review_queue) {
                                         this.learningStats.review_queue = this.learningStats.review_queue.filter(q => q.question !== questionObj.question);
                                     }
-                                } else {
-                                    // Reset to level 1 on mistake if they were higher, or 0 if they were new
-                                    currentMastery.level = Math.max(0, currentMastery.level - 1);
+                                } else if (!isCorrect) {
+                                    // Got it wrong, reset to Level 1
+                                    currentMastery.level = 1;
                                     currentMastery.next_review = now + (1 * oneDayMs);
                                     
+                                    // Make sure it's in the review queue
                                     if (!this.learningStats.review_queue) this.learningStats.review_queue = [];
                                     const exists = this.learningStats.review_queue.some(q => q.question === questionObj.question);
                                     if (!exists) {
@@ -6373,103 +6559,6 @@
                             }
                         } catch (e) {
                             console.error("Error capturing SRM word:", e);
-                        }
-                    },
-
-                    getMasteryColor(level) {
-                        if (level <= 1) return 'bg-red-400';
-                        if (level === 2) return 'bg-orange-400';
-                        if (level === 3) return 'bg-yellow-400';
-                        if (level === 4) return 'bg-green-400';
-                        return 'bg-gradient-to-r from-yellow-400 to-orange-500'; 
-                    },
-
-                    getMasteryLevelName(level) {
-                        if (level === 0) return 'Newbie';
-                        if (level === 1) return 'Beginner';
-                        if (level === 2) return 'Learner';
-                        if (level === 3) return 'Rising Star';
-                        if (level === 4) return 'Expert';
-                        return 'Mastered! 🏆';
-                    },
-
-                    checkReviewsDue() {
-                        try {
-                            if (!this.learningStats.mastery_levels) return;
-                            
-                            const now = Date.now();
-                            const dueItems = Object.entries(this.learningStats.mastery_levels)
-                                .filter(([key, item]) => item.next_review && now >= item.next_review)
-                                .sort((a, b) => a[1].next_review - b[1].next_review);
-                            
-                            if (dueItems.length > 0) {
-                                // Take 5 oldest items for a "Daily Mix"
-                                this.reviewQuestions = dueItems.slice(0, 5).map(([key, item]) => item.question_data);
-                                this.showReviewBanner = true;
-                            } else {
-                                this.showReviewBanner = false;
-                                this.reviewQuestions = [];
-                            }
-                        } catch (e) {
-                            console.error("Error checking reviews:", e);
-                        }
-                    },
-
-                    getWeeklyReport() {
-                        const stats = this.learningStats;
-                        const defaultReport = { wordsNew: 0, accuracy: 0, accuracyTrend: 0, strongArea: 'None', growthArea: 'None', summaryText: 'Start learning to see insights!' };
-
-                        try {
-                            // 1. Vocabulary Growth
-                            const wordsNew = Math.max(0, (stats.wordsLearned || 0) - (stats.lastWeekWords || 0));
-
-                            // 2. Accuracy Calculation
-                            const qh = stats.quizHistory || [];
-                            const currentCorrect = qh.filter(Boolean).length;
-                            const totalQ = qh.length || 1;
-                            const currentAcc = Math.round((currentCorrect / totalQ) * 100);
-                            const accTrend = currentAcc - (stats.lastWeekAccuracy || 70);
-
-                            // 3. Strongest Subject
-                            const subjects = stats.subjects || {};
-                            const topSubjectKey = Object.keys(subjects).sort((a, b) => subjects[b] - subjects[a])[0] || 'history';
-                            
-                            const subjectMapping = {
-                                'history': 'History & Arts',
-                                'robots': 'Coding & Tech',
-                                'space': 'Space Explorer',
-                                'science': 'Science Master',
-                                'nature': 'Nature Guardian'
-                            };
-                            const strongArea = subjectMapping[topSubjectKey] || 'General';
-
-                            // 4. Growth Opportunity (Lowest Level in Mastery)
-                            const mastery = Object.entries(stats.mastery_levels || {});
-                            let growthArea = "All Areas";
-                            if (mastery.length > 0) {
-                                const lowestItem = mastery.sort((a, b) => a[1].level - b[1].level)[0];
-                                growthArea = lowestItem[0].substring(0, 15) + "...";
-                            } else {
-                                // Fallback to subject with fewest XP
-                                growthArea = subjectMapping[Object.keys(subjects).sort((a, b) => subjects[a] - subjects[b])[0]] || "New Topics";
-                            }
-
-                            // 5. Summary Text
-                            let summaryText = `Your child learned ${wordsNew} new words this week! `;
-                            if (currentAcc >= 80) summaryText += `They have a fantastic accuracy of ${currentAcc}% and are really shining in ${strongArea}.`;
-                            else summaryText += `They are making steady progress and are strongest in ${strongArea}. Keep focusing on ${growthArea}!`;
-
-                            return {
-                                wordsNew,
-                                accuracy: currentAcc,
-                                accuracyTrend: accTrend,
-                                strongArea,
-                                growthArea,
-                                summaryText
-                            };
-                        } catch (e) {
-                            console.error("Report Error:", e);
-                            return defaultReport;
                         }
                     },
 
@@ -6493,14 +6582,9 @@
                     },
 
                     async handleSignup() {
-                        if (!this.supabase) {
-                            alert("⚠️ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
-                            console.error("Signup blocked: this.supabase is null");
+                        if (!this.supabase || !navigator.onLine) {
+                            alert("⚠️ You're offline! Please connect to the internet to create an account.");
                             return;
-                        }
-                        
-                        if (!navigator.onLine) {
-                            console.warn("navigator.onLine is false, but attempting signup anyway...");
                         }
                         if (!this.loginForm.name || !this.loginForm.email || !this.loginForm.password) {
                             alert("Please fill in all fields.");
@@ -6653,14 +6737,9 @@
                     },
 
                     async handleLogin() {
-                        if (!this.supabase) {
-                            alert("⚠️ Connection failed! The learning server (Supabase) is not responding. Please refresh the page or check your internet.");
-                            console.error("Login blocked: this.supabase is null");
+                        if (!this.supabase || !navigator.onLine) {
+                            alert("⚠️ You're offline! Please connect to the internet to login.");
                             return;
-                        }
-                        
-                        if (!navigator.onLine) {
-                            console.warn("navigator.onLine is false, but attempting login anyway...");
                         }
                         console.log("Attempting Login..."); // Log start
                         this.isLoading = true;
@@ -7805,131 +7884,9 @@
                               this.playPing();
                               this.syncData();
                           }
-                      },
-
-                      // --- RE-ADDED MISSING METHODS ---
-                      toggleScroll(isFixed) {
-                          document.body.classList.toggle('overflow-hidden', isFixed);
-                          if (isFixed) {
-                              this.playPing();
-                          }
-                      },
-
-                      generateGateQuestion() {
-                          const a = Math.floor(Math.random() * 10) + 1;
-                          const b = Math.floor(Math.random() * 10) + 1;
-                          this.correctGateResult = a + b;
-                          this.gateQuestion = `Wait! Parents only! What is ${a} + ${b}?`;
-                          this.gateAnswer = '';
-                          this.gateVerified = false;
-                      },
-
-                      verifyGate() {
-                          if (parseInt(this.gateAnswer) === this.correctGateResult) {
-                              this.gateVerified = true;
-                              this.openParentPortal();
-                          } else {
-                              alert("Oops! That's not quite right. Try again!");
-                              this.generateGateQuestion();
-                          }
-                      },
-
-
-                      async generateStory() {
-                          this.showStoryModal = true;
-                          this.isStoryThinking = true;
-                          this.toggleScroll(true);
-
-                          try {
-                              const prompt = `Write a short, magical 3-sentence story about ${this.t(this.currentChar.subjectKey)} for a child named ${this.childProfile.name || 'Friend'}.`;
-                              const response = await fetch('/api/chat', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ message: prompt })
-                              });
-                              const data = await response.json();
-                              this.currentStory = { 
-                                  story: data.response || "Once upon a time, there was a magical dinosaur who loved history...",
-                                  questions: [] 
-                              };
-                          } catch (e) {
-                              this.currentStory = { story: "Oh no! My magic wand is out of battery. Let's try again later!", questions: [] };
-                          } finally {
-                              this.isStoryThinking = false;
-                          }
-                      },
-
-                      startLesson(path) {
-                          if (path.premium && !this.isPremium) {
-                              this.showPremiumModal = true;
-                              return;
-                          }
-                          this.playPing();
-                          this.showLearningPath = false;
-                          this.toggleScroll(false);
-                          
-                          // Navigate to lesson or start AI session
-                          this.displayText = `Welcome to ${path.name}! Let's start our adventure! 🌟`;
-                          this.speak(this.displayText);
-                      },
-
-                      buyShopItem(item) {
-                          if (this.coins >= item.price) {
-                              this.coins -= item.price;
-                              this.inventory.push({ ...item, date: new Date().toISOString() });
-                              localStorage.setItem('user_inventory', JSON.stringify(this.inventory));
-                              this.playPing();
-                              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                              this.syncData();
-                          } else {
-                              alert("You need more magic coins! Keep learning to earn them! 💰");
-                          }
-                      },
-
-                      loadLeaderboard() {
-                          this.isModalLoading = true;
-                          this.showLeaderboardRewardModal = true;
-                          setTimeout(() => {
-                              this.leaderboardRewardData = [
-                                  { name: this.childProfile.name || 'You', xp: this.xp, rank: 1, avatar: '🦖' },
-                                  { name: 'Alex', xp: 1200, rank: 2, avatar: '🤖' },
-                                  { name: 'Sam', xp: 1100, rank: 3, avatar: '🚀' },
-                                  { name: 'Jordan', xp: 950, rank: 4, avatar: '🦁' }
-                              ];
-                              this.isModalLoading = false;
-                          }, 1000);
-                      },
-
-                      loadDownloadedLessons() {
-                          const saved = localStorage.getItem('downloaded_lessons');
-                          this.downloadedLessons = saved ? JSON.parse(saved) : [];
-                      },
-
-                      t(key) {
-                          const translations = {
-                              'adventure_map': 'Adventure Map',
-                              'magic_auras': 'Magic Shop',
-                              'daily_gift': 'Daily Gift',
-                              'story_about': 'A story about',
-                              'history_subject': 'History',
-                              'robots_subject': 'Robots',
-                              'space_subject': 'Space',
-                              'science_subject': 'Science',
-                              'nature_subject': 'Nature',
-                              'dino_name': 'Professor Dino',
-                              'robot_name': 'Robo-Buddy',
-                              'astronaut_name': 'Star-Gazer',
-                              'subject_history': 'History',
-                              'subject_robots': 'Robots',
-                              'subject_space': 'Space',
-                              'subject_science': 'Science',
-                              'subject_nature': 'Nature'
-                          };
-                          return translations[key] || key;
                       }
                 }
             }
-
 
             // --- Global Bridge for Native App ---
             window.updateNetworkStatus = (isWifi) => {
