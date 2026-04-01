@@ -4185,6 +4185,23 @@
                         const onboardingCompleted = localStorage.getItem('onboarding_completed');
                         this.hasCompletedOnboarding = onboardingCompleted === 'true';
 
+                        // --- NEW: Real-time Connection Listeners ---
+                        window.addEventListener('online', () => {
+                            this.isOfflineMode = false;
+                            console.log("🌐 App is back online!");
+                            // Optionally trigger a reload or specific init logic here if needed
+                        });
+                        window.addEventListener('offline', () => {
+                            this.isOfflineMode = true;
+                            console.log("📴 App is now offline.");
+                        });
+
+                        // Set initial state
+                        this.isOfflineMode = !navigator.onLine;
+
+                        // --- MODIFIED: Pre-cache Media for Offline Resurrection ---
+                        this.preCacheMedia();
+
                         // --- Offline Detection: Don't show spinner if no internet ---
                         if (!navigator.onLine) {
                             console.warn("App loaded offline — skipping Supabase init.");
@@ -4210,9 +4227,12 @@
 
                         this.sessionStartTime = Date.now();
                         setInterval(() => {
-                            this.totalMinutesLearned++;
-                            this.syncData();
+                            if (navigator.onLine) {
+                                this.totalMinutesLearned++;
+                                this.syncData();
+                            }
                         }, 60000);
+
 
                         try {
                             // Timeout fetch after 3s — if offline, fail fast instead of hanging
@@ -4606,8 +4626,31 @@
                         }
                     },
 
+                    preCacheMedia() {
+                        console.log("📦 Starting Pre-cache for Golden Path media...");
+                        const assets = [
+                            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+                            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+                            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+                            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+                            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
+                        ];
+                        assets.forEach(url => {
+                            const audio = new Audio();
+                            audio.src = url;
+                            audio.preload = "auto";
+                        });
+                    },
+
                     async speak(text) {
                         this.unlockAudio();
+
+                        // --- NEW: Offline Voice Fallback ---
+                        if (!navigator.onLine) {
+                            console.log("📴 Offline: Skipping Cloud TTS, using local fallback.");
+                            this.speakNative(text);
+                            return;
+                        }
 
                         if (this.currentAudio) {
                             this.currentAudio.pause();
@@ -6234,6 +6277,21 @@
                         const ageRange = this.childProfile.ageRange || '6-7';
                         const subject = this.currentChar.subject;
 
+                        // --- NEW: Offline Story Fallback ---
+                        if (!navigator.onLine) {
+                            const charName = this.t(this.currentChar.nameKey);
+                            this.currentStory = {
+                                story: `Professor ${charName}'s internet connection is sleeping right now! 😴🔌 But I can tell you a classic story: Once upon a time, a brave explorer learned that books can take you anywhere, even without the internet!`,
+                                questions: [
+                                    {type: 'multiple_choice', question: "What is sleeping?", options: ["The Internet", "A Dragon", "The Moon"], correctIndex: 0},
+                                    {type: 'multiple_choice', question: "Where can books take you?", options: ["Anywhere", "Only home", "To the kitchen"], correctIndex: 0},
+                                    {type: 'multiple_choice', question: "Do books need internet?", options: ["Yes", "No", "Sometimes"], correctIndex: 1}
+                                ]
+                            };
+                            this.isStoryThinking = false;
+                            this.speak(this.currentStory.story);
+                            return;
+                        }
                         try {
                             const systemPrompt = `You are an AI Story & Quiz Generator for kids.
                             TARGET AGE: ${ageRange}.
@@ -7523,6 +7581,16 @@
 
                     async askTutor() {
                         if (!this.userQuery.trim()) return;
+
+                        // --- NEW: Offline Generative AI Fallback ---
+                        if (!navigator.onLine) {
+                            const charName = this.t(this.currentChar.nameKey);
+                            this.displayText = `Professor ${charName}'s internet connection is sleeping right now! 😴🔌`;
+                            this.currentMoodIcon = '😴';
+                            this.speak(this.displayText);
+                            this.userQuery = '';
+                            return;
+                        }
 
                         // --- DAILY STREAK LOGIC ---
                         this.updateDailyStreak();
