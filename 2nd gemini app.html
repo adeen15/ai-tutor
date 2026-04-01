@@ -544,11 +544,6 @@
                     <span class="text-xl sm:text-3xl">🗺️</span>
                 </button>
 
-                <!-- Skill Tree Button -->
-                <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
-                    <span class="text-xl sm:text-3xl">🌳</span>
-                </button>
-
                 <!-- Scavenger Hunt (Row 2 Desktop) -->
                 <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
                     <span class="text-xl sm:text-3xl">🔍</span>
@@ -753,14 +748,14 @@
                         </button>
                     </template>
 
-                    <!-- 30-Day Path Banner -->
+                    <!-- Hardcoded Curriculum Banner -->
                     <button @click="startDailyLesson()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-blue-400">
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">📅</div>
+                            <div class="bg-white/20 p-3 rounded-2xl text-2xl sm:text-3xl group-hover:rotate-12 transition-transform">🗺️</div>
                             <div>
                                 <div class="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Your Learning Plan</div>
-                                <div class="text-xl sm:text-3xl font-kids" x-text="getDailyContent().title">Start Day 1</div>
-                                <div class="text-xs font-bold opacity-90 mt-1 text-blue-100" x-text="getDailyContent().content.substring(0,30) + '...'"></div>
+                                <div class="text-xl sm:text-3xl font-kids">Adventure Map</div>
+                                <div class="text-xs font-bold opacity-90 mt-1 text-blue-100">Continue your educational journey!</div>
                             </div>
                         </div>
                         <div class="bg-white text-blue-600 px-3 py-2 sm:px-6 sm:py-3 rounded-2xl font-bold font-kids shadow-lg group-hover:bg-yellow-400 group-hover:text-yellow-900 transition-colors text-sm sm:text-base">
@@ -775,13 +770,6 @@
                         </div>
                         
                         <div class="flex flex-wrap justify-end gap-3 mt-6" x-show="hasAnswered && !isThinking">
-                            <button 
-                                @click="startQuiz()"
-                                class="flex items-center gap-2 px-5 py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4 bg-yellow-400 border-yellow-600 text-yellow-900 shadow-md"
-                            >
-                                <span class="text-xl">🏆</span> <span x-text="t('challenge_me')">Challenge Me!</span>
-                            </button>
-
                             <button 
                                 @click="isSpeaking ? stopSpeaking() : speak(displayText)"
                                 class="flex items-center gap-3 px-5 sm:px-6 py-2 sm:py-3 rounded-2xl font-kids text-base sm:text-lg transition-all transform hover:scale-110 active:scale-95 border-b-4"
@@ -921,14 +909,6 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <button 
-                            x-show="visionPreview && !isThinking && !isCameraActive"
-                            @click="generateToyLesson()"
-                            class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
-                        >
-                            Magic Lesson! 🪄
-                        </button>
-
                         <button 
                             x-show="visionPreview && !isCameraActive"
                             @click="analyzeImage()"
@@ -1432,21 +1412,6 @@
                                 </template>
                             </button>
                         </template>
-
-                        <button @click="generateNewPath()" 
-                                class="bg-white rounded-[2rem] p-8 border-4 border-dashed border-purple-200 hover:border-purple-400 group transition-all flex flex-col items-center text-center relative overflow-hidden"
-                                :disabled="isGeneratingPath">
-                            <div x-show="isGeneratingPath" class="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center">
-                                <div class="spinner border-purple-500 mb-4"></div>
-                                <p class="font-kids text-purple-600 animate-pulse text-sm">Magic in progress...</p>
-                            </div>
-                            <div class="w-24 h-24 rounded-full bg-purple-50 flex items-center justify-center text-5xl mb-6 group-hover:rotate-12 transition-transform">
-                            ✨
-                            </div>
-                            <h3 class="text-2xl font-kids text-purple-600 mb-2">Magic Wand</h3>
-                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Generate New Quest</p>
-                            <div class="mt-6 text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-full font-bold">Powered by AI 🪄</div>
-                        </button>
                     </div>
                 </div>
 
@@ -1640,6 +1605,18 @@
                         </div>
 
                         <h3 class="text-2xl font-bold text-gray-800 mb-6" x-text="getCurrentLessonQuestion().q"></h3>
+
+                        <!-- AI Hint Area -->
+                        <div x-show="isHintThinking || hintText" class="mb-6 p-4 bg-blue-50 rounded-2xl border-2 border-blue-100 animate__animated animate__fadeIn">
+                            <div x-show="isHintThinking" class="flex items-center gap-3 text-blue-500 font-bold">
+                                <div class="spinner w-5 h-5 border-blue-500 border-2"></div>
+                                <span class="font-kids animate-pulse">Professor AI is thinking of a hint...</span>
+                            </div>
+                            <div x-show="!isHintThinking && hintText" class="flex gap-3">
+                                <div class="text-2xl">💡</div>
+                                <p class="text-blue-700 font-bold text-sm" x-text="hintText"></p>
+                            </div>
+                        </div>
 
                         <div class="space-y-3">
                             <template x-for="(opt, idx) in getCurrentLessonQuestion().options">
@@ -3395,6 +3372,8 @@
                     isVoiceNativeMode: false, 
                     displayText: "Hi friend! 🌟 I'm Professor Dino. I teach History! What do you want to know about the past?",
                     isThinking: false,
+                    isHintThinking: false,
+                    hintText: '',
                     isSpeaking: false,
                     isListening: false,
                     hasAnswered: true,
@@ -5108,9 +5087,10 @@
                         if (!this.activeLesson) return {q:'', options:[], correct:0};
                         return this.activeLesson.quiz[this.currentLessonQuizIndex];
                     },
-                    checkLessonAnswer(index) {
+                    async checkLessonAnswer(index) {
                         const currentQ = this.getCurrentLessonQuestion();
                         if(index === currentQ.correct) {
+                            this.hintText = '';
                             if (!this.learningStats.quizHistory) this.learningStats.quizHistory = [];
                             this.learningStats.quizHistory.push(true);
                             if (this.learningStats.quizHistory.length > 10) this.learningStats.quizHistory.shift();
@@ -5129,7 +5109,46 @@
                             }
                         } else {
                             this.handleMistake();
-                            alert("Oops! Try again!");
+                            this.generateDynamicHint(currentQ, index);
+                        }
+                    },
+
+                    async generateDynamicHint(questionObj, wrongIndex) {
+                        this.isHintThinking = true;
+                        this.hintText = "";
+                        const ageRange = this.childProfile.ageRange || '6-7';
+                        const wrongAnswer = questionObj.options[wrongIndex];
+                        const correctAnswer = questionObj.options[questionObj.correct];
+                        
+                        try {
+                            const systemPrompt = `You are a supportive tutor for a ${ageRange} year old. 
+                            The child answered a question incorrectly.
+                            Question: "${questionObj.q}"
+                            They guessed: "${wrongAnswer}"
+                            Correct answer: "${correctAnswer}"
+                            
+                            Write a very short, encouraging 1-2 sentence hint explaining why their guess was wrong in a friendly way, and giving a clue for the correct answer without just giving it away immediately.
+                            Keep it extremely simple.
+                            Return plain text only.`;
+
+                            const response = await fetch("/api/chat", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    "messages": [
+                                        { "role": "system", "content": systemPrompt },
+                                        { "role": "user", "content": "Give me a hint!" }
+                                    ]
+                                })
+                            });
+
+                            const data = await response.json();
+                            this.hintText = data.response.replace(/```/g, '').trim();
+                        } catch(e) {
+                            console.error("Hint Error", e);
+                            this.hintText = "Oops, keep trying! You can do it!";
+                        } finally {
+                            this.isHintThinking = false;
                         }
                     },
 
@@ -6087,21 +6106,8 @@
 
 
 
-                    getDailyContent() {
-                        // Fallback for days without specific data
-                        const dayKey = 'day' + this.learningPathDay;
-                        return this.dailyPathData[dayKey] || { 
-                            title: "Day " + this.learningPathDay + ": Daily Adventure", 
-                            type: "generic", 
-                            content: "Keep learning! Today is a great day to ask Professor Dino a question.",
-                            task: "Ask 3 questions to your AI Tutor!"
-                        };
-                    },
-
                     startDailyLesson() {
-                        this.currentChar = this.characters[0]; // Force Professor Dino
-                        this.currentMoodIcon = this.currentChar.icon;
-                        this.showDailyPath = true;
+                        this.showLearningPath = true;
                         this.toggleScroll(true);
                     },
 
