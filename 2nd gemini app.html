@@ -758,7 +758,16 @@
                              </div>
                          </template>
 
-                        <div class="text-[6rem] sm:text-[9rem] md:text-[12rem] lg:text-[15rem]" x-text="currentMoodIcon"></div>
+                        <!-- Character Display with Accessories -->
+                        <div class="relative inline-block px-4">
+                            <div class="text-[6rem] sm:text-[9rem] md:text-[12rem] lg:text-[15rem] transition-transform duration-500 hover:scale-105" x-text="currentMoodIcon"></div>
+                            
+                            <!-- Accessory Layer -->
+                            <template x-if="equippedAccessories[currentChar.nameKey]">
+                                <div class="absolute -top-4 -right-2 text-[2.5rem] sm:text-[4rem] md:text-[5rem] lg:text-[6rem] filter drop-shadow-lg transform rotate-12 transition-all duration-700 animate__animated animate__bounceIn" 
+                                     x-text="getAccessoryIcon(equippedAccessories[currentChar.nameKey])"></div>
+                            </template>
+                        </div>
                     </div>
                     
                     <div x-show="isThinking" class="absolute -top-8 left-8 sm:-top-10 sm:left-10 animate__animated animate__fadeIn">
@@ -1583,8 +1592,13 @@
 
                                 <!-- Floating Avatar (Active character on current level) -->
                                 <div x-show="isLevelUnlocked(currentPath.id, level.id) && !isLevelComplete(currentPath.id, level.id)"
-                                     class="absolute -top-16 z-50 text-6xl path-avatar-float"
-                                     x-text="currentChar.icon">
+                                     class="absolute -top-16 z-50 text-6xl path-avatar-float">
+                                     <div class="relative w-full h-full flex items-center justify-center">
+                                        <span class="text-3xl sm:text-4xl" x-text="currentChar.icon"></span>
+                                        <template x-if="equippedAccessories[currentChar.nameKey]">
+                                            <span class="absolute -top-3 -right-2 text-xl filter drop-shadow-sm" x-text="getAccessoryIcon(equippedAccessories[currentChar.nameKey])"></span>
+                                        </template>
+                                     </div>
                                 </div>
 
                                 <button 
@@ -2175,58 +2189,138 @@
         <div x-show="showShop" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black bg-opacity-70 overflow-y-auto"
             x-transition.opacity>
-            <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-blue-200 overflow-y-auto flex flex-col">
-                <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10">
+            <div @click.away="showShop = false; toggleScroll(false)" class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[92vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-blue-200 overflow-hidden flex flex-col">
+                <button @click="showShop = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-50">
                     <i class="fas fa-times-circle"></i>
                 </button>
                 
-                <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600" x-text="t('magic_auras')">Magic Auras</h2>
-                <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8">Add magic effects to your teacher!</p>
-                
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
-                    <template x-for="item in shopItems">
-                        <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-105"
-                            :class="equippedItem === item.id ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200' : 'bg-gray-50 border-gray-100'">
-                            
-                            <div class="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white rounded-full shadow-inner text-3xl sm:text-5xl">
-                                <span x-text="item.icon"></span>
-                                <div x-show="inventory.includes(item.id)" class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-xs border-2 border-white">
-                                    <i class="fas fa-check"></i>
+                <!-- Tab Switcher -->
+                <div class="flex gap-2 p-1 bg-slate-100 rounded-2xl mb-6 self-center scale-90 sm:scale-100">
+                    <button @click="shopTab = 'auras'" 
+                        class="px-6 py-2 rounded-xl font-bold transition-all flex items-center gap-2"
+                        :class="shopTab === 'auras' ? 'bg-white text-purple-600 shadow-md' : 'text-slate-500 hover:bg-slate-50'">
+                        <span>🪄</span> <span class="hidden sm:inline" x-text="t('magic_auras')"></span>
+                    </button>
+                    <button @click="shopTab = 'boutique'" 
+                        class="px-6 py-2 rounded-xl font-bold transition-all flex items-center gap-2"
+                        :class="shopTab === 'boutique' ? 'bg-white text-pink-600 shadow-md' : 'text-slate-500 hover:bg-slate-50'">
+                        <span>👗</span> <span class="hidden sm:inline">The Boutique</span>
+                    </button>
+                </div>
+
+                <!-- Auras Tab Content -->
+                <div x-show="shopTab === 'auras'" class="flex-1 overflow-y-auto px-1 custom-scroll pb-4">
+                    <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600" x-text="t('magic_auras')">Magic Auras</h2>
+                    <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8">Add magic effects to your teacher!</p>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                        <template x-for="item in shopItems">
+                            <div class="flex flex-col items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-2xl border-2 transition-all hover:scale-105"
+                                :class="equippedItem === item.id ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-200' : 'bg-gray-50 border-gray-100'">
+                                
+                                <div class="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center bg-white rounded-full shadow-inner text-3xl sm:text-5xl">
+                                    <span x-text="item.icon"></span>
+                                    <div x-show="inventory.includes(item.id)" class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-green-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-xs border-2 border-white">
+                                        <i class="fas fa-check"></i>
+                                    </div>
                                 </div>
+                                
+                                <div class="text-center w-full">
+                                    <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
+                                    <div x-show="!inventory.includes(item.id)" class="font-bold text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block"
+                                        :class="item.seasonal ? 'text-pink-600 bg-pink-50' : 'text-yellow-600 bg-yellow-100'">
+                                        <span x-text="item.price"></span> <span x-text="item.seasonal ? currentSeason.tokenIcon : '💰'"></span>
+                                    </div>
+                                </div>
+    
+                                <button 
+                                    @click="inventory.includes(item.id) ? toggleEquip(item.id) : (item.seasonal ? buySeasonalItem(item) : buyItem(item))"
+                                    class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
+                                    :class="inventory.includes(item.id) 
+                                        ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') 
+                                        : ((item.seasonal ? eventTokens : coins) >= item.price ? (item.seasonal ? 'bg-pink-500' : 'bg-green-500') + ' text-white hover:opacity-90' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
+                                    :disabled="!inventory.includes(item.id) && (item.seasonal ? eventTokens : coins) < item.price"
+                                >
+                                    <span x-text="(inventory.includes(item.id) || inventory.includes(String(item.id))) ? (equippedItem === item.id ? 'Active Now' : t('activate')) : t('buy_now')"></span>
+                                </button>
                             </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Boutique Tab Content -->
+                <div x-show="shopTab === 'boutique'" class="flex-1 overflow-y-auto px-1 custom-scroll pb-4" x-data="{ hoveredItem: null }">
+                    <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-pink-500">The Boutique</h2>
+                    <p class="text-center text-gray-500 font-bold mb-6">Style your tutor with amazing hats and glasses!</p>
+
+                    <!-- Try-On Preview -->
+                    <div class="bg-slate-50 rounded-3xl p-6 mb-8 flex flex-col items-center border-4 border-white shadow-inner relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-pink-50/50"></div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 relative z-10">Live Preview ✨</p>
+                        
+                        <div class="relative z-10 scale-125 sm:scale-150 py-4">
+                            <!-- Character -->
+                            <div class="text-7xl sm:text-8xl drop-shadow-md" x-text="currentChar.icon"></div>
                             
-                             <div class="text-center w-full">
-                                 <h3 class="font-bold text-gray-700 text-xs sm:text-base truncate w-full" x-text="item.name"></h3>
-                                 <div x-show="!inventory.includes(item.id)" class="font-bold text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 inline-block"
-                                     :class="item.seasonal ? 'text-pink-600 bg-pink-50' : 'text-yellow-600 bg-yellow-100'">
-                                     <span x-text="item.price"></span> <span x-text="item.seasonal ? currentSeason.tokenIcon : '💰'"></span>
-                                 </div>
-                             </div>
- 
-                             <button 
-                                 @click="inventory.includes(item.id) ? toggleEquip(item.id) : (item.seasonal ? buySeasonalItem(item) : buyItem(item))"
-                                 class="w-full py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
-                                 :class="inventory.includes(item.id) 
-                                     ? (equippedItem === item.id ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-600') 
-                                     : ((item.seasonal ? eventTokens : coins) >= item.price ? (item.seasonal ? 'bg-pink-500' : 'bg-green-500') + ' text-white hover:opacity-90' : 'bg-gray-300 text-gray-500 cursor-not-allowed')"
-                                 :disabled="!inventory.includes(item.id) && (item.seasonal ? eventTokens : coins) < item.price"
-                             >
-                                 <span x-text="(inventory.includes(item.id) || inventory.includes(String(item.id))) ? (equippedItem === item.id ? 'Active Now' : t('activate')) : t('buy_now')"></span>
-                             </button>
+                            <!-- Accessory Layer (Priority: Hover > Equipped) -->
+                            <template x-if="hoveredItem || equippedAccessories[currentChar.nameKey]">
+                                <div class="absolute -top-4 -right-1 text-4xl sm:text-5xl filter drop-shadow animate-bounce-slow" 
+                                     x-text="getAccessoryIcon(hoveredItem || equippedAccessories[currentChar.nameKey])"></div>
+                            </template>
                         </div>
-                    </template>
+                        
+                        <p class="mt-4 text-xs font-bold text-pink-400 italic relative z-10" x-text="hoveredItem ? 'Trying on...' : 'Currently wearing'"></p>
+                    </div>
+
+                    <!-- Items Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                        <template x-for="item in boutiqueItems">
+                            <div @mouseenter="hoveredItem = item.id" @mouseleave="hoveredItem = null"
+                                class="flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all hover:border-pink-300 group shadow-sm bg-white"
+                                :class="equippedAccessories[currentChar.nameKey] === item.id ? 'border-pink-400 bg-pink-50/30' : 'border-gray-100'">
+                                
+                                <div class="w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center bg-slate-50 rounded-2xl text-3xl sm:text-4xl group-hover:scale-110 transition-transform">
+                                    <span x-text="item.icon"></span>
+                                </div>
+                                
+                                <div class="text-center flex-1 w-full">
+                                    <h4 class="font-bold text-slate-700 text-xs sm:text-sm truncate" x-text="item.name"></h4>
+                                    <!-- Price -->
+                                    <div x-show="!boutiqueInventory.includes(item.id)" class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full mt-1 inline-block border border-yellow-100">
+                                        <span x-text="item.price"></span> 💰
+                                    </div>
+                                    <!-- Owned Label -->
+                                    <div x-show="boutiqueInventory.includes(item.id)" class="text-[9px] font-bold text-green-500 uppercase tracking-widest mt-1">
+                                        Owned ✅
+                                    </div>
+                                </div>
+
+                                <button 
+                                    @click="boutiqueInventory.includes(item.id) ? toggleAccessory(item.id) : buyBoutiqueItem(item)"
+                                    class="w-full py-1.5 rounded-xl font-bold text-[10px] sm:text-xs shadow-md transition-all active:scale-95"
+                                    :class="boutiqueInventory.includes(item.id) 
+                                        ? (equippedAccessories[currentChar.nameKey] === item.id ? 'bg-pink-500 text-white' : 'bg-slate-200 text-slate-600 hover:bg-pink-100') 
+                                        : (coins >= item.price ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-400 cursor-not-allowed')"
+                                    :disabled="!boutiqueInventory.includes(item.id) && coins < item.price"
+                                >
+                                    <span x-text="boutiqueInventory.includes(item.id) ? (equippedAccessories[currentChar.nameKey] === item.id ? 'Unequip' : 'Equip') : 'Buy Item'"></span>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
                 </div>
                 
-                 <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center gap-4">
-                     <div class="bg-yellow-100 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-yellow-300">
-                         <span class="text-xl sm:text-2xl">💰</span>
-                         <span class="font-bold text-sm sm:text-base text-yellow-800" x-text="coins + ' coins'"></span>
-                     </div>
-                     <div class="bg-pink-50 px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 border-2 border-pink-200">
-                         <span class="text-xl sm:text-2xl" x-text="currentSeason.tokenIcon"></span>
-                         <span class="font-bold text-sm sm:text-base text-pink-600" x-text="eventTokens + ' tokens'"></span>
-                     </div>
-                 </div>
+                <!-- Footer (Wallets) -->
+                <div class="mt-6 pt-4 border-t border-slate-100 flex justify-center gap-4 shrink-0">
+                    <div class="bg-yellow-400/10 px-4 py-2 rounded-full flex items-center gap-2 border border-yellow-400/20">
+                        <span class="text-lg">💰</span>
+                        <span class="font-bold text-sm text-yellow-700" x-text="coins"></span>
+                    </div>
+                    <div class="bg-pink-400/10 px-4 py-2 rounded-full flex items-center gap-2 border border-pink-400/20">
+                        <span class="text-lg" x-text="currentSeason.tokenIcon"></span>
+                        <span class="font-bold text-sm text-pink-600" x-text="eventTokens"></span>
+                    </div>
+                </div>
  
                   <!-- Event Branding in Shop -->
                   <div class="mt-6 pt-6 border-t border-slate-100 text-center">
@@ -4100,6 +4194,46 @@
                         { id: 'spring_aura', name: 'Spring Aura', icon: '🌸', price: 200, effectType: 'bloom', seasonal: true },
                         { id: 'flower_trail', name: 'Flower Trail', icon: '🌻', price: 350, effectType: 'flowers', seasonal: true }
                     ],
+
+                    boutiqueItems: [
+                        { id: 'cool_shades', name: 'Cool Shades', icon: '😎', price: 150, category: 'eyes' },
+                        { id: 'royal_crown', name: 'Royal Crown', icon: '👑', price: 500, category: 'head' },
+                        { id: 'party_hat', name: 'Party Hat', icon: '🥳', price: 100, category: 'head' },
+                        { id: 'wizard_hat', name: 'Wizard Hat', icon: '🧙', price: 350, category: 'head' },
+                        { id: 'space_helmet', name: 'Space Helmet', icon: '👨‍🚀', price: 450, category: 'head' },
+                        { id: 'bow_tie', name: 'Red Bow Tie', icon: '🎀', price: 200, category: 'neck' },
+                        { id: 'magic_wand', name: 'Star Wand', icon: '🪄', price: 300, category: 'hand' }
+                    ],
+
+                    boutiqueInventory: [],
+                    equippedAccessories: {}, // Format: { dino: 'royal_crown', milo: 'cool_shades' }
+                    shopTab: 'auras', // 'auras' or 'boutique'
+
+                    buyBoutiqueItem(item) {
+                        if (this.coins >= item.price && !this.boutiqueInventory.includes(item.id)) {
+                            this.coins -= item.price;
+                            this.boutiqueInventory.push(item.id);
+                            this.playPing();
+                            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                            this.syncData();
+                        }
+                    },
+
+                    toggleAccessory(itemId) {
+                        const charKey = this.currentChar.nameKey; 
+                        if (this.equippedAccessories[charKey] === itemId) {
+                            delete this.equippedAccessories[charKey];
+                        } else {
+                            this.equippedAccessories[charKey] = itemId;
+                        }
+                        this.playPing();
+                        this.syncData();
+                    },
+
+                    getAccessoryIcon(itemId) {
+                        const item = this.boutiqueItems.find(i => i.id === itemId);
+                        return item ? item.icon : '';
+                    },
 
                     dailyQuests: [
                         { id: 'ask_ai', text: 'Ask the Professor a question', progress: 0, target: 1, completed: false, reward: 50, icon: '💬', claimed: false },
@@ -6092,7 +6226,9 @@
                              event_tokens: 0,
                              seasonal_quests: null,
                              review_queue: [], 
-                             mastery_levels: {} 
+                             mastery_levels: {},
+                             boutique_inventory: [],
+                             equipped_accessories: {}
                          };
 
                         // Ensure mastery_levels exists for existing users
@@ -6114,6 +6250,10 @@
                         this.lastSummaryDate = data.last_summary_date || this.learningStats.last_summary_date || null;
                         this.currentLanguage = data.current_language || this.learningStats.current_language || 'English';
                         this.currentCurriculumRegion = this.learningStats.current_curriculum_region || 'Global';
+                        
+                        // Hydrate Boutique
+                        this.boutiqueInventory = this.learningStats.boutique_inventory || [];
+                        this.equippedAccessories = this.learningStats.equipped_accessories || {};
                         this.inventory = this.learningStats.inventory || data.inventory || [];
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
@@ -7240,6 +7380,10 @@
                         safeStats.active_profile_id = this.activeProfileId;
                         safeStats.time_used_today = this.timeUsedToday;
                         safeStats.daily_time_limit = this.dailyTimeLimit;
+                        
+                        // Boutique Persistence
+                        safeStats.boutique_inventory = this.boutiqueInventory;
+                        safeStats.equipped_accessories = this.equippedAccessories;
 
                         // Persist Social Data
                         safeStats.friends = this.friends;
