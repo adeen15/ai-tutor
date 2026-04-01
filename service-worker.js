@@ -1,5 +1,25 @@
-const CACHE_NAME = 'ai-tutor-v2';
-const PRECACHE_URLS = ['/'];
+const CACHE_NAME = 'ai-tutor-v3';
+const PRECACHE_URLS = [
+  '/',
+  'manifest.json',
+  'https://cdn.tailwindcss.com',
+  'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+  'https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
+  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js',
+  'https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js',
+  'https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+  'https://cdn-icons-png.flaticon.com/512/1998/1998614.png'
+];
 
 self.addEventListener("install", (event) => {
   console.log("✅ Service Worker Installed");
