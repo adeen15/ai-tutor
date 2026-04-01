@@ -1415,9 +1415,10 @@
         </div>
 
         <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[65] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
-            <div class="w-full h-full max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
+            <!-- Adventure Map Modal Content -->
+            <div class="w-full h-full sm:h-[90vh] max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
                 
-                <div class="p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
+                <div class="flex-none p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
                     <div>
                         <h2 class="text-3xl font-kids text-slate-800" x-text="t('adventure_map')">Adventure Map 🗺️</h2>
                         <p class="text-gray-500 font-bold" x-show="!currentPath" x-text="t('choose_journey')">Choose your journey!</p>
@@ -1432,6 +1433,9 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Main Content Area with Height Lock -->
+                <div x-show="!currentPath" class="flex-grow overflow-y-auto p-8 bg-slate-50 custom-scroll" style="flex-basis: 0; min-height: 0;">
 
                     <!-- Today's Missions (Compact Version) -->
                     <div class="mb-6 px-2">
