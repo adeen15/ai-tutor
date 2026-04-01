@@ -474,20 +474,139 @@
 
         </div>
 
-        <div class="absolute top-4 right-4 flex flex-row gap-2 sm:gap-4 z-40">
-            <!-- Profile Switcher -->
-            <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
-                <div class="flex flex-col items-center">
-                    <span class="text-xl sm:text-2xl">👤</span>
-                    <span class="hidden sm:block text-[9px] font-bold text-slate-400 mt-1 uppercase" x-text="childProfile.name"></span>
-                </div>
-            </button>
-            <button @click="openParentPortal()" class="bg-white p-2 border-b-4 border-gray-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform">
-                <span class="text-xl sm:text-2xl">🔒</span>
-            </button>
+        <div class="absolute top-4 right-4 flex flex-col items-end gap-2 sm:gap-4 z-40">
+            <div class="flex flex-row gap-2 sm:gap-4">
+
+
+                <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
+                    <span class="text-xl sm:text-3xl">📕</span>
+                </button>
+
+                <!-- Profile Switcher: Hidden on mobile here, moved to Row 4 -->
+                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white hidden sm:flex p-2 border-b-4 border-orange-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
+                    <div class="flex flex-col items-center">
+                        <span class="text-xl sm:text-2xl">👤</span>
+                        <span class="hidden sm:block text-[9px] font-bold text-slate-400 mt-1 uppercase" x-text="childProfile.name"></span>
+                    </div>
+                </button>
+
+                <!-- Dual Quest Button: Hidden on mobile here, moved to Row 3 -->
+                <button 
+                    @click="showQuestModal = true; toggleScroll(true)"
+                    class="bg-white hidden sm:flex p-2 border-b-4 border-yellow-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform relative"
+                    title="Secret Quest"
+                >
+                    <i class="fas fa-trophy text-yellow-500 text-xl sm:text-2xl"></i>
+                    <span x-show="activeDualQuest.code && !activeDualQuest.isUnlocked" class="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <span x-show="activeDualQuest.isUnlocked" class="absolute -top-1 -right-1 flex h-4 w-4 bg-green-500 text-white rounded-full items-center justify-center text-[8px] font-bold border-2 border-white">
+                        <i class="fas fa-check"></i>
+                    </span>
+                </button>
+
+                <button @click="openParentPortal()" class="bg-white p-2 border-b-4 border-gray-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform">
+                    <span class="text-xl sm:text-2xl">🔒</span>
+                </button>
+
+                <!-- Social Button -->
+                <button @click="socialTab = 'friends'; showSocialModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-pink-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Friends & Social">
+                    <span class="text-xl sm:text-2xl">👫</span>
+                </button>
+
+                <!-- NEW: Trophy Room Button -->
+                <button @click="showTrophyRoom = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-500 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform relative group" title="Verified Trophy Room">
+                    <span class="text-xl sm:text-2xl">💎</span>
+                    <span x-show="learningStats.blockchain_certificates && learningStats.blockchain_certificates.length > 0" class="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="flex flex-row gap-2 sm:gap-4">
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
+                    <span class="text-xl sm:text-3xl">📖</span>
+                </button>
+
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                    <span class="text-xl sm:text-3xl">🏆</span>
+                </button>
+
+                <!-- Offline Downloads Button -->
+                <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-indigo-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
+                    <span class="text-xl sm:text-3xl">📥</span>
+                </button>
+
+                <!-- Adventure Map -->
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                    <span class="text-xl sm:text-3xl">🗺️</span>
+                </button>
+
+                <!-- Skill Tree Button -->
+                <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
+                    <span class="text-xl sm:text-3xl">🌳</span>
+                </button>
+
+                <!-- Scavenger Hunt (Row 2 Desktop) -->
+                <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                    <span class="text-xl sm:text-3xl">🔍</span>
+                </button>
+
+                <!-- Magic Auras (Row 2 Desktop) -->
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-blue-400" :title="t('magic_auras')">
+                    <span class="text-xl sm:text-3xl">🪄</span>
+                </button>
+            </div>
+
+            <!-- Third Row -->
+            <div class="flex flex-row gap-2 sm:gap-4">
+
+                <!-- Scavenger Hunt Button (Mobile Only) -->
+                <button @click="startScavengerHunt()" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                    <span class="text-xl">🔍</span>
+                </button>
+
+                <!-- Sticker Book (Mobile Only - Aligned in Third Row) -->
+                <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
+                    <span class="text-xl">📕</span>
+                </button>
+
+                <!-- Dual Quest (Mobile Only - Row 3) -->
+                <button 
+                    @click="showQuestModal = true; toggleScroll(true)"
+                    class="bg-white sm:hidden p-2 border-b-4 border-yellow-400 rounded-2xl shadow-lg hover:scale-110 transition-transform relative"
+                    title="Secret Quest"
+                >
+                    <i class="fas fa-trophy text-yellow-500 text-xl"></i>
+                    <span x-show="activeDualQuest.code && !activeDualQuest.isUnlocked" class="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                </button>
+            </div>
+
+            <!-- Fourth Row (Mobile Only) -->
+            <div class="flex sm:hidden flex-row gap-2">
+                <!-- Magic Aura (Mobile Only - Row 4) -->
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
+                    <span class="text-xl">🪄</span>
+                </button>
+
+                <!-- Story Time (Mobile Only - Row 4) -->
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
+                    <span class="text-xl">📖</span>
+                </button>
+
+                <!-- Profile Switcher (Mobile Only - Row 4) -->
+                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
+                    <span class="text-xl">👤</span>
+                </button>
+            </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[280px] sm:pt-12 pb-32 sm:pb-12 md:pl-32 lg:pl-72 transition-all duration-300">
+        <div class="container max-w-6xl mx-auto px-4 pt-[280px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
@@ -826,127 +945,6 @@
             </div>
         </div>
 
-        <!-- RESPONSIVE NAVIGATION BAR (Bottom Mobile, Left Sidebar Web) -->
-        <nav x-show="!showLearningPath && !showLegalDoc && !showParentPortal" 
-             class="fixed bg-white z-40 transition-all duration-300 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:shadow-[4px_0_20px_rgba(0,0,0,0.05)] pb-safe md:pb-6 pt-0 md:pt-8 bottom-0 left-0 w-full border-t-2 sm:border-t-4 border-slate-200 md:bottom-auto md:top-0 md:h-screen md:w-24 lg:w-64 md:border-t-0 md:border-r-2" 
-             :class="{ 'translate-y-full md:translate-y-0 md:-translate-x-full': isListening || isThinking }">
-            <div class="max-w-md mx-auto md:max-w-none md:mx-0 flex justify-around md:flex-col md:justify-start items-end md:items-center lg:items-start p-2 sm:p-3 md:p-4 gap-2 lg:gap-4 md:h-full relative font-kids text-slate-700">
-                
-                <!-- Home -->
-                <button @click="showStickerBook = false; showShop = false; showDownloadsModal = false; showMoreMenu = false;" 
-                        class="flex flex-col md:flex-row items-center lg:justify-start gap-1 md:gap-4 p-2 md:p-3 md:px-4 lg:w-full rounded-xl md:rounded-2xl transition-all pb-2 md:pb-3"
-                        :class="!showStickerBook && !showShop && !showDownloadsModal && !showMoreMenu ? 'text-blue-500 scale-110 md:scale-100 md:bg-blue-50' : 'text-slate-400 md:text-slate-500 hover:bg-slate-50 hover:text-blue-500'">
-                    <span class="text-2xl sm:text-3xl md:text-4xl leading-none">🏠</span>
-                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-1 md:hidden">Home</span>
-                    <span class="hidden lg:block text-base lg:text-xl font-bold uppercase tracking-normal">Home</span>
-                </button>
-
-                <!-- Stickers -->
-                <button @click="showStickerBook = true; showShop = false; showDownloadsModal = false; showMoreMenu = false; toggleScroll(true)" 
-                        class="flex flex-col md:flex-row items-center lg:justify-start gap-1 md:gap-4 p-2 md:p-3 md:px-4 lg:w-full rounded-xl md:rounded-2xl transition-all pb-2 md:pb-3"
-                        :class="showStickerBook ? 'text-yellow-500 scale-110 md:scale-100 md:bg-yellow-50' : 'text-slate-400 md:text-slate-500 hover:bg-slate-50 hover:text-yellow-500'">
-                    <span class="text-2xl sm:text-3xl md:text-4xl leading-none">📕</span>
-                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-1 md:hidden">Stickers</span>
-                    <span class="hidden lg:block text-base lg:text-xl font-bold uppercase tracking-normal">Stickers</span>
-                </button>
-
-                <!-- Massive Responsive Play Action -->
-                <div class="relative -mt-10 md:mt-0 md:my-4 mx-2 md:mx-0 flex flex-col items-center lg:items-start lg:w-full">
-                    <button @click="startDailyLesson()" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-full lg:h-auto lg:py-4 bg-gradient-to-tr from-blue-500 to-indigo-500 lg:rounded-2xl rounded-full shadow-[0_6px_0_#3730a3] active:shadow-[0_0px_0_#3730a3] active:translate-y-[6px] border-[5px] lg:border-4 border-white lg:border-transparent flex lg:flex-row justify-center items-center gap-3 text-white transform hover:scale-105 transition-all text-2xl sm:text-3xl lg:text-2xl group z-50">
-                        <i class="fas fa-play lg:text-xl ml-1 lg:ml-0 group-hover:scale-110 transition-transform"></i>
-                        <span class="hidden lg:block font-bold tracking-widest uppercase">Start</span>
-                    </button>
-                    <span class="absolute -bottom-4 md:hidden w-max text-center text-[10px] sm:text-xs font-bold text-indigo-500 tracking-widest mt-1">PLAY</span>
-                </div>
-
-                <!-- Magic Auras -->
-                <button @click="showShop = true; showStickerBook = false; showDownloadsModal = false; showMoreMenu = false; toggleScroll(true)" 
-                        class="flex flex-col md:flex-row items-center lg:justify-start gap-1 md:gap-4 p-2 md:p-3 md:px-4 lg:w-full rounded-xl md:rounded-2xl transition-all pb-2 md:pb-3"
-                        :class="showShop ? 'text-purple-500 scale-110 md:scale-100 md:bg-purple-50' : 'text-slate-400 md:text-slate-500 hover:bg-slate-50 hover:text-purple-500'">
-                    <span class="text-2xl sm:text-3xl md:text-4xl leading-none">🪄</span>
-                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-1 md:hidden" x-text="t('magic_auras')">Auras</span>
-                    <span class="hidden lg:block text-base lg:text-xl font-bold uppercase tracking-normal" x-text="t('magic_auras')">Auras</span>
-                </button>
-
-                <!-- More Menu -->
-                <button @click="showMoreMenu = true; showShop = false; showStickerBook = false; showDownloadsModal = false; toggleScroll(true)" 
-                        class="flex flex-col md:flex-row items-center lg:justify-start gap-1 md:gap-4 p-2 md:p-3 md:px-4 lg:w-full rounded-xl md:rounded-2xl transition-all pb-2 md:pb-3"
-                        :class="showMoreMenu ? 'text-emerald-500 scale-110 md:scale-100 md:bg-emerald-50' : 'text-slate-400 md:text-slate-500 hover:bg-slate-50 hover:text-emerald-500'">
-                    <span class="text-2xl sm:text-3xl md:text-4xl leading-none">🌟</span>
-                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-1 md:hidden">More</span>
-                    <span class="hidden lg:block text-base lg:text-xl font-bold uppercase tracking-normal">More</span>
-                </button>
-            </div>
-            <div class="h-2 sm:h-0 hidden md:block"></div>
-        </nav>
-
-        <!-- MORE MENU OVERLAY -->
-        <div x-show="showMoreMenu" x-cloak class="fixed inset-0 z-50 bg-slate-900 bg-opacity-60 flex items-end sm:items-center justify-center p-0 sm:p-6" x-transition.opacity>
-            <div @click.away="showMoreMenu = false; toggleScroll(false)" 
-                 class="w-full sm:max-w-lg bg-slate-50 pb-24 pt-6 px-6 sm:pb-8 sm:pt-8 sm:px-8 sm:rounded-[3rem] rounded-t-[2.5rem] shadow-2xl relative transform transition-transform" 
-                 x-transition:enter="transition ease-out duration-300 transform" 
-                 x-transition:enter-start="translate-y-full" 
-                 x-transition:enter-end="translate-y-0">
-                
-                <!-- Mobile Drag Indicator -->
-                <div class="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-300 rounded-full sm:hidden"></div>
-
-                <div class="flex justify-between items-center mb-6 mt-4 sm:mt-0 text-center sm:text-left">
-                    <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 w-full">More Fun Activities</h2>
-                    <button @click="showMoreMenu = false; toggleScroll(false)" class="bg-gray-200 hidden sm:flex w-10 h-10 rounded-full justify-center items-center hover:bg-red-100 text-gray-600 hover:text-red-500 transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-3 gap-3 sm:gap-6 mt-6">
-                    <!-- Leaderboard -->
-                    <button @click="!isPremium ? (showPremiumModal = true) : (loadLeaderboard(), showMoreMenu=false)" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-yellow-400 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2">
-                        <span class="text-3xl sm:text-4xl">🏆</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Ranks</span>
-                    </button>
-                    <!-- Dual Quest -->
-                    <button @click="showQuestModal = true; showMoreMenu = false" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-yellow-500 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2 relative">
-                        <i class="fas fa-trophy text-yellow-500 text-3xl sm:text-4xl mb-1"></i>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Quests</span>
-                    </button>
-                    <!-- Adventure Map -->
-                    <button @click="!isPremium ? (showPremiumModal = true) : (showLearningPath = true, showMoreMenu=false)" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-green-500 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2">
-                        <span class="text-3xl sm:text-4xl">🗺️</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Map</span>
-                    </button>
-                    <!-- Story Time -->
-                    <button @click="!isPremium ? (showPremiumModal = true) : (generateStory(), showMoreMenu=false)" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-pink-400 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2">
-                        <span class="text-3xl sm:text-4xl">📖</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Story</span>
-                    </button>
-                    <!-- Scavenger Hunt -->
-                    <button @click="startScavengerHunt(); showMoreMenu=false" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-emerald-400 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2">
-                        <span class="text-3xl sm:text-4xl">🔍</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Hunt</span>
-                    </button>
-                    <!-- Skill Tree -->
-                    <button @click="toggleSkillTree(true); showMoreMenu=false" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-amber-500 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2">
-                        <span class="text-3xl sm:text-4xl">🌳</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Skills</span>
-                    </button>
-                    <!-- Offline Lessons -->
-                    <button @click="loadDownloadedLessons(); showDownloadsModal = true; showMoreMenu=false" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-indigo-400 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2">
-                        <span class="text-3xl sm:text-4xl">📥</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Offline</span>
-                    </button>
-                    <!-- Trophy Room -->
-                    <button @click="showTrophyRoom = true; showMoreMenu=false" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-blue-500 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2 relative">
-                        <span class="text-3xl sm:text-4xl">💎</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Trophies</span>
-                    </button>
-                    <!-- Friends -->
-                    <button @click="socialTab = 'friends'; showSocialModal = true; showMoreMenu=false" class="bg-white p-3 sm:p-4 rounded-2xl shadow hover:shadow-md border-b-4 border-pink-500 hover:scale-105 transition-all flex flex-col items-center justify-center gap-2">
-                        <span class="text-3xl sm:text-4xl">👫</span>
-                        <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 uppercase">Friends</span>
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <!-- Scavenger Hunt Modal -->
         <div x-show="showScavengerModal" x-cloak class="fixed inset-0 z-[85] flex items-center justify-center p-6 bg-black bg-opacity-90" x-transition.opacity>
@@ -3377,7 +3375,7 @@
                     isLoggedIn: false,
                     showLeaderboardRewardModal: false,
 
-                    showMoreMenu: false, // Added for Duolingo-style UI
+
 
                     // --- DUAL QUESTS STATE ---
                     activeDualQuest: { title: '', code: '', isUnlocked: false },
