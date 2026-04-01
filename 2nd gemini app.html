@@ -4476,13 +4476,8 @@
                             this.isListening = true;
                             this.stopSpeaking();
 
-                            // Auto-stop after 5 seconds of silence or fixed duration for kids
-                            setTimeout(() => {
-                                if (this.isListening && this.mediaRecorder.state === "recording") {
-                                    this.mediaRecorder.stop();
-                                    stream.getTracks().forEach(track => track.stop());
-                                }
-                            }, 5000);
+                            // VAD logic in initVoiceAnalyzer will handle stopping the recording
+                            // no more hardcoded 5-second interruptions!
 
                         } catch (e) {
                             console.error("Mic Access Error:", e);
@@ -4508,6 +4503,10 @@
                             let fastVolumeCount = 0;
                             let prevVolume = 0;
                             let samples = 0;
+                            
+                            // VAD tracking state
+                            let silencePeriods = 0;
+                            let hasStartedTalking = false;
 
                             this.voiceSentiment = 'neutral';
 
@@ -4529,8 +4528,11 @@
                                 for(let i=0; i<bufferLength; i++) sum += dataArray[i];
                                 let avgVolume = sum / bufferLength;
 
-                                if (avgVolume > 10) { // Only analyze if talking
+                                if (avgVolume > 10) { // Voice detected! Only analyze if talking
+                                    hasStartedTalking = true;
+                                    silencePeriods = 0; // Reset the silence timeout
                                     samples++;
+                                    
                                     // Kids' high pitch is usually at higher frequencies
                                     if (maxIndex > bufferLength * 0.4) highPitchCount++;
                                     
@@ -4549,6 +4551,25 @@
                                         } else {
                                             this.voiceSentiment = 'neutral';
                                         }
+                                    }
+                                } else if (hasStartedTalking) {
+                                    // VAD Silence Detection (Wait 1.5 seconds)
+                                    silencePeriods++;
+                                    if (silencePeriods > 15 && this.isListening && this.mediaRecorder?.state === "recording") {
+                                        console.log("🎙️ VAD: End of speech detected. Sending to Deepgram.");
+                                        this.mediaRecorder.stop();
+                                        stream.getTracks().forEach(track => track.stop());
+                                        hasStartedTalking = false;
+                                        silencePeriods = 0;
+                                    }
+                                } else {
+                                    // Hard timeout if they take too long to start talking (8s)
+                                    silencePeriods++;
+                                    if (silencePeriods > 80 && this.isListening && this.mediaRecorder?.state === "recording") {
+                                        console.log("🎙️ VAD: Timeout (No speech detected).");
+                                        this.mediaRecorder.stop();
+                                        stream.getTracks().forEach(track => track.stop());
+                                        silencePeriods = 0;
                                     }
                                 }
                             }, 100);
