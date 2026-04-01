@@ -1414,28 +1414,34 @@
             </div>
         </div>
 
-        <div x-show="showLearningPath" x-cloak class="fixed inset-0 z-[65] bg-slate-100 flex items-center justify-center p-0" x-transition.opacity>
-            <!-- Adventure Map Modal Content -->
-            <div class="w-full h-full sm:h-[90vh] max-w-5xl mx-auto flex flex-col bg-white sm:rounded-[2rem] shadow-2xl relative overflow-hidden">
+        <!-- ADVENTURE MAP MODAL -->
+        <div x-show="showLearningPath" 
+             x-cloak 
+             class="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 bg-slate-900/95 backdrop-blur-md" 
+             x-transition.opacity>
+            
+            <!-- Adventure Map Modal Content (Enlarged & Locked) -->
+            <div class="w-full h-full max-h-[95vh] max-w-7xl mx-auto flex flex-col bg-white sm:rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.3)] relative overflow-hidden">
                 
-                <div class="flex-none p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
+                <!-- Fixed Header (No Scroll) -->
+                <div class="flex-none p-6 sm:p-8 bg-white border-b-4 border-slate-50 flex justify-between items-center z-30 shadow-sm">
                     <div>
-                        <h2 class="text-3xl font-kids text-slate-800" x-text="t('adventure_map')">Adventure Map 🗺️</h2>
-                        <p class="text-gray-500 font-bold" x-show="!currentPath" x-text="t('choose_journey')">Choose your journey!</p>
-                        <p class="text-gray-500 font-bold" x-show="currentPath" x-text="currentPath ? currentPath.name : ''"></p>
+                        <h2 class="text-4xl font-kids text-slate-800" x-text="t('adventure_map')">Adventure Map 🗺️</h2>
+                        <p class="text-gray-400 font-bold text-lg" x-show="!currentPath" x-text="t('choose_journey')">Choose your journey!</p>
+                        <p class="text-gray-400 font-bold text-lg" x-show="currentPath" x-text="currentPath ? currentPath.name : ''"></p>
                     </div>
-                    <div class="flex gap-2">
-                        <button @click="resetMapProgress()" class="bg-red-100 p-3 rounded-full hover:bg-red-200 text-red-500 transition-colors" title="Reset Progress">
-                            <i class="fas fa-undo"></i>
+                    <div class="flex gap-3">
+                        <button @click="resetMapProgress()" class="bg-red-50 p-4 rounded-2xl hover:bg-red-100 text-red-500 transition-all hover:rotate-12" title="Reset Progress">
+                            <i class="fas fa-undo text-xl"></i>
                         </button>
-                        <button @click="showLearningPath = false; currentPath = null; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
+                        <button @click="showLearningPath = false; currentPath = null; toggleScroll(false)" class="bg-slate-50 p-4 rounded-2xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all hover:scale-110">
                             <i class="fas fa-times text-2xl"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Main Content Area with Height Lock -->
-                <div x-show="!currentPath" class="flex-grow overflow-y-auto p-8 bg-slate-50 custom-scroll" style="flex-basis: 0; min-height: 0;">
+                <!-- Main Scrollable Body (The ONLY scroll area) -->
+                <div x-show="!currentPath" class="flex-grow overflow-y-auto overflow-x-hidden p-6 sm:p-12 bg-slate-50/50 custom-scroll relative" style="flex-basis: 0; min-height: 0;">
 
                     <!-- Today's Missions (Compact Version) -->
                     <div class="mb-6 px-2">
