@@ -3415,62 +3415,184 @@
         <!-- Social Modal -->
         <div x-show="showSocialModal" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-0 sm:p-8" x-transition.opacity>
             <div @click.away="showSocialModal = false; toggleScroll(false)" 
-                 class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-pink-200 overflow-y-auto flex flex-col">
+                 class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[92vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-pink-200 flex flex-col overflow-hidden">
                 
-                <button @click="showSocialModal = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10 transition-colors">
-                    <i class="fas fa-times"></i>
+                <button @click="showSocialModal = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-50 transition-colors">
+                    <i class="fas fa-times-circle"></i>
                 </button>
 
-                <!-- Tabs -->
-                <div class="flex gap-4 mb-8">
-                    <button @click="socialTab = 'friends'" 
-                            class="flex-1 py-3 rounded-2xl font-kids text-xl transition-all border-b-4"
-                            :class="socialTab === 'friends' ? 'bg-pink-500 text-white border-pink-700 shadow-lg' : 'bg-gray-100 text-gray-400 border-gray-300 hover:bg-gray-200'">
-                        Friends 👫
+                <h2 class="text-3xl font-kids text-center mb-6 text-slate-800 flex items-center justify-center gap-3">
+                    <span x-text="socialTab === 'arena' ? '🏆' : (socialTab === 'friends' ? '👫' : '✋')"></span>
+                    <span x-text="socialTab === 'arena' ? 'The Arena' : (socialTab === 'friends' ? 'My Friends' : 'Notifications')"></span>
+                </h2>
+
+                <!-- Modern Tab Switcher -->
+                <div class="flex p-1 bg-slate-100 rounded-2xl mb-8 self-center">
+                    <button @click="socialTab = 'arena'; loadLeaderboard()" 
+                            class="px-6 py-2 rounded-xl font-bold transition-all text-sm sm:text-base flex items-center gap-2"
+                            :class="socialTab === 'arena' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-500'">
+                        Arena
                     </button>
-                    <button @click="socialTab = 'add'" 
-                            class="flex-1 py-3 rounded-2xl font-kids text-xl transition-all border-b-4"
-                            :class="socialTab === 'add' ? 'bg-blue-500 text-white border-blue-700 shadow-lg' : 'bg-gray-100 text-gray-400 border-gray-300 hover:bg-gray-200'">
-                        Add Friends 🔍
+                    <button @click="socialTab = 'friends'" 
+                            class="px-6 py-2 rounded-xl font-bold transition-all text-sm sm:text-base flex items-center gap-2"
+                            :class="socialTab === 'friends' ? 'bg-white text-pink-600 shadow-md' : 'text-slate-500'">
+                        Friends
+                    </button>
+                    <button @click="socialTab = 'highfives'" 
+                            class="px-6 py-2 rounded-xl font-bold transition-all text-sm sm:text-base flex items-center gap-2"
+                            :class="socialTab === 'highfives' ? 'bg-white text-yellow-600 shadow-md' : 'text-slate-500'">
+                        Activity
                     </button>
                 </div>
 
-                <!-- Friends List -->
-                <div x-show="socialTab === 'friends'" class="flex-1 overflow-y-auto custom-scroll space-y-4">
-                    <template x-if="friends.length === 0">
-                        <div class="text-center py-12">
-                            <div class="text-6xl mb-4">🏠</div>
-                            <h3 class="text-xl font-kids text-slate-700">No friends yet!</h3>
-                            <p class="text-gray-400 mt-2 text-sm">Add friends from the leaderboard to see their progress.</p>
-                            <button @click="socialTab = 'add'" class="mt-6 px-6 py-2 bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest hover:bg-blue-600 transition-colors">Find Friends</button>
-                        </div>
-                    </template>
-                    <template x-for="friendId in friends" :key="friendId">
-                        <div class="bg-slate-50 border-2 border-slate-100 p-4 rounded-3xl flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border-2 border-pink-200">👤</div>
-                                <div>
-                                    <h4 class="font-kids text-lg text-slate-800" x-text="'Friend ' + friendId.substring(0, 5)"></h4>
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase">Top Learner</p>
+                <!-- Arena (Leaderboard) Tab -->
+                <div x-show="socialTab === 'arena'" class="flex-1 overflow-y-auto custom-scroll px-1">
+                    <!-- PODIUM FOR TOP 3 -->
+                    <div class="flex items-end justify-center gap-2 sm:gap-4 mb-10 mt-6 h-40">
+                        <!-- 2nd Place -->
+                        <template x-if="weeklyLeaderboard[1]">
+                            <div class="flex flex-col items-center animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                                <span class="text-3xl mb-1">🥈</span>
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-full border-4 border-slate-200 flex items-center justify-center text-2xl mb-2">👤</div>
+                                <div class="bg-slate-200 w-16 sm:w-24 h-16 rounded-t-xl flex flex-col items-center justify-center">
+                                    <span class="text-[10px] font-bold text-slate-600 truncate px-1 w-full text-center" x-text="weeklyLeaderboard[1].formattedName"></span>
+                                    <span class="text-xs font-bold text-slate-500" x-text="weeklyLeaderboard[1].xp_this_week + ' XP'"></span>
                                 </div>
                             </div>
-                            <div class="flex gap-2">
-                                <button @click="sendHighFive(friendId)" class="p-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-xl shadow-md transition-transform active:scale-95" title="Give High-Five">
-                                    ✋
-                                </button>
-                                <button @click="removeFriend(friendId)" class="p-2 bg-gray-200 hover:bg-red-100 hover:text-red-500 text-gray-400 rounded-xl transition-colors">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+                        </template>
+                        <!-- 1st Place -->
+                        <template x-if="weeklyLeaderboard[0]">
+                            <div class="flex flex-col items-center animate__animated animate__bounceIn">
+                                <span class="text-5xl mb-1 -mt-4">👑</span>
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-50 rounded-full border-4 border-yellow-400 flex items-center justify-center text-4xl mb-2 shadow-lg">🏆</div>
+                                <div class="bg-yellow-400 w-20 sm:w-32 h-24 rounded-t-xl flex flex-col items-center justify-center shadow-md">
+                                    <span class="text-xs font-bold text-yellow-900 truncate px-1 w-full text-center" x-text="weeklyLeaderboard[0].formattedName"></span>
+                                    <span class="text-sm font-bold text-white drop-shadow-sm" x-text="weeklyLeaderboard[0].xp_this_week + ' XP'"></span>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- 3rd Place -->
+                        <template x-if="weeklyLeaderboard[2]">
+                            <div class="flex flex-col items-center animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                                <span class="text-3xl mb-1">🥉</span>
+                                <div class="w-10 h-10 sm:w-14 sm:h-14 bg-orange-50 rounded-full border-4 border-orange-200 flex items-center justify-center text-xl mb-2">👤</div>
+                                <div class="bg-orange-200 w-16 sm:w-24 h-12 rounded-t-xl flex flex-col items-center justify-center">
+                                    <span class="text-[10px] font-bold text-orange-700 truncate px-1 w-full text-center" x-text="weeklyLeaderboard[2].formattedName"></span>
+                                    <span class="text-xs font-bold text-orange-600" x-text="weeklyLeaderboard[2].xp_this_week + ' XP'"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- League Banner -->
+                    <div class="bg-indigo-500 text-white rounded-3xl p-4 mb-6 flex justify-between items-center shadow-lg transform hover:scale-[1.02] transition-transform">
+                        <div class="flex items-center gap-3">
+                            <div class="text-3xl" x-text="userLeagueIcon">🥉</div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Current Weekly League</p>
+                                <h3 class="text-xl font-kids" x-text="calculateLeague(xp) + ' League'"></h3>
                             </div>
                         </div>
-                    </template>
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Your Score</p>
+                            <p class="text-lg font-bold" x-text="xp + ' XP'"></p>
+                        </div>
+                    </div>
+
+                    <!-- Rankings List -->
+                    <div class="space-y-3">
+                        <template x-for="(player, index) in weeklyLeaderboard.slice(3, 20)" :key="player.id">
+                            <div class="p-4 rounded-2xl flex items-center justify-between border-2 transition-all"
+                                 :class="player.email === registeredEmail ? 'bg-blue-50 border-blue-400 ring-2 ring-blue-100' : 'bg-white border-slate-100'">
+                                <div class="flex items-center gap-4">
+                                    <span class="w-6 text-center font-bold text-slate-400" x-text="index + 4"></span>
+                                    <div class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-xl shadow-sm border-2"
+                                         :class="player.email === registeredEmail ? 'border-blue-200' : 'border-slate-100'">
+                                        <span x-text="player.icon || '👤'"></span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                            <span x-text="player.formattedName"></span>
+                                            <span x-show="player.email === registeredEmail" class="text-[9px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full uppercase tracking-tighter">You</span>
+                                        </h4>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase" x-text="player.xp_this_week + ' XP'"></p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button @click="sendHighFive(player)" class="p-2 hover:bg-yellow-50 text-yellow-500 rounded-xl transition-colors" title="Send High Five">✋</button>
+                                    <template x-if="player.email !== registeredEmail && !friends.some(f => f.id === player.id)">
+                                        <button @click="addFriend(player)" class="p-2 hover:bg-blue-50 text-blue-500 rounded-xl transition-colors" title="Add Friend">
+                                            <i class="fas fa-user-plus"></i>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </div>
 
-                <!-- Add Friends Tab -->
-                <div x-show="socialTab === 'add'" class="flex-1 flex flex-col">
-                    <div class="bg-blue-50 p-4 rounded-2xl mb-6">
-                        <p class="text-xs font-bold text-blue-600 uppercase mb-2">How to add friends</p>
-                        <p class="text-sm text-blue-800">You can add friends by clicking the ➕ button next to any kid on the leaderboard!</p>
+                <!-- Friends Tab -->
+                <div x-show="socialTab === 'friends'" class="flex-1 overflow-y-auto custom-scroll space-y-4">
+                    <template x-if="friends.length === 0">
+                        <div class="text-center py-20">
+                            <div class="text-6xl mb-6">🏝️</div>
+                            <h3 class="text-2xl font-kids text-slate-700">All alone?</h3>
+                            <p class="text-slate-400 mt-2 font-bold">Add friends from the Arena to compete together!</p>
+                            <button @click="socialTab = 'arena'" class="mt-8 px-8 py-3 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg border-b-4 border-blue-700 hover:scale-105 active:scale-95 transition-all">Go to The Arena 🚀</button>
+                        </div>
+                    </template>
+                    <div class="grid grid-cols-1 gap-3">
+                        <template x-for="friend in friends" :key="friend.id">
+                            <div class="bg-white border-2 border-slate-100 p-4 rounded-3xl flex items-center justify-between group hover:border-pink-200 transition-colors shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-14 h-14 bg-pink-50 rounded-2xl flex items-center justify-center text-3xl shadow-sm border-2 border-white relative">
+                                        <span x-text="friend.icon || '👤'"></span>
+                                        <div class="absolute -bottom-2 -right-2 bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg border-2 border-white" x-text="'Lvl ' + (friend.level || 1)"></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-kids text-lg text-slate-800" x-text="friend.name"></h4>
+                                        <p class="text-[10px] font-bold text-green-500 uppercase flex items-center gap-1">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online Now
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button @click="sendHighFive(friend)" class="p-3 bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl shadow-md transition-transform active:scale-95 group-hover:rotate-6">
+                                        ✋
+                                    </button>
+                                    <button @click="removeFriend(friend.id)" class="p-3 bg-slate-50 hover:bg-red-50 hover:text-red-500 text-slate-400 rounded-2xl transition-colors">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- High Fives (Notifications) Tab -->
+                <div x-show="socialTab === 'highfives'" class="flex-1 overflow-y-auto custom-scroll space-y-4">
+                    <div class="bg-yellow-50 border-2 border-yellow-100 rounded-[2rem] p-8 text-center flex flex-col items-center">
+                        <div class="relative mb-6">
+                            <div class="text-7xl">✋</div>
+                            <div class="absolute -top-2 -right-2 bg-pink-500 text-white text-xl w-10 h-10 rounded-full flex items-center justify-center border-4 border-white font-bold" x-text="highFivesReceived || 0"></div>
+                        </div>
+                        <h3 class="text-2xl font-kids text-amber-700">You are Amazing!</h3>
+                        <p class="text-amber-600 font-bold max-w-sm">Every time a friend gives you a High Five, you get extra encouragement here!</p>
+                        
+                        <div class="mt-8 space-y-3 w-full max-w-xs">
+                             <template x-if="highFivesReceived > 0">
+                                <div class="bg-white p-4 rounded-2xl shadow-sm border border-yellow-200 flex items-center gap-4 animate__animated animate__shakeX">
+                                   <div class="text-2xl">✨</div>
+                                   <div class="text-left">
+                                       <p class="text-xs font-bold text-slate-800">Your latest High Five!</p>
+                                       <p class="text-[10px] text-slate-400">Keep up the great work!</p>
+                                   </div>
+                                </div>
+                             </template>
+                             <template x-if="highFivesReceived === 0">
+                                <p class="text-xs text-amber-500 font-bold uppercase tracking-widest italic pt-8">No high fives yet today. <br>Be the first to send one! 🚀</p>
+                             </template>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3686,13 +3808,28 @@
                     showShareMenu: false,
                     sharingBadge: null,
 
-                    // Social System State
+                    // Social System State (Feature #4)
                     showSocialModal: false,
-                    socialTab: 'friends', // 'friends' or 'add'
-                    friends: [],
-                    highFivesReceived: [],
+                    socialTab: 'arena', // 'arena', 'friends', 'highfives'
+                    friends: [], // Array of friend objects {id, name, icon, level}
+                    highFivesReceived: 0,
+                    weeklyLeaderboard: [],
+                    userRank: 0,
+                    userLeague: 'Bronze', // 'Bronze', 'Silver', 'Gold', 'Diamond'
                     showHighFiveAnimation: false,
                     lastHighFiveFrom: '',
+
+                    calculateLeague(xp) {
+                        if (xp >= 2000) return 'Diamond';
+                        if (xp >= 1000) return 'Gold';
+                        if (xp >= 500) return 'Silver';
+                        return 'Bronze';
+                    },
+
+                    get userLeagueIcon() {
+                        const icons = { 'Bronze': '🥉', 'Silver': '🥈', 'Gold': '🥇', 'Diamond': '💎' };
+                        return icons[this.userLeague] || '🥉';
+                    },
 
                     // Offline Lessons State
                     showDownloadsModal: false,
@@ -5996,40 +6133,6 @@
                         }
                     },
 
-                    // --- SOCIAL SYSTEM METHODS ---
-                    async addFriend(profileId) {
-                        if (this.friends.includes(profileId)) return;
-                        this.friends.push(profileId);
-                        await this.syncData();
-                        this.playPing();
-                    },
-
-                    async removeFriend(profileId) {
-                        this.friends = this.friends.filter(f => f !== profileId);
-                        await this.syncData();
-                    },
-
-                    async sendHighFive(targetProfileId) {
-                        // Mock sending a high-five
-                        this.playPing();
-                        confetti({
-                            particleCount: 50,
-                            spread: 50,
-                            origin: { y: 0.8 },
-                            colors: ['#FFD700', '#FFA500']
-                        });
-                        alert("High-five sent!");
-                        // In a real app, this would be a Supabase RPC or table insert
-                    },
-
-                    receiveHighFive(fromName) {
-                        this.lastHighFiveFrom = fromName;
-                        this.showHighFiveAnimation = true;
-                        this.playPing();
-                        setTimeout(() => {
-                            this.showHighFiveAnimation = false;
-                        }, 4000);
-                    },
 
                     // --- OFFLINE LESSON METHODS ---
                     downloadLesson(lesson) {
@@ -7279,37 +7382,62 @@
                     },
 
                     async loadLeaderboard() {
-                        this.showLeaderboard = true;
-                        this.leaderboardData = []; // Clear previous
-                        this.currentWeekNumber = this.getWeekNumber(new Date());
+                        this.weeklyLeaderboard = [];
+                        const currentWeek = this.getWeekNumber(new Date());
 
                         try {
                             const { data, error } = await this.supabase
                                 .from('weekly_xp')
-                                .select('user_id, child_name, xp_this_week')
-                                .eq('week_number', this.currentWeekNumber)
+                                .select('user_id, child_name, xp_this_week, email')
+                                .eq('week_number', currentWeek)
                                 .order('xp_this_week', { ascending: false })
-                                .limit(10);
+                                .limit(20);
 
                             if (error) throw error;
                             
-                            // Format child_name to "Amira S."
-                            this.leaderboardData = data.map(row => {
-                                let formattedName = row.child_name;
+                            this.weeklyLeaderboard = data.map((row, index) => {
+                                let formattedName = row.child_name || "Student";
                                 const parts = formattedName.trim().split(' ');
                                 if (parts.length > 1) {
                                     formattedName = parts[0] + ' ' + parts[parts.length - 1].charAt(0).toUpperCase() + '.';
                                 }
+                                if (row.email === this.registeredEmail) this.userRank = index + 1;
                                 return {
                                     ...row,
+                                    id: row.user_id,
                                     formattedName: formattedName,
-                                    // Match new dashboard formula: (XP * 1) + (words proxy)
-                                    learning_score: Math.round(row.xp_this_week * 1.2) 
+                                    icon: ['🦊', '🐨', '🐷', '🦁', '🐸'][index % 5] // Randomized icons for others
                                 };
                             });
                         } catch (err) {
                             console.error("Error loading leaderboard:", err);
                         }
+                    },
+
+                    sendHighFive(friend) {
+                        this.playPing();
+                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#ff69b4', '#ff1493'] });
+                        // In a real app, this would send a push notification/db update
+                        console.log("High five sent to " + friend.name);
+                        alert("High Five sent to " + (friend.formattedName || friend.name) + "! ✋✨");
+                    },
+
+                    addFriend(player) {
+                        if (!this.friends.some(f => f.id === player.id)) {
+                            this.friends.push({
+                                id: player.id,
+                                name: player.formattedName || player.name,
+                                icon: player.icon || '👤',
+                                level: Math.floor((player.xp_this_week || 0) / 100) + 1
+                            });
+                            this.playPing();
+                            this.syncData();
+                        }
+                    },
+
+                    removeFriend(friendId) {
+                        this.friends = this.friends.filter(f => f.id !== friendId);
+                        this.syncData();
                     },
 
                     async syncData() {
