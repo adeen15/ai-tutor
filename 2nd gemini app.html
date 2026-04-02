@@ -675,11 +675,30 @@
                     <span class="text-xl">📖</span>
                 </button>
 
-                <!-- Profile Switcher (Moved to 5th Row) -->
+                <!-- Profile Switcher -->
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <span class="text-xl">👤</span>
                 </button>
             </div>
+
+            <!-- Dashboard Daily Quest Tracker (Mobile Only) -->
+            <div class="flex sm:hidden w-full mt-4 bg-indigo-50/50 backdrop-blur-sm p-3 rounded-2xl border-2 border-indigo-100 shadow-sm flex-col gap-2 animate__animated animate__fadeInUp">
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Daily Goals</span>
+                    <button @click="showDailyQuests = true" class="text-[10px] font-bold text-indigo-600 underline">View All</button>
+                </div>
+                <div class="flex gap-2 justify-between">
+                    <template x-for="quest in dailyQuests" :key="quest.id">
+                        <div class="flex-1 bg-white p-1.5 rounded-xl shadow-sm border border-indigo-50 flex flex-col items-center">
+                            <span class="text-xs mb-0.5" x-text="quest.icon"></span>
+                            <div class="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-indigo-500 transition-all duration-500" :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
         </div>
 
         <div class="container max-w-6xl mx-auto px-4 pt-[380px] sm:pt-12 pb-8 sm:pb-12">
@@ -3450,8 +3469,59 @@
             </div>
         </div>
 
+        <!-- Daily Quests Modal -->
+        <div x-show="showDailyQuests" x-cloak class="fixed inset-0 z-[150] bg-indigo-900 bg-opacity-90 flex items-center justify-center p-4 sm:p-8" x-transition.opacity>
+            <div @click.away="showDailyQuests = false; toggleScroll(false)" class="bg-white rounded-[3rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__backInDown border-8 border-indigo-400 mx-4">
+                <button @click="showDailyQuests = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-indigo-600 transition-colors">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+                
+                <div class="text-center mb-10">
+                    <div class="text-6xl mb-4 animate-bounce">🎯</div>
+                    <h2 class="text-4xl font-kids text-indigo-900 leading-tight">Daily Goals!</h2>
+                    <p class="text-indigo-400 font-bold uppercase tracking-widest text-sm mt-2">Finish these to win big!</p>
+                </div>
+
+                <div class="space-y-6">
+                    <template x-for="quest in dailyQuests" :key="quest.id">
+                        <div class="bg-indigo-50 p-6 rounded-[2rem] border-2 border-indigo-100 relative overflow-hidden group transition-all hover:scale-[1.02]">
+                            <div class="flex justify-between items-center mb-4 relative z-10">
+                                <div class="flex items-center gap-4">
+                                    <span class="text-4xl" x-text="quest.icon"></span>
+                                    <div>
+                                        <h4 class="font-kids text-xl text-indigo-900" x-text="quest.title"></h4>
+                                        <p class="text-xs font-bold text-indigo-400" x-text="quest.desc"></p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-sm" x-text="'+' + quest.reward + ' 🪙'"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full bg-indigo-100 rounded-full h-4 overflow-hidden shadow-inner relative z-10">
+                                <div class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-1000" :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center mt-2 relative z-10">
+                                <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest" x-text="quest.progress + ' / ' + quest.target + ' completed'"></span>
+                                <span x-show="quest.progress === quest.target" class="text-green-500 font-bold text-xs animate-pulse">✨ DONE! ✨</span>
+                            </div>
+
+                            <!-- Success Glow -->
+                            <div x-show="quest.progress === quest.target" class="absolute inset-0 bg-green-400 bg-opacity-5 pointer-events-none"></div>
+                        </div>
+                    </template>
+                </div>
+
+                <button @click="showDailyQuests = false; toggleScroll(false)" class="w-full mt-10 bg-indigo-600 text-white font-kids text-2xl py-4 rounded-full shadow-lg hover:shadow-indigo-200/50 hover:bg-indigo-700 transition-all active:scale-95 border-b-4 border-indigo-800">
+                    Keep Learning! 🚀
+                </button>
+            </div>
+        </div>
+
         <!-- Social Modal -->
         <div x-show="showSocialModal" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-0 sm:p-8" x-transition.opacity>
+
             <div @click.away="showSocialModal = false; toggleScroll(false)" 
                  class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[92vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-pink-200 flex flex-col overflow-hidden">
                 
@@ -3523,19 +3593,20 @@
                     </div>
 
                     <!-- League Banner -->
-                    <div class="bg-indigo-500 text-white rounded-3xl p-4 mb-6 flex justify-between items-center shadow-lg transform hover:scale-[1.02] transition-transform">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-3xl p-4 mb-6 flex justify-between items-center shadow-lg transform hover:scale-[1.02] transition-transform border-b-4 border-indigo-700">
                         <div class="flex items-center gap-3">
-                            <div class="text-3xl" x-text="userLeagueIcon">🥉</div>
+                            <div class="text-4xl filter drop-shadow-md animate-bounce" style="animation-duration: 3s" x-text="userLeagueIcon">🥉</div>
                             <div>
                                 <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Current Weekly League</p>
-                                <h3 class="text-xl font-kids" x-text="calculateLeague(xp) + ' League'"></h3>
+                                <h3 class="text-xl font-kids" x-text="userLeagueName"></h3>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Your Score</p>
-                            <p class="text-lg font-bold" x-text="xp + ' XP'"></p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Ranked Status</p>
+                            <p class="text-lg font-bold" x-text="'#' + (userRank || '--')"></p>
                         </div>
                     </div>
+
 
                     <!-- Rankings List -->
                     <div class="space-y-3">
@@ -3924,9 +3995,23 @@
                     },
 
                     get userLeagueIcon() {
-                        const icons = { 'Bronze': '🥉', 'Silver': '🥈', 'Gold': '🥇', 'Diamond': '💎' };
-                        return icons[this.userLeague] || '🥉';
+                        const rank = this.userRank || 20;
+                        if (rank === 1) return '💎';
+                        if (rank <= 3) return '🛡️';
+                        if (rank <= 6) return '🥇';
+                        if (rank <= 10) return '🥈';
+                        return '🥉';
                     },
+
+                    get userLeagueName() {
+                        const rank = this.userRank || 20;
+                        if (rank === 1) return 'Diamond League';
+                        if (rank <= 3) return 'Platinum League';
+                        if (rank <= 6) return 'Gold League';
+                        if (rank <= 10) return 'Silver League';
+                        return 'Bronze League';
+                    },
+
 
                     // Offline Lessons State
                     showDownloadsModal: false,
@@ -4049,6 +4134,10 @@
                         this.coins += finalCoins;
                         this.incrementWeeklyXP(finalXp);
                         
+                        // Update Daily Quest
+                        this.updateDailyQuestProgress('sprint', this.sprintTotalCorrect);
+
+                        
                         this.playPing();
                         confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
                         
@@ -4101,6 +4190,25 @@
                          { id: 'quiz_2', title: 'Quiz Master', desc: 'Complete 2 quizzes today', target: 2, progress: 0, reward: 100, type: 'quizzes' },
                          { id: 'words_5', title: 'Word Weaver', desc: 'Learn 5 new words', target: 5, progress: 0, reward: 30, type: 'words' }
                      ],
+
+                      // --- Daily Quests State ---
+                      showDailyQuests: false,
+                      dailyQuests: [
+                          { id: 'dq_1', title: 'Daily Chat', desc: 'Ask any AI 3 questions', target: 3, progress: 0, reward: 25, type: 'questions', icon: '💬' },
+                          { id: 'dq_2', title: 'Sprint Star', desc: 'Get 5 correct in AI Sprint', target: 5, progress: 0, reward: 50, type: 'sprint', icon: '⚡' },
+                          { id: 'dq_3', title: 'Story Listener', desc: 'Listen to 1 AI Story', target: 1, progress: 0, reward: 30, type: 'story', icon: '📖' }
+                      ],
+                      lastDailyQuestDate: localStorage.getItem('last_daily_quest_date') || '',
+                      
+                      // --- Academy Leagues State ---
+                      leagues: [
+                          { id: 'bronze', name: 'Bronze League', icon: '🥉', minRank: 11, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+                          { id: 'silver', name: 'Silver League', icon: '🥈', minRank: 7, color: 'text-slate-500', bgColor: 'bg-slate-50' },
+                          { id: 'gold', name: 'Gold League', icon: '🥇', minRank: 4, color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
+                          { id: 'platinum', name: 'Platinum League', icon: '🛡️', minRank: 2, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+                          { id: 'diamond', name: 'Diamond League', icon: '💎', minRank: 1, color: 'text-blue-600', bgColor: 'bg-blue-50' }
+                      ],
+
                     
                     showQuiz: false,
                     quizState: 'loading',
@@ -4291,6 +4399,46 @@
                             this.skillTreeSubject = 'history'; // default to first subject
                         }
                     },
+
+                    initDailyQuests() {
+                        const today = new Date().toDateString();
+                        if (this.lastDailyQuestDate !== today) {
+                            // Reset Progress for the new day
+                            this.dailyQuests.forEach(q => q.progress = 0);
+                            this.lastDailyQuestDate = today;
+                            localStorage.setItem('last_daily_quest_date', today);
+                            this.saveDailyQuestProgress();
+                        } else {
+                            // Load existing progress
+                            const saved = JSON.parse(localStorage.getItem('daily_quest_progress') || '[]');
+                            if (saved.length > 0) {
+                                this.dailyQuests.forEach((q, i) => {
+                                    if (saved[i]) q.progress = saved[i].progress;
+                                });
+                            }
+                        }
+                    },
+
+                    saveDailyQuestProgress() {
+                        localStorage.setItem('daily_quest_progress', JSON.stringify(this.dailyQuests.map(q => ({ progress: q.progress }))));
+                    },
+
+                    updateDailyQuestProgress(type, amount = 1) {
+                        this.dailyQuests.forEach(quest => {
+                            if (quest.type === type && quest.progress < quest.target) {
+                                quest.progress = Math.min(quest.progress + amount, quest.target);
+                                if (quest.progress === quest.target) {
+                                    // Victory!
+                                    this.playPing();
+                                    this.coins += quest.reward;
+                                    this.xp += Math.round(quest.reward / 2);
+                                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+                                }
+                                this.saveDailyQuestProgress();
+                            }
+                        });
+                    },
+
 
                     async generateSkillTree(subject) {
                         if (this.isGeneratingSkillTree) return;
@@ -4802,6 +4950,8 @@
                     
                     isProfileLoading: false,
                     async init() {
+                        // Initialize Daily Quests
+                        this.initDailyQuests();
                         window.app = this; // Expose for easy console testing
                         await this.initI18n();
                         this.initializeCurrentChar();
@@ -8223,7 +8373,10 @@
                     async askTutor() {
                         if (!this.userQuery.trim()) return;
 
+                        // Increment quest progress
+                        this.updateDailyQuestProgress('questions');
                         this.updateQuest('ask_ai');
+
 
                         // --- NEW: Offline Generative AI Fallback ---
                         if (!navigator.onLine) {
