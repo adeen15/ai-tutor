@@ -563,7 +563,7 @@
                 </button>
             </div>
 
-            <div class="flex flex-row gap-2 sm:gap-4">
+            <div class="hidden sm:flex flex-row gap-2 sm:gap-4">
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
                     <span class="text-xl sm:text-3xl">📖</span>
                 </button>
@@ -631,8 +631,33 @@
                 </button>
             </div>
 
-            <!-- Fourth Row (Mobile Only - Empty to prevent overlap) -->
-            <div class="flex sm:hidden flex-row gap-2 h-0"></div>
+            <!-- Fourth Row (Mobile Only): Leaderboard, Downloads, Map, Skill Tree, Sprints -->
+            <div class="flex sm:hidden flex-row gap-2 justify-end">
+                <!-- Weekly Leaderboard -->
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                    <span class="text-xl">🏆</span>
+                </button>
+
+                <!-- Offline Downloads -->
+                <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white w-12 h-12 p-2 border-b-4 border-indigo-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
+                    <span class="text-xl">📥</span>
+                </button>
+
+                <!-- Adventure Map -->
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                    <span class="text-xl">🗺️</span>
+                </button>
+
+                <!-- Skill Tree Button -->
+                <button @click="toggleSkillTree(true)" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
+                    <span class="text-xl">🌳</span>
+                </button>
+
+                <!-- AI Sprints Button (⚡) -->
+                <button @click="startSprint()" class="bg-indigo-500 w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
+                    <span class="text-xl animate__animated animate__pulse animate__infinite">⚡</span>
+                </button>
+            </div>
 
             <!-- Fifth Row (Mobile Only) -->
             <div class="flex sm:hidden flex-row gap-2 justify-end">
@@ -658,7 +683,7 @@
             </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[450px] sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[380px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
