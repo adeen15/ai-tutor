@@ -6721,6 +6721,10 @@
                         this.lastStreakDate = this.learningStats.last_streak_date || data.last_streak_date || null;
                         this.streakFreezeUsed = this.learningStats.streak_freeze_used || false;
                         
+                        // --- Fix: Auto-increment streak on login if active yesterday ---
+                        this.updateDailyStreak();
+
+                        
                         // Load Monthly Quotas
                         this.monthlyQuestsUsed = this.learningStats.monthly_quests_used || 0;
                         this.lastQuestMonth = (this.learningStats.last_quest_month !== undefined) ? this.learningStats.last_quest_month : new Date().getMonth();
