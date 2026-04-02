@@ -509,22 +509,19 @@
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
 
-            <!-- Mobile Only Row 4: Trophy and Download (Left-aligned) -->
-            <div class="flex sm:hidden flex-row gap-2">
+            <!-- Mobile Only Row 5: Kid-Safe AI and Extra Buttons (Left-aligned) -->
+            <div class="flex sm:hidden flex-row items-center gap-2">
+                <div class="bg-green-500 text-white px-3 py-1.5 rounded-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1">
+                    <i class="fas fa-shield-alt"></i> Kid-Safe AI
+                </div>
                 <!-- Weekly Leaderboard -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl">🏆</span>
                 </button>
-
                 <!-- Offline Downloads -->
                 <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white w-12 h-12 p-2 border-b-4 border-indigo-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
                     <span class="text-xl">📥</span>
                 </button>
-            </div>
-
-            <!-- Mobile Only Row 5: Kid-Safe AI (Left-aligned) -->
-            <div class="flex sm:hidden bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1">
-                <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
 
         </div>
