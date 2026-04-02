@@ -682,20 +682,24 @@
             </div>
 
             <!-- Dashboard Daily Quest Tracker (Mobile Only) -->
-            <div class="flex sm:hidden w-full mt-4 bg-indigo-50/50 backdrop-blur-sm p-3 rounded-2xl border-2 border-indigo-100 shadow-sm flex-col gap-2 animate__animated animate__fadeInUp">
-                <div class="flex justify-between items-center px-1">
-                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Daily Goals</span>
-                    <button @click="showDailyQuests = true" class="text-[10px] font-bold text-indigo-600 underline">View All</button>
-                </div>
-                <div class="flex gap-3 justify-between">
-                    <template x-for="quest in dailyQuests" :key="quest.id">
-                        <div class="flex-1 bg-white p-2 rounded-xl shadow-sm border border-indigo-50 flex flex-col items-center">
-                            <span class="text-lg mb-1" x-text="quest.icon"></span>
-                            <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-indigo-500 transition-all duration-500" :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
+            <div class="flex sm:hidden w-full px-4 justify-center">
+                <div class="w-full max-w-[340px] bg-gradient-to-r from-indigo-500 to-purple-600 p-4 rounded-[2.5rem] shadow-xl flex flex-col gap-3 animate__animated animate__fadeInUp border-b-4 border-indigo-800">
+                    <div class="flex justify-between items-center px-2">
+                        <span class="text-[10px] font-black text-white uppercase tracking-[0.2em] opacity-90">Daily Goals</span>
+                        <button @click="showDailyQuests = true" class="text-[10px] font-black text-white underline uppercase tracking-widest bg-white bg-opacity-20 px-3 py-1 rounded-full">View All</button>
+                    </div>
+                    <div class="flex gap-4 justify-center">
+                        <template x-for="quest in dailyQuests" :key="quest.id">
+                            <div class="flex flex-col items-center gap-1.5">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white border-opacity-30">
+                                    <span class="text-2xl" x-text="quest.icon"></span>
+                                </div>
+                                <div class="w-10 h-1.5 bg-black bg-opacity-20 rounded-full overflow-hidden">
+                                    <div class="h-full bg-white transition-all duration-700" :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
+                                </div>
                             </div>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
             </div>
 
