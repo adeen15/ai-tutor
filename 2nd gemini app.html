@@ -587,40 +587,43 @@
                     <span class="text-xl sm:text-3xl">🌳</span>
                 </button>
 
-                <!-- Scavenger Hunt (Row 2 Desktop) -->
+                <!-- Scavenger Hunt (Desktop Only Row 2) -->
                 <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
                     <span class="text-xl sm:text-3xl">🔍</span>
                 </button>
+            </div>
 
-                <!-- NEW: AI Sprints Button (⚡) -->
-                <button @click="startSprint()" class="bg-indigo-500 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
-                    <span class="text-xl sm:text-3xl animate__animated animate__pulse animate__infinite">⚡</span>
+            <!-- Third Row (Mobile View Optimization) -->
+            <div class="flex sm:hidden flex-row gap-2">
+                <!-- AI Sprints Button (⚡) - Moved from Row 2 on mobile -->
+                <button @click="startSprint()" class="bg-indigo-500 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
+                    <span class="text-xl animate__animated animate__pulse animate__infinite">⚡</span>
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
                 </button>
 
-                <!-- Magic Auras -->
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('magic_auras')">
-                    <span class="text-xl sm:text-3xl">🪄</span>
+                <!-- Magic Auras - Moved from Row 2 on mobile -->
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
+                    <span class="text-xl">🪄</span>
+                </button>
+
+                <!-- Scavenger Hunt (Mobile View) -->
+                <button @click="startScavengerHunt()" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                    <span class="text-xl">🔍</span>
                 </button>
             </div>
 
-            <!-- Third Row -->
-            <div class="flex flex-row gap-2 sm:gap-4">
+            <!-- Fourth Row (Mobile Only) -->
+            <div class="flex sm:hidden flex-row gap-2 sm:gap-4">
 
-                <!-- Scavenger Hunt Button (Mobile Only) -->
-                <button @click="startScavengerHunt()" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
-                    <span class="text-xl">🔍</span>
-                </button>
-
-                <!-- Sticker Book (Mobile Only - Aligned in Third Row) -->
-                <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
+                <!-- Sticker Book (Mobile Only) -->
+                <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
                     <span class="text-xl">📕</span>
                 </button>
 
-                <!-- Dual Quest (Mobile Only - Row 3) -->
+                <!-- Dual Quest (Mobile Only) -->
                 <button 
                     @click="showQuestModal = true; toggleScroll(true)"
-                    class="bg-white sm:hidden p-2 border-b-4 border-yellow-400 rounded-2xl shadow-lg hover:scale-110 transition-transform relative"
+                    class="bg-white p-2 border-b-4 border-yellow-400 rounded-2xl shadow-lg hover:scale-110 transition-transform relative"
                     title="Secret Quest"
                 >
                     <i class="fas fa-trophy text-yellow-500 text-xl"></i>
@@ -631,33 +634,25 @@
                 </button>
             </div>
 
-            <!-- Fourth Row (Mobile Only) -->
+            <!-- Fifth Row (Mobile Only) -->
             <div class="flex sm:hidden flex-row gap-2">
-                <!-- Magic Aura (Mobile Only - Row 4) -->
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
-                    <span class="text-xl">🪄</span>
-                </button>
-
-                <!-- Story Time (Mobile Only - Row 4) -->
+                <!-- Story Time - Moved from Row 4 to Row 5 -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
                     <span class="text-xl">📖</span>
                 </button>
 
-                <!-- Profile Switcher (Mobile Only - Row 4) -->
+                <!-- Profile Switcher - Moved from Row 4 to Row 5 -->
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <span class="text-xl">👤</span>
                 </button>
-            </div>
 
-            <!-- Fifth Row (Mobile Only) -->
-            <div class="flex sm:hidden flex-row gap-2">
+                <!-- Kid-Safe AI - Moved from Left Side to Row 5 on Right Side -->
                 <div class="bg-green-500 text-white px-3 py-1.5 rounded-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInRight w-max mr-1">
                     <i class="fas fa-shield-alt"></i> Kid-Safe AI
                 </div>
             </div>
-        </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[340px] sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[380px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
