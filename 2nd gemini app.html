@@ -3734,7 +3734,7 @@
         </div>
 
         <!-- AI Sprint Overlay (Feature #5) -->
-        <div x-show="isSprintActive" x-cloak class="fixed inset-0 z-[200] bg-indigo-900 flex flex-col items-center p-4 sm:p-12 overflow-hidden" x-transition.opacity>
+        <div x-show="isSprintActive" x-cloak class="fixed inset-0 z-[200] bg-indigo-900 flex flex-col items-center p-4 sm:p-12 overflow-y-auto scrollbar-hide" x-transition.opacity>
             <!-- Ticking Header -->
             <div class="w-full max-w-2xl flex justify-between items-center mb-8">
                 <div class="flex items-center gap-4">
@@ -3758,7 +3758,7 @@
             </div>
 
             <!-- Question Area -->
-            <div class="flex-1 w-full max-w-3xl flex flex-col justify-center items-center gap-8 translate-y-[-20px]">
+            <div class="flex-1 w-full max-w-3xl flex flex-col sm:justify-center items-center gap-4 sm:gap-8 sm:translate-y-[-20px] py-4 sm:py-0">
                 <template x-if="isSprintLoading">
                     <div class="flex flex-col items-center animate__animated animate__fadeIn">
                         <div class="spinner border-white mb-4 w-12 h-12"></div>
