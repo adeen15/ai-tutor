@@ -631,31 +631,32 @@
                 </button>
             </div>
 
-            <!-- Fourth Row (Mobile Only - Spacer Row) -->
-            <div class="flex sm:hidden flex-row gap-2 h-0"></div>
-
-            <!-- Fifth Row (Mobile Only) -->
-            <div class="flex sm:hidden flex-row gap-2">
-                <!-- Magic Aura (Mobile Only - Row 5) -->
+            <!-- Fourth Row (Mobile Only) -->
+            <div class="flex sm:hidden flex-row gap-2 justify-end">
+                <!-- Magic Aura -->
                 <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
                     <span class="text-xl">🪄</span>
                 </button>
 
-                <!-- Story Time (Mobile Only - Row 5) -->
+                <!-- Story Time -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
                     <span class="text-xl">📖</span>
                 </button>
 
-                <!-- Profile Switcher (Mobile Only - Row 5) -->
+                <!-- Profile Switcher -->
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <span class="text-xl">👤</span>
                 </button>
+            </div>
 
-                <!-- Kid-Safe AI badge (Moved to 5th Row on Mobile) -->
+            <!-- Fifth Row (Mobile Only) -->
+            <div class="flex sm:hidden flex-row gap-2 justify-end">
+                <!-- Kid-Safe AI (Moved to its own 5th row on mobile) -->
                 <div class="bg-green-500 text-white px-3 py-1.5 rounded-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInRight w-max mr-1">
                     <i class="fas fa-shield-alt"></i> Kid-Safe AI
                 </div>
             </div>
+        </div>
 
         <div class="container max-w-6xl mx-auto px-4 pt-[400px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
