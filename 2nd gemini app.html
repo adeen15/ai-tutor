@@ -505,7 +505,7 @@
                     <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
                 </div>
             </div>
-            <div class="bg-green-500 text-white px-3 py-1.5 rounded-full flex items-center justify-center gap-2 text-[10px] sm:text-xs font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1 sm:ml-2">
+            <div class="hidden sm:flex bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] sm:text-xs font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1 sm:ml-2">
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
 
@@ -648,9 +648,16 @@
                     <span class="text-xl">👤</span>
                 </button>
             </div>
+
+            <!-- Fifth Row (Mobile Only) -->
+            <div class="flex sm:hidden flex-row gap-2">
+                <div class="bg-green-500 text-white px-3 py-1.5 rounded-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInRight w-max mr-1">
+                    <i class="fas fa-shield-alt"></i> Kid-Safe AI
+                </div>
+            </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[280px] sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[340px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
