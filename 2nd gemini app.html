@@ -631,34 +631,34 @@
                 </button>
             </div>
 
-            <!-- Fourth Row (Mobile Only) -->
+            <!-- Fourth Row (Mobile Only - Empty to prevent overlap) -->
+            <div class="flex sm:hidden flex-row gap-2 h-0"></div>
+
+            <!-- Fifth Row (Mobile Only) -->
             <div class="flex sm:hidden flex-row gap-2 justify-end">
-                <!-- Magic Aura -->
+                <!-- Magic Aura (Moved to 5th Row) -->
                 <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
                     <span class="text-xl">🪄</span>
                 </button>
 
-                <!-- Story Time -->
+                <!-- Story Time (Moved to 5th Row) -->
                 <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
                     <span class="text-xl">📖</span>
                 </button>
 
-                <!-- Profile Switcher -->
+                <!-- Profile Switcher (Moved to 5th Row) -->
                 <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <span class="text-xl">👤</span>
                 </button>
-            </div>
 
-            <!-- Fifth Row (Mobile Only) -->
-            <div class="flex sm:hidden flex-row gap-2 justify-end">
-                <!-- Kid-Safe AI (Moved to its own 5th row on mobile) -->
+                <!-- Kid-Safe AI badge (5th Row) -->
                 <div class="bg-green-500 text-white px-3 py-1.5 rounded-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInRight w-max mr-1">
                     <i class="fas fa-shield-alt"></i> Kid-Safe AI
                 </div>
             </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[400px] sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[450px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
