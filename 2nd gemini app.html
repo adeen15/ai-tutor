@@ -2745,6 +2745,29 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Weekly Report Settings (Feature Request) -->
+                    <div class="mt-8 pt-8 border-t-2 border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Email Report Settings 📊</h3>
+                        <div class="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-50 p-6 rounded-3xl border-2 border-slate-100">
+                            <div class="flex-1 text-center sm:text-left">
+                                <p class="font-bold text-slate-700">Weekly Progress Email</p>
+                                <p class="text-xs text-slate-400 mt-1">Receive a summary of learning milestones every Monday.</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button @click="learningStats.weekly_report_opt_out = !learningStats.weekly_report_opt_out; syncData()" 
+                                        class="w-12 h-6 rounded-full transition-colors relative"
+                                        :class="!learningStats.weekly_report_opt_out ? 'bg-green-500' : 'bg-slate-300'">
+                                    <div class="absolute top-1 w-4 h-4 bg-white rounded-full transition-all"
+                                         :class="!learningStats.weekly_report_opt_out ? 'right-1' : 'left-1'"></div>
+                                </button>
+                                <button @click="requestWeeklyReport()" 
+                                        class="px-4 py-2 bg-white border-2 border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:border-blue-300 hover:text-blue-500 transition-all uppercase tracking-widest active:scale-95">
+                                    Send Now 📧
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -4331,7 +4354,7 @@
                         const finalXp = Math.round(this.sprintScore / 2);
                         const finalCoins = Math.round(this.sprintScore / 5);
                         
-                        this.xp += finalXp;
+                        this.addXP(finalXp);
                         this.coins += finalCoins;
                         this.incrementWeeklyXP(finalXp);
                         
@@ -4360,6 +4383,8 @@
                         mastery_levels: {}, // Spaced Repetition Engine (Word Tracking)
                         achievements: [],
                         quizzesCompleted: 0,
+                        xp_this_week: 0, // NEW: Weekly Progress Tracking
+                        weekly_report_opt_out: false, // NEW: Subscription Setting
                         blockchain_certificates: []
                     },
                     // Adventure Stories Mode State
@@ -4574,7 +4599,7 @@
 
                             if (result.found) {
                                 this.coins += 50;
-                                this.xp += 10;
+                                this.addXP(10);
                                 this.playPing();
                                 confetti({
                                     particleCount: 150,
@@ -6906,9 +6931,15 @@
                              seasonal_quests: null,
                              review_queue: [], 
                              mastery_levels: {},
+                             xp_this_week: 0,
+                             weekly_report_opt_out: false,
                              boutique_inventory: [],
                              equipped_accessories: {}
                          };
+
+                        // Ensure required fields exist in existing learningStats
+                        if (this.learningStats.xp_this_week === undefined) this.learningStats.xp_this_week = 0;
+                        if (this.learningStats.weekly_report_opt_out === undefined) this.learningStats.weekly_report_opt_out = false;
 
                         // Ensure mastery_levels exists for existing users
                         if (!this.learningStats.mastery_levels) {
@@ -7547,10 +7578,7 @@
                             
                             if (this.isStoryQuiz) {
                                 this.coins += 30;
-                                this.xp += 2;
-                                // Still add the individual question coins? No, user said 30 coins for completion.
-                                // Actually handleCorrect adds 4 coins per question.
-                                // To be safe, I'll just add the bonus.
+                                this.addXP(2);
                             } else {
                                 this.coins += this.quizCoinsEarned;
                                 this.playSFX('coin');
@@ -8128,6 +8156,37 @@
                             console.error("Sync Error:", err);
                             // Alerting the user so they know their progress might not be saved
                             alert("Sync Error: " + (err.message || JSON.stringify(err)));
+                        }
+                    },
+
+                    addXP(amount) {
+                        const val = parseInt(amount) || 0;
+                        this.xp += val;
+                        if (!this.learningStats.xp_this_week) this.learningStats.xp_this_week = 0;
+                        this.learningStats.xp_this_week += val;
+                        console.log(`✨ Got ${val} XP! (Weekly: ${this.learningStats.xp_this_week})`);
+                    },
+
+                    async requestWeeklyReport() {
+                        if (!this.registeredEmail) return;
+                        this.isLoading = true;
+                        try {
+                            const response = await fetch('/api/request-parent-report', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email: this.registeredEmail })
+                            });
+                            const result = await response.json();
+                            if (result.success) {
+                                alert("📧 A progress report has been sent to your email!");
+                            } else {
+                                throw new Error(result.error || "Failed to send report");
+                            }
+                        } catch (err) {
+                            console.error("Report Error:", err);
+                            alert("Oops! We couldn't send the report right now. Please try again later.");
+                        } finally {
+                            this.isLoading = false;
                         }
                     },
 
@@ -8737,7 +8796,7 @@
                         this.hasAnswered = true;
                         this.userQuery = '';
                         this.currentMoodIcon = this.currentChar.mood_happy;
-                        this.xp += 2;
+                        this.addXP(2);
                         this.incrementWeeklyXP(2);
                         this.updateLevel();
                         this.playPing();
