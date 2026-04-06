@@ -726,13 +726,31 @@ app.get('/api/cron/reset-weekly-xp', async (req, res) => {
             }
         }
 
-        // 3. Update all rows where xp_this_week > 0 to be 0
+        // 3. Update all rows in weekly_xp where xp_this_week > 0 to be 0
         const { error: resetError } = await supabase
             .from('weekly_xp')
             .update({ xp_this_week: 0 })
             .gt('xp_this_week', 0);
 
         if (resetError) throw resetError;
+
+        // 4. ALSO Reset learning_stats.xp_this_week for all user profiles
+        // We fetch all profiles with XP this week and reset them to maintain report accuracy
+        const { data: profilesToReset, error: fetchResetError } = await supabase
+            .from('profiles')
+            .select('id, email, learning_stats');
+
+        if (!fetchResetError && profilesToReset) {
+            for (const profile of profilesToReset) {
+                let stats = profile.learning_stats || {};
+                if (typeof stats === 'string') { try { stats = JSON.parse(stats); } catch { stats = {}; } }
+                
+                if (stats.xp_this_week > 0) {
+                    stats.xp_this_week = 0;
+                    await supabase.from('profiles').update({ learning_stats: stats }).eq('id', profile.id);
+                }
+            }
+        }
 
         console.log("✅ Weekly XP reset successful & Rewards Distributed!");
         res.json({ success: true, message: "Weekly XP reset & rewarded successfully." });
@@ -744,7 +762,281 @@ app.get('/api/cron/reset-weekly-xp', async (req, res) => {
 
 
 
-// --- CHAT API ---
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WEEKLY PARENT DASHBOARD EMAIL — Cron: every Monday 08:00 UTC
+// Also exposes /api/send-weekly-report-now?secret=... for manual testing
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function sendWeeklyReportToUser(email, stats) {
+    const resendKey = process.env.RESEND_API_KEY;
+    if (!resendKey) return { ok: false, reason: 'RESEND_API_KEY missing' };
+
+    // ── Pull metrics from learning_stats ──────────────────────────────────────
+    const childName   = stats.child_name   || 'Your Child';
+    const coins       = stats.coins        ?? 0;
+    const streak      = stats.streak       ?? 0;
+    const xpThisWeek  = stats.xp_this_week ?? stats.weekly_xp ?? 0;
+    const totalXP     = stats.total_xp     ?? 0;
+    const quizzesDone = stats.quizzes_done ?? stats.quiz_count ?? 0;
+    const lessonsCompleted = stats.lessons_completed ?? stats.lesson_count ?? 0;
+    const lastQuestion = stats.last_question || 'kept exploring with curiosity!';
+    const trialDaysLeft = stats.trial_days_left ?? null;
+    const isPremium   = stats.is_premium   ?? false;
+
+    // ── XP Progress bar (max 500 XP per week as reference) ───────────────────
+    const xpPercent = Math.min(Math.round((xpThisWeek / 500) * 100), 100);
+    const xpBar = `
+        <div style="background:#e2e8f0;border-radius:99px;height:10px;margin-top:8px;overflow:hidden;">
+            <div style="background:linear-gradient(90deg,#4f46e5,#7c3aed);height:10px;width:${xpPercent}%;border-radius:99px;transition:width 0.5s;"></div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:#94a3b8;margin-top:4px;">${xpPercent}% of weekly goal</div>
+    `;
+
+    // ── Streak badge ─────────────────────────────────────────────────────────
+    const streakBadge = streak >= 7
+        ? `<span style="background:#fef3c7;color:#92400e;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700;">🔥 ${streak}-Day Streak — Amazing!</span>`
+        : streak >= 3
+        ? `<span style="background:#dcfce7;color:#166534;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700;">🔥 ${streak}-Day Streak — Keep it up!</span>`
+        : `<span style="background:#f1f5f9;color:#64748b;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700;">📅 ${streak} Day${streak !== 1 ? 's' : ''} Active</span>`;
+
+    // ── Trial / Premium notice ────────────────────────────────────────────────
+    const accountNotice = isPremium
+        ? `<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:12px;padding:14px 18px;margin-bottom:24px;color:#166534;font-size:14px;font-weight:600;">✅ Premium Member — Full access active</div>`
+        : trialDaysLeft !== null && trialDaysLeft > 0
+        ? `<div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:14px 18px;margin-bottom:24px;color:#78350f;font-size:14px;font-weight:600;">⏳ Free Trial — ${trialDaysLeft} day${trialDaysLeft !== 1 ? 's' : ''} left. <a href="https://ai-tutor-murex.vercel.app" style="color:#4f46e5;font-weight:700;">Upgrade to keep the streak going →</a></div>`
+        : `<div style="background:#fee2e2;border:1px solid #fecaca;border-radius:12px;padding:14px 18px;margin-bottom:24px;color:#7f1d1d;font-size:14px;font-weight:600;">⚠️ Trial Expired — <a href="https://ai-tutor-murex.vercel.app" style="color:#4f46e5;font-weight:700;">Upgrade now to keep learning →</a></div>`;
+
+    // ── Stat cards ────────────────────────────────────────────────────────────
+    const statCards = [
+        { label: 'XP This Week',       value: `⚡ ${xpThisWeek} XP`,   color: '#4f46e5' },
+        { label: 'Total XP Earned',    value: `🌟 ${totalXP}`,         color: '#7c3aed' },
+        { label: 'Coins',              value: `💰 ${coins}`,           color: '#f59e0b' },
+        { label: 'Quizzes Completed',  value: `🏆 ${quizzesDone}`,     color: '#10b981' },
+        { label: 'Lessons Done',       value: `📚 ${lessonsCompleted}`, color: '#3b82f6' },
+        { label: 'Day Streak',         value: `🔥 ${streak}`,          color: '#ef4444' },
+    ].map(c => `
+        <div style="background:#fff;border:1px solid #f1f5f9;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+            <div style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">${c.label}</div>
+            <div style="color:${c.color};font-size:22px;font-weight:700;margin-top:4px;">${c.value}</div>
+        </div>
+    `).join('');
+
+    // ── Full email HTML ───────────────────────────────────────────────────────
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  @media only screen and (max-width:600px){.container{width:100%!important;border-radius:0!important;}}
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center" style="padding:24px 0;">
+      <div class="container" style="max-width:600px;width:95%;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);padding:48px 32px;text-align:center;">
+          <div style="font-size:56px;margin-bottom:12px;">🎓</div>
+          <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;">Weekly Learning Report</h1>
+          <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:15px;">${childName}'s progress · Week of ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:32px;">
+
+          ${accountNotice}
+
+          <!-- Streak badge centred -->
+          <div style="text-align:center;margin-bottom:28px;">${streakBadge}</div>
+
+          <!-- XP Progress -->
+          <div style="background:#f8fafc;border-radius:16px;padding:20px;margin-bottom:28px;">
+            <div style="color:#0f172a;font-size:16px;font-weight:700;margin-bottom:4px;">⚡ XP Earned This Week</div>
+            <div style="color:#4f46e5;font-size:32px;font-weight:800;">${xpThisWeek} <span style="font-size:16px;font-weight:500;color:#64748b;">XP</span></div>
+            ${xpBar}
+          </div>
+
+          <!-- Stat cards -->
+          <h3 style="color:#0f172a;font-size:18px;font-weight:700;margin-bottom:16px;">📊 Weekly Highlights</h3>
+          ${statCards}
+
+          <!-- Last curiosity -->
+          <div style="margin-top:28px;">
+            <h3 style="color:#0f172a;font-size:18px;font-weight:700;margin-bottom:12px;">📝 What ${childName} Explored</h3>
+            <div style="background:#eff6ff;border-radius:16px;padding:20px;">
+              <div style="color:#1d4ed8;font-size:15px;font-style:italic;line-height:1.6;">"${lastQuestion}"</div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div style="text-align:center;margin-top:36px;">
+            <a href="https://ai-tutor-murex.vercel.app" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-decoration:none;padding:16px 40px;border-radius:14px;font-weight:700;font-size:16px;display:inline-block;">Open AI Tutor →</a>
+          </div>
+
+          <!-- Footer note -->
+          <div style="margin-top:40px;padding-top:24px;border-top:1px solid #f1f5f9;text-align:center;">
+            <div style="color:#10b981;font-weight:700;font-size:13px;">✅ VERIFIED BY AI TUTOR</div>
+            <p style="color:#64748b;font-size:12px;margin-top:10px;line-height:1.6;">
+              This report is sent automatically every Monday. It verifies that ${childName} is actively engaging with lessons, quizzes, and daily goals on AI Tutor.
+              <br><br>
+              <a href="https://ai-tutor-murex.vercel.app" style="color:#94a3b8;font-size:11px;">Unsubscribe from weekly reports</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Footer bar -->
+        <div style="background:#f1f5f9;padding:24px 32px;text-align:center;">
+          <p style="color:#94a3b8;font-size:12px;margin:0;">© ${new Date().getFullYear()} AI Tutor — Dedicated to your child's success.</p>
+          <div style="margin-top:8px;color:#cbd5e1;font-size:11px;">Weekly Analytics · Parent Dashboard · Kid-Safe AI</div>
+        </div>
+
+      </div>
+    </td>
+  </tr>
+</table>
+</body>
+</html>`;
+
+    const sendRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendKey}`
+        },
+        body: JSON.stringify({
+            from: 'AI Tutor <onboarding@resend.dev>',
+            to:   [email],
+            subject: `📊 ${childName}'s Weekly Learning Report — AI Tutor`,
+            html: htmlContent
+        })
+    });
+
+    const result = await sendRes.json();
+    return sendRes.ok
+        ? { ok: true,  id: result.id }
+        : { ok: false, reason: JSON.stringify(result) };
+}
+
+// Automated cron — fires every Monday at 08:00 UTC via vercel.json
+app.get('/api/cron/weekly-parent-report', async (req, res) => {
+    console.log('📧 [Weekly Report] Cron started...');
+    try {
+        if (!supabase) throw new Error('Supabase not initialized');
+        if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY missing');
+
+        const { data: profiles, error } = await supabase
+            .from('profiles')
+            .select('email, learning_stats');
+
+        if (error) throw error;
+
+        const results = [];
+        for (const profile of profiles) {
+            if (!profile.email) continue;
+
+            let stats = profile.learning_stats || {};
+            if (typeof stats === 'string') {
+                try { stats = JSON.parse(stats); } catch { stats = {}; }
+            }
+
+            // Skip profiles that have explicitly opted out
+            if (stats.weekly_report_opt_out === true) {
+                results.push({ email: profile.email, status: 'skipped (opted out)' });
+                continue;
+            }
+
+            try {
+                const outcome = await sendWeeklyReportToUser(profile.email, stats);
+                results.push({ email: profile.email, status: outcome.ok ? 'sent' : 'failed', detail: outcome.ok ? outcome.id : outcome.reason });
+                console.log(outcome.ok
+                    ? `✅ Report sent to ${profile.email}`
+                    : `❌ Failed for ${profile.email}: ${outcome.reason}`
+                );
+            } catch (sendErr) {
+                results.push({ email: profile.email, status: 'error', detail: sendErr.message });
+            }
+        }
+
+        const sent   = results.filter(r => r.status === 'sent').length;
+        const failed = results.filter(r => r.status === 'failed' || r.status === 'error').length;
+        console.log(`📧 [Weekly Report] Done — ${sent} sent, ${failed} failed, ${profiles.length} total.`);
+        res.json({ success: true, sent, failed, total: profiles.length, results });
+
+    } catch (err) {
+        console.error('❌ [Weekly Report] Cron error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Manual trigger for testing (protect with a secret query param)
+app.get('/api/send-weekly-report-now', async (req, res) => {
+    const { secret, email } = req.query;
+    if (secret !== process.env.ADMIN_CRON_SECRET) {
+        return res.status(403).json({ error: 'Forbidden — provide ?secret=YOUR_ADMIN_CRON_SECRET' });
+    }
+    try {
+        if (!supabase) throw new Error('Supabase not initialized');
+
+        let query = supabase.from('profiles').select('email, learning_stats');
+        if (email) query = query.eq('email', email); // Test a single address
+
+        const { data: profiles, error } = await query;
+        if (error) throw error;
+
+        const results = [];
+        for (const profile of profiles) {
+            if (!profile.email) continue;
+            let stats = profile.learning_stats || {};
+            if (typeof stats === 'string') { try { stats = JSON.parse(stats); } catch { stats = {}; } }
+            const outcome = await sendWeeklyReportToUser(profile.email, stats);
+            results.push({ email: profile.email, ...outcome });
+        }
+        res.json({ success: true, results });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Authenticated manual request for a single parent report
+app.post('/api/request-parent-report', async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    try {
+        if (!supabase) throw new Error('Supabase not initialized');
+
+        // Fetch the user's latest stats
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('email, learning_stats')
+            .eq('email', email)
+            .single();
+
+        if (error || !profile) throw new Error('Profile not found');
+
+        let stats = profile.learning_stats || {};
+        if (typeof stats === 'string') { try { stats = JSON.parse(stats); } catch { stats = {}; } }
+
+        const outcome = await sendWeeklyReportToUser(profile.email, stats);
+        
+        if (outcome.ok) {
+            res.json({ success: true, id: outcome.id });
+        } else {
+            res.status(500).json({ error: outcome.reason });
+        }
+    } catch (err) {
+        console.error("Manual Report Error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+
 app.post('/api/chat', chatLimit, async (req, res) => {
     try {
         const { messages } = req.body;
