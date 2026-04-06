@@ -637,7 +637,7 @@
 
             <!-- Web Version: Trial Countdown (Replaces Free Questions) -->
             <template x-if="!isPremium">
-                <div class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 flex-col items-center min-w-[100px] transition-all duration-500"
+                <div class="flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 flex-col items-center min-w-[100px] transition-all duration-500"
                      :class="isTrialActive ? 'border-green-400' : 'border-red-400 pulse-red'">
                     <p class="text-[9px] font-bold uppercase text-center leading-tight" 
                        :class="isTrialActive ? 'text-green-600' : 'text-red-600'"
@@ -887,15 +887,26 @@
                 </template>
             </div>
             
-            <!-- Mobile Version: Smaller & Centered -->
+            <!-- Mobile Version: Trial Status Box (Replaced Free Questions) -->
             <div x-show="!isPremium" class="flex md:hidden justify-center mb-6 animate__animated animate__fadeIn">
-                <div class="bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-xl border-2 border-orange-300 shadow-md flex items-center gap-3 transform scale-90">
-                    <div class="flex flex-col">
-                        <span class="text-[8px] font-bold text-orange-600 uppercase tracking-widest leading-none">Free Questions</span>
-                        <span class="font-kids text-base text-orange-500 mt-0.5" x-text="dailyQuestionsUsed + '/' + maxFreeQuestions"></span>
+                <div class="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-[2rem] border-2 shadow-xl flex flex-col items-center gap-1 transform scale-110"
+                     :class="isTrialActive ? 'border-green-300 shadow-green-100' : 'border-red-300 shadow-red-100'">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs" x-text="isTrialActive ? '✨' : '⚠️'"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest leading-none"
+                              :class="isTrialActive ? 'text-green-600' : 'text-red-600'"
+                              x-text="isTrialActive ? '7-Day Free Trial' : 'Trial Expired'"></span>
                     </div>
-                    <div class="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden border border-orange-100">
-                        <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="font-kids text-xl leading-none"
+                              :class="isTrialActive ? 'text-green-500' : 'text-red-500'"
+                              x-text="trialDaysLeft"></span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Days Left</span>
+                    </div>
+                    <div class="w-24 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                        <div class="h-full transition-all duration-500" 
+                             :class="isTrialActive ? 'bg-green-400' : 'bg-red-400'"
+                             :style="'width: ' + (trialDaysLeft / 7 * 100) + '%'"></div>
                     </div>
                 </div>
             </div>
