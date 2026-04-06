@@ -842,7 +842,7 @@
         </div>
 
         <!-- NEW: Full-Width Daily Quest Tracker Container -->
-        <div class="absolute top-[500px] left-0 w-full px-4 sm:hidden z-40">
+        <div class="absolute top-[410px] left-0 w-full px-4 sm:hidden z-40">
             <div class="w-full bg-gradient-to-r from-indigo-600 to-purple-700 p-3 rounded-3xl shadow-xl flex items-center justify-between animate__animated animate__fadeInUp border-4 border-indigo-400">
                 <div class="flex flex-col gap-1 items-start">
                     <div class="flex items-center gap-2">
@@ -868,7 +868,7 @@
             </div>
         </div>
 
-        <div class="container max-w-6xl mx-auto px-4 pt-[555px] sm:pt-12 pb-8 sm:pb-12">
+        <div class="container max-w-6xl mx-auto px-4 pt-[465px] sm:pt-12 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
                 <template x-for="char in characters">
                     <button 
@@ -2668,8 +2668,8 @@
                         </template>
                     </div>
 
-                    <button @click="showProfileSwitcher = false; openParentPortal()" class="w-full mt-6 py-3 bg-slate-100 text-slate-500 rounded-2xl font-bold text-sm hover:bg-slate-200 transition-colors uppercase tracking-widest">
-                        Manage Children in Portal
+                    <button @click="showProfileSwitcher = false; openParentPortal()" class="w-full mt-6 py-4 bg-blue-600 text-white rounded-3xl font-kids text-lg shadow-xl hover:scale-105 active:scale-95 transition-all uppercase tracking-widest flex items-center justify-center gap-3">
+                        <i class="fas fa-lock"></i> Parent Dashboard & Reports
                     </button>
                 </div>
             </div>
@@ -2679,7 +2679,7 @@
         <div x-show="showManageChildren" x-cloak class="fixed inset-0 z-[101] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate__animated animate__fadeIn">
             <div class="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl border-4 border-white transform animate__animated animate__zoomIn">
                 <div class="p-8">
-                    <div class="flex justify-between items-center mb-8">
+                    <div class="flex justify-between items-center mb-4">
                         <div>
                             <h2 class="text-3xl font-kids text-slate-800">Family Management 👨‍👩‍👧‍👦</h2>
                             <div class="flex items-center gap-2 mt-1">
@@ -2691,6 +2691,28 @@
                             </div>
                         </div>
                         <button @click="showManageChildren = false" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-2xl"></i></button>
+                    </div>
+
+                    <!-- Weekly Report Settings (MOVED TO TOP FOR DISCOVERABILITY) -->
+                    <div class="mb-8 p-6 bg-blue-600 rounded-3xl border-4 border-blue-400 shadow-xl shadow-blue-100 animate__animated animate__pulse">
+                        <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                            <div class="flex-1 text-center sm:text-left">
+                                <h3 class="text-white font-kids text-xl mb-1">Weekly Progress Report 📊</h3>
+                                <p class="text-xs text-blue-100">Get an automatic summary of learning milestones every Monday.</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button @click="learningStats.weekly_report_opt_out = !learningStats.weekly_report_opt_out; syncData()" 
+                                        class="w-12 h-6 rounded-full transition-colors relative"
+                                        :class="!learningStats.weekly_report_opt_out ? 'bg-green-400' : 'bg-blue-400'">
+                                    <div class="absolute top-1 w-4 h-4 bg-white rounded-full transition-all"
+                                         :class="!learningStats.weekly_report_opt_out ? 'right-1' : 'left-1'"></div>
+                                </button>
+                                <button @click="requestWeeklyReport()" 
+                                        class="px-6 py-3 bg-white text-blue-600 rounded-2xl font-kids text-lg shadow-lg hover:scale-105 active:scale-95 transition-all">
+                                    Send Report Now 📧
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2746,28 +2768,6 @@
                         </div>
                     </div>
 
-                    <!-- Weekly Report Settings (Feature Request) -->
-                    <div class="mt-8 pt-8 border-t-2 border-slate-100">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Email Report Settings 📊</h3>
-                        <div class="flex flex-col sm:flex-row gap-4 items-center justify-between bg-slate-50 p-6 rounded-3xl border-2 border-slate-100">
-                            <div class="flex-1 text-center sm:text-left">
-                                <p class="font-bold text-slate-700">Weekly Progress Email</p>
-                                <p class="text-xs text-slate-400 mt-1">Receive a summary of learning milestones every Monday.</p>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <button @click="learningStats.weekly_report_opt_out = !learningStats.weekly_report_opt_out; syncData()" 
-                                        class="w-12 h-6 rounded-full transition-colors relative"
-                                        :class="!learningStats.weekly_report_opt_out ? 'bg-green-500' : 'bg-slate-300'">
-                                    <div class="absolute top-1 w-4 h-4 bg-white rounded-full transition-all"
-                                         :class="!learningStats.weekly_report_opt_out ? 'right-1' : 'left-1'"></div>
-                                </button>
-                                <button @click="requestWeeklyReport()" 
-                                        class="px-4 py-2 bg-white border-2 border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:border-blue-300 hover:text-blue-500 transition-all uppercase tracking-widest active:scale-95">
-                                    Send Now 📧
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
