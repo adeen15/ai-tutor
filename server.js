@@ -85,7 +85,7 @@ const privateVapidKey = process.env.VAPID_PRIVATE_KEY;
 
 if (publicVapidKey && privateVapidKey) {
     webpush.setVapidDetails(
-        'mailto:support@ai-tutor.example', // Replace with actual contact
+        'mailto:adeenamjad714@gmail.com',
         publicVapidKey,
         privateVapidKey
     );
@@ -311,7 +311,7 @@ app.get('/privacy', (req, res) => {
         <p>This app is designed for children under 13 and complies with the Children's Online Privacy Protection Act (COPPA) and GDPR provisions for children. We require verifiable parental consent (parental gate) before any data collection. We do not condition a child's participation on disclosing more information than is reasonably necessary.</p>
 
         <h2>8. Contact Us</h2>
-        <p>For privacy concerns or data deletion requests, contact us at: <a href="mailto:privacy@aitutor.app">privacy@aitutor.app</a></p>
+        <p>For privacy concerns or data deletion requests, contact us at: <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></p>
     </div>
     <div class="footer">© ${new Date().getFullYear()} AI Tutor. All rights reserved.</div>
 </body>
@@ -391,7 +391,7 @@ app.get('/terms', (req, res) => {
         <p>These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles.</p>
 
         <h2>10. Contact Us</h2>
-        <p>For questions about these Terms, contact us at: <a href="mailto:support@aitutor.app">support@aitutor.app</a></p>
+        <p>For questions about these Terms, contact us at: <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></p>
     </div>
     <div class="footer">© ${new Date().getFullYear()} AI Tutor. All rights reserved.</div>
 </body>
@@ -401,6 +401,12 @@ app.get('/terms', (req, res) => {
 // --- LEGAL PAGE ALIASES (support both /privacy and /privacy.html formats) ---
 app.get('/privacy.html', (req, res) => res.redirect(301, '/privacy'));
 app.get('/terms.html', (req, res) => res.redirect(301, '/terms'));
+
+// --- SUPPORT PAGE ---
+app.get('/support', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'support.html'));
+});
+app.get('/support.html', (req, res) => res.redirect(301, '/support'));
 
 // --- GDPR: Account Deletion ---
 app.post('/api/delete-account', authLimit, async (req, res) => {
