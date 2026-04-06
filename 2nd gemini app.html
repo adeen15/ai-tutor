@@ -790,53 +790,51 @@
             <!-- Fourth Row (Mobile Only): Map, Skill Tree, Sprints -->
             <div class="flex sm:hidden flex-row gap-2 justify-end">
                 <!-- Adventure Map -->
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl">🗺️</span>
                 </button>
 
                 <!-- Skill Tree Button -->
-                <button @click="toggleSkillTree(true)" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
+                <button @click="toggleSkillTree(true)" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
                     <span class="text-xl">🌳</span>
                 </button>
 
                 <!-- AI Sprints Button (⚡) -->
-                <button @click="startSprint()" class="bg-indigo-500 w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
+                <button @click="startSprint()" class="bg-indigo-500 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
                     <span class="text-xl animate__animated animate__pulse animate__infinite">⚡</span>
                 </button>
             </div>
 
-            <!-- Fifth Row (Mobile Only): Trophy, Download, Aura -->
             <div class="flex sm:hidden flex-row gap-2 justify-end">
                 <!-- Weekly Leaderboard -->
-                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl">🏆</span>
                 </button>
 
                 <!-- Offline Downloads -->
-                <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white w-12 h-12 p-2 border-b-4 border-indigo-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
+                <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-indigo-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
                     <span class="text-xl">📥</span>
                 </button>
 
                 <!-- Magic Aura -->
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white w-12 h-12 p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
                     <span class="text-xl">🪄</span>
                 </button>
             </div>
 
-            <!-- Sixth Row (Mobile Only): Story, Profile, Help -->
             <div class="flex sm:hidden flex-row gap-2 justify-end">
                 <!-- Story Time -->
-                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white w-12 h-12 p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
                     <span class="text-xl">📖</span>
                 </button>
 
                 <!-- Profile Switcher -->
-                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white w-12 h-12 p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
+                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <span class="text-xl">👤</span>
                 </button>
 
                 <!-- Help & Support -->
-                <a href="/support" target="_blank" class="bg-white w-12 h-12 p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" title="Help & Support">
+                <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" title="Help & Support">
                     <span class="text-xl">❓</span>
                 </a>
             </div>
