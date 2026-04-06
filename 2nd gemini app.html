@@ -5068,6 +5068,13 @@
                                     this.loadHearts(); // Restore hearts from localStorage
                                     this.setupPushNotifications(); // Ask for push permission on login
                                     setTimeout(() => window.scrollTo(0, 0), 500); // Robust scroll to top after login
+                                    // Identify user in RevenueCat for purchase linking & restoration
+                                    if (window.ReactNativeWebView) {
+                                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                                            type: 'USER_LOGGED_IN',
+                                            email: session.user.email
+                                        }));
+                                    }
                                 } else if (event === 'SIGNED_OUT') {
                                     this.refreshAppState();
                                 }
