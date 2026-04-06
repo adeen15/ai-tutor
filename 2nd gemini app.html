@@ -330,40 +330,39 @@
                                         <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Complex science & math</div>
                                     </div>
                                 </button>
-                            </div>
-                        </div>
-
-                        <!-- Slide 3: Try it Free -->
+                                                   <!-- Slide 3: Try it Free -->
                         <div x-show="onboardingStep === 3" class="animate__animated animate__fadeInRight" x-cloak>
                             <div class="text-6xl mb-6">✨</div>
-                            <h2 class="text-3xl font-kids text-slate-800 mb-4">Try it entirely<br><span class="text-green-500">Risk-Free</span></h2>
-                            <p class="text-slate-500 font-bold mb-8">Create a secure parent account to unlock your child's personal AI tutor.</p>
+                            <h2 class="text-3xl font-kids text-slate-800 mb-4">7 Days of<br><span class="text-green-500">Premium Magic</span></h2>
+                            <p class="text-slate-500 font-bold mb-8">Try every single feature for 7 days. No credit card required to start.</p>
 
                             <div class="bg-green-50 p-6 rounded-3xl border-2 border-green-200 mb-2 text-left shadow-inner">
                                 <ul class="space-y-4">
                                     <li class="flex items-start gap-4">
                                         <div class="mt-1 bg-white rounded-full p-1 shadow-sm"><i class="fas fa-check text-green-500"></i></div>
                                         <div>
-                                            <p class="font-black text-slate-700">3 Free Questions Daily</p>
-                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Renews every 24 hours</p>
+                                            <p class="font-black text-slate-700">Unlimited AI Chat</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">No daily question limits for 7 days</p>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-4">
                                         <div class="mt-1 bg-white rounded-full p-1 shadow-sm"><i class="fas fa-check text-green-500"></i></div>
                                         <div>
-                                            <p class="font-black text-slate-700">Rex the Dino is Free</p>
-                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">History lessons forever</p>
+                                            <p class="font-black text-slate-700">Unlock All Teachers</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Math, Science, Reading & Nature</p>
                                         </div>
                                     </li>
                                     <li class="flex items-start gap-4">
-                                        <div class="mt-1 bg-white rounded-full p-1 shadow-sm"><i class="fas fa-check text-slate-300"></i></div>
+                                        <div class="mt-1 bg-white rounded-full p-1 shadow-sm"><i class="fas fa-check text-green-500"></i></div>
                                         <div>
-                                            <p class="font-bold text-slate-500 line-through">Hidden Fees or Subscriptions</p>
-                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">You only pay if you upgrade</p>
+                                            <p class="font-black text-slate-700">Adventure Maps & Sprints</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Explore the full curriculum</p>
                                         </div>
                                     </li>
                                 </ul>
                             </div>
+                        </div>
+     </div>
                         </div>
                     </div>
 
@@ -635,14 +634,23 @@
 
             </div>
 
-            <!-- Web Version: Under Daily Gift -->
-            <div x-show="!isPremium" class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 border-orange-400 flex-col items-center min-w-[80px]">
-                <p class="text-[9px] font-bold text-orange-600 uppercase text-center leading-tight">Free Questions</p>
-                <p class="text-[12px] font-kids text-orange-500 leading-none mt-0.5" x-text="dailyQuestionsUsed + '/' + maxFreeQuestions"></p>
-                <div class="w-full h-1 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
-                    <div class="h-full bg-orange-400 transition-all duration-500" :style="'width: ' + ((maxFreeQuestions - dailyQuestionsUsed) / maxFreeQuestions * 100) + '%'"></div>
+            <!-- Web Version: Trial Countdown (Replaces Free Questions) -->
+            <template x-if="!isPremium">
+                <div class="hidden md:flex bg-white px-3 py-2 rounded-xl shadow-lg border-2 flex-col items-center min-w-[100px] transition-all duration-500"
+                     :class="isTrialActive ? 'border-green-400' : 'border-red-400 pulse-red'">
+                    <p class="text-[9px] font-bold uppercase text-center leading-tight" 
+                       :class="isTrialActive ? 'text-green-600' : 'text-red-600'"
+                       x-text="isTrialActive ? 'Free Trial' : 'Trial Expired'"></p>
+                    <p class="text-[12px] font-kids leading-none mt-0.5" 
+                       :class="isTrialActive ? 'text-green-500' : 'text-red-500'"
+                       x-text="trialDaysLeft + ' Days Left'"></p>
+                    <div class="w-full h-1 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                        <div class="h-full transition-all duration-500" 
+                             :class="isTrialActive ? 'bg-green-400' : 'bg-red-400'"
+                             :style="'width: ' + (trialDaysLeft / 7 * 100) + '%'"></div>
+                    </div>
                 </div>
-            </div>
+            </template>
             <div class="hidden sm:flex bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] sm:text-xs font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1 sm:ml-2">
                 <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
@@ -706,11 +714,11 @@
             </div>
 
             <div class="hidden sm:flex flex-row gap-2 sm:gap-4">
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
+                <button @click="(!isPremium && !isTrialActive) ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
                     <span class="text-xl sm:text-3xl">📖</span>
                 </button>
 
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                <button @click="(!isPremium && !isTrialActive) ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl sm:text-3xl">🏆</span>
                 </button>
 
@@ -720,7 +728,7 @@
                 </button>
 
                 <!-- Adventure Map -->
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
+                <button @click="(!isPremium && !isTrialActive) ? (showPremiumModal = true, toggleScroll(true)) : (showLearningPath = true, toggleScroll(true))" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-green-500" :title="t('adventure_map')">
                     <span class="text-xl sm:text-3xl">🗺️</span>
                 </button>
 
@@ -2848,8 +2856,8 @@
                 
                 <div class="text-center mb-8">
                     <div class="text-6xl mb-4">👑</div>
-                    <h2 class="text-4xl font-kids text-yellow-900 mb-2">Choose Your Power!</h2>
-                    <p class="text-yellow-800 font-bold text-lg">Unlock the full magic of learning!</p>
+                    <h2 class="text-4xl font-kids text-yellow-900 mb-2">Try Everything Risk-Free!</h2>
+                    <p class="text-yellow-800 font-bold text-lg">7 Days of Full Access included with every plan!</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
@@ -3192,7 +3200,7 @@
                             </div>
 
                             <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-8 relative overflow-hidden">
-                                <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                                <div x-show="!isPremium && !isTrialActive" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
                                     <div>
                                         <i class="fas fa-lock text-gray-400 mb-2"></i>
                                         <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
@@ -3263,7 +3271,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
-                                    <div x-show="!isPremium" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
+                                    <div x-show="!isPremium && !isTrialActive" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center p-6 text-center">
                                         <div>
                                             <i class="fas fa-lock text-gray-400 mb-2"></i>
                                             <p class="text-xs font-bold text-gray-500 uppercase">Premium Feature</p>
@@ -4090,6 +4098,19 @@
                     premiumExpiry: null,
                     showCheckout: false,
                     checkoutForm: { name: '', card: '', expiry: '', cvv: '' },
+                    
+                    // --- 7-DAY FREE TRIAL SYSTEM ---
+                    trialStartDate: localStorage.getItem('trial_start_date') ? parseInt(localStorage.getItem('trial_start_date')) : null,
+                    get trialDaysLeft() {
+                        if (!this.trialStartDate) return 7;
+                        const elapsedMs = Date.now() - this.trialStartDate;
+                        const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
+                        return Math.max(0, 7 - elapsedDays);
+                    },
+                    get isTrialActive() {
+                        return this.trialDaysLeft > 0;
+                    },
+
                     maxFreeQuestions: 5,
                     dailyQuestionsUsed: 0,
                     lastUsageDate: new Date().toDateString(),
@@ -5124,6 +5145,13 @@
 
                     isProfileLoading: false,
                     async init() {
+                        // Initialize Trial Start Date for everyone
+                        if (!this.trialStartDate) {
+                            this.trialStartDate = Date.now();
+                            localStorage.setItem('trial_start_date', this.trialStartDate.toString());
+                            console.log("⚡ Trial started: " + new Date(this.trialStartDate).toLocaleDateString());
+                        }
+
                         // Initialize Daily Quests
                         this.initDailyQuests();
                         window.app = this; // Expose for easy console testing
@@ -8665,7 +8693,7 @@
                             
                             this.logActivity(savedQuery, parsed.emotion);
 
-                            if (!this.isPremium) {
+                            if (!this.isPremium && !this.isTrialActive) {
                                 this.dailyQuestionsUsed++;
                             }
 
@@ -8831,7 +8859,7 @@
                         osc.stop(context.currentTime + 0.08);
                     },
                     loseHeart() {
-                        if (this.isPremium) return;
+                        if (this.isPremium || this.isTrialActive) return;
                         if (this.hearts > 0) {
                             this.hearts--;
                             this.saveHearts();
@@ -8946,7 +8974,7 @@
                         }
                     },
                     generateWorksheet() {
-                        if(!this.isPremium) {
+                        if(!this.isPremium && !this.isTrialActive) {
                             this.showPremiumModal = true;
                             return;
                         }
