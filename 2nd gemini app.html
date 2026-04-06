@@ -805,10 +805,10 @@
                 </button>
             </div>
 
-            <!-- Fifth Row (Mobile Only): Trophy, Download, Aura, Story, Profile -->
+            <!-- Fifth Row (Mobile Only): Trophy, Download, Aura -->
             <div class="flex sm:hidden flex-row gap-2 justify-end">
                 <!-- Weekly Leaderboard -->
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white w-12 h-12 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
                     <span class="text-xl">🏆</span>
                 </button>
 
@@ -817,22 +817,25 @@
                     <span class="text-xl">📥</span>
                 </button>
 
-                <!-- Magic Aura (Moved to 5th Row) -->
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
+                <!-- Magic Aura -->
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white w-12 h-12 p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
                     <span class="text-xl">🪄</span>
                 </button>
+            </div>
 
-                <!-- Story Time (Moved to 5th Row) -->
-                <button @click="!isPremium ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
+            <!-- Sixth Row (Mobile Only): Story, Profile, Help -->
+            <div class="flex sm:hidden flex-row gap-2 justify-end">
+                <!-- Story Time -->
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white w-12 h-12 p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
                     <span class="text-xl">📖</span>
                 </button>
 
                 <!-- Profile Switcher -->
-                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
+                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white w-12 h-12 p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
                     <span class="text-xl">👤</span>
                 </button>
 
-                <!-- Help & Support (Mobile) -->
+                <!-- Help & Support -->
                 <a href="/support" target="_blank" class="bg-white w-12 h-12 p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" title="Help & Support">
                     <span class="text-xl">❓</span>
                 </a>
