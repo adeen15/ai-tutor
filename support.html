@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support & Help — AI Tutor</title>
+    <meta name="description" content="Get help with AI Tutor. Contact our support team, find answers to common questions, and manage your account.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        /* ---- HEADER ---- */
+        .hero {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+            padding: 60px 24px 80px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .hero-logo { font-family: 'Fredoka One', cursive; font-size: 20px; margin-bottom: 32px; opacity: 0.9; }
+        .hero-emoji { font-size: 64px; margin-bottom: 16px; display: block; }
+        .hero h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; margin-bottom: 12px; }
+        .hero p { font-size: 16px; opacity: 0.85; max-width: 480px; margin: 0 auto; }
+
+        /* ---- RESPONSE BADGE ---- */
+        .response-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        /* ---- MAIN CONTAINER ---- */
+        .container {
+            max-width: 800px;
+            margin: -40px auto 60px;
+            padding: 0 16px;
+        }
+
+        /* ---- CARDS ---- */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+        }
+        .card-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-title i { color: #6366f1; }
+
+        /* ---- CONTACT BUTTON ---- */
+        .contact-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(79,70,229,0.3);
+        }
+        .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.35); }
+        .contact-btn i { margin-right: 8px; }
+
+        /* ---- QUICK ACTIONS ---- */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .quick-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover { border-color: #6366f1; color: #4f46e5; background: #eef2ff; }
+        .quick-btn i { font-size: 16px; color: #6366f1; }
+
+        /* ---- FAQ ---- */
+        .faq-item {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 20px 0;
+            cursor: pointer;
+        }
+        .faq-item:first-child { padding-top: 0; }
+        .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .faq-question {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .faq-question i {
+            color: #6366f1;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+            font-size: 12px;
+        }
+        .faq-answer {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 10px;
+            display: none;
+            line-height: 1.7;
+        }
+        .faq-answer a { color: #6366f1; font-weight: 600; }
+        .faq-item.open .faq-answer { display: block; }
+        .faq-item.open .faq-question i { transform: rotate(180deg); }
+
+        /* ---- INFO BOXES ---- */
+        .info-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .info-box.green { background: #f0fdf4; border: 1px solid #bbf7d0; }
+        .info-box.blue  { background: #eff6ff; border: 1px solid #bfdbfe; }
+        .info-box i { margin-top: 2px; flex-shrink: 0; }
+        .info-box.green i { color: #16a34a; }
+        .info-box.blue  i { color: #2563eb; }
+        .info-box strong { color: #0f172a; display: block; margin-bottom: 2px; }
+
+        /* ---- FOOTER ---- */
+        .footer { text-align: center; padding: 32px 16px; color: #94a3b8; font-size: 12px; }
+        .footer a { color: #6366f1; text-decoration: none; font-weight: 600; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 12px; flex-wrap: wrap; }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 640px) {
+            .card { padding: 24px 20px; border-radius: 20px; }
+            .container { margin-top: -24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Header -->
+    <div class="hero">
+        <div class="hero-logo">🎓 AI Tutor</div>
+        <span class="hero-emoji">💬</span>
+        <h1>How can we help?</h1>
+        <p>We're here to make sure your child's learning experience is always smooth and fun.</p>
+        <div class="response-badge">
+            <i class="fas fa-clock"></i>
+            We reply within 24 hours · Mon–Sat
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Contact Card -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-envelope"></i>
+                Contact Support
+            </div>
+
+            <div class="info-box green">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                    <strong>You're talking directly to the developer</strong>
+                    No bots, no outsourced support. Your message goes straight to the person who built the app.
+                </div>
+            </div>
+
+            <a href="mailto:adeenamjad714@gmail.com?subject=AI%20Tutor%20Support%20Request&body=Hi%20there%2C%0A%0AI%20need%20help%20with%3A%0A%0A[Describe%20your%20issue%20here]%0A%0ADevice%3A%20[e.g.%20iPhone%2014%2C%20Samsung%20S23]%0AApp%20version%3A%20[from%20App%20Store%20page]%0A%0AThanks!"
+               class="contact-btn">
+                <i class="fas fa-envelope"></i>
+                Email adeenamjad714@gmail.com
+            </a>
+
+            <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:12px; font-weight:600;">
+                Tip: Include your device type and what happened — it helps us solve things faster!
+            </p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-bolt"></i>
+                Quick Actions
+            </div>
+            <div class="quick-grid">
+                <a href="mailto:adeenamjad714@gmail.com?subject=Account%20Deletion%20Request&body=Hi%2C%20I%20would%20like%20to%20delete%20my%20AI%20Tutor%20account.%20My%20email%20is%3A%20[your%20email]" class="quick-btn">
+                    <i class="fas fa-user-times"></i> Delete Account
+                </a>
+                <a href="mailto:adeenamjad714@gmail.com?subject=Forgot%20PIN%20-%20Need%20Reset&body=Hi%2C%20I%20have%20forgotten%20my%20PIN.%20My%20account%20email%20is%3A%20[your%20email]" class="quick-btn">
+                    <i class="fas fa-key"></i> Reset PIN
+                </a>
+                <a href="mailto:adeenamjad714@gmail.com?subject=Refund%20Request&body=Hi%2C%20I%20would%20like%20to%20request%20a%20refund.%20My%20account%20email%20is%3A%20[your%20email]" class="quick-btn">
+                    <i class="fas fa-undo"></i> Request Refund
+                </a>
+                <a href="mailto:adeenamjad714@gmail.com?subject=Cancel%20Subscription&body=Hi%2C%20I%20would%20like%20to%20cancel%20my%20subscription.%20My%20account%20email%20is%3A%20[your%20email]" class="quick-btn">
+                    <i class="fas fa-times-circle"></i> Cancel Plan
+                </a>
+                <a href="mailto:adeenamjad714@gmail.com?subject=Bug%20Report&body=Hi%2C%20I%20found%20a%20bug%3A%0A%0A[Describe%20what%20happened]%0ADevice%3A%20[your%20device]" class="quick-btn">
+                    <i class="fas fa-bug"></i> Report a Bug
+                </a>
+                <a href="/privacy" class="quick-btn">
+                    <i class="fas fa-lock"></i> Privacy Policy
+                </a>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    How do I reset my PIN?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    On the login screen, tap <strong>"Forgot PIN?"</strong> and enter your parent email address. You'll receive a reset link within a few minutes. If you don't see it, check your spam folder. Still stuck? <a href="mailto:adeenamjad714@gmail.com?subject=PIN%20Reset%20Help">Email us</a>.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    How do I cancel my subscription?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Subscriptions are managed through the App Store or Google Play — not through us directly.<br><br>
+                    <strong>iPhone/iPad:</strong> Settings → [Your Name] → Subscriptions → AI Tutor → Cancel<br>
+                    <strong>Android:</strong> Google Play → Menu → Subscriptions → AI Tutor → Cancel<br><br>
+                    Your premium access continues until the end of the paid period.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    Can I get a refund?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Refunds are processed by Apple or Google depending on where you purchased. If it was recent (within 48 hours), you can request directly:<br><br>
+                    <strong>Apple:</strong> <a href="https://reportaproblem.apple.com" target="_blank">reportaproblem.apple.com</a><br>
+                    <strong>Google:</strong> <a href="https://support.google.com/googleplay/answer/2479637" target="_blank">Google Play refund policy</a><br><br>
+                    You can also <a href="mailto:adeenamjad714@gmail.com?subject=Refund%20Request">email us</a> and we'll do our best to help.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    Is my child's data safe?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes — completely. We are COPPA compliant. We never sell your data to anyone, ever. We don't store voice recordings, we don't collect your location, and we don't use advertising trackers. Read our full <a href="/privacy">Privacy Policy</a>.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    How do I switch to a different child profile?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Tap the 👤 icon in the top-right corner of the app. You can add a new child profile or switch between existing ones from there. Each profile has its own name, age range, coins, and learning progress.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    Premium isn't working after I bought it
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    This can happen if there was a delay in the purchase being confirmed. Try:<br>
+                    1. Close and reopen the app<br>
+                    2. Log out and log back in<br>
+                    3. If on iOS, go to Settings → App Store → tap your Apple ID → Restore Purchases<br><br>
+                    Still not working? <a href="mailto:adeenamjad714@gmail.com?subject=Premium%20Not%20Working">Email us</a> with your account email and we'll fix it manually.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    How do I delete my account and all data?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can request full account deletion (as required by GDPR/COPPA) by <a href="mailto:adeenamjad714@gmail.com?subject=Account%20Deletion%20Request&body=Please%20delete%20my%20account.%20My%20email%20is%3A%20">emailing us</a>. We will permanently delete your account and all associated data within 48 hours and confirm via email.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggle(this)">
+                <div class="faq-question">
+                    What age groups does AI Tutor support?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    AI Tutor supports children ages <strong>4 to 13</strong>. When you set up the app, you select your child's age range and the AI automatically adjusts the difficulty of questions, vocabulary, and explanations to match their level.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Safety Card -->
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-shield-alt"></i>
+                Our Commitment to Safety
+            </div>
+            <div class="info-box green">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>Child-Safe AI</strong>
+                    Every message is filtered through a two-layer content moderation system before reaching your child.
+                </div>
+            </div>
+            <div class="info-box green">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>No Data Selling — Ever</strong>
+                    We do not sell, share, or trade your child's data with any third party, advertiser, or data broker.
+                </div>
+            </div>
+            <div class="info-box blue">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>COPPA & GDPR Compliant</strong>
+                    Parental consent is required before any data is collected. Parents can request data deletion at any time.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-links">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+            <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a>
+        </div>
+        <p>© <span id="yr"></span> AI Tutor. Made with ❤️ for curious kids everywhere.</p>
+    </div>
+
+    <script>
+        document.getElementById('yr').textContent = new Date().getFullYear();
+        function toggle(el) {
+            el.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
