@@ -257,7 +257,145 @@
         </div>
 
         <div x-show="!isLoggedIn" class="fixed inset-0 z-[100] bg-white sm:bg-gradient-to-br sm:from-blue-400 sm:to-purple-600 overflow-y-auto overflow-x-hidden sm:overflow-hidden sm:flex sm:items-center sm:justify-center transition-all duration-700">
-            <div class="min-h-full w-full p-0 sm:p-4 block sm:flex sm:items-center sm:justify-center">
+            
+            <!-- NEW: ONBOARDING FLOW -->
+            <div x-show="!hasCompletedOnboarding" class="min-h-full w-full p-0 sm:p-4 block sm:flex sm:items-center sm:justify-center animate__animated animate__fadeIn">
+                <div class="bg-white m-0 w-full min-w-full sm:min-w-0 min-h-screen sm:min-h-0 sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative overflow-hidden sm:my-8 sm:border-8 border-white/20 flex flex-col justify-between">
+                    
+                    <!-- Dynamic Background blobs -->
+                    <div class="absolute top-0 left-0 w-32 h-32 rounded-full blur-3xl opacity-40 -translate-x-1/2 -translate-y-1/2 transition-colors duration-1000" :class="{'bg-yellow-400': onboardingStep === 1, 'bg-green-400': onboardingStep === 2, 'bg-purple-400': onboardingStep === 3}"></div>
+                    <div class="absolute bottom-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-40 translate-x-1/2 translate-y-1/2 transition-colors duration-1000" :class="{'bg-pink-400': onboardingStep === 1, 'bg-blue-400': onboardingStep === 2, 'bg-orange-400': onboardingStep === 3}"></div>
+
+                    <div class="relative z-10 flex-1 flex flex-col justify-center min-h-[400px]">
+                        
+                        <!-- Slide 1: Welcome & Value Prop -->
+                        <div x-show="onboardingStep === 1" class="animate__animated animate__fadeInRight">
+                            <div class="text-6xl mb-6 bounce">🚀</div>
+                            <h2 class="text-3xl font-kids text-slate-800 mb-4">Welcome to<br><span class="text-blue-500">AI Tutor</span></h2>
+                            <p class="text-slate-500 font-bold mb-8">The interactive, fun way for your child to learn anything with smart AI companions.</p>
+                            
+                            <div class="space-y-4 text-left bg-blue-50 p-5 rounded-3xl border-2 border-blue-100 mb-2">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-8 flex justify-center text-2xl">🗣️</div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-700 leading-tight">Instant Voice Chat</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Talk naturally without typing</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="w-8 flex justify-center text-2xl">🛡️</div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-700 leading-tight">100% Kid-Safe</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Zero data sold. COPPA Compliant.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="w-8 flex justify-center text-2xl">📚</div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-700 leading-tight">Adaptive Learning</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Grows with your child's age</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Age Selection -->
+                        <div x-show="onboardingStep === 2" class="animate__animated animate__fadeInRight" x-cloak>
+                            <div class="text-6xl mb-6">🎂</div>
+                            <h2 class="text-3xl font-kids text-slate-800 mb-4">How old is<br>your child?</h2>
+                            <p class="text-slate-500 font-bold mb-8">We'll automatically tailor the vocabulary, math, and concepts to their exact level.</p>
+
+                            <div class="space-y-3">
+                                <button @click="loginForm.ageRange = '4-6'; onboardingStep = 3" 
+                                        class="w-full p-4 rounded-3xl border-2 font-bold transition-all flex items-center gap-4 bg-white hover:bg-slate-50 border-slate-200 hover:border-blue-300 hover:shadow-md transform active:scale-95">
+                                    <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl">🐣</div>
+                                    <div class="text-left">
+                                        <div class="text-lg font-kids text-slate-800">4-6 Years Old</div>
+                                        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Phonics & basic concepts</div>
+                                    </div>
+                                </button>
+                                <button @click="loginForm.ageRange = '7-9'; onboardingStep = 3" 
+                                        class="w-full p-4 rounded-3xl border-2 font-bold transition-all flex items-center gap-4 bg-white hover:bg-slate-50 border-slate-200 hover:border-green-300 hover:shadow-md transform active:scale-95">
+                                    <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-3xl">🎒</div>
+                                    <div class="text-left">
+                                        <div class="text-lg font-kids text-slate-800">7-9 Years Old</div>
+                                        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Reading & basic logic</div>
+                                    </div>
+                                </button>
+                                <button @click="loginForm.ageRange = '10-13'; onboardingStep = 3" 
+                                        class="w-full p-4 rounded-3xl border-2 font-bold transition-all flex items-center gap-4 bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 hover:shadow-md transform active:scale-95">
+                                    <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-3xl">🚀</div>
+                                    <div class="text-left">
+                                        <div class="text-lg font-kids text-slate-800">10-13 Years Old</div>
+                                        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Complex science & math</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Try it Free -->
+                        <div x-show="onboardingStep === 3" class="animate__animated animate__fadeInRight" x-cloak>
+                            <div class="text-6xl mb-6">✨</div>
+                            <h2 class="text-3xl font-kids text-slate-800 mb-4">Try it entirely<br><span class="text-green-500">Risk-Free</span></h2>
+                            <p class="text-slate-500 font-bold mb-8">Create a secure parent account to unlock your child's personal AI tutor.</p>
+
+                            <div class="bg-green-50 p-6 rounded-3xl border-2 border-green-200 mb-2 text-left shadow-inner">
+                                <ul class="space-y-4">
+                                    <li class="flex items-start gap-4">
+                                        <div class="mt-1 bg-white rounded-full p-1 shadow-sm"><i class="fas fa-check text-green-500"></i></div>
+                                        <div>
+                                            <p class="font-black text-slate-700">3 Free Questions Daily</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Renews every 24 hours</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start gap-4">
+                                        <div class="mt-1 bg-white rounded-full p-1 shadow-sm"><i class="fas fa-check text-green-500"></i></div>
+                                        <div>
+                                            <p class="font-black text-slate-700">Rex the Dino is Free</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">History lessons forever</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start gap-4">
+                                        <div class="mt-1 bg-white rounded-full p-1 shadow-sm"><i class="fas fa-check text-slate-300"></i></div>
+                                        <div>
+                                            <p class="font-bold text-slate-500 line-through">Hidden Fees or Subscriptions</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">You only pay if you upgrade</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footers -->
+                    <div class="relative z-10 mt-6 min-h-[100px]">
+                        <div x-show="onboardingStep === 1" class="flex flex-col gap-3">
+                            <button @click="onboardingStep = 2" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-[0_4px_0_rgb(37,99,235)] hover:shadow-[0_2px_0_rgb(37,99,235)] hover:translate-y-[2px] transition-all transform active:scale-95">
+                                Continue
+                            </button>
+                            <button @click="finishOnboarding()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 mt-2">
+                                Skip Intro
+                            </button>
+                        </div>
+                        
+                        <div x-show="onboardingStep === 3" class="flex flex-col gap-3">
+                            <button @click="finishOnboarding()" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-[0_4px_0_rgb(22,163,74)] hover:shadow-[0_2px_0_rgb(22,163,74)] hover:translate-y-[2px] transition-all transform active:scale-95">
+                                Get Started Free! 🚀
+                            </button>
+                        </div>
+
+                        <!-- Progress Dots -->
+                        <div class="flex justify-center flex-row gap-2 mt-6 h-2 items-center">
+                            <div class="h-2 rounded-full transition-all duration-300" :class="onboardingStep === 1 ? 'bg-blue-500 w-6' : 'bg-slate-200 w-2'"></div>
+                            <div class="h-2 rounded-full transition-all duration-300" :class="onboardingStep === 2 ? 'bg-blue-500 w-6' : 'bg-slate-200 w-2'"></div>
+                            <div class="h-2 rounded-full transition-all duration-300" :class="onboardingStep === 3 ? 'bg-green-500 w-6' : 'bg-slate-200 w-2 hover:bg-slate-300 cursor-pointer'" @click="onboardingStep < 3 ? null : onboardingStep = 2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXISTING LOGIN FLOW -->
+            <div x-show="hasCompletedOnboarding" class="min-h-full w-full p-0 sm:p-4 block sm:flex sm:items-center sm:justify-center animate__animated animate__fadeIn" x-cloak>
                 <div class="bg-white m-0 w-full min-w-full sm:min-w-0 min-h-screen sm:min-h-0 sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative overflow-hidden animate__animated animate__zoomIn sm:my-8 sm:border-8 border-white/20">
                     
                     <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
@@ -4977,6 +5115,13 @@
                         document.body.dir = (this.currentLanguage === 'Arabic') ? 'rtl' : 'ltr';
                     },
                     
+                    onboardingStep: 1,
+                    hasCompletedOnboarding: false,
+                    finishOnboarding() {
+                        this.hasCompletedOnboarding = true;
+                        localStorage.setItem('onboarding_completed', 'true');
+                    },
+
                     isProfileLoading: false,
                     async init() {
                         // Initialize Daily Quests
