@@ -1220,6 +1220,74 @@ app.post('/api/webhook', async (req, res) => {
     }
 });
 
+// --- REVENUECAT WEBHOOK (Mobile In-App Purchases) ---
+// Set the shared secret in Vercel as: REVENUECAT_WEBHOOK_SECRET
+// Then in RevenueCat dashboard: Project → Integrations → Webhooks → add your URL:
+//   https://ai-tutor-murex.vercel.app/api/revenuecat-webhook
+app.post('/api/revenuecat-webhook', async (req, res) => {
+    try {
+        const secret = process.env.REVENUECAT_WEBHOOK_SECRET;
+        if (!secret) {
+            console.error('⚠️ REVENUECAT_WEBHOOK_SECRET missing — accepting all (insecure)');
+        } else {
+            const authHeader = req.headers['authorization'];
+            if (authHeader !== secret) {
+                console.error('❌ RevenueCat webhook: Invalid authorization');
+                return res.status(401).json({ error: 'Invalid authorization' });
+            }
+        }
+
+        const { event } = req.body;
+        if (!event) return res.status(400).json({ error: 'Missing event' });
+
+        const eventType = event.type;
+        const userEmail = event.app_user_id; // We set this to the user's email via Purchases.logIn()
+        
+        console.log(`📱 RevenueCat Webhook: ${eventType} for ${userEmail}`);
+
+        if (!supabase || !userEmail) {
+            return res.status(200).json({ received: true, note: 'No action taken — DB or email missing' });
+        }
+
+        // Grant premium on purchase / renewal / reactivation
+        if (['INITIAL_PURCHASE', 'RENEWAL', 'PRODUCT_CHANGE', 'UNCANCELLATION'].includes(eventType)) {
+            const expiresAt = event.expiration_at_ms || (Date.now() + 30 * 24 * 60 * 60 * 1000);
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    is_premium: true,
+                    premium_expiry: expiresAt
+                })
+                .eq('email', userEmail);
+
+            if (error) {
+                console.error('RevenueCat: DB update error:', error);
+                return res.status(500).json({ error: 'DB update failed' });
+            }
+            console.log(`✅ RevenueCat: Premium granted to ${userEmail} until ${new Date(expiresAt).toISOString()}`);
+        }
+
+        // Revoke premium on cancellation / expiration / billing issue
+        if (['CANCELLATION', 'EXPIRATION', 'BILLING_ISSUE'].includes(eventType)) {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ is_premium: false })
+                .eq('email', userEmail);
+
+            if (error) {
+                console.error('RevenueCat: DB revoke error:', error);
+            } else {
+                console.log(`📵 RevenueCat: Premium revoked for ${userEmail}`);
+            }
+        }
+
+        res.status(200).json({ received: true });
+    } catch (error) {
+        console.error('RevenueCat Webhook Error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ AI Tutor Server is running on port ${PORT}`);
