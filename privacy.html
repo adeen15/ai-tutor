@@ -3,40 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - AI Tutor</title>
+    <title>AI Tutor — Privacy Policy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 20px; color: #333; }
-        h1 { color: #2c3e50; }
-        h2 { color: #34495e; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .highlight { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f8fafc; color: #334155; line-height: 1.7; }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 56px 24px 72px; text-align: center; color: white; }
+        .header h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+        .header p { opacity: 0.85; font-size: 15px; }
+        .container { max-width: 740px; margin: -40px auto 60px; padding: 40px 36px; background: white; border-radius: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.07); position: relative; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; background: #ecfdf5; color: #059669; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 28px; border: 1px solid #a7f3d0; width: 100%; }
+        .dates { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #64748b; margin-bottom: 24px; }
+        .dates strong { color: #334155; }
+        h2 { font-size: 18px; font-weight: 800; color: #0f172a; margin: 36px 0 14px; padding-top: 20px; border-top: 2px solid #f1f5f9; }
+        h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+        p { font-size: 15px; margin-bottom: 14px; color: #475569; }
+        ul { padding-left: 22px; margin-bottom: 14px; }
+        li { font-size: 15px; margin-bottom: 10px; color: #475569; }
+        .third-party-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+        .third-party-table th { background: #f8fafc; text-align: left; padding: 10px 14px; font-weight: 700; color: #0f172a; border-bottom: 2px solid #e2e8f0; }
+        .third-party-table td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+        .third-party-table tr:last-child td { border-bottom: none; }
+        .third-party-table td:first-child { font-weight: 700; color: #334155; white-space: nowrap; }
+        .highlight-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 18px; margin: 16px 0; }
+        .highlight-box strong { color: #1d4ed8; }
+        .footer { text-align: center; padding: 28px; color: #94a3b8; font-size: 12px; border-top: 1px solid #f1f5f9; margin-top: 8px; }
+        a { color: #3b82f6; text-decoration: none; font-weight: 600; }
+        @media (max-width: 640px) { .container { margin: -20px 8px 32px; padding: 28px 20px; } .third-party-table { font-size: 12px; } }
     </style>
 </head>
 <body>
-    <h1>Privacy Policy</h1>
-    <p>Last updated: March 2024</p>
-
-    <div class="highlight">
-        <strong>STRICT NO DATA SALE POLICY:</strong> We do NOT sell, trade, or rent your child's personal identification information to others. Ever.
+    <div class="header">
+        <h1>🔒 Privacy Policy</h1>
+        <p>AI Tutor — Kid-Safe Educational App for Children Ages 4–13</p>
     </div>
+    <div class="container">
+        <div class="badge">🛡️ STRICT NO DATA SALE POLICY — We never sell, rent, or trade your data. Ever.</div>
 
-    <h2>1. Information We Collect</h2>
-    <p>We collect only the minimum information necessary to provide the service:</p>
-    <ul>
-        <li><strong>Parent Email:</strong> Used solely for account recovery and login.</li>
-        <li><strong>PIN Code:</strong> Encrypted and used for parental controls.</li>
-        <li><strong>Progress Data:</strong> Coins, inventory, and learning stats to save your child's progress.</li>
-    </ul>
+        <div class="dates">
+            <strong>Effective Date:</strong> April 6, 2026 &nbsp;|&nbsp;
+            <strong>Last Updated:</strong> April 6, 2026 &nbsp;|&nbsp;
+            <strong>App Version:</strong> 1.0.0
+        </div>
 
-    <h2>2. What We Do NOT Collect</h2>
-    <p>We do NOT store voice recordings. Voice inputs are processed instantly and discarded. We do not collect GPS location or physical addresses.</p>
+        <p>AI Tutor ("we", "our", "us") is committed to protecting the privacy of children and families. This Privacy Policy explains what information we collect, how we use it, who we share it with, and your rights as a parent or guardian.</p>
 
-    <h2>3. AI & COPPA Compliance</h2>
-    <p>AI Tutor is designed to be COPPA compliant. No personally identifiable information (PII) is sent to AI models for training. We use stateless inference APIs.</p>
+        <h2>1. Information We Collect</h2>
+        <p>We collect only the minimum data necessary to provide the service:</p>
+        <ul>
+            <li><strong>Parent Email Address:</strong> Used solely for account login and account recovery. We do not send marketing emails without explicit consent.</li>
+            <li><strong>Encrypted Password:</strong> Stored as an industry-standard hash (bcrypt). We never see or store your plain text password.</li>
+            <li><strong>Child's First Name &amp; Age Range:</strong> Used to personalize lessons and adjust difficulty level. We do not collect the child's full name, date of birth, or school.</li>
+            <li><strong>Learning Progress Data:</strong> Coins, XP, quiz scores, lesson history, and inventory items — stored to preserve your child's progress across devices.</li>
+            <li><strong>Device &amp; Usage Data:</strong> Crash reports and anonymous usage analytics to improve the app. This data cannot identify individual users.</li>
+        </ul>
 
-    <h2>4. Data Deletion</h2>
-    <p>Parents can delete their account and all associated data at any time through the app settings or by contacting us.</p>
+        <h2>2. What We Do NOT Collect</h2>
+        <ul>
+            <li>We do <strong>NOT</strong> store voice recordings. Audio is transcribed and immediately discarded.</li>
+            <li>We do <strong>NOT</strong> store photos or camera images. Images are analyzed in real-time and discarded within seconds.</li>
+            <li>We do <strong>NOT</strong> collect GPS location, physical address, or precise geolocation data.</li>
+            <li>We do <strong>NOT</strong> use advertising SDKs, behavioural tracking, or third-party ad networks.</li>
+            <li>We do <strong>NOT</strong> use your child's conversations to train any AI model.</li>
+        </ul>
 
-    <h2>5. Contact Us</h2>
-    <p>If you have questions about this policy, please contact us at <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></p>
+        <h2>3. Third-Party Services We Use</h2>
+        <table class="third-party-table">
+            <thead>
+                <tr><th>Service</th><th>Purpose</th><th>Data Shared</th><th>Privacy Policy</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Supabase</td><td>Database &amp; Authentication</td><td>Email, encrypted password, progress data</td><td><a href="https://supabase.com/privacy" target="_blank">supabase.com/privacy</a></td></tr>
+                <tr><td>OpenRouter</td><td>AI lesson generation</td><td>Anonymized messages (no PII)</td><td><a href="https://openrouter.ai/privacy" target="_blank">openrouter.ai/privacy</a></td></tr>
+                <tr><td>OpenAI</td><td>Text-to-speech</td><td>Text strings only</td><td><a href="https://openai.com/policies/privacy-policy" target="_blank">openai.com/policies</a></td></tr>
+                <tr><td>Deepgram</td><td>Speech-to-text (voice input)</td><td>Audio stream — discarded after transcription</td><td><a href="https://deepgram.com/privacy" target="_blank">deepgram.com/privacy</a></td></tr>
+                <tr><td>RevenueCat</td><td>In-app purchase management</td><td>Email (user ID), purchase receipts</td><td><a href="https://www.revenuecat.com/privacy" target="_blank">revenuecat.com/privacy</a></td></tr>
+                <tr><td>LemonSqueezy</td><td>Web payment processing</td><td>Email, payment info (PCI compliant)</td><td><a href="https://www.lemonsqueezy.com/privacy" target="_blank">lemonsqueezy.com/privacy</a></td></tr>
+                <tr><td>Resend</td><td>Transactional email</td><td>Parent email, child's first name</td><td><a href="https://resend.com/privacy" target="_blank">resend.com/privacy</a></td></tr>
+                <tr><td>Sentry</td><td>Crash reporting</td><td>Anonymous crash logs, device type, OS version</td><td><a href="https://sentry.io/privacy/" target="_blank">sentry.io/privacy</a></td></tr>
+                <tr><td>PostHog</td><td>Product analytics</td><td>Anonymous usage events — no PII</td><td><a href="https://posthog.com/privacy" target="_blank">posthog.com/privacy</a></td></tr>
+                <tr><td>Apple / Google</td><td>App Store &amp; purchases</td><td>Subject to their privacy policies</td><td>apple.com/privacy / policies.google.com</td></tr>
+            </tbody>
+        </table>
+
+        <h2>4. Children's Privacy — COPPA &amp; GDPR-K Compliance</h2>
+        <div class="highlight-box">
+            <strong>This app is designed for children under 13.</strong> We comply with COPPA and GDPR-K.
+        </div>
+        <ul>
+            <li>We require verifiable parental consent (math-based parental gate) before any data is collected.</li>
+            <li>No AI conversation data is used for training. All AI inference is stateless.</li>
+            <li>All content is filtered through a dual-layer child safety system before being shown to a child.</li>
+        </ul>
+
+        <h2>5. Data Storage, Security &amp; Retention</h2>
+        <ul>
+            <li><strong>Storage:</strong> Supabase (AWS us-east-1) with row-level security.</li>
+            <li><strong>Encryption:</strong> TLS 1.2+ in transit, AES-256 at rest.</li>
+            <li><strong>Retention:</strong> Account data kept while account is active. Deleted within 48 hours on request.</li>
+            <li><strong>Crash logs:</strong> Retained 90 days, then auto-deleted.</li>
+        </ul>
+
+        <h2>6. Parental Rights</h2>
+        <ul>
+            <li><strong>Access:</strong> Review your data by emailing us.</li>
+            <li><strong>Correct:</strong> Update account info within app settings.</li>
+            <li><strong>Delete:</strong> Permanent deletion within 48 hours on request.</li>
+            <li><strong>Withdraw Consent:</strong> Delete your account at any time.</li>
+            <li><strong>Data Portability:</strong> Request a copy of your data in machine-readable format.</li>
+        </ul>
+        <p>Contact: <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></p>
+
+        <h2>7. Data Transfers</h2>
+        <p>Some third-party providers process data in the United States. By using this app, you consent to this transfer under appropriate safeguards (Standard Contractual Clauses where applicable).</p>
+
+        <h2>8. Changes to This Policy</h2>
+        <p>We update the "Last Updated" date for any material changes and notify registered parents by email where appropriate.</p>
+
+        <h2>9. Contact Us</h2>
+        <ul>
+            <li><strong>Email:</strong> <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></li>
+            <li><strong>Support:</strong> <a href="/support">ai-tutor-murex.vercel.app/support</a></li>
+            <li><strong>Response Time:</strong> Within 48 hours.</li>
+        </ul>
+    </div>
+    <div class="footer">
+        © 2026 AI Tutor. All rights reserved. &nbsp;|&nbsp;
+        <a href="/terms">Terms of Service</a> &nbsp;|&nbsp;
+        <a href="/support">Support</a>
+    </div>
 </body>
 </html>
