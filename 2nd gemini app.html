@@ -330,7 +330,10 @@
                                         <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Complex science & math</div>
                                     </div>
                                 </button>
-                                                   <!-- Slide 3: Try it Free -->
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Try it Free -->
                         <div x-show="onboardingStep === 3" class="animate__animated animate__fadeInRight" x-cloak>
                             <div class="text-6xl mb-6">✨</div>
                             <h2 class="text-3xl font-kids text-slate-800 mb-4">7 Days of<br><span class="text-green-500">Premium Magic</span></h2>
@@ -361,8 +364,6 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
-     </div>
                         </div>
                     </div>
 
@@ -8604,7 +8605,7 @@
                         // --- DAILY STREAK LOGIC ---
                         this.updateDailyStreak();
 
-                        if (!this.isPremium && this.dailyQuestionsUsed >= this.maxFreeQuestions) {
+                        if (!this.isPremium && !this.isTrialActive) {
                             this.showPremiumModal = true;
                             this.toggleScroll(true);
                             return;
