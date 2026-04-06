@@ -240,80 +240,194 @@ app.get('/privacy', (req, res) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Tutor — Privacy Policy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: #f8fafc; color: #334155; line-height: 1.7; }
-        .header { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 48px 24px; text-align: center; color: white; }
-        .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
-        .header p { opacity: 0.85; font-size: 14px; }
-        .container { max-width: 720px; margin: -32px auto 48px; padding: 40px 32px; background: white; border-radius: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; }
-        h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin: 32px 0 12px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 56px 24px 72px; text-align: center; color: white; }
+        .header h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+        .header p { opacity: 0.85; font-size: 15px; }
+        .container { max-width: 740px; margin: -40px auto 60px; padding: 40px 36px; background: white; border-radius: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.07); position: relative; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; background: #ecfdf5; color: #059669; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 28px; border: 1px solid #a7f3d0; width: 100%; }
+        .dates { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; font-size: 13px; color: #64748b; margin-bottom: 24px; }
+        .dates strong { color: #334155; }
+        h2 { font-size: 18px; font-weight: 800; color: #0f172a; margin: 36px 0 14px; padding-top: 20px; border-top: 2px solid #f1f5f9; }
         h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
-        p, li { font-size: 15px; margin-bottom: 12px; }
-        ul { padding-left: 20px; }
-        li { margin-bottom: 8px; }
-        .badge { display: inline-flex; align-items: center; gap: 8px; background: #ecfdf5; color: #059669; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 24px; border: 1px solid #a7f3d0; }
-        .footer { text-align: center; padding: 24px; color: #94a3b8; font-size: 12px; }
-        a { color: #3b82f6; }
-        @media (max-width: 640px) { .container { margin: -16px 8px 24px; padding: 24px 20px; } }
+        p { font-size: 15px; margin-bottom: 14px; color: #475569; }
+        ul { padding-left: 22px; margin-bottom: 14px; }
+        li { font-size: 15px; margin-bottom: 10px; color: #475569; }
+        .third-party-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+        .third-party-table th { background: #f8fafc; text-align: left; padding: 10px 14px; font-weight: 700; color: #0f172a; border-bottom: 2px solid #e2e8f0; }
+        .third-party-table td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+        .third-party-table tr:last-child td { border-bottom: none; }
+        .third-party-table td:first-child { font-weight: 700; color: #334155; white-space: nowrap; }
+        .highlight-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 18px; margin: 16px 0; }
+        .highlight-box strong { color: #1d4ed8; }
+        .footer { text-align: center; padding: 28px; color: #94a3b8; font-size: 12px; border-top: 1px solid #f1f5f9; margin-top: 8px; }
+        a { color: #3b82f6; text-decoration: none; font-weight: 600; }
+        @media (max-width: 640px) { .container { margin: -20px 8px 32px; padding: 28px 20px; } .third-party-table { font-size: 12px; } }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🔒 Privacy Policy</h1>
-        <p>AI Tutor — Kid-Safe Educational App</p>
+        <p>AI Tutor — Kid-Safe Educational App for Children Ages 4–13</p>
     </div>
     <div class="container">
-        <div class="badge">🛡️ STRICT NO DATA SALE POLICY — We never sell your data</div>
+        <div class="badge">🛡️ STRICT NO DATA SALE POLICY — We never sell, rent, or trade your data. Ever.</div>
 
-        <p><strong>Effective Date:</strong> March 2026 &nbsp;|&nbsp; <strong>Last Updated:</strong> March 2026</p>
-        <p>AI Tutor ("we", "our", "us") is committed to protecting the privacy of children and families. This policy explains what data we collect and how we use it.</p>
+        <div class="dates">
+            <strong>Effective Date:</strong> April 6, 2026 &nbsp;|&nbsp;
+            <strong>Last Updated:</strong> April 6, 2026 &nbsp;|&nbsp;
+            <strong>App Version:</strong> 1.0.0
+        </div>
 
-        <h2>1. Information We Collect (Strictly Necessary Only)</h2>
+        <p>AI Tutor ("we", "our", "us") is committed to protecting the privacy of children and families. This Privacy Policy explains what information we collect, how we use it, who we share it with, and your rights as a parent or guardian.</p>
+
+        <h2>1. Information We Collect</h2>
+        <p>We collect only the minimum data necessary to provide the service:</p>
         <ul>
-            <li><strong>Parent Email:</strong> Used solely for account recovery and login.</li>
-            <li><strong>PIN Code:</strong> Stored securely and used for parental controls.</li>
-            <li><strong>Child's First Name & Age Range:</strong> Used to personalize the learning experience and adjust difficulty.</li>
-            <li><strong>Progress Data:</strong> Coins, inventory, learning stats, and quiz scores — synced securely to provide continuity.</li>
+            <li><strong>Parent Email Address:</strong> Used solely for account login and account recovery. We do not send marketing emails without explicit consent.</li>
+            <li><strong>Encrypted Password:</strong> Stored as an industry-standard hash (bcrypt). We never see or store your plain text password.</li>
+            <li><strong>Child's First Name & Age Range:</strong> Used to personalize lessons and adjust difficulty level. We do not collect the child's full name, date of birth, or school.</li>
+            <li><strong>Learning Progress Data:</strong> Coins, XP, quiz scores, lesson history, and inventory items — stored to preserve your child's progress across devices.</li>
+            <li><strong>Device & Usage Data:</strong> Crash reports and anonymous usage analytics (e.g., which features are used) to improve the app. This data cannot identify individual users.</li>
         </ul>
 
         <h2>2. What We Do NOT Collect</h2>
         <ul>
-            <li>We do <strong>NOT</strong> store voice recordings. Voice inputs are processed instantly and discarded.</li>
-            <li>We do <strong>NOT</strong> collect GPS location, physical addresses, or precise geolocation.</li>
-            <li>We do <strong>NOT</strong> use tracking cookies, advertising SDKs, or third-party analytics that profile children.</li>
-            <li>We do <strong>NOT</strong> collect photos. Vision/camera features process images in real-time and discard them immediately.</li>
+            <li>We do <strong>NOT</strong> store voice recordings. Voice inputs are streamed to our speech-to-text provider for transcription and immediately discarded. We retain no audio.</li>
+            <li>We do <strong>NOT</strong> store photos or camera images. Images captured during the Visual Scavenger Hunt are analyzed in real-time and discarded within seconds.</li>
+            <li>We do <strong>NOT</strong> collect GPS location, physical address, or precise geolocation data.</li>
+            <li>We do <strong>NOT</strong> use advertising SDKs, behavioural tracking, or third-party ad networks.</li>
+            <li>We do <strong>NOT</strong> use your child's conversations to train any AI model.</li>
+            <li>We do <strong>NOT</strong> collect Social Security numbers, government IDs, or financial information directly.</li>
         </ul>
 
-        <h2>3. AI & COPPA Compliance</h2>
-        <p>Our AI interactions are filtered for child safety using a two-layer moderation system (automated content filtering + keyword detection). No personally identifiable information (PII) is sent to AI models for training purposes. We use stateless inference APIs — your child's conversations are not used to train any AI model.</p>
+        <h2>3. Third-Party Services We Use</h2>
+        <p>To provide the app's features, we use the following third-party services. Each is listed with what data they handle and a link to their own privacy policy:</p>
+        <table class="third-party-table">
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Purpose</th>
+                    <th>Data Shared</th>
+                    <th>Privacy Policy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Supabase</td>
+                    <td>Database & Authentication</td>
+                    <td>Email, encrypted password, progress data</td>
+                    <td><a href="https://supabase.com/privacy" target="_blank">supabase.com/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>OpenRouter</td>
+                    <td>AI lesson generation (Gemini 2.0)</td>
+                    <td>Anonymized chat messages (no PII)</td>
+                    <td><a href="https://openrouter.ai/privacy" target="_blank">openrouter.ai/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>OpenAI</td>
+                    <td>Text-to-speech (AI voices)</td>
+                    <td>Text strings only — no personal data</td>
+                    <td><a href="https://openai.com/policies/privacy-policy" target="_blank">openai.com/policies</a></td>
+                </tr>
+                <tr>
+                    <td>Deepgram</td>
+                    <td>Speech-to-text (voice input)</td>
+                    <td>Audio stream — immediately discarded after transcription</td>
+                    <td><a href="https://deepgram.com/privacy" target="_blank">deepgram.com/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>RevenueCat</td>
+                    <td>In-app purchase management</td>
+                    <td>Email (user ID), purchase receipts</td>
+                    <td><a href="https://www.revenuecat.com/privacy" target="_blank">revenuecat.com/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>LemonSqueezy</td>
+                    <td>Web payment processing</td>
+                    <td>Email, payment info (PCI compliant)</td>
+                    <td><a href="https://www.lemonsqueezy.com/privacy" target="_blank">lemonsqueezy.com/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>Resend</td>
+                    <td>Transactional email (progress reports)</td>
+                    <td>Parent email, child's first name</td>
+                    <td><a href="https://resend.com/privacy" target="_blank">resend.com/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>Sentry</td>
+                    <td>Crash reporting & error monitoring</td>
+                    <td>Anonymous crash logs, device type, OS version</td>
+                    <td><a href="https://sentry.io/privacy/" target="_blank">sentry.io/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>PostHog</td>
+                    <td>Product analytics (feature usage)</td>
+                    <td>Anonymous usage events — no PII</td>
+                    <td><a href="https://posthog.com/privacy" target="_blank">posthog.com/privacy</a></td>
+                </tr>
+                <tr>
+                    <td>Apple / Google</td>
+                    <td>App Store distribution & in-app purchases</td>
+                    <td>Subject to Apple/Google privacy policies</td>
+                    <td>apple.com/privacy / policies.google.com</td>
+                </tr>
+            </tbody>
+        </table>
 
-        <h2>4. Data Storage & Security</h2>
-        <p>All data is stored securely using Supabase (hosted on AWS) with row-level security enabled. Data is encrypted in transit (TLS 1.2+) and at rest. We follow industry-standard security practices.</p>
-
-        <h2>5. Third-Party Services</h2>
+        <h2>4. Children's Privacy — COPPA & GDPR-K Compliance</h2>
+        <div class="highlight-box">
+            <strong>This app is designed for children under 13.</strong> We comply with the Children's Online Privacy Protection Act (COPPA) and the GDPR provisions for children (GDPR-K).
+        </div>
         <ul>
-            <li><strong>Supabase:</strong> Authentication and database (privacy policy: supabase.com/privacy)</li>
-            <li><strong>OpenRouter/OpenAI:</strong> AI inference only — no data retention</li>
-            <li><strong>Apple/Google:</strong> In-app purchase processing (subject to their respective privacy policies)</li>
+            <li>We require verifiable parental consent (via a math-based parental gate) before any account is created or data is collected.</li>
+            <li>We do not condition a child's participation on disclosing more personal information than is reasonably necessary to use the service.</li>
+            <li>No AI conversation data is used for training. All AI inference is stateless.</li>
+            <li>All content responses are filtered through a dual-layer child safety moderation system before being shown to a child.</li>
+            <li>We do not allow children to post publicly visible content or interact with other users without parental configuration.</li>
         </ul>
 
-        <h2>6. Parental Rights</h2>
+        <h2>5. Data Storage, Security & Retention</h2>
+        <ul>
+            <li><strong>Storage:</strong> All personal data is stored in Supabase databases hosted on AWS (us-east-1 region), with row-level security enabled.</li>
+            <li><strong>Encryption:</strong> All data is encrypted in transit via TLS 1.2+ and encrypted at rest using AES-256.</li>
+            <li><strong>Retention:</strong> Account data is retained for as long as the account is active. Deleted accounts are permanently erased within 48 hours.</li>
+            <li><strong>Crash logs:</strong> Retained for 90 days then automatically deleted.</li>
+        </ul>
+
+        <h2>6. Parental Rights (COPPA / GDPR)</h2>
         <p>As a parent or guardian, you have the right to:</p>
         <ul>
-            <li>Review all data associated with your child's account via the Parent Dashboard</li>
-            <li>Request deletion of your account and all associated data by contacting us</li>
-            <li>Withdraw consent at any time by deleting the account</li>
+            <li><strong>Access:</strong> Review all data associated with your child's account by emailing us.</li>
+            <li><strong>Correct:</strong> Update your child's name, age range, or any account information within the app settings.</li>
+            <li><strong>Delete:</strong> Request permanent deletion of your account and all associated data at any time — we respond within 48 hours.</li>
+            <li><strong>Withdraw Consent:</strong> Stop all data collection immediately by deleting your account.</li>
+            <li><strong>Data Portability:</strong> Request a copy of your account data in machine-readable format.</li>
         </ul>
+        <p>To exercise any of these rights, email: <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></p>
 
-        <h2>7. Children's Privacy (COPPA & GDPR-K)</h2>
-        <p>This app is designed for children under 13 and complies with the Children's Online Privacy Protection Act (COPPA) and GDPR provisions for children. We require verifiable parental consent (parental gate) before any data collection. We do not condition a child's participation on disclosing more information than is reasonably necessary.</p>
+        <h2>7. Data Transfers</h2>
+        <p>AI Tutor is operated by an individual developer. Some of our third-party service providers (listed in Section 3) process data in the United States and other countries outside your region. By using this app, you consent to this international data transfer, which is conducted under appropriate safeguards (Standard Contractual Clauses where applicable).</p>
 
-        <h2>8. Contact Us</h2>
-        <p>For privacy concerns or data deletion requests, contact us at: <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></p>
+        <h2>8. Push Notifications</h2>
+        <p>If you grant permission, we may send push notifications reminding your child to continue their learning streak. You can disable these at any time in your device's notification settings. We do not send promotional or advertising notifications.</p>
+
+        <h2>9. Changes to This Policy</h2>
+        <p>We will notify you of any material changes to this Privacy Policy by updating the "Last Updated" date above and, where appropriate, by sending an email to the registered parent account. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
+
+        <h2>10. Contact Us</h2>
+        <p>For privacy concerns, data deletion requests, or any questions about this policy:</p>
+        <ul>
+            <li><strong>Email:</strong> <a href="mailto:adeenamjad714@gmail.com">adeenamjad714@gmail.com</a></li>
+            <li><strong>Support Page:</strong> <a href="/support">ai-tutor-murex.vercel.app/support</a></li>
+            <li><strong>Response Time:</strong> We respond to all privacy requests within 48 hours.</li>
+        </ul>
     </div>
-    <div class="footer">© ${new Date().getFullYear()} AI Tutor. All rights reserved.</div>
+    <div class="footer">© ${new Date().getFullYear()} AI Tutor. All rights reserved. &nbsp;|&nbsp; <a href="/terms">Terms of Service</a> &nbsp;|&nbsp; <a href="/support">Support</a></div>
 </body>
 </html>`);
 });
