@@ -751,6 +751,11 @@
                     <span class="text-xl sm:text-3xl">🪄</span>
                 </button>
 
+                <!-- Daily Quests (🎯) -->
+                <button @click="showDailyQuests = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-500 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Daily Quests">
+                    <span class="text-xl sm:text-3xl">🎯</span>
+                </button>
+
                 <!-- Help & Support (Desktop) -->
                 <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" :title="t('help_support')">
                     <span class="text-xl sm:text-3xl">❓</span>
@@ -838,8 +843,8 @@
 
         </div>
 
-        <!-- NEW: Full-Width Daily Quest Tracker Container -->
-        <div class="absolute top-[315px] left-0 w-full px-4 sm:hidden z-40">
+        <!-- NEW: Full-Width Daily Quest Tracker Container (Mobile Only) -->
+        <div class="absolute top-[315px] left-0 w-full px-4 md:hidden z-40">
             <div class="w-full bg-gradient-to-r from-indigo-600 to-purple-700 p-3 rounded-3xl shadow-xl flex items-center justify-between animate__animated animate__fadeInUp border-4 border-indigo-400">
                 <div class="flex flex-col gap-1 items-start">
                     <div class="flex items-center gap-2">
@@ -919,9 +924,9 @@
                 </div>
             </div>
 
-            <div class="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-10 sm:gap-8 lg:gap-12">
+            <div class="flex flex-col md:flex-row items-center justify-center md:justify-between gap-10 sm:gap-8 md:gap-12">
                 
-                <div class="relative flex flex-col items-center order-2 lg:order-1">
+                <div class="relative flex flex-col items-center order-2 md:order-1 md:w-1/3">
                     
                     <div class="relative char-float select-none cursor-pointer transition-all duration-300 rounded-full" 
                         :class="[isSpeaking ? 'wiggle-speak' : '', getEquippedItemData().effectType === 'glow' ? 'effect-glow' : '', isListening ? 'listening-pulse' : '']">
@@ -992,11 +997,11 @@
 
                         <!-- Character Display with Accessories -->
                         <div class="relative inline-block px-4">
-                            <div class="text-[6rem] sm:text-[9rem] md:text-[12rem] lg:text-[15rem] transition-transform duration-500 hover:scale-105" x-text="currentMoodIcon"></div>
+                            <div class="text-[6rem] sm:text-[9rem] md:text-[13rem] lg:text-[16rem] transition-transform duration-500 hover:scale-105" x-text="currentMoodIcon"></div>
                             
                             <!-- Accessory Layer -->
                             <template x-if="equippedAccessories[currentChar.nameKey]">
-                                <div class="absolute -top-4 -right-2 text-[2.5rem] sm:text-[4rem] md:text-[5rem] lg:text-[6rem] filter drop-shadow-lg transform rotate-12 transition-all duration-700 animate__animated animate__bounceIn" 
+                                <div class="absolute -top-4 -right-2 text-[2.5rem] sm:text-[4rem] md:text-[6rem] lg:text-[7rem] filter drop-shadow-lg transform rotate-12 transition-all duration-700 animate__animated animate__bounceIn" 
                                      x-text="getAccessoryIcon(equippedAccessories[currentChar.nameKey])"></div>
                             </template>
                         </div>
@@ -1014,7 +1019,7 @@
                     </div>
                 </div>
 
-                <div class="w-full max-w-2xl order-1 lg:order-2">
+                <div class="w-full max-w-2xl order-1 md:order-2 md:w-2/3">
                     <!-- Spaced Repetition Banner -->
                     <template x-if="showReviewBanner">
                         <button @click="startReviewQuiz()" class="w-full bg-gradient-to-r from-orange-400 to-red-500 rounded-3xl p-4 sm:p-6 mb-6 shadow-xl flex items-center justify-between text-white transform hover:scale-105 transition-all text-left group border-4 border-orange-300">
