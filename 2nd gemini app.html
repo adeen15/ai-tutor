@@ -711,6 +711,7 @@
                 </button>
             </div>
 
+            <!-- Row 2 (Desktop): Action Buttons Part 1 -->
             <div class="hidden sm:flex flex-row gap-2 sm:gap-4">
                 <button @click="(!isPremium && !isTrialActive) ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-pink-400" title="Story Time">
                     <span class="text-xl sm:text-3xl">📖</span>
@@ -734,8 +735,11 @@
                 <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" :title="t('skill_tree')">
                     <span class="text-xl sm:text-3xl">🌳</span>
                 </button>
+            </div>
 
-                <!-- Scavenger Hunt (Row 2 Desktop) -->
+            <!-- Row 3 (Desktop): Action Buttons Part 2 -->
+            <div class="hidden sm:flex flex-row gap-2 sm:gap-4">
+                <!-- Scavenger Hunt (Row 3 Desktop) -->
                 <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" :title="t('scavenger_hunt')">
                     <span class="text-xl sm:text-3xl">🔍</span>
                 </button>
