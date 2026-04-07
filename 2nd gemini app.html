@@ -2656,8 +2656,7 @@
                             <button @click="switchProfile(profile.id)" 
                                     class="p-4 rounded-3xl border-4 transition-all flex flex-col items-center gap-2 group"
                                     :class="activeProfileId === profile.id ? 'border-blue-400 bg-blue-50' : 'border-slate-100 hover:border-blue-200 bg-white'">
-                                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                                    👤
+                                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform" x-text="profile.icon || '👤'">
                                 </div>
                                 <span class="font-kids text-slate-800" x-text="profile.name"></span>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase" x-text="profile.xp + ' XP'"></span>
@@ -2684,7 +2683,7 @@
                                       :class="isFamilyPlan ? 'bg-indigo-100 text-indigo-600' : (isPremium ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-500')"
                                       x-text="isFamilyPlan ? 'Family Plan' : (isPremium ? 'Individual Premium' : 'Free Plan')"></span>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
-                                      x-text="allProfiles.length + '/' + (isFamilyPlan ? 5 : (isPremium ? 2 : 1)) + ' Explorers'"></span>
+                                      x-text="allProfiles.length + '/' + (isFamilyPlan ? 3 : (isPremium ? 2 : 1)) + ' Explorers'"></span>
                             </div>
                         </div>
                         <button @click="showManageChildren = false" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-2xl"></i></button>
@@ -2720,7 +2719,7 @@
                                 <template x-for="profile in allProfiles">
                                     <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 flex justify-between items-center group hover:border-blue-200 transition-colors">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">👤</div>
+                                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm" x-text="profile.icon || '👤'"></div>
                                             <div>
                                                 <p class="font-kids text-slate-800 leading-none" x-text="profile.name"></p>
                                                 <p class="text-[10px] font-bold text-slate-400 uppercase mt-1" x-text="profile.ageRange + ' Years'"></p>
@@ -6779,12 +6778,12 @@
                             return;
                         }
                         if (this.isPremium && !this.isFamilyPlan && this.allProfiles.length >= 2) {
-                            alert("Individual Premium is limited to 2 child profiles. Upgrade to Family Plan for up to 5 children!");
+                            alert("Individual Premium is limited to 2 child profiles. Upgrade to Family Plan for up to 3 children!");
                             this.showPremiumModal = true;
                             return;
                         }
-                        if (this.isFamilyPlan && this.allProfiles.length >= 5) {
-                            alert("Family Plan is limited to 5 child profiles.");
+                        if (this.isFamilyPlan && this.allProfiles.length >= 3) {
+                            alert("Family Plan is limited to 3 child profiles.");
                             return;
                         }
 
@@ -6814,7 +6813,8 @@
                             quizzesCompleted: 0,
                             quizHistory: [],
                             wordsLearned: 0,
-                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 }
+                            subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                            icon: ['🦊', '🐨', '🐷', '🦁', '🐸', '🐨', '🐰', '🐼', '🐯', '🐵'][Math.floor(Math.random() * 10)]
                         };
                         this.allProfiles.push(newProfile);
                         if (!this.activeProfileId) {
