@@ -7210,6 +7210,11 @@
                              equipped_accessories: {}
                          };
 
+                        // Update push notification toggle to reflect actual subscription status from DB
+                        if (this.learningStats && 'Notification' in window) {
+                            this.pushNotificationsEnabled = !!this.learningStats.push_subscription && Notification.permission === 'granted';
+                        }
+ 
                         // Ensure required fields exist in existing learningStats
                         if (this.learningStats.xp_this_week === undefined) this.learningStats.xp_this_week = 0;
                         if (this.learningStats.weekly_report_opt_out === undefined) this.learningStats.weekly_report_opt_out = false;
