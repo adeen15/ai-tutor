@@ -602,7 +602,7 @@ app.get('/api/config/vapid', (req, res) => {
 app.post('/api/save-subscription', async (req, res) => {
     try {
         const { email, subscription } = req.body;
-        if (!email || !subscription) return res.status(400).json({ error: "Missing data" });
+        if (!email) return res.status(400).json({ error: "Missing email" });
 
         if (!supabase) return res.status(503).json({ error: "Database not available" });
 
@@ -633,7 +633,7 @@ app.get('/api/cron/daily-reminders', async (req, res) => {
         
         if (!supabase) throw new Error("Database not initialized");
 
-        const todayString = new Date().toDateString();
+        const todayString = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
         // Fetch all profiles with subscriptions who haven't used the app today
         const { data: profiles, error } = await supabase
