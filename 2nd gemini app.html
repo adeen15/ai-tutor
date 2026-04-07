@@ -5652,7 +5652,7 @@
                     async setupPushNotifications(isToggle = false) {
                         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                             console.warn("Push notifications not supported");
-                            alert("Oops! Your browser doesn't support push notifications.");
+                            if (isToggle) alert("Oops! Your browser doesn't support push notifications.");
                             return;
                         }
 
@@ -5669,7 +5669,7 @@
                                         })
                                     });
                                     this.pushNotificationsEnabled = false;
-                                    alert("Notifications turned off!");
+                                    if (isToggle) alert("Notifications turned off!");
                                 } catch (err) {
                                     console.error("Failed to disable notifications:", err);
                                 }
@@ -5677,10 +5677,14 @@
                             return;
                         }
 
+                        // If not enabled and this is just an automatic check on login, DO NOTHING.
+                        // We strictly respect the "off" state and don't re-subscribe automatically.
+                        if (!isToggle) return;
+
                         try {
                             const permission = await Notification.requestPermission();
                             if (permission !== 'granted') {
-                                alert("Permission denied. To enable notifications later, you may need to update your browser settings.");
+                                if (isToggle) alert("Permission denied. To enable notifications later, you may need to update your browser settings.");
                                 return;
                             }
 
@@ -5713,11 +5717,11 @@
                             });
 
                             this.pushNotificationsEnabled = true;
-                            alert("✅ Awesome! You'll now get \"Don't break your streak!\" reminders on this device.");
+                            if (isToggle) alert("✅ Awesome! You'll now get \"Don't break your streak!\" reminders on this device.");
 
                         } catch (err) {
                             console.error("❌ Push subscription failed:", err);
-                            alert("Oops! Something went wrong while setting up notifications.");
+                            if (isToggle) alert("Oops! Something went wrong while setting up notifications.");
                         }
                     },
 
