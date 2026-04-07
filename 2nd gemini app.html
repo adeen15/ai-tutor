@@ -679,10 +679,10 @@
                 </button>
 
                 <!-- Dual Quest Button: Hidden on mobile here, moved to Row 3 -->
-                <button 
-                    :title="t('secret_quest')"
-                >
-                    <i class="fas fa-trophy text-yellow-500 text-xl sm:text-2xl"></i>
+                <button @click="showQuestModal = true; toggleScroll(true)" 
+                        class="bg-white hidden sm:flex p-2 border-b-4 border-yellow-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform relative"
+                        :title="t('secret_quest')">
+                    <span class="text-xl sm:text-2xl">🏆</span>
                     <span x-show="activeDualQuest.code && !activeDualQuest.isUnlocked" class="absolute -top-1 -right-1 flex h-3 w-3">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
