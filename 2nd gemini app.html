@@ -8332,7 +8332,10 @@
 
                     async syncData() {
                         if (!this.registeredEmail) return;
-                        
+
+                        // 1. IMPORTANT: Update the active child profile collection with the latest local state (coins, inventory, etc.)
+                        this.saveCurrentProfileToCollection();
+
                         // --- Native Bridge: UPDATE_STATS ---
                         if (window.ReactNativeWebView) {
                             window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -8342,6 +8345,7 @@
                             }));
                         }
 
+                        // 2. Prepare transient states
                         this.learningStats.path_progress = this.pathProgress;
                         this.learningStats.child_profile = this.childProfile;
 
@@ -8349,34 +8353,38 @@
                         const todayStr = new Date().toDateString();
                         if (!this.learningStats.daily_snapshots) this.learningStats.daily_snapshots = [];
                         const existingIdx = this.learningStats.daily_snapshots.findIndex(s => s.date === todayStr);
-                         if (existingIdx !== -1) {
-                             this.learningStats.daily_snapshots[existingIdx].score = this.learningScore;
-                         } else {
-                             this.learningStats.daily_snapshots.push({ date: todayStr, score: this.learningScore });
-                             if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
-                         }
- 
+                        if (existingIdx !== -1) {
+                            this.learningStats.daily_snapshots[existingIdx].score = this.learningScore;
+                        } else {
+                            this.learningStats.daily_snapshots.push({ date: todayStr, score: this.learningScore });
+                            if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
+                        }
+
                         // Persistent Seasonal Data
                         this.learningStats.event_tokens = this.eventTokens;
                         this.learningStats.seasonal_quests = this.seasonalQuests;
                         this.learningStats.current_season_name = this.currentSeason.name;
 
-                        // Deep copy to remove reactivity proxies which might confuse Supabase
+                        // 3. Deep copy EVERYTHING to remove reactivity proxies for Supabase
                         const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                         const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                         const safeStats = JSON.parse(JSON.stringify(this.learningStats));
 
-                        // Persist Skill Tree Data
+                        // 4. Sync specific properties into the safeStats blob
+                        safeStats.all_profiles = JSON.parse(JSON.stringify(this.allProfiles));
+                        safeStats.active_profile_id = this.activeProfileId;
+                        safeStats.inventory = safeInventory;
+                        safeStats.coins = this.coins;
+                        safeStats.xp = this.xp;
+                        
                         safeStats.skill_tree_data = JSON.parse(JSON.stringify(this.skillTreeData));
                         safeStats.skill_tree_node_progress = JSON.parse(JSON.stringify(this.skillTreeNodeProgress));
 
-                        // Embed missing columns into learning_stats to avoid schema errors
                         safeStats.daily_usage = {
                             date: new Date().toDateString(),
                             questions_used: this.dailyQuestionsUsed,
                             reward_claimed: this.rewardClaimedToday
                         };
-                        safeStats.inventory = safeInventory;
                         safeStats.is_premium = this.isPremium;
                         safeStats.is_family_plan = this.isFamilyPlan;
                         safeStats.premium_expiry = this.premiumExpiry;
@@ -8384,30 +8392,18 @@
                         safeStats.email_summary_enabled = this.emailSummaryEnabled;
                         safeStats.last_summary_date = this.lastSummaryDate;
                         safeStats.current_language = this.currentLanguage;
-                        safeStats.equipped_item = this.equippedItem; // Save equipped item to JSON blob
-                        safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum)); // Persist newly generated quests
+                        safeStats.equipped_item = this.equippedItem;
+                        safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum));
                         safeStats.has_completed_onboarding = this.hasCompletedOnboarding;
                         
-                        // Persist Monthly Quotas
                         safeStats.monthly_quests_used = this.monthlyQuestsUsed;
                         safeStats.last_quest_month = this.lastQuestMonth;
-
-                        // Persist Multi-Child Data
-                        this.saveCurrentProfileToCollection(); // Ensure latest state is in the array
-                        safeStats.all_profiles = JSON.parse(JSON.stringify(this.allProfiles));
-                        safeStats.active_profile_id = this.activeProfileId;
                         safeStats.time_used_today = this.timeUsedToday;
                         safeStats.daily_time_limit = this.dailyTimeLimit;
-                        
-                        // Boutique Persistence
                         safeStats.boutique_inventory = this.boutiqueInventory;
                         safeStats.equipped_accessories = this.equippedAccessories;
-
-                        // Persist Social Data
                         safeStats.friends = this.friends;
                         safeStats.high_fives = this.highFivesReceived;
-
-                        // Persist Streak Data in JSON blob
                         safeStats.streak = this.streak;
                         safeStats.last_streak_date = this.lastStreakDate;
                         safeStats.streak_freeze_used = this.streakFreezeUsed;
@@ -8415,15 +8411,10 @@
                         const updateData = {
                             coins: this.coins,
                             xp: this.xp,
-                            // Note: is_premium and premium_expiry are deliberately NOT included here
-                            // to prevent stale client-side state from overwriting server-side truth.
-                            // They are only updated via explicit actions (Payment Webhook or Cancel button).
                             learning_stats: safeStats,
                             parent_logs: safeLogs,
                             daily_usage: safeStats.daily_usage
                         };
-
-
 
                         try {
                             const { error } = await this.supabase
@@ -8432,12 +8423,8 @@
                                 .eq('email', this.registeredEmail);
 
                             if (error) throw error;
-                            
-                            // console.log("Data synced successfully!"); 
                         } catch (err) {
                             console.error("Sync Error:", err);
-                            // Alerting the user so they know their progress might not be saved
-                            alert("Sync Error: " + (err.message || JSON.stringify(err)));
                         }
                     },
 
