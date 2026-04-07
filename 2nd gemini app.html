@@ -208,14 +208,14 @@
         <div x-show="isLoading" class="fixed inset-0 z-[200] bg-white/80 flex items-center justify-center backdrop-blur-sm" x-transition>
             <div class="flex flex-col items-center">
                 <div class="spinner mb-4"></div>
-                <p class="font-kids text-blue-500">Syncing magic...</p>
+                <p class="font-kids text-blue-500" x-text="t('syncing_magic')">Syncing magic...</p>
             </div>
         </div>
 
         <div id="certificate-area" class="hidden flex-col items-center justify-center p-12 text-center bg-white certificate-border" style="min-height: 100vh;">
             <div class="text-6xl mb-4">🎓</div>
-            <h1 class="text-5xl font-kids text-amber-600 mb-2">Certificate of Achievement</h1>
-            <p class="text-2xl text-gray-600 mb-8">This award is proudly presented to</p>
+            <h1 class="text-5xl font-kids text-amber-600 mb-2" x-text="t('certificate_title')">Certificate of Achievement</h1>
+            <p class="text-2xl text-gray-600 mb-8" x-text="t('award_presented_to')">This award is proudly presented to</p>
             <h2 class="text-6xl font-kids text-slate-800 mb-8 underline" x-text="childProfile.name"></h2>
             <p class="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
                 For successfully completing the <span class="font-bold text-slate-800" x-text="selectedCertificatePath?.name"></span> 
@@ -224,11 +224,11 @@
             <div class="mt-16 flex justify-between w-full max-w-3xl px-12">
                 <div class="text-center">
                     <div class="border-b-2 border-gray-400 w-48 mb-2"></div>
-                    <p class="font-bold text-gray-400 uppercase">Your Teacher</p>
+                    <p class="font-bold text-gray-400 uppercase" x-text="t('your_teacher')">Your Teacher</p>
                 </div>
                 <div class="text-center">
                     <div class="border-b-2 border-gray-400 w-48 mb-2"></div>
-                    <p class="font-bold text-gray-400 uppercase">Date</p>
+                    <p class="font-bold text-gray-400 uppercase" x-text="t('date')">Date</p>
                 </div>
             </div>
             <div class="mt-12 text-4xl">⭐⭐⭐⭐⭐</div>
@@ -271,29 +271,29 @@
                         <!-- Slide 1: Welcome & Value Prop -->
                         <div x-show="onboardingStep === 1" class="animate__animated animate__fadeInRight">
                             <div class="text-6xl mb-6 bounce">🚀</div>
-                            <h2 class="text-3xl font-kids text-slate-800 mb-4">Welcome to<br><span class="text-blue-500">AI Tutor</span></h2>
-                            <p class="text-slate-500 font-bold mb-8">The interactive, fun way for your child to learn anything with smart AI companions.</p>
+                            <h2 class="text-3xl font-kids text-slate-800 mb-4" x-html="t('welcome_to') + '<br><span class=\'text-blue-500\'>AI Tutor</span>'">Welcome to<br><span class="text-blue-500">AI Tutor</span></h2>
+                            <p class="text-slate-500 font-bold mb-8" x-text="t('welcome_subtitle')">The interactive, fun way for your child to learn anything with smart AI companions.</p>
                             
                             <div class="space-y-4 text-left bg-blue-50 p-5 rounded-3xl border-2 border-blue-100 mb-2">
                                 <div class="flex items-start gap-4">
                                     <div class="w-8 flex justify-center text-2xl">🗣️</div>
                                     <div>
-                                        <p class="text-sm font-black text-slate-700 leading-tight">Instant Voice Chat</p>
-                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Talk naturally without typing</p>
+                                        <p class="text-sm font-black text-slate-700 leading-tight" x-text="t('instant_voice')">Instant Voice Chat</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1" x-text="t('instant_voice_sub')">Talk naturally without typing</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-4">
                                     <div class="w-8 flex justify-center text-2xl">🛡️</div>
                                     <div>
-                                        <p class="text-sm font-black text-slate-700 leading-tight">100% Kid-Safe</p>
-                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Zero data sold. COPPA Compliant.</p>
+                                        <p class="text-sm font-black text-slate-700 leading-tight" x-text="t('kidsafe_onboarding')">100% Kid-Safe</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1" x-text="t('kidsafe_onboarding_sub')">Zero data sold. COPPA Compliant.</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-4">
                                     <div class="w-8 flex justify-center text-2xl">📚</div>
                                     <div>
-                                        <p class="text-sm font-black text-slate-700 leading-tight">Adaptive Learning</p>
-                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Grows with your child's age</p>
+                                        <p class="text-sm font-black text-slate-700 leading-tight" x-text="t('adaptive_learning')">Adaptive Learning</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1" x-text="t('adaptive_learning_sub')">Grows with your child's age</p>
                                     </div>
                                 </div>
                             </div>
@@ -302,8 +302,8 @@
                         <!-- Slide 2: Age Selection -->
                         <div x-show="onboardingStep === 2" class="animate__animated animate__fadeInRight" x-cloak>
                             <div class="text-6xl mb-6">🎂</div>
-                            <h2 class="text-3xl font-kids text-slate-800 mb-4">How old is<br>your child?</h2>
-                            <p class="text-slate-500 font-bold mb-8">We'll automatically tailor the vocabulary, math, and concepts to their exact level.</p>
+                            <h2 class="text-3xl font-kids text-slate-800 mb-4" x-html="t('how_old')">How old is<br>your child?</h2>
+                            <p class="text-slate-500 font-bold mb-8" x-text="t('age_sub')">We'll automatically tailor the vocabulary, math, and concepts to their exact level.</p>
 
                             <div class="space-y-3">
                                 <button @click="loginForm.ageRange = '4-6'; onboardingStep = 3" 
@@ -336,8 +336,8 @@
                         <!-- Slide 3: Try it Free -->
                         <div x-show="onboardingStep === 3" class="animate__animated animate__fadeInRight" x-cloak>
                             <div class="text-6xl mb-6">✨</div>
-                            <h2 class="text-3xl font-kids text-slate-800 mb-4">7 Days of<br><span class="text-green-500">Premium Magic</span></h2>
-                            <p class="text-slate-500 font-bold mb-8">Try every single feature for 7 days. No credit card required to start.</p>
+                            <h2 class="text-3xl font-kids text-slate-800 mb-4" x-html="t('premium_magic')">7 Days of<br><span class="text-green-500">Premium Magic</span></h2>
+                            <p class="text-slate-500 font-bold mb-8" x-text="t('premium_magic_sub')">Try every single feature for 7 days. No credit card required to start.</p>
 
                             <div class="bg-green-50 p-6 rounded-3xl border-2 border-green-200 mb-2 text-left shadow-inner">
                                 <ul class="space-y-4">
@@ -371,16 +371,16 @@
                     <div class="relative z-10 mt-6 min-h-[100px]">
                         <div x-show="onboardingStep === 1" class="flex flex-col gap-3">
                             <button @click="onboardingStep = 2" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-[0_4px_0_rgb(37,99,235)] hover:shadow-[0_2px_0_rgb(37,99,235)] hover:translate-y-[2px] transition-all transform active:scale-95">
-                                Continue
+                                <span x-text="t('continue')">Continue</span>
                             </button>
-                            <button @click="finishOnboarding()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 mt-2">
+                            <button @click="finishOnboarding()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 mt-2" x-text="t('skip_intro')">
                                 Skip Intro
                             </button>
                         </div>
                         
                         <div x-show="onboardingStep === 3" class="flex flex-col gap-3">
                             <button @click="finishOnboarding()" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-[0_4px_0_rgb(22,163,74)] hover:shadow-[0_2px_0_rgb(22,163,74)] hover:translate-y-[2px] transition-all transform active:scale-95">
-                                Get Started Free! 🚀
+                                <span x-text="t('get_started_free')">Get Started Free! 🚀</span>
                             </button>
                         </div>
 
@@ -403,33 +403,33 @@
 
                     <div class="relative z-10">
                         <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
-                        <h1 class="text-4xl font-kids text-slate-800 mb-2">AI Tutor</h1>
-                        <p class="text-slate-500 font-bold mb-8">Parent Setup & Login</p>
+                        <h1 class="text-4xl font-kids text-slate-800 mb-2" x-text="t('welcome_to') + ' AI Tutor'">AI Tutor</h1>
+                        <p class="text-slate-500 font-bold mb-8" x-text="t('parent_setup')">Parent Setup & Login</p>
 
                         <div x-show="!hasAccount" class="space-y-4 text-left">
                             <div x-show="!gateVerified" class="animate__animated animate__fadeIn">
                                 <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-200">
-                                    <h3 class="font-kids text-blue-800 mb-2">Adult Verification</h3>
-                                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Please solve this to continue:</p>
+                                    <h3 class="font-kids text-blue-800 mb-2" x-text="t('adult_verify')">Adult Verification</h3>
+                                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4" x-text="t('solve_to_continue')">Please solve this to continue:</p>
                                     <div class="flex items-center gap-4 mb-4">
                                         <span class="text-2xl font-kids text-blue-600" x-text="gateQuestion"></span>
                                         <input type="number" x-model="gateAnswer" placeholder="?" class="w-20 p-3 bg-white border-2 border-blue-300 rounded-xl text-center font-bold text-xl">
                                     </div>
-                                    <button @click="verifyGate" class="w-full py-3 bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 transition-colors">
+                                    <button @click="verifyGate" class="w-full py-3 bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 transition-colors" x-text="t('verify_adult')">
                                         Verify I am an Adult
                                     </button>
-                                    <p class="text-[10px] text-slate-400 mt-4 leading-tight italic">This "Parental Gate" ensures children cannot provide personal data without adult supervision, in compliance with COPPA and GDPR-K.</p>
+                                    <p class="text-[10px] text-slate-400 mt-4 leading-tight italic" x-text="t('parent_gate_sub')">This "Parental Gate" ensures children cannot provide personal data without adult supervision, in compliance with COPPA and GDPR-K.</p>
                                 </div>
                             </div>
 
                             <div x-show="gateVerified" class="animate__animated animate__fadeInUp">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Parent Full Name</label>
-                                    <input type="text" x-model="loginForm.name" placeholder="Jane Doe" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2" x-text="t('parent_name')">Parent Full Name</label>
+                                    <input type="text" x-model="loginForm.name" :placeholder="t('parent_name')" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                                 </div>
 
                                 <div class="animate__animated animate__fadeIn mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-2">Child's Age (Auto-Adjusts Difficulty)</label>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-2" x-text="t('child_age_label')">Child's Age (Auto-Adjusts Difficulty)</label>
                                     <div class="grid grid-cols-2 gap-2">
                                         <button @click="loginForm.ageRange = '4-6'" 
                                                 :class="loginForm.ageRange === '4-6' ? 'bg-blue-500 text-white border-blue-600 shadow-md ring-2 ring-blue-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
@@ -452,11 +452,11 @@
                                     </div>
                                 </div>
                                 <div class="mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Email Address</label>
-                                    <input type="email" x-model="loginForm.email" placeholder="parent@email.com" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2" x-text="t('email_address')">Email Address</label>
+                                    <input type="email" x-model="loginForm.email" :placeholder="t('email_address')" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                                 </div>
                                 <div class="mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2">Create PIN</label>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2" x-text="t('create_pin')">Create PIN</label>
                                     <input type="password" x-model="loginForm.password" placeholder="****" maxlength="4" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
                                 </div>
                                 
@@ -464,25 +464,24 @@
                                     <label class="flex items-start gap-3 cursor-pointer">
                                         <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                         <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
-                                            I confirm I am the parent/guardian and agree to the 
-                                            <a href="/privacy.html" target="_blank" class="text-blue-500 underline">Privacy Policy</a> & 
-                                            <a href="/terms.html" target="_blank" class="text-blue-500 underline">Terms</a>. 
-                                            I consent to kid-safe AI processing (COPPA/GDPR).
+                                            <span x-text="t('confirm_legal')">I confirm I am the parent/guardian and agree to the</span> 
+                                            <a href="/privacy.html" target="_blank" class="text-blue-500 underline" x-text="t('policy_terms')">Privacy Policy & Terms</a>. 
+                                            <span x-text="t('consent_ai')">I consent to kid-safe AI processing (COPPA/GDPR).</span>
                                         </span>
                                     </label>
                                 </div>
 
-                                <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale">
+                                <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale" x-text="t('start_learning')">
                                     Start Learning! 🚀
                                 </button>
                                 
                                 <div class="flex items-center justify-center gap-2 mt-4 opacity-80 border-t pt-4">
                                     <i class="fas fa-shield-alt text-green-500"></i>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Strict Privacy: No Data is ever Sold to 3rd Parties.</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide" x-text="t('strict_privacy')">Strict Privacy: No Data is ever Sold to 3rd Parties.</p>
                                 </div>
                             </div>
                             
-                            <p class="text-center mt-4 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true">Already have an account? Login</p>
+                            <p class="text-center mt-4 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true" x-text="t('already_account')">Already have an account? Login</p>
                         </div>
 
                         <div x-show="hasAccount" class="space-y-6">
@@ -490,8 +489,8 @@
                             <template x-if="session && !isLoggedIn">
                                 <div class="animate__animated animate__fadeIn">
                                     <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
-                                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Device is Authorized</p>
-                                        <h3 class="text-xl font-kids text-slate-800 my-4">Enter PIN to Unlock</h3>
+                                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide" x-text="t('authorized_device')">Device is Authorized</p>
+                                        <h3 class="text-xl font-kids text-slate-800 my-4" x-text="t('enter_pin')">Enter PIN to Unlock</h3>
                                         <input type="password" 
                                                x-model="pinInput" 
                                                @keyup.enter="verifyPin"
@@ -500,11 +499,11 @@
                                                class="w-full p-4 bg-white border-2 border-blue-200 rounded-2xl text-center font-bold text-3xl tracking-widest outline-none focus:border-blue-500 transition-all">
                                         
                                         <div class="mt-6 space-y-3">
-                                            <button @click="verifyPin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                                            <button @click="verifyPin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all" x-text="t('unlock_app')">
                                                 Unlock App 🔓
                                             </button>
 
-                                            <button @click="handleLogout" class="text-xs text-blue-400 font-bold hover:underline uppercase block mx-auto py-2">
+                                            <button @click="handleLogout" class="text-xs text-blue-400 font-bold hover:underline uppercase block mx-auto py-2" x-text="t('sign_out')">
                                                 Sign Out / Change Account
                                             </button>
                                         </div>
@@ -516,30 +515,30 @@
                             <template x-if="!session">
                                 <div class="space-y-6">
                                     <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
-                                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide">Welcome Back</p>
-                                        <input type="email" x-model="loginForm.email" placeholder="Enter parent email" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700 text-base">
+                                        <p class="text-sm text-blue-400 font-bold uppercase tracking-wide" x-text="t('welcome_back')">Welcome Back</p>
+                                        <input type="email" x-model="loginForm.email" :placeholder="t('email_address')" class="w-full mt-2 p-2 bg-white border border-blue-200 rounded-xl focus:outline-none text-center font-bold text-slate-700 text-base">
                                     </div>
                                     
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Enter PIN</label>
+                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2" x-text="t('enter_pin')">Enter PIN</label>
                                         <input type="password" x-model="loginForm.password" @keyup.enter="handleLogin" placeholder="****" maxlength="4" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 outline-none font-bold text-slate-700 text-center text-xl">
-                                        <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline">Forgot PIN?</button></p>
+                                        <p class="text-right mt-2"><button @click="handlePasswordReset" class="text-xs text-blue-400 font-bold hover:underline" x-text="t('forgot_pin')">Forgot PIN?</button></p>
                                     </div>
 
-                                    <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                                    <button @click="handleLogin" class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all" x-text="t('unlock_app')">
                                         Unlock App 🔓
                                     </button>
                                     
-                                    <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4">Create New Account</button>
+                                    <button @click="hasAccount = false" class="text-xs text-blue-400 hover:text-blue-600 font-bold uppercase tracking-widest mt-4" x-text="t('create_new_account')">Create New Account</button>
                                 </div>
                             </template>
                         </div>
 
                         <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
-                            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Legal & Privacy</h3>
+                            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2" x-text="t('legal_privacy')">Legal & Privacy</h3>
                             <div class="flex justify-center gap-6">
-                                <a href="/privacy.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Privacy Policy</a>
-                                <a href="/terms.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest">Terms of Service</a>
+                                <a href="/privacy.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest" x-text="t('policy_terms').split('&')[0]">Privacy Policy</a>
+                                <a href="/terms.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest" x-text="t('policy_terms').split('&')[1]">Terms of Service</a>
                             </div>
                         </div>
                     </div>
@@ -559,7 +558,7 @@
                 <!-- Learning Score Badge -->
                 <div class="flex daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                    <span class="text-[7px] sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center">Learning Score</span>
+                    <span class="text-[7px] sm:text-[10px] font-bold text-indigo-100 uppercase leading-none mb-1 text-center" x-text="t('learning_score')">Learning Score</span>
                     <span class="font-kids text-xs sm:text-2xl text-white drop-shadow-md" x-text="learningScore"></span>
                     <div class="absolute -bottom-1 right-1 opacity-20 text-xl sm:text-3xl">🚀</div>
                 </div>
@@ -601,7 +600,7 @@
                     <div class="absolute left-full top-0 pl-4 hidden group-hover:block z-[100] animate__animated animate__fadeInLeft animate__faster">
                         <div class="bg-white rounded-3xl shadow-2xl p-3 min-w-[160px] border-4 border-slate-100">
                             <div class="text-[10px] font-bold text-slate-400 uppercase mb-2 px-2 flex items-center justify-between">
-                                <span>Select Music</span>
+                                <span x-text="t('select_music')">Select Music</span>
                                 <i class="fas fa-music"></i>
                             </div>
                             <div class="space-y-1">
@@ -653,7 +652,7 @@
                 </div>
             </template>
             <div class="hidden sm:flex bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] sm:text-xs font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1 sm:ml-2">
-                <i class="fas fa-shield-alt"></i> Kid-Safe AI
+                <i class="fas fa-shield-alt"></i> <span x-text="t('kidsafe_ai')">Kid-Safe AI</span>
             </div>
 
             <!-- Mobile Only Row 5: Kid-Safe AI (Left-aligned) -->
@@ -681,9 +680,7 @@
 
                 <!-- Dual Quest Button: Hidden on mobile here, moved to Row 3 -->
                 <button 
-                    @click="showQuestModal = true; toggleScroll(true)"
-                    class="bg-white hidden sm:flex p-2 border-b-4 border-yellow-400 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform relative"
-                    title="Secret Quest"
+                    :title="t('secret_quest')"
                 >
                     <i class="fas fa-trophy text-yellow-500 text-xl sm:text-2xl"></i>
                     <span x-show="activeDualQuest.code && !activeDualQuest.isUnlocked" class="absolute -top-1 -right-1 flex h-3 w-3">
@@ -734,17 +731,17 @@
                 </button>
 
                 <!-- Skill Tree Button -->
-                <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
+                <button @click="toggleSkillTree(true)" class="bg-white p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" :title="t('skill_tree')">
                     <span class="text-xl sm:text-3xl">🌳</span>
                 </button>
 
                 <!-- Scavenger Hunt (Row 2 Desktop) -->
-                <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                <button @click="startScavengerHunt()" class="bg-white hidden sm:block p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" :title="t('scavenger_hunt')">
                     <span class="text-xl sm:text-3xl">🔍</span>
                 </button>
 
                 <!-- NEW: AI Sprints Button (⚡) -->
-                <button @click="startSprint()" class="bg-indigo-500 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
+                <button @click="startSprint()" class="bg-indigo-500 p-2 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" :title="t('ai_sprint')">
                     <span class="text-xl sm:text-3xl animate__animated animate__pulse animate__infinite">⚡</span>
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
                 </button>
@@ -755,7 +752,7 @@
                 </button>
 
                 <!-- Help & Support (Desktop) -->
-                <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" title="Help & Support">
+                <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 sm:p-4 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" :title="t('help_support')">
                     <span class="text-xl sm:text-3xl">❓</span>
                 </a>
             </div>
@@ -764,12 +761,12 @@
             <div class="flex flex-row gap-2 sm:gap-4">
 
                 <!-- Scavenger Hunt Button (Mobile Only) -->
-                <button @click="startScavengerHunt()" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" title="Visual Scavenger Hunt">
+                <button @click="startScavengerHunt()" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-emerald-400" :title="t('scavenger_hunt')">
                     <span class="text-xl">🔍</span>
                 </button>
 
                 <!-- Sticker Book (Mobile Only - Aligned in Third Row) -->
-                <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" title="Sticker Book">
+                <button @click="showStickerBook = true; toggleScroll(true)" class="bg-white sm:hidden p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-500" :title="t('sticker_book')">
                     <span class="text-xl">📕</span>
                 </button>
 
@@ -795,46 +792,46 @@
                 </button>
 
                 <!-- Skill Tree Button -->
-                <button @click="toggleSkillTree(true)" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" title="Skill Tree">
+                <button @click="toggleSkillTree(true)" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-amber-500" :title="t('skill_tree')">
                     <span class="text-xl">🌳</span>
                 </button>
 
                 <!-- AI Sprints Button (⚡) -->
-                <button @click="startSprint()" class="bg-indigo-500 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" title="AI Sprint Challenge">
+                <button @click="startSprint()" class="bg-indigo-500 p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-indigo-700 relative group overflow-hidden" :title="t('ai_sprint')">
                     <span class="text-xl animate__animated animate__pulse animate__infinite">⚡</span>
                 </button>
             </div>
 
             <div class="flex sm:hidden flex-row gap-2 justify-end">
                 <!-- Weekly Leaderboard -->
-                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" title="Weekly Leaderboard">
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" :title="t('leaderboard')">
                     <span class="text-xl">🏆</span>
                 </button>
 
                 <!-- Offline Downloads -->
-                <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-indigo-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="My Offline Lessons">
+                <button @click="loadDownloadedLessons(); showDownloadsModal = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-indigo-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('offline_lessons')">
                     <span class="text-xl">📥</span>
                 </button>
 
                 <!-- Magic Aura -->
-                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Magic Auras">
+                <button @click="showShop = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-blue-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('magic_auras')">
                     <span class="text-xl">🪄</span>
                 </button>
             </div>
 
             <div class="flex sm:hidden flex-row gap-2 justify-end">
                 <!-- Story Time -->
-                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Story Time">
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('story_time')">
                     <span class="text-xl">📖</span>
                 </button>
 
                 <!-- Profile Switcher -->
-                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" title="Switch Child">
+                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('switch_child')">
                     <span class="text-xl">👤</span>
                 </button>
 
                 <!-- Help & Support -->
-                <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" title="Help & Support">
+                <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" :title="t('help_support')">
                     <span class="text-xl">❓</span>
                 </a>
             </div>
@@ -1132,7 +1129,7 @@
                         
                         <div class="absolute -bottom-6 left-0 right-0 flex justify-center opacity-70">
                             <span class="text-[9px] font-bold text-slate-400 flex items-center gap-1 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
-                                <i class="fas fa-lock text-green-500"></i> Safe-Response Mode ON
+                                <i class="fas fa-lock text-green-500"></i> <span x-text="t('safe_response_mode')">Safe-Response Mode ON</span>
                             </span>
                         </div>
 
@@ -1156,8 +1153,8 @@
             <div @click.away="!isThinking ? closeVisionModal() : null" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__zoomIn border-4 border-blue-200">
                 <button @click="closeVisionModal()" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
                 
-                <h2 class="text-3xl font-kids text-blue-500 text-center mb-2">Vision Studio 📸</h2>
-                <p class="text-center text-gray-500 font-bold mb-6">Show me your homework or a drawing!</p>
+                <h2 class="text-3xl font-kids text-blue-500 text-center mb-2" x-text="t('vision_studio')">Vision Studio 📸</h2>
+                <p class="text-center text-gray-500 font-bold mb-6" x-text="t('vision_sub')">Show me your homework or a drawing!</p>
 
                 <div class="flex flex-col items-center gap-6">
                     <!-- Standard Upload / Preview Area -->
@@ -1168,7 +1165,7 @@
                         <template x-if="!visionPreview">
                             <div class="text-center">
                                 <i class="fas fa-image text-4xl text-gray-300 mb-2"></i>
-                                <p class="text-xs font-bold text-gray-400">SELECT A PHOTO</p>
+                                <p class="text-xs font-bold text-gray-400" x-text="t('select_photo')">SELECT A PHOTO</p>
                             </div>
                         </template>
                         
@@ -1183,22 +1180,22 @@
 
                     <div x-show="isThinking" class="flex flex-col items-center">
                         <div class="spinner border-blue-500 mb-2"></div>
-                        <p class="font-kids text-blue-500 animate-pulse">Analyzing magic...</p>
+                        <p class="font-kids text-blue-500 animate-pulse" x-text="t('analyzing_magic')">Analyzing magic...</p>
                     </div>
 
                     <div class="flex flex-col w-full gap-3" x-show="!isThinking">
                         <!-- Camera Controls -->
                         <div class="flex gap-2">
                              <button x-show="!isCameraActive && !visionPreview" @click="startCamera()" class="flex-1 py-3 bg-blue-100 text-blue-600 rounded-xl font-bold hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-camera mr-2"></i> Use Camera
+                                <i class="fas fa-camera mr-2"></i> <span x-text="t('use_camera')">Use Camera</span>
                             </button>
                             
                             <button x-show="isCameraActive" @click="capturePhoto()" class="flex-1 py-3 bg-white border-4 border-blue-500 text-blue-600 rounded-full font-bold hover:bg-blue-50 transition-colors shadow-lg">
-                                <i class="fas fa-circle mr-2"></i> SNAP PHOTO
+                                <i class="fas fa-circle mr-2"></i> <span x-text="t('snap_photo')">SNAP PHOTO</span>
                             </button>
 
                             <button x-show="isCameraActive" @click="stopCamera()" class="px-4 py-3 bg-gray-100 text-gray-500 rounded-xl font-bold hover:bg-gray-200 transition-colors">
-                                Cancel
+                                <span x-text="t('cancel')">Cancel</span>
                             </button>
                         </div>
 
@@ -1208,7 +1205,7 @@
                             @click="generateToyLesson()"
                             class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
                         >
-                            Magic Lesson! 🪄
+                            <span x-text="t('magic_lesson')">Magic Lesson! 🪄</span>
                         </button>
 
                         <button 
@@ -1216,11 +1213,11 @@
                             @click="analyzeImage()"
                             class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform"
                         >
-                            Explain it to me! 🚀
+                            <span x-text="t('explain_it')">Explain it to me! 🚀</span>
                         </button>
 
                         <button x-show="visionPreview && !isCameraActive" @click="visionFile = null; visionPreview = null" class="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                            Clear / Retake
+                            <span x-text="t('clear_retake')">Clear / Retake</span>
                         </button>
                     </div>
                 </div>
@@ -1235,12 +1232,12 @@
                 
                 <div class="text-center mb-6">
                     <div class="text-6xl mb-4">🕵️‍♂️</div>
-                    <h2 class="text-3xl font-kids text-emerald-600">Scavenger Hunt!</h2>
-                    <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Can you find this object?</p>
+                    <h2 class="text-3xl font-kids text-emerald-600" x-text="t('scavenger_hunt')">Scavenger Hunt!</h2>
+                    <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1" x-text="t('find_this_object')">Can you find this object?</p>
                 </div>
 
                 <div class="bg-emerald-50 rounded-3xl p-8 border-4 border-dashed border-emerald-200 text-center mb-8">
-                    <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em] mb-2">YOUR MISSION:</p>
+                    <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em] mb-2" x-text="t('your_mission')">YOUR MISSION:</p>
                     <h3 class="text-4xl font-kids text-emerald-700" x-text="scavengerTarget.name"></h3>
                 </div>
 
@@ -1261,30 +1258,30 @@
                 <!-- Analyzing State -->
                 <div x-show="isAnalyzingScavenger" class="flex flex-col items-center mb-8">
                     <div class="spinner border-emerald-500 mb-4 h-12 w-12 border-t-transparent"></div>
-                    <p class="font-kids text-emerald-600 animate-pulse text-xl">Dino is checking his list...</p>
+                    <p class="font-kids text-emerald-600 animate-pulse text-xl" x-text="t('dino_checking')">Dino is checking his list...</p>
                 </div>
 
                 <div class="flex flex-col gap-3" x-show="!isAnalyzingScavenger">
                     <template x-if="!scavengerResult">
                         <button @click="openScavengerCamera()" class="w-full py-5 bg-emerald-500 text-white rounded-[2rem] font-kids text-2xl shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-3">
-                            <i class="fas fa-camera"></i> TAKE PHOTO!
+                            <i class="fas fa-camera"></i> <span x-text="t('take_photo')">TAKE PHOTO!</span>
                         </button>
                     </template>
                     
                     <template x-if="scavengerResult === 'success'">
                         <button @click="showScavengerModal = false; toggleScroll(false)" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform">
-                            Awesome! 🚀
+                            <span x-text="t('awesome')">Awesome! 🚀</span>
                         </button>
                     </template>
 
                     <template x-if="scavengerResult === 'fail'">
                         <button @click="openScavengerCamera()" class="w-full py-4 bg-orange-400 text-white rounded-2xl font-kids text-xl shadow-lg hover:scale-105 transition-transform">
-                            Try Again! 📸
+                            <span x-text="t('try_again')">Try Again! 📸</span>
                         </button>
                     </template>
 
                     <button @click="startScavengerHunt()" x-show="!isAnalyzingScavenger" class="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-emerald-500 transition-colors py-2">
-                        Get different object
+                        <span x-text="t('get_different_object')">Get different object</span>
                     </button>
                 </div>
             </div>
@@ -1294,8 +1291,8 @@
             <div class="bg-white rounded-none sm:rounded-[2.5rem] w-full h-full sm:h-auto sm:max-h-[90vh] max-w-4xl flex flex-col shadow-2xl overflow-hidden animate__animated animate__zoomIn">
                 <div class="p-6 sm:p-8 border-b-4 border-gray-100 flex justify-between items-center bg-white z-10">
                     <div>
-                        <h2 class="text-3xl font-kids text-slate-800">Sticker Book 📕</h2>
-                        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1">Collect them all, <span x-text="childProfile.name"></span>!</p>
+                        <h2 class="text-3xl font-kids text-slate-800" x-text="t('sticker_book')">Sticker Book 📕</h2>
+                        <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mt-1" x-html="t('collect_all_name').replace('{name}', childProfile.name)">Collect them all, <span x-text="childProfile.name"></span>!</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <button @click="if(confirm('Are you sure you want to restart your collection?')){ learningStats.achievements = []; syncData(); playPing(); }" class="bg-gray-100 p-3 rounded-full hover:bg-orange-100 text-gray-500 hover:text-orange-500 transition-colors" title="Restart Collection">
@@ -1343,7 +1340,7 @@
                             <div class="h-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-1000" 
                                  :style="'width: ' + (learningStats.achievements.length / availableBadges.length * 100) + '%'"></div>
                         </div>
-                        <p class="mt-3 font-kids text-slate-600" x-text="learningStats.achievements.length + ' / ' + availableBadges.length + ' Badges Earned'"></p>
+                        <p class="mt-3 font-kids text-slate-600" x-text="t('badges_earned').replace('{count}', learningStats.achievements.length).replace('{total}', availableBadges.length)"></p>
                     </div>
 
                 </div>
@@ -1357,8 +1354,8 @@
                     <div class="flex items-center gap-3 sm:gap-4">
                         <div class="w-10 h-10 sm:w-14 sm:h-14 bg-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl text-white shadow-lg shadow-blue-200">💎</div>
                         <div>
-                            <h2 class="text-xl sm:text-3xl font-kids text-slate-800">Verified Trophy Room</h2>
-                            <p class="text-blue-400 font-bold uppercase tracking-[0.2em] text-[8px] sm:text-[10px] mt-1">Official Cryptographic Records</p>
+                            <h2 class="text-xl sm:text-3xl font-kids text-slate-800" x-text="t('trophy_room')">Verified Trophy Room</h2>
+                            <p class="text-blue-400 font-bold uppercase tracking-[0.2em] text-[8px] sm:text-[10px] mt-1" x-text="t('official_records')">Official Cryptographic Records</p>
                         </div>
                     </div>
                     <button @click="showTrophyRoom = false; toggleScroll(false)" class="bg-slate-50 p-2 sm:p-4 rounded-full hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all">
@@ -1373,7 +1370,7 @@
                         <h3 class="text-3xl font-kids text-slate-300 mb-4">No Trophies Yet!</h3>
                         <p class="text-slate-400 max-w-sm mx-auto font-medium">Complete an entire Adventure Path (Grade Level) to earn your first **Blockchain Verified Trophy**!</p>
                         <button @click="showTrophyRoom = false; showLearningPath = true" class="mt-8 px-8 py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-xl hover:scale-105 transition-transform">
-                            Go to Adventure Map! 🗺️
+                            <span x-text="t('go_to_map')">Go to Adventure Map! 🗺️</span>
                         </button>
                     </div>
 
@@ -1411,10 +1408,10 @@
                                 <div class="mt-8 sm:mt-10 grid grid-cols-1 gap-3 sm:gap-4 relative z-10">
                                     <button @click="verifyOnChain(cert)" class="w-full py-4 sm:py-5 bg-slate-900 text-white rounded-[1.2rem] sm:rounded-[1.5rem] font-kids text-xl sm:text-2xl shadow-2xl hover:bg-black transition-all flex items-center justify-center gap-3 sm:gap-4 group/btn hover:scale-[1.02] active:scale-100">
                                         <i class="fas fa-shield-alt text-blue-400 group-hover/btn:scale-125 transition-transform text-lg sm:text-2xl"></i>
-                                        <span>Verify Truth</span>
+                                        <span x-text="t('verify_truth')">Verify Truth</span>
                                     </button>
                                     <button @click="shareBlockchainCert(cert)" class="w-full py-3 sm:py-4 bg-blue-50 text-blue-600 rounded-[1.2rem] sm:rounded-[1.5rem] font-bold text-[10px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.2em] hover:bg-blue-100 transition-all flex items-center justify-center gap-2 sm:gap-3">
-                                        <i class="fas fa-share-alt"></i> Share Verified Proof
+                                        <i class="fas fa-share-alt"></i> <span x-text="t('share_proof')">Share Verified Proof</span>
                                     </button>
                                 </div>
                             </div>
@@ -1518,22 +1515,22 @@
                     <!-- Empty State: No Tree Generated Yet -->
                     <div x-show="!skillTreeData[skillTreeSubject]" class="flex flex-col items-center justify-center text-center py-16 px-6">
                         <div class="text-7xl sm:text-9xl mb-6 animate__animated animate__pulse animate__infinite">🌱</div>
-                        <h3 class="text-2xl sm:text-3xl font-kids text-slate-700 mb-3">No Skill Tree Yet!</h3>
+                        <h3 class="text-2xl sm:text-3xl font-kids text-slate-700 mb-3" x-text="t('no_skill_tree')">No Skill Tree Yet!</h3>
                         <p class="text-slate-400 font-bold max-w-xs mb-8 text-sm sm:text-base">
-                            Let the AI generate a personalised skill path for 
-                            <span class="capitalize" x-text="skillTreeSubject"></span> 
-                            based on <span x-text="childProfile.name || 'your child'"></span>'s level!
+                            <span x-text="t('let_ai_skill')">Let the AI generate a personalised skill path for</span> 
+                            <span class="capitalize" x-text="t(skillTreeSubject)"></span> 
+                            <span x-text="t('based_on_name').replace('{name}', childProfile.name || t('your_child'))"></span>
                         </p>
                         <button @click="generateSkillTree(skillTreeSubject)"
                             :disabled="isGeneratingSkillTree"
                             class="relative px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl font-kids text-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all border-b-4 border-orange-700 disabled:opacity-60 disabled:cursor-not-allowed">
-                            <span x-show="!isGeneratingSkillTree">✨ Generate My Skill Tree</span>
+                            <span x-show="!isGeneratingSkillTree" x-text="t('generate_skill_tree')">✨ Generate My Skill Tree</span>
                             <span x-show="isGeneratingSkillTree" class="flex items-center gap-3">
                                 <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-                                Growing your tree...
+                                <span x-text="t('growing_tree')">Growing your tree...</span>
                             </span>
                         </button>
-                        <p class="text-[10px] text-slate-300 mt-4 uppercase tracking-widest font-bold">Powered by AI ✨</p>
+                        <p class="text-[10px] text-slate-300 mt-4 uppercase tracking-widest font-bold" x-text="t('powered_by_ai')">Powered by AI ✨</p>
                     </div>
 
                     <!-- Skill Nodes Tree -->
@@ -1545,7 +1542,7 @@
                                 <h3 class="font-kids text-2xl text-slate-800" x-text="skillTreeData[skillTreeSubject]?.title || 'Skill Tree'"></h3>
                                 <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">
                                     <span x-text="Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length"></span>
-                                    / <span x-text="(skillTreeData[skillTreeSubject]?.nodes || []).length"></span> skills mastered
+                                    <span x-text="' / ' + (skillTreeData[skillTreeSubject]?.nodes || []).length + ' ' + t('skills_mastered')"> skills mastered</span>
                                 </p>
                             </div>
                             <button @click="if(confirm('Regenerate this skill tree? Your progress for this subject will be reset.')) { delete skillTreeData[skillTreeSubject]; if(skillTreeNodeProgress[skillTreeSubject]) delete skillTreeNodeProgress[skillTreeSubject]; localStorage.setItem('skill_tree_data', JSON.stringify(skillTreeData)); localStorage.setItem('skill_tree_progress', JSON.stringify(skillTreeNodeProgress)); generateSkillTree(skillTreeSubject); }" 
@@ -1609,9 +1606,9 @@
                                                         'text-green-600': getSkillNodeStatus(skillTreeSubject, node.id) === 'completed',
                                                         'text-gray-400': getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'
                                                     }">
-                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'">✅ Mastered</span>
-                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked'">▶ Ready</span>
-                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'">🔒 Locked</span>
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'completed'" x-text="'✅ ' + t('mastered')">✅ Mastered</span>
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'unlocked'" x-text="'▶ ' + t('ready')">▶ Ready</span>
+                                                    <span x-show="getSkillNodeStatus(skillTreeSubject, node.id) === 'locked'" x-text="'🔒 ' + t('locked')">🔒 Locked</span>
                                                 </span>
                                             </div>
                                             <h4 class="font-kids text-base sm:text-xl text-slate-800 leading-tight" x-text="'Skill ' + (node.id + 1) + ': ' + node.title"></h4>
@@ -1636,8 +1633,8 @@
                             <template x-if="skillTreeData[skillTreeSubject] && (skillTreeData[skillTreeSubject]?.nodes || []).length > 0 && Object.values(skillTreeNodeProgress[skillTreeSubject] || {}).filter(v => v === 'completed').length === (skillTreeData[skillTreeSubject]?.nodes || []).length">
                                 <div class="mt-10 w-full max-w-sm bg-gradient-to-r from-yellow-400 to-amber-500 rounded-3xl p-6 text-white text-center shadow-2xl animate__animated animate__bounceIn">
                                     <div class="text-5xl mb-3">🏆</div>
-                                    <h3 class="font-kids text-2xl mb-1">Tree Complete!</h3>
-                                    <p class="text-yellow-100 text-sm font-bold">You mastered all skills in this subject!</p>
+                                    <h3 class="font-kids text-2xl mb-1" x-text="t('tree_complete')">Tree Complete!</h3>
+                                    <p class="text-yellow-100 text-sm font-bold" x-text="t('mastered_all_skills')">You mastered all skills in this subject!</p>
                                 </div>
                             </template>
                         </div>
@@ -1647,12 +1644,12 @@
 
                 <!-- Footer -->
                 <div class="p-4 sm:p-6 bg-white border-t-2 border-gray-100 flex items-center justify-between">
-                    <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest">AI-Generated • Progress Saved</p>
+                    <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest" x-text="t('ai_generated_saved')">AI-Generated • Progress Saved</p>
                     <button x-show="skillTreeData[skillTreeSubject]" 
                         @click="generateSkillTree(skillTreeSubject)" 
                         :disabled="isGeneratingSkillTree"
                         class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50">
-                        <i class="fas fa-magic mr-1"></i> Regenerate
+                        <i class="fas fa-magic mr-1"></i> <span x-text="t('regenerate')">Regenerate</span>
                     </button>
                 </div>
             </div>
@@ -1692,10 +1689,10 @@
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <span class="text-xl">🎯</span>
-                                <h3 class="font-kids text-lg text-slate-700">Today's Missions</h3>
+                                <h3 class="font-kids text-lg text-slate-700" x-text="t('daily_missions')">Today's Missions</h3>
                             </div>
                             <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-full" 
-                                 x-text="dailyQuests.filter(q => q.claimed).length + ' / ' + dailyQuests.length + ' Complete'"></div>
+                                 x-text="dailyQuests.filter(q => q.claimed).length + ' / ' + dailyQuests.length + ' ' + t('complete')"></div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <template x-for="quest in dailyQuests">
@@ -1707,7 +1704,7 @@
                                          :class="quest.completed ? 'bg-green-100 text-green-600' : ''"></div>
                                     
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-[11px] font-bold text-slate-700 leading-tight truncate" x-text="quest.text"></p>
+                                        <p class="text-[11px] font-bold text-slate-700 leading-tight truncate" x-text="t(quest.titleKey)"></p>
                                         
                                         <div class="flex items-center justify-between mt-1 mb-1">
                                             <span class="text-[9px] font-bold text-amber-500" x-text="'+' + quest.reward"></span>
@@ -1730,7 +1727,7 @@
                                                 quest.claimed ? 'bg-green-500 text-white' : ''
                                             ]">
                                         <i x-show="!quest.completed" class="fas fa-lock opacity-20"></i>
-                                        <span x-show="quest.completed && !quest.claimed" class="leading-tight">Claim!</span>
+                                        <span x-show="quest.completed && !quest.claimed" class="leading-tight" x-text="t('claim') + '!'">Claim!</span>
                                         <i x-show="quest.claimed" class="fas fa-check"></i>
                                     </button>
                                 </div>
@@ -1781,13 +1778,13 @@
                                 :disabled="isGeneratingPath">
                             <div x-show="isGeneratingPath" class="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center">
                                 <div class="spinner border-purple-500 mb-4"></div>
-                                <p class="font-kids text-purple-600 animate-pulse text-sm">Magic in progress...</p>
+                                <p class="font-kids text-purple-600 animate-pulse text-sm" x-text="t('magic_in_progress')">Magic in progress...</p>
                             </div>
                             <div class="w-24 h-24 rounded-full bg-purple-50 flex items-center justify-center text-5xl mb-6 group-hover:rotate-12 transition-transform">
                             ✨
                             </div>
-                            <h3 class="text-2xl font-kids text-purple-600 mb-2">Magic Wand</h3>
-                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Generate New Quest</p>
+                            <h3 class="text-2xl font-kids text-purple-600 mb-2" x-text="t('magic_wand')">Magic Wand</h3>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest" x-text="t('generate_new_quest')">Generate New Quest</p>
                             <div class="mt-6 text-[10px] bg-purple-100 text-purple-600 px-3 py-1 rounded-full font-bold">Powered by AI 🪄</div>
                         </button>
                     </div>
@@ -1795,14 +1792,14 @@
 
                 <div x-show="currentPath" class="flex-1 overflow-y-auto relative bg-slate-50 custom-scroll">
                     <button @click="currentPath = null" class="absolute top-4 left-4 z-20 bg-white px-4 py-2 rounded-xl shadow-md font-bold text-gray-600 hover:text-blue-500">
-                        <i class="fas fa-arrow-left mr-2"></i> Back
+                        <i class="fas fa-arrow-left mr-2"></i> <span x-text="t('back')">Back</span>
                     </button>
 
                     <div x-show="currentPath && currentPath.premium && !isPremium" class="absolute inset-0 z-30 bg-white/90 flex flex-col items-center justify-center text-center p-8 backdrop-blur-sm">
                         <div class="text-6xl mb-4">👑</div>
-                        <h2 class="text-3xl font-kids text-slate-800 mb-2">Premium Curriculum</h2>
-                        <p class="text-slate-500 font-bold max-w-sm mb-6">Unlock all Adventure Paths, Personalized Plans, and Certificates for just $4.99/mo!</p>
-                        <button @click="showPremiumModal = true; showLearningPath = false" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600">Upgrade Now</button>
+                        <h2 class="text-3xl font-kids text-slate-800 mb-2" x-text="t('premium_curriculum')">Premium Curriculum</h2>
+                        <p class="text-slate-500 font-bold max-w-sm mb-6" x-text="t('unlock_all_paths_desc')">Unlock all Adventure Paths, Personalized Plans, and Certificates for just $4.99/mo!</p>
+                        <button @click="showPremiumModal = true; showLearningPath = false" class="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600" x-text="t('upgrade_now')">Upgrade Now</button>
                     </div>
 
                     <div class="flex flex-col items-center py-24 px-4 min-h-full relative">
@@ -1859,7 +1856,7 @@
                                         <button @click.stop="downloadLesson(level)"
                                                 class="mt-2 text-[8px] font-bold uppercase tracking-widest text-indigo-400 hover:text-indigo-600 flex items-center justify-center gap-1 w-full p-1 rounded-lg hover:bg-indigo-50 transition-colors">
                                             <i class="fas" :class="downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title)) ? 'fa-check-circle text-green-500' : 'fa-download'"></i>
-                                            <span x-text="downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title)) ? 'Stored' : 'Offline Mode'"></span>
+                                            <span x-text="downloadedLessons.some(l => (l.id || l.title) === (level.id || level.title)) ? t('stored') : t('offline_mode')"></span>
                                         </button>
                                     </template>
                                 </div>
@@ -2012,7 +2009,7 @@
                         <div x-show="isHintThinking || hintText" class="mb-6 p-4 bg-blue-50 rounded-2xl border-2 border-blue-100 animate__animated animate__fadeIn">
                             <div x-show="isHintThinking" class="flex items-center gap-3 text-blue-500 font-bold">
                                 <div class="spinner w-5 h-5 border-blue-500 border-2"></div>
-                                <span class="font-kids animate-pulse">Professor AI is thinking of a hint...</span>
+                                <span class="font-kids animate-pulse" x-text="t('professor_thinking_hint')">Professor AI is thinking of a hint...</span>
                             </div>
                             <div x-show="!isHintThinking && hintText" class="flex gap-3">
                                 <div class="text-2xl">💡</div>
@@ -2035,23 +2032,23 @@
 
                     <div x-show="lessonStep === 'success'" class="flex-1 flex flex-col items-center justify-center text-center py-8">
                         <div class="text-8xl mb-4 animate__animated animate__tada">🎉</div>
-                        <h2 class="text-4xl font-kids text-green-500 mb-2">Lesson Complete!</h2>
-                        <p class="text-gray-500 font-bold mb-8">You are getting smarter!</p>
+                        <h2 class="text-4xl font-kids text-green-500 mb-2" x-text="t('lesson_complete')">Lesson Complete!</h2>
+                        <p class="text-gray-500 font-bold mb-8" x-text="t('getting_smarter')">You are getting smarter!</p>
                         
                         <div class="flex justify-center gap-4 mb-8">
                             <div class="bg-yellow-50 px-6 py-3 rounded-2xl border border-yellow-200 shadow-sm flex flex-col">
                                 <span class="font-bold text-yellow-700 text-lg mb-1">💰 +50</span>
-                                <span class="text-xs text-yellow-600 font-bold uppercase">Coins</span>
+                                <span class="text-xs text-yellow-600 font-bold uppercase" x-text="t('coins')">Coins</span>
                             </div>
                             <div class="bg-purple-50 px-6 py-3 rounded-2xl border border-purple-200 shadow-sm flex flex-col">
                                 <span class="font-bold text-purple-700 text-lg mb-1">⭐ +100</span>
-                                <span class="text-xs text-purple-600 font-bold uppercase">XP</span>
+                                <span class="text-xs text-purple-600 font-bold uppercase" x-text="t('xp')">XP</span>
                             </div>
                         </div>
 
                         <div class="mt-auto w-full pt-4">
                             <button @click="completeLesson()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-xl shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105 active:scale-95">
-                                Continue Journey 🚀
+                                <span x-text="t('continue_journey')">Continue Journey 🚀</span>
                             </button>
                         </div>
                     </div>
@@ -2066,7 +2063,7 @@
                 <!-- Loading State -->
                 <div class="text-center py-10" x-show="quizState === 'loading'">
                     <div class="spinner mx-auto mb-6 border-yellow-400 scale-125"></div>
-                    <h2 class="text-2xl font-kids text-yellow-500" x-text="t('thinking') + '... 🤔'">Thinking up a tricky one... 🤔</h2>
+                    <h2 class="text-2xl font-kids text-yellow-500" x-text="t('thinking_tricky')">Thinking up a tricky one... 🤔</h2>
                     <p class="text-xs text-slate-400 font-bold mt-2" x-text="'Building a fun challenge for ' + (childProfile.name || 'you') + '!'"></p>
                 </div>
 
@@ -2090,7 +2087,7 @@
 
                 <div x-show="quizState === 'active'">
                     <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" 
-                        x-text="quizType === 'matching' ? 'Match Pairs!' : (quizType === 'scramble' ? 'Build the Sentence!' : (quizType === 'listen' ? 'Listen & Answer' : 'Pop Quiz!'))">Pop Quiz!</span>
+                        x-text="quizType === 'matching' ? t('match_pairs') : (quizType === 'scramble' ? t('build_sentence') : (quizType === 'listen' ? t('listen_answer') : t('pop_quiz')))">Pop Quiz!</span>
                     <h2 class="text-xl font-bold text-gray-800 mt-4 mb-6 leading-tight" x-text="quizQuestion"></h2>
                     
                     <!-- Multiple Choice & Listen UI -->
@@ -2170,14 +2167,14 @@
                     <div class="text-6xl mb-4 animate__animated animate__tada">🎉</div>
                     <h2 class="text-3xl font-kids text-green-500 mb-2" x-text="t('awesome')">Awesome!</h2>
                     <p class="font-bold text-gray-500 mb-6" x-text="'You completed the quiz and earned ' + quizCoinsEarned + ' Coins!'"></p>
-                    <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Collect Reward! 💰</button>
+                    <button @click="showQuiz = false; toggleScroll(false)" class="bg-green-500 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform" x-text="t('collect_reward')">Collect Reward! 💰</button>
                 </div>
 
                 <div class="text-center" x-show="quizState === 'wrong'">
                     <div class="text-6xl mb-4 animate__animated animate__shakeX">😅</div>
-                    <h2 class="text-3xl font-kids text-orange-500 mb-2">Oops!</h2>
+                    <h2 class="text-3xl font-kids text-orange-500 mb-2" x-text="t('oops')">Oops!</h2>
                     <p class="font-bold text-gray-500 mb-6" x-text="consecutiveMistakes >= 2 ? 'Let\'s try something easier together!' : 'That wasn\'t quite right. Try again?'"></p>
-                    <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform">Try Again</button>
+                    <button @click="quizState = 'active'" class="bg-orange-400 text-white px-8 py-3 rounded-xl font-kids shadow-lg hover:scale-105 transition-transform" x-text="t('try_again')">Try Again</button>
                 </div>
             </div>
         </div>
@@ -2192,8 +2189,8 @@
                     <div class="w-20 h-20 sm:w-24 sm:h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border-4 border-white/30">
                         <span class="text-5xl sm:text-6xl" x-text="verifyingCert?.icon || '🏆'"></span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-kids mb-1">Certificate Verified!</h2>
-                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-80">Official Proof of Learning</p>
+                    <h2 class="text-2xl sm:text-3xl font-kids mb-1" x-text="t('cert_verified')">Certificate Verified!</h2>
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-80" x-text="t('official_proof')">Official Proof of Learning</p>
                 </div>
 
                 <div class="p-6 sm:p-10 text-center">
@@ -2230,11 +2227,11 @@
                     </p>
 
                     <button @click="showVerificationModal = false" class="w-full py-3 sm:py-4 bg-slate-900 text-white rounded-[1.2rem] sm:rounded-2xl font-kids text-lg sm:text-xl hover:bg-black transition-all shadow-xl">
-                        Close Certificate
+                        <span x-text="t('close_cert')">Close Certificate</span>
                     </button>
                     
                     <button @click="shareBlockchainCert(verifyingCert)" class="mt-4 text-blue-500 font-bold text-xs uppercase tracking-widest hover:underline flex items-center justify-center gap-2 mx-auto">
-                        <i class="fas fa-share-alt"></i> Share this proof
+                        <i class="fas fa-share-alt"></i> <span x-text="t('share_this_proof')">Share this proof</span>
                     </button>
                 </div>
             </div>
@@ -2244,18 +2241,18 @@
         <div x-show="showOutOfHeartsModal" x-cloak class="fixed inset-0 z-[99] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
             <div class="bg-white rounded-[2.5rem] max-w-sm w-full p-8 shadow-2xl text-center animate__animated animate__bounceIn">
                 <div class="text-7xl mb-4">💔</div>
-                <h2 class="text-3xl font-kids text-red-500 mb-2">Out of Hearts!</h2>
-                <p class="text-gray-500 font-bold mb-4">Take a break and come back later, or get Premium for unlimited hearts!</p>
+                <h2 class="text-3xl font-kids text-red-500 mb-2" x-text="t('out_of_hearts')">Out of Hearts!</h2>
+                <p class="text-gray-500 font-bold mb-4" x-text="t('out_of_hearts_desc')">Take a break and come back later, or get Premium for unlimited hearts!</p>
 
                 <div class="bg-red-50 rounded-2xl py-3 px-4 mb-6 text-sm font-bold text-red-400" x-show="heartsRefillTime">
                     <i class="fas fa-clock mr-2"></i>Hearts refill in: <span x-text="heartsRefillMinutes()"></span>
                 </div>
 
                 <button @click="showPremiumModal = true; showOutOfHeartsModal = false" class="w-full py-4 bg-yellow-400 text-yellow-900 rounded-2xl font-kids text-xl shadow-lg mb-3 hover:scale-105 transition-transform border-b-4 border-yellow-600">
-                    👑 Get Unlimited Hearts
+                    <span x-text="t('get_unlimited_hearts')">👑 Get Unlimited Hearts</span>
                 </button>
                 <button @click="showOutOfHeartsModal = false; showQuiz = false; toggleScroll(false)" class="text-gray-400 font-bold text-sm hover:underline">
-                    Come back later
+                    <span x-text="t('come_back_later')">Come back later</span>
                 </button>
             </div>
         </div>
@@ -2266,7 +2263,7 @@
                 <div class="p-6 bg-white border-b-4 border-gray-100 flex justify-between items-center z-20 shadow-sm">
                     <div>
                         <h2 class="text-3xl font-kids text-slate-800" x-text="getDailyContent().title"></h2>
-                         <p class="text-gray-500 font-bold" x-text="'Current Progress: Day ' + learningPathDay + ' of 30'"></p>
+                         <p class="text-gray-500 font-bold" x-text="t('current_progress_day').replace('{day}', learningPathDay).replace('{total}', 30)"></p>
                     </div>
                     <button @click="showDailyPath = false; toggleScroll(false)" class="bg-gray-100 p-3 rounded-full hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors">
                         <i class="fas fa-times text-2xl"></i>
@@ -2298,7 +2295,7 @@
 
                     <!-- Type: Quiz (Simple Placeholder for now) -->
                     <div x-show="getDailyContent().type === 'quiz'" class="w-full max-w-3xl bg-white p-10 rounded-[2.5rem] shadow-xl text-center border-4 border-blue-100 animate__animated animate__zoomIn">
-                        <h3 class="text-3xl font-bold mb-8 text-blue-600">Quick Check!</h3>
+                        <h3 class="text-3xl font-bold mb-8 text-blue-600" x-text="t('quick_check')">Quick Check!</h3>
                         <template x-for="(q, idx) in getDailyContent().quiz || []">
                             <div class="mb-10 last:mb-0">
                                 <p class="text-2xl font-bold text-slate-700 mb-6" x-text="q.q"></p>
@@ -2315,16 +2312,16 @@
                     <!-- Type: Report -->
                     <div x-show="getDailyContent().type === 'report'" class="text-center bg-white p-12 rounded-[3rem] shadow-2xl w-full max-w-3xl border-8 border-yellow-300 animate__animated animate__tada">
                         <div class="text-9xl mb-6">🏆</div>
-                        <h3 class="text-5xl font-kids text-yellow-600 mb-4">Super Star!</h3>
-                        <p class="text-2xl text-gray-500 font-bold mb-10">You completed Week 1!</p>
+                        <h3 class="text-5xl font-kids text-yellow-600 mb-4" x-text="t('super_star')">Super Star!</h3>
+                        <p class="text-2xl text-gray-500 font-bold mb-10" x-text="t('completed_week_1')">You completed Week 1!</p>
                         <div class="flex justify-center gap-4">
                             <div class="bg-blue-50 px-8 py-4 rounded-3xl">
                                 <span class="block text-3xl font-bold text-blue-600">7</span>
-                                <span class="text-xs font-bold text-blue-400 uppercase">Days Streak</span>
+                                <span class="text-xs font-bold text-blue-400 uppercase" x-text="t('days_streak')">Days Streak</span>
                             </div>
                             <div class="bg-purple-50 px-8 py-4 rounded-3xl">
                                 <span class="block text-3xl font-bold text-purple-600">A+</span>
-                                <span class="text-xs font-bold text-purple-400 uppercase">Grade</span>
+                                <span class="text-xs font-bold text-purple-400 uppercase" x-text="t('grade')">Grade</span>
                             </div>
                         </div>
                     </div>
@@ -2334,7 +2331,7 @@
                         <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center text-8xl shadow-xl mx-auto mb-8 animate-bounce">🚀</div>
                         <h3 class="text-3xl font-kids text-slate-700 mb-4" x-text="getDailyContent().task"></h3>
                         <button @click="showDailyPath = false; $nextTick(() => $refs.queryInput.focus())" class="mt-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-5 rounded-full font-bold text-xl shadow-xl hover:scale-105 transition-transform hover:shadow-2xl">
-                            Go to Chat & Ask! <i class="fas fa-comment-dots ml-2"></i>
+                            <span x-text="t('go_to_chat_ask')">Go to Chat & Ask!</span> <i class="fas fa-comment-dots ml-2"></i>
                         </button>
                     </div>
 
@@ -2342,14 +2339,14 @@
 
                 <!-- Footer -->
                 <div class="p-6 bg-white border-t flex justify-between items-center z-20">
-                     <button @click="if(learningPathDay > 1) learningPathDay--" :disabled="learningPathDay <= 1" class="text-gray-400 font-bold hover:text-blue-500 disabled:opacity-50 transition-colors flex items-center gap-2"><i class="fas fa-chevron-left"></i> Previous</button>
+                     <button @click="if(learningPathDay > 1) learningPathDay--" :disabled="learningPathDay <= 1" class="text-gray-400 font-bold hover:text-blue-500 disabled:opacity-50 transition-colors flex items-center gap-2"><i class="fas fa-chevron-left"></i> <span x-text="t('previous')">Previous</span></button>
                      
                      <div class="w-full max-w-xs mx-4 bg-gray-100 rounded-full h-4 relative">
                         <div class="absolute inset-0 bg-gray-200 rounded-full"></div>
                         <div class="absolute left-0 top-0 bottom-0 bg-green-400 rounded-full transition-all duration-1000" :style="'width: ' + ((learningPathDay / 30) * 100) + '%'"></div>
                      </div>
 
-                     <button @click="if(learningPathDay < 30) learningPathDay++" :disabled="learningPathDay >= 30" class="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-600 transition-transform active:scale-95 flex items-center gap-2">Next <i class="fas fa-chevron-right"></i></button>
+                     <button @click="if(learningPathDay < 30) learningPathDay++" :disabled="learningPathDay >= 30" class="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-600 transition-transform active:scale-95 flex items-center gap-2"><span x-text="t('next')">Next</span> <i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
@@ -2357,7 +2354,7 @@
         <div x-show="showLegalDoc" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black bg-opacity-80" x-transition.opacity>
             <div class="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl relative flex flex-col max-h-[80vh]">
                 <button @click="showLegalDoc = null" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-600"><i class="fas fa-times-circle"></i></button>
-                <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? 'Privacy Policy' : 'Terms of Service'"></h2>
+                <h2 class="text-2xl font-kids mb-4 text-slate-800" x-text="showLegalDoc === 'privacy' ? t('privacy_policy') : t('terms_of_service')"></h2>
                 <div class="overflow-y-auto pr-2 text-sm text-slate-600 space-y-4">
                     
                     <template x-if="showLegalDoc === 'privacy'">
@@ -2439,14 +2436,14 @@
                     <button @click="shopTab = 'boutique'" 
                         class="px-6 py-2 rounded-xl font-bold transition-all flex items-center gap-2"
                         :class="shopTab === 'boutique' ? 'bg-white text-pink-600 shadow-md' : 'text-slate-500 hover:bg-slate-50'">
-                        <span>👗</span> <span class="hidden sm:inline">The Boutique</span>
+                        <span>👗</span> <span class="hidden sm:inline" x-text="t('the_boutique')">The Boutique</span>
                     </button>
                 </div>
 
                 <!-- Auras Tab Content -->
                 <div x-show="shopTab === 'auras'" class="flex-1 overflow-y-auto px-1 custom-scroll pb-4">
                     <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-purple-600" x-text="t('magic_auras')">Magic Auras</h2>
-                    <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8">Add magic effects to your teacher!</p>
+                    <p class="text-center text-gray-500 font-bold mb-6 sm:mb-8" x-text="t('magic_auras_sub')">Add magic effects to your teacher!</p>
                     
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                         <template x-for="item in shopItems">
@@ -2485,8 +2482,8 @@
 
                 <!-- Boutique Tab Content -->
                 <div x-show="shopTab === 'boutique'" class="flex-1 overflow-y-auto px-1 custom-scroll pb-4" x-data="{ hoveredItem: null }">
-                    <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-pink-500">The Boutique</h2>
-                    <p class="text-center text-gray-500 font-bold mb-6">Style your tutor with amazing hats and glasses!</p>
+                    <h2 class="text-3xl sm:text-4xl font-kids text-center mb-2 text-pink-500" x-text="t('the_boutique')">The Boutique</h2>
+                    <p class="text-center text-gray-500 font-bold mb-6" x-text="t('boutique_sub')">Style your tutor with amazing hats and glasses!</p>
 
                     <!-- Try-On Preview -->
                     <div class="bg-slate-50 rounded-3xl p-6 mb-8 flex flex-col items-center border-4 border-white shadow-inner relative overflow-hidden group">
@@ -2525,7 +2522,7 @@
                                         <span x-text="item.price"></span> 💰
                                     </div>
                                     <!-- Owned Label -->
-                                    <div x-show="boutiqueInventory.includes(item.id)" class="text-[9px] font-bold text-green-500 uppercase tracking-widest mt-1">
+                                    <div x-show="boutiqueInventory.includes(item.id)" class="text-[9px] font-bold text-green-500 uppercase tracking-widest mt-1" x-text="t('owned')">
                                         Owned ✅
                                     </div>
                                 </div>
@@ -2538,7 +2535,7 @@
                                         : (coins >= item.price ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-400 cursor-not-allowed')"
                                     :disabled="!boutiqueInventory.includes(item.id) && coins < item.price"
                                 >
-                                    <span x-text="boutiqueInventory.includes(item.id) ? (equippedAccessories[currentChar.nameKey] === item.id ? 'Unequip' : 'Equip') : 'Buy Item'"></span>
+                                    <span x-text="boutiqueInventory.includes(item.id) ? (equippedAccessories[currentChar.nameKey] === item.id ? t('unequip') : t('equip')) : t('buy_item')"></span>
                                 </button>
                             </div>
                         </template>
@@ -2559,7 +2556,7 @@
  
                   <!-- Event Branding in Shop -->
                   <div class="mt-6 pt-6 border-t border-slate-100 text-center">
-                      <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest leading-none">Seasonal Event Support</p>
+                      <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest leading-none" x-text="t('seasonal_event_support')">Seasonal Event Support</p>
                       <p class="text-xs text-slate-400 mt-1">Seasonal items are only available during the <span class="font-bold text-pink-500" x-text="currentSeason.name"></span> event!</p>
                   </div>
              </div>
@@ -2576,7 +2573,7 @@
                  <div class="text-center mb-8">
                      <div class="text-7xl mb-4" x-text="currentSeason.icon"></div>
                      <h2 class="text-4xl font-kids" :class="currentSeason.color" x-text="currentSeason.name"></h2>
-                     <p class="text-slate-500 font-bold">Seasonal Event is LIVE! 🎊</p>
+                     <p class="text-slate-500 font-bold" x-text="t('seasonal_event_live')">Seasonal Event is LIVE! 🎊</p>
                  </div>
  
                  <div class="space-y-6 mb-8">
@@ -2591,8 +2588,8 @@
                          <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 group hover:border-pink-200 transition-colors">
                              <div class="flex justify-between items-start mb-2">
                                  <div>
-                                     <h4 class="font-bold text-slate-800 text-sm sm:text-base" x-text="quest.title"></h4>
-                                     <p class="text-[10px] sm:text-xs text-slate-500 font-medium" x-text="quest.desc"></p>
+                                     <h4 class="font-bold text-slate-800 text-sm sm:text-base" x-text="t(quest.titleKey)"></h4>
+                                     <p class="text-[10px] sm:text-xs text-slate-500 font-medium" x-text="t(quest.descKey)"></p>
                                  </div>
                                  <div class="text-right">
                                      <span class="bg-pink-100 text-pink-600 px-2 py-1 rounded-lg text-[10px] font-bold uppercase" x-text="'+' + quest.reward + ' ' + currentSeason.tokenIcon"></span>
@@ -2625,12 +2622,12 @@
                     <i class="fas fa-times-circle"></i>
                 </button>
                 <h2 class="text-4xl font-kids text-pink-500 mb-2" x-text="t('daily_rewards')">Daily Rewards!</h2>
-                <p class="font-bold text-gray-500 mb-6">Come back every day for free coins!</p>
+                <p class="font-bold text-gray-500 mb-6" x-text="t('daily_rewards_sub')">Come back every day for free coins!</p>
                 <div class="grid grid-cols-4 gap-3 mb-8">
                     <template x-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']">
                         <div class="p-3 rounded-2xl border-2 flex flex-col items-center"
                             :class="todayIndex === index ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50 opacity-60'">
-                            <span class="text-[10px] font-bold uppercase" x-text="day"></span>
+                            <span class="text-[10px] font-bold uppercase" x-text="t(day.toLowerCase())"></span>
                             <span class="text-xl" x-text="index === 6 ? '🎁' : '💰'"></span>
                             <span class="text-xs font-bold text-gray-600" x-text="index === 6 ? '100' : '50'"></span>
                         </div>
@@ -2640,7 +2637,7 @@
                     class="w-full py-4 rounded-3xl font-kids text-2xl text-white shadow-xl transform transition hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
                     :class="(!isPremium || rewardClaimedToday) ? 'bg-gray-400' : 'bg-gradient-to-r from-pink-500 to-orange-400 border-b-4 border-pink-700'"
                     :disabled="rewardClaimedToday">
-                    <span x-text="!isPremium ? 'Join Premium to Claim! 👑' : (rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim') + ' 100 Coins! ✨' : t('claim') + ' 50 Coins! ✨'))"></span>
+                    <span x-text="!isPremium ? t('join_premium_claim') : (rewardClaimedToday ? t('see_you_tomorrow') : (todayIndex === 6 ? t('claim_coins').replace('{amount}', 100) : t('claim_coins').replace('{amount}', 50)))"></span>
                 </button>
             </div>
         </div>
@@ -2650,7 +2647,7 @@
             <div class="bg-white rounded-[40px] w-full max-w-md overflow-hidden shadow-2xl border-4 border-white transform animate__animated animate__zoomIn">
                 <div class="p-8">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-kids text-slate-800">Switch Explorer 🗺️</h2>
+                        <h2 class="text-2xl font-kids text-slate-800" x-text="t('switch_explorer')">Switch Explorer 🗺️</h2>
                         <button @click="showProfileSwitcher = false" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
                     </div>
                     
@@ -3002,27 +2999,27 @@
                                     </div>
 
                                     <div x-show="isEditingProfile" class="space-y-3 animate__animated animate__fadeIn">
-                                        <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" placeholder="Name">
+                                        <input type="text" x-model="childProfile.name" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm" :placeholder="t('parent_name')">
                                         
                                         <div>
-                                            <label class="text-xs text-slate-400 font-bold uppercase">Adjust Age Group</label>
+                                            <label class="text-xs text-slate-400 font-bold uppercase" x-text="t('difficulty')">Adjust Age Group</label>
                                             <select x-model="childProfile.ageRange" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
-                                                <option value="4-6">4-6 Years (Basic)</option>
-                                                <option value="7-9">7-9 Years (Logic)</option>
-                                                <option value="10-13">10-13 Years (Science)</option>
+                                                <option value="4-6" x-text="t('age_4_6')">4-6 Years (Basic)</option>
+                                                <option value="7-9" x-text="t('age_7_9')">7-9 Years (Logic)</option>
+                                                <option value="10-13" x-text="t('age_10_13')">10-13 Years (Science)</option>
                                             </select>
                                         </div>
                                         
 
                                         
-                                        <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2">Update Profile</button>
+                                        <button @click="saveChildProfile()" class="w-full py-2 bg-blue-500 text-white rounded-xl text-sm font-bold mt-2" x-text="t('update_profile')">Update Profile</button>
                                     </div>
                                     
                                     <div class="mt-4 pt-4 border-t border-slate-50">
                                         <div class="mb-4">
-                                            <label class="text-xs text-slate-400 font-bold uppercase">Daily Screen Time</label>
+                                            <label class="text-xs text-slate-400 font-bold uppercase" x-text="t('screen_time')">Daily Screen Time</label>
                                             <select x-model="dailyTimeLimit" @change="syncData()" class="w-full p-2 border rounded-xl bg-slate-50 font-bold text-sm mt-1">
-                                                <option value="0">Unlimited ♾️</option>
+                                                <option value="0" x-text="t('unlimited')">Unlimited ♾️</option>
                                                 <option value="15">15 Minutes</option>
                                                 <option value="30">30 Minutes</option>
                                                 <option value="45">45 Minutes</option>
@@ -3031,17 +3028,17 @@
                                             </select>
                                         </div>
                                         <button @click="showManageChildren = true" class="w-full py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold uppercase hover:bg-slate-200 transition-colors">
-                                            <i class="fas fa-users-cog mr-2"></i>Manage All Children
+                                            <i class="fas fa-users-cog mr-2"></i><span x-text="t('manage_children')">Manage All Children</span>
                                         </button>
                                         <button @click="showOnboarding = true; onboardingStep = 0; showParentPortal = false" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold uppercase hover:bg-blue-200 transition-colors mt-2">
-                                            <i class="fas fa-redo mr-2"></i>Restart Tutorial
+                                            <i class="fas fa-redo mr-2"></i><span x-text="t('restart_tutorial')">Restart Tutorial</span>
                                         </button>
                                     </div>
                                 </div>
 
                                 <div class="bg-blue-50 p-6 rounded-3xl shadow-sm border border-blue-100 flex flex-col justify-center">
                                     <h3 class="font-bold text-blue-800 text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <i class="fas fa-flag-checkered"></i> 30-Day Outcomes
+                                        <i class="fas fa-flag-checkered"></i> <span x-text="t('outcomes_30d')">30-Day Outcomes</span>
                                     </h3>
                                     <div class="space-y-3">
                                         <template x-for="outcome in getRegionalOutcomes()">
@@ -3055,11 +3052,11 @@
 
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                                     <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-shield-virus text-green-500"></i> AI Guardrails Active
+                                        <i class="fas fa-shield-virus text-green-500"></i> <span x-text="t('guardrails_active')">AI Guardrails Active</span>
                                     </h3>
                                     <div class="space-y-4">
                                         <div>
-                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">App Language</label>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1" x-text="t('app_language')">App Language</label>
                                             <select x-model="currentLanguage" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
                                                 <template x-for="lang in availableLanguages">
                                                     <option :value="lang" x-text="lang"></option>
@@ -3068,7 +3065,7 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Regional Curriculum</label>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1" x-text="t('regional_curriculum')">Regional Curriculum</label>
                                             <select x-model="currentCurriculumRegion" @change="syncData()" class="w-full p-2 border-2 border-slate-100 rounded-xl bg-slate-50 font-bold text-sm outline-none focus:border-blue-300">
                                                 <option value="Global">Global Standards 🌍</option>
                                                 <option value="US">US (Common Core) 🇺🇸</option>
@@ -3079,17 +3076,17 @@
                                         <div class="flex items-start gap-3">
                                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-book"></i></div>
                                             <div>
-                                                <p class="text-xs font-bold text-slate-700 uppercase">Curriculum Aligned</p>
-                                                <p class="text-[10px] text-slate-500 leading-tight">AI answers are restricted to age-appropriate educational topics only.</p>
+                                                <p class="text-xs font-bold text-slate-700 uppercase" x-text="t('curriculum_aligned')">Curriculum Aligned</p>
+                                                <p class="text-[10px] text-slate-500 leading-tight" x-text="t('curriculum_sub')">AI answers are restricted to age-appropriate educational topics only.</p>
                                             </div>
                                         </div>
                                         <div class="flex items-start gap-3">
                                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mt-1 flex-shrink-0"><i class="fas fa-envelope-open-text"></i></div>
                                             <div>
-                                                <p class="text-xs font-bold text-slate-700 uppercase">Learning Wins Summaries</p>
+                                                <p class="text-xs font-bold text-slate-700 uppercase" x-text="t('learning_wins')">Learning Wins Summaries</p>
                                                 <div class="flex items-center gap-2 mt-1">
                                                     <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                                                    <span class="text-[10px] font-bold text-green-600">Daily Automated Reports Active</span>
+                                                    <span class="text-[10px] font-bold text-green-600" x-text="t('reports_active')">Daily Automated Reports Active</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -3097,7 +3094,7 @@
                                             <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 mt-1 flex-shrink-0"><i class="fas fa-bell"></i></div>
                                             <div class="flex-1">
                                                 <div class="flex items-center justify-between">
-                                                    <p class="text-xs font-bold text-slate-700 uppercase">Streak Reminders</p>
+                                                    <p class="text-xs font-bold text-slate-700 uppercase" x-text="t('streak_reminders')">Streak Reminders</p>
                                                     <button @click="setupPushNotifications()" 
                                                             class="w-10 h-5 rounded-full transition-colors relative"
                                                             :class="pushNotificationsEnabled ? 'bg-green-400' : 'bg-slate-300'">
@@ -3105,7 +3102,7 @@
                                                              :class="pushNotificationsEnabled ? 'right-1' : 'left-1'"></div>
                                                     </button>
                                                 </div>
-                                                <p class="text-[10px] text-slate-500 leading-tight mt-1">Get "Don't break your streak!" push notifications on this device.</p>
+                                                <p class="text-[10px] text-slate-500 leading-tight mt-1" x-text="t('streak_reminders_sub')">Get "Don't break your streak!" push notifications on this device.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -3115,12 +3112,12 @@
                                 <div class="bg-indigo-600 p-6 rounded-3xl shadow-xl border-4 border-indigo-400 animate__animated animate__pulse">
                                     <div class="flex flex-col h-full justify-between gap-4">
                                         <div>
-                                            <h3 class="text-white font-kids text-xl mb-1">Weekly Progress Report 📊</h3>
-                                            <p class="text-xs text-indigo-100">Deliver an automatic summary of learning milestones to your email every Monday.</p>
+                                            <h3 class="text-white font-kids text-xl mb-1" x-text="t('weekly_report')">Weekly Progress Report 📊</h3>
+                                            <p class="text-xs text-indigo-100" x-text="t('weekly_report_sub')">Deliver an automatic summary of learning milestones to your email every Monday.</p>
                                         </div>
                                         <div class="space-y-3">
                                             <div class="flex items-center justify-between bg-black/10 p-3 rounded-2xl">
-                                                <span class="text-xs text-white font-bold uppercase tracking-widest">Auto Monday Email</span>
+                                                <span class="text-xs text-white font-bold uppercase tracking-widest" x-text="t('auto_email')">Auto Monday Email</span>
                                                 <button @click="learningStats.weekly_report_opt_out = !learningStats.weekly_report_opt_out; syncData()" 
                                                         class="w-10 h-5 rounded-full transition-colors relative"
                                                         :class="!learningStats.weekly_report_opt_out ? 'bg-green-400' : 'bg-indigo-400'">
@@ -3130,7 +3127,7 @@
                                             </div>
                                             <button @click="requestWeeklyReport()" 
                                                     class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-kids text-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
-                                                <i class="fas fa-paper-plane"></i> Send Report Now
+                                                <i class="fas fa-paper-plane"></i> <span x-text="t('send_report_now')">Send Report Now</span>
                                             </button>
                                         </div>
                                     </div>
@@ -3147,11 +3144,11 @@
                                         </div>
                                     </div>
                                      <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-chart-bar text-indigo-500"></i> Learning Progress Score
+                                        <i class="fas fa-chart-bar text-indigo-500"></i> <span x-text="t('progress_score')">Learning Progress Score</span>
                                     </h3>
                                     <div class="h-48 flex items-end justify-between gap-2 px-2 mt-4">
                                         <template x-if="!learningStats.daily_snapshots || learningStats.daily_snapshots.length === 0">
-                                            <div class="w-full text-center text-slate-400 text-xs italic py-10">
+                                            <div class="w-full text-center text-slate-400 text-xs italic py-10" x-text="t('keep_learning')">
                                                 Keep learning to see your progress chart!
                                             </div>
                                         </template>
@@ -3166,10 +3163,10 @@
                                         </template>
                                     </div>
                                     <div class="mt-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-                                        <p class="text-[10px] text-indigo-700 font-bold uppercase tracking-widest leading-none">Overall proficiency Score</p>
+                                        <p class="text-[10px] text-indigo-700 font-bold uppercase tracking-widest leading-none" x-text="t('proficiency_score')">Overall proficiency Score</p>
                                         <div class="flex justify-between items-end mt-2">
                                             <span class="text-3xl font-kids text-indigo-600" x-text="learningScore"></span>
-                                            <span class="text-[10px] font-bold text-indigo-400 bg-white px-2 py-1 rounded-full shadow-sm">Formula: XP + Quizzes + Streak + Vocabulary</span>
+                                            <span class="text-[10px] font-bold text-indigo-400 bg-white px-2 py-1 rounded-full shadow-sm" x-text="t('formula')">Formula: XP + Quizzes + Streak + Vocabulary</span>
                                         </div>
                                     </div>
                                 </div>
@@ -3177,28 +3174,28 @@
                                 <!-- Dual Quests Section -->
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
                                      <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-bullseye text-red-500"></i> Shared Missions 🎯
+                                        <i class="fas fa-bullseye text-red-500"></i> <span x-text="t('shared_missions')">Shared Missions 🎯</span>
                                     </h3>
                                     
                                     <div class="space-y-4">
                                         <template x-if="activeDualQuest && activeDualQuest.title">
                                             <div class="bg-red-50 rounded-2xl p-4 border border-red-100">
-                                                <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Active Mission:</p>
+                                                <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1" x-text="t('active_mission')">Active Mission:</p>
                                                 <p class="text-sm font-bold text-slate-700" x-text="activeDualQuest.title"></p>
                                                 <div class="mt-3 flex items-center justify-between">
                                                     <div>
-                                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Secret Code:</p>
+                                                        <p class="text-[10px] font-bold text-slate-400 uppercase" x-text="t('secret_code')">Secret Code:</p>
                                                         <p class="text-xl font-kids text-red-600 tracking-widest" x-text="activeDualQuest.code"></p>
                                                     </div>
-                                                    <span x-show="activeDualQuest.isUnlocked" class="text-[10px] bg-green-500 text-white px-2 py-1 rounded-full font-bold">UNLOCKED</span>
+                                                    <span x-show="activeDualQuest.isUnlocked" class="text-[10px] bg-green-500 text-white px-2 py-1 rounded-full font-bold" x-text="t('unlocked')">UNLOCKED</span>
                                                 </div>
                                             </div>
                                         </template>
 
-                                        <p class="text-[10px] text-slate-500">Shared missions encourage bonding. Give your child the code once you finish the activity together!</p>
+                                        <p class="text-[10px] text-slate-500" x-text="t('mission_sub')">Shared missions encourage bonding. Give your child the code once you finish the activity together!</p>
                                         
                                         <button @click="generateDualQuest()" class="w-full py-3 bg-red-500 text-white rounded-xl font-bold text-sm shadow-md hover:bg-red-600 transition-colors">
-                                            <i class="fas fa-plus-circle mr-2"></i> Generate New Mission
+                                            <i class="fas fa-plus-circle mr-2"></i> <span x-text="t('generate_mission')">Generate New Mission</span>
                                         </button>
                                     </div>
                                 </div>
@@ -3212,7 +3209,7 @@
                                         </div>
                                     </div>
                                      <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
-                                        <i class="fas fa-smile-beam text-pink-500"></i> Emotional Insights (New)
+                                        <i class="fas fa-smile-beam text-pink-500"></i> <span x-text="t('emotional_insights')">Emotional Insights (New)</span>
                                     </h3>
                                     <div class="space-y-4 min-h-[200px] flex flex-col justify-center">
                                         <template x-for="insight in getEmotionalInsights()">
@@ -3224,7 +3221,7 @@
                                                 </div>
                                             </div>
                                         </template>
-                                        <div x-show="parentLogs.length < 3" class="text-center py-4 text-gray-400 text-xs italic">
+                                        <div x-show="parentLogs.length < 3" class="text-center py-4 text-gray-400 text-xs italic" x-text="t('reveal_patterns')">
                                             Asking more questions will reveal emotional patterns!
                                         </div>
                                     </div>
@@ -3235,22 +3232,22 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
                                     <div class="flex justify-between items-start">
-                                        <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i>Membership</h3>
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" :class="isPremium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'" x-text="isPremium ? 'Premium' : 'Free'"></span>
+                                        <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i><span x-text="t('membership')">Membership</span></h3>
+                                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" :class="isPremium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'" x-text="isPremium ? t('premium') : t('free')"></span>
                                     </div>
                                     <div class="mt-4">
-                                        <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? 'All teachers and features unlocked.' : 'Limited to 5 questions per day.'"></p>
+                                        <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? t('membership_sub_premium') : t('membership_sub_free')"></p>
                                         
                                         <template x-if="isPremium && premiumExpiry">
                                             <p class="text-xs text-gray-400 font-bold mb-3">
-                                                Renews on: <span class="text-slate-600" x-text="new Date(Number(premiumExpiry)).toLocaleDateString()"></span>
+                                                <span x-text="t('renews_on')">Renews on:</span> <span class="text-slate-600" x-text="new Date(Number(premiumExpiry)).toLocaleDateString()"></span>
                                             </p>
                                         </template>
 
                                         <button @click="isPremium ? cancelSubscription() : triggerIAP()" 
                                             class="w-full py-3 rounded-xl font-bold text-sm transition-all" 
                                             :class="isPremium ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg transform hover:-translate-y-1'">
-                                            <span x-text="isPremium ? 'Cancel Subscription' : 'Upgrade Now ($4.99/mo)'"></span>
+                                            <span x-text="isPremium ? t('cancel_sub') : t('upgrade_now')"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -3267,9 +3264,9 @@
                                         <i class="fas fa-chart-line text-blue-500"></i> Monthly Report
                                     </h3>
                                     <div class="space-y-4">
-                                        <p class="text-[10px] text-gray-500">A detailed analysis of subjects learned, questions asked, and vocabulary milestones.</p>
+                                        <p class="text-[10px] text-gray-500" x-text="t('monthly_report_sub')">A detailed analysis of subjects learned, questions asked, and vocabulary milestones.</p>
                                         <button @click="downloadMonthlyReport()" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-200 transition-colors">
-                                            <i class="fas fa-file-download mr-2"></i> Download Report (PDF)
+                                            <i class="fas fa-file-download mr-2"></i> <span x-text="t('download_report')">Download Report (PDF)</span>
                                         </button>
                                     </div>
                                 </div>
@@ -3284,7 +3281,7 @@
                                     </div>
                                 </div>
                                 <h3 class="font-bold text-slate-800 text-xl mb-6 flex items-center gap-2">
-                                    <i class="fas fa-rocket text-purple-500"></i> Learning Journey
+                                    <i class="fas fa-rocket text-purple-500"></i> <span x-text="t('learning_journey')">Learning Journey</span>
                                 </h3>
                                 
                                 <div class="relative w-full mt-4 mb-8 px-2 sm:px-10">
@@ -3298,7 +3295,7 @@
                                                 <i class="fas fa-egg text-lg"></i>
                                             </div>
                                             <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
-                                                :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'">Beginner</span>
+                                                :class="xp >= 0 ? 'text-green-600' : 'text-gray-300'" x-text="t('beginner')">Beginner</span>
                                         </div>
                                         
                                         <div class="flex flex-col items-center gap-2">
@@ -3307,7 +3304,7 @@
                                                 <i class="fas fa-book-reader text-lg"></i>
                                             </div>
                                             <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
-                                                :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'">Intermediate</span>
+                                                :class="xp >= 1000 ? 'text-blue-600' : 'text-gray-300'" x-text="t('intermediate')">Intermediate</span>
                                         </div>
 
                                         <div class="flex flex-col items-center gap-2">
@@ -3316,7 +3313,7 @@
                                                 <i class="fas fa-graduation-cap text-lg"></i>
                                             </div>
                                             <span class="text-[10px] font-bold uppercase tracking-wider mt-1" 
-                                                :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'">Advanced</span>
+                                                :class="xp >= 3000 ? 'text-purple-600' : 'text-gray-300'" x-text="t('advanced')">Advanced</span>
                                         </div>
                                     </div>
                                 </div>
@@ -3325,22 +3322,22 @@
                                     <div class="bg-orange-50 p-4 rounded-2xl border-orange-100 border text-center">
                                         <div class="text-2xl mb-1">❓</div>
                                         <div class="text-2xl font-bold text-orange-600" x-text="parentLogs.length"></div>
-                                        <div class="text-[10px] text-orange-400 font-bold uppercase">Questions Asked</div>
+                                        <div class="text-[10px] text-orange-400 font-bold uppercase" x-text="t('questions_asked')">Questions Asked</div>
                                     </div>
                                     <div class="bg-blue-50 p-4 rounded-2xl border-blue-100 border text-center">
                                         <div class="text-2xl mb-1">📖</div>
                                         <div class="text-2xl font-bold text-blue-600" x-text="learningStats.wordsLearned"></div>
-                                        <div class="text-[10px] text-blue-400 font-bold uppercase">Words Read</div>
+                                        <div class="text-[10px] text-blue-400 font-bold uppercase" x-text="t('words_read')">Words Read</div>
                                     </div>
                                     <div class="bg-yellow-50 p-4 rounded-2xl border-yellow-100 border text-center">
                                         <div class="text-2xl mb-1">💰</div>
                                         <div class="text-2xl font-bold text-yellow-600" x-text="coins"></div>
-                                        <div class="text-[10px] text-yellow-400 font-bold uppercase">Coins Earned</div>
+                                        <div class="text-[10px] text-yellow-400 font-bold uppercase" x-text="t('coins_earned')">Coins Earned</div>
                                     </div>
                                     <div class="bg-pink-50 p-4 rounded-2xl border-pink-100 border text-center">
                                         <div class="text-2xl mb-1">⭐</div>
                                         <div class="text-2xl font-bold text-pink-600" x-text="xp"></div>
-                                        <div class="text-[10px] text-pink-400 font-bold uppercase">Total XP</div>
+                                        <div class="text-[10px] text-pink-400 font-bold uppercase" x-text="t('total_xp')">Total XP</div>
                                     </div>
                                 </div>
                             </div>
@@ -3354,7 +3351,7 @@
                                             <p class="text-[10px] text-gray-400">Unlock Detailed Weekly Reports</p>
                                         </div>
                                     </div>
-                                    <h3 class="font-bold text-slate-800 text-lg mb-4">Evidence-Based Mastery Levels</h3>
+                                    <h3 class="font-bold text-slate-800 text-lg mb-4" x-text="t('mastery_levels')">Evidence-Based Mastery Levels</h3>
                                     <div class="space-y-6">
                                         <template x-for="(score, subject) in getTopSubjects()">
                                             <div>
@@ -3376,15 +3373,15 @@
                                             </div>
                                         </template>
                                         <div x-show="Object.values(learningStats.subjects).reduce((a, b) => a + b, 0) === 0" class="text-center text-gray-400 text-sm py-4">
-                                            No mastery data yet. Start asking questions!
+                                            <span x-text="t('no_mastery_data')">No mastery data yet. Start asking questions!</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
                                     <div class="flex justify-between items-center mb-4">
-                                        <h3 class="font-bold text-slate-800 text-lg">Recent Questions</h3>
-                                        <button @click="clearLogs" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase">Clear History</button>
+                                        <h3 class="font-bold text-slate-800 text-lg" x-text="t('recent_questions')">Recent Questions</h3>
+                                        <button @click="clearLogs" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase" x-text="t('clear_history')">Clear History</button>
                                     </div>
                                     <div class="flex-1 overflow-y-auto max-h-[200px] custom-scroll pr-2 space-y-3">
                                         <template x-for="log in parentLogs.slice().reverse().slice(0, 10)">
@@ -3840,7 +3837,7 @@
                         <div class="flex items-center gap-3">
                             <div class="text-4xl filter drop-shadow-md animate-bounce" style="animation-duration: 3s" x-text="userLeagueIcon">🥉</div>
                             <div>
-                                <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Current Weekly League</p>
+                                <p class="text-[10px] font-bold uppercase tracking-widest opacity-80" x-text="t('current_weekly_league')">Current Weekly League</p>
                                 <h3 class="text-xl font-kids" x-text="userLeagueName"></h3>
                             </div>
                         </div>
@@ -4270,11 +4267,11 @@
 
                     get userLeagueName() {
                         const rank = this.userRank || 20;
-                        if (rank === 1) return 'Diamond League';
-                        if (rank <= 3) return 'Platinum League';
-                        if (rank <= 6) return 'Gold League';
-                        if (rank <= 10) return 'Silver League';
-                        return 'Bronze League';
+                        if (rank === 1) return this.t('diamond_league');
+                        if (rank <= 3) return this.t('platinum_league');
+                        if (rank <= 6) return this.t('gold_league');
+                        if (rank <= 10) return this.t('silver_league');
+                        return this.t('bronze_league');
                     },
 
 
@@ -4461,9 +4458,9 @@
                       // --- Daily Quests State ---
                       showDailyQuests: false,
                       dailyQuests: [
-                          { id: 'dq_1', title: 'Daily Chat', desc: 'Ask any AI 3 questions', target: 3, progress: 0, reward: 25, type: 'questions', icon: '💬' },
-                          { id: 'dq_2', title: 'Sprint Star', desc: 'Get 5 correct in AI Sprint', target: 5, progress: 0, reward: 50, type: 'sprint', icon: '⚡' },
-                          { id: 'dq_3', title: 'Story Listener', desc: 'Listen to 1 AI Story', target: 1, progress: 0, reward: 30, type: 'story', icon: '📖' }
+                          { id: 'dq_1', titleKey: 'daily_chat', descKey: 'dq_1_desc', target: 3, progress: 0, reward: 25, type: 'questions', icon: '💬' },
+                          { id: 'dq_2', titleKey: 'sprint_star', descKey: 'dq_2_desc', target: 5, progress: 0, reward: 50, type: 'sprint', icon: '⚡' },
+                          { id: 'dq_3', titleKey: 'story_listener', descKey: 'dq_3_desc', target: 1, progress: 0, reward: 30, type: 'story', icon: '📖' }
                       ],
                       lastDailyQuestDate: localStorage.getItem('last_daily_quest_date') || '',
                       
@@ -5096,6 +5093,7 @@
                     async initI18n() {
                         const resources = {
                             'en': { translation: {
+                                // Existing & Navigation
                                 adventure_map: 'Adventure Map 🗺️', magic_auras: 'Magic Auras', daily_gift: 'Daily Gift',
                                 parent_portal: 'Parent Dashboard', says: 'says', challenge_me: 'Challenge Me!', listen: 'Listen',
                                 stop: 'Stop', ask: 'ASK!', ask_about: 'Ask about', listening: 'Listening',
@@ -5103,8 +5101,34 @@
                                 daily_rewards: 'Daily Rewards!', claim: 'Claim',
                                 see_you_tomorrow: 'See You Tomorrow!', active: 'Active Now', buy_now: 'Buy Now', activate: 'Activate',
                                 personalized_mission: 'Personalized Mission', choose_journey: 'Choose your journey!', complete: 'Complete',
+                                curious_explorer: 'Curious Explorer', ask_3_desc: 'Ask 3 questions to your teacher',
+                                quiz_master: 'Quiz Master', quiz_2_desc: 'Complete 2 quizzes today',
+                                word_weaver: 'Word Weaver', words_5_desc: 'Learn 5 new words',
+                                daily_chat: 'Daily Chat', dq_1_desc: 'Ask any AI 3 questions',
+                                sprint_star: 'Sprint Star', dq_2_desc: 'Get 5 correct in AI Sprint',
+                                story_listener: 'Story Listener', dq_3_desc: 'Listen to 1 AI Story',
+                                bronze_league: 'Bronze League', silver_league: 'Silver League',
+                                gold_league: 'Gold League', platinum_league: 'Platinum League', diamond_league: 'Diamond League',
                                 read_to_me: 'Read to me', start_quiz: 'Start Quiz!', type_here: 'Type here',
                                 story_about: 'A special story about',
+                                current_progress_day: 'Current Progress: Day {day} of {total}',
+                                quick_check: 'Quick Check!', super_star: 'Super Star!', completed_week_1: 'You completed Week 1!',
+                                days_streak: 'Days Streak', grade: 'Grade', go_to_chat_ask: 'Go to Chat & Ask!',
+                                previous: 'Previous', next: 'Next', privacy_policy: 'Privacy Policy', terms_of_service: 'Terms of Service',
+                                the_boutique: 'The Boutique', owned: 'Owned ✅', unequip: 'Unequip', equip: 'Equip',
+                                buy_item: 'Buy Item', seasonal_event_support: 'Seasonal Event Support',
+                                seasonal_event_live: 'Seasonal Event is LIVE! 🎊', seasonal_challenges: 'Seasonal Challenges',
+                                open_seasonal_shop: 'Open Seasonal Shop 🛍️', daily_rewards_sub: 'Come back every day for free coins!',
+                                mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun',
+                                diamond_league: 'Diamond League', platinum_league: 'Platinum League', gold_league: 'Gold League',
+                                silver_league: 'Silver League', bronze_league: 'Bronze League',
+                                current_weekly_league: 'Current Weekly League', ranked_status: 'Ranked Status',
+                                daily_missions: 'Today\'s Missions',
+                                join_premium_claim: 'Join Premium to Claim! 👑', claim_coins: 'Claim {amount} Coins! ✨',
+                                switch_explorer: 'Switch Explorer 🗺️',
+                                magic_auras_sub: 'Add magic effects to your teacher!',
+                                the_boutique_sub: 'Style your tutor with amazing hats and glasses!',
+                                boutique_sub: 'Style your tutor with amazing hats and glasses!',
                                 history: 'History', robots: 'Maths', space: 'Space Exploration', science: 'Science', nature: 'Nature',
                                 char_dino_name: 'Professor Dino', char_milo_name: 'Milo Monkey', char_starry_name: 'Starry Alien', char_cat_name: 'Magic Cat', char_bee_name: 'Bouncy Bee',
                                 char_dino_personality: 'History Teacher', char_milo_personality: 'Math Teacher', char_starry_personality: 'Space Teacher', char_cat_personality: 'Science Teacher', char_bee_personality: 'Nature Teacher',
@@ -5113,9 +5137,66 @@
                                 suggest_2plus2: 'What is 2 + 2? 🍌', suggest_count10: 'Count to 10! 🔟', suggest_circle: 'What is a circle? 🔵',
                                 suggest_sun_hot: 'How hot is the sun? ☀️', suggest_black_hole: 'What is a black hole? 🕳️', suggest_planets: 'How many planets are there? 🪐',
                                 suggest_ice_melt: 'Why does ice melt? 🧊', suggest_signature: 'What is a signature? 🍎', suggest_magnets: 'How do magnets work? 🧲',
-                                suggest_honey: 'Why do bees make honey? 🍯', suggest_flowers: 'How do flowers grow? 🌻', suggest_sky_blue: 'Why is the sky blue? ☁️'
+                                suggest_honey: 'Why do bees make honey? 🍯', suggest_flowers: 'How do flowers grow? 🌻', suggest_sky_blue: 'Why is the sky blue? ☁️',
+                                syncing_magic: 'Syncing magic...', certificate_title: 'Certificate of Achievement',
+                                award_presented_to: 'This award is proudly presented to', your_teacher: 'Your Teacher', date: 'Date',
+
+                                // Dashboard Stats
+                                xp: 'XP', level: 'Level', coins: 'Coins', streak: 'Streak', learning_score: 'Learning Score', daily_quests: 'Daily Quests',
+                                sticker_book: 'Sticker Book', trophy_room: 'Trophy Room', offline_lessons: 'Offline Lessons', skill_tree: 'Skill Tree',
+                                scavenger_hunt: 'Scavenger Hunt', ai_sprint: 'AI Sprint', music_on: 'ON', music_off: 'OFF', select_music: 'Select Music',
+                                free_trial: 'Free Trial', trial_expired: 'Trial Expired', days_left: 'Days Left', kidsafe_ai: 'Kid-Safe AI',
+                                switch_child: 'Switch Child', secret_quest: 'Secret Quest', story_time: 'Story Time', leaderboard: 'Leaderboard', help_support: 'Help & Support',
+
+                                // Onboarding
+                                welcome_to: 'Welcome to', welcome_subtitle: 'The interactive, fun way for your child to learn anything with smart AI companions.',
+                                instant_voice: 'Instant Voice Chat', instant_voice_sub: 'Talk naturally without typing',
+                                kidsafe_onboarding: '100% Kid-Safe', kidsafe_onboarding_sub: 'Zero data sold. COPPA Compliant.',
+                                adaptive_learning: 'Adaptive Learning', adaptive_learning_sub: 'Grows with your child\'s age',
+                                continue: 'Continue', skip_intro: 'Skip Intro', get_started_free: 'Get Started Free! 🚀',
+                                how_old: 'How old is your child?', age_sub: 'We\'ll automatically tailor the vocabulary, math, and concepts to their exact level.',
+                                age_4_6: '4-6 Years Old', age_4_6_sub: 'Phonics & basic concepts',
+                                age_7_9: '7-9 Years Old', age_7_9_sub: 'Reading & basic logic',
+                                age_10_13: '10-13 Years Old', age_10_13_sub: 'Complex science & math',
+                                premium_magic: '7 Days of Premium Magic', premium_magic_sub: 'Try every single feature for 7 days. No credit card required to start.',
+                                unlimited_chat: 'Unlimited AI Chat', unlimited_chat_sub: 'No daily question limits for 7 days',
+                                unlock_teachers: 'Unlock All Teachers', unlock_teachers_sub: 'Math, Science, Reading & Nature',
+                                adventure_sprints: 'Adventure Maps & Sprints', adventure_sprints_sub: 'Explore the full curriculum',
+
+                                // Login & Parent Portal
+                                parent_setup: 'Parent Setup & Login', adult_verify: 'Adult Verification', solve_to_continue: 'Please solve this to continue:',
+                                verify_adult: 'Verify I am an Adult', parent_gate_sub: 'This "Parental Gate" ensures children cannot provide personal data without adult supervision, in compliance with COPPA and GDPR-K.',
+                                parent_name: 'Parent Full Name', child_age_label: 'Child\'s Age (Auto-Adjusts Difficulty)', email_address: 'Email Address',
+                                create_pin: 'Create PIN', confirm_legal: 'I confirm I am the parent/guardian and agree to the', policy_terms: 'Privacy Policy & Terms',
+                                consent_ai: 'I consent to kid-safe AI processing (COPPA/GDPR).', start_learning: 'Start Learning! 🚀',
+                                strict_privacy: 'Strict Privacy: No Data is ever Sold to 3rd Parties.', already_account: 'Already have an account? Login',
+                                authorized_device: 'Device is Authorized', enter_pin: 'Enter PIN to Unlock', unlock_app: 'Unlock App 🔓',
+                                sign_out: 'Sign Out / Change Account', welcome_back: 'Welcome Back', forgot_pin: 'Forgot PIN?', create_new_account: 'Create New Account',
+                                legal_privacy: 'Legal & Privacy', difficulty: 'Difficulty', beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced',
+                                update_profile: 'Update Profile', screen_time: 'Daily Screen Time', unlimited: 'Unlimited ♾️',
+                                manage_children: 'Manage All Children', restart_tutorial: 'Restart Tutorial', outcomes_30d: '30-Day Outcomes',
+                                guardrails_active: 'AI Guardrails Active', app_language: 'App Language', regional_curriculum: 'Regional Curriculum',
+                                curriculum_aligned: 'Curriculum Aligned', curriculum_sub: 'AI answers are restricted to age-appropriate educational topics only.',
+                                learning_wins: 'Learning Wins Summaries', reports_active: 'Daily Automated Reports Active',
+                                streak_reminders: 'Streak Reminders', streak_reminders_sub: 'Get "Don\'t break your streak!" push notifications on this device.',
+                                weekly_report: 'Weekly Progress Report 📊', weekly_report_sub: 'Deliver an automatic summary of learning milestones to your email every Monday.',
+                                auto_email: 'Auto Monday Email', send_report_now: 'Send Report Now', progress_score: 'Learning Progress Score',
+                                keep_learning: 'Keep learning to see your progress chart!', proficiency_score: 'Overall proficiency Score',
+                                formula: 'Formula: XP + Quizzes + Streak + Vocabulary', shared_missions: 'Shared Missions 🎯',
+                                active_mission: 'Active Mission:', secret_code: 'Secret Code:', unlocked: 'UNLOCKED',
+                                mission_sub: 'Shared missions encourage bonding. Give your child the code once you finish the activity together!',
+                                generate_mission: 'Generate New Mission', emotional_insights: 'Emotional Insights (New)', reveal_patterns: 'Asking more questions will reveal emotional patterns!',
+                                membership: 'Membership', premium: 'Premium', free: 'Free',
+                                membership_sub_premium: 'All teachers and features unlocked.', membership_sub_free: 'Limited to 5 questions per day.',
+                                renews_on: 'Renews on:', cancel_sub: 'Cancel Subscription', upgrade_now: 'Upgrade Now ($4.99/mo)',
+                                monthly_report: 'Monthly Report', monthly_report_sub: 'A detailed analysis of subjects learned, questions asked, and vocabulary milestones.',
+                                download_report: 'Download Report (PDF)', learning_journey: 'Learning Journey',
+                                questions_asked: 'Questions Asked', words_read: 'Words Read', coins_earned: 'Coins Earned', total_xp: 'Total XP',
+                                mastery_levels: 'Evidence-Based Mastery Levels', no_mastery_data: 'No mastery data yet. Start asking questions!',
+                                recent_questions: 'Recent Questions', clear_history: 'Clear History'
                             }},
                             'es': { translation: {
+                                // Existing & Navigation
                                 adventure_map: 'Mapa de Aventuras 🗺️', magic_auras: 'Auras Mágicas', daily_gift: 'Regalo Diario',
                                 parent_portal: 'Panel de Padres', says: 'dice', challenge_me: '¡Desafíame!', listen: 'Escuchar',
                                 stop: 'Parar', ask: '¡PREGUNTAR!', ask_about: 'Preguntar sobre', listening: 'Escuchando',
@@ -5125,6 +5206,20 @@
                                 personalized_mission: 'Misión Personalizada', choose_journey: '¡Elige tu viaje!', complete: 'Completo',
                                 read_to_me: 'Léeme', start_quiz: '¡Empezar Quiz!', type_here: 'Escribe aquí',
                                 story_about: 'Una historia especial sobre',
+                                current_progress_day: 'Progreso actual: Día {day} de {total}',
+                                quick_check: '¡Verificación rápida!', super_star: '¡Súper estrella!', completed_week_1: '¡Completaste la semana 1!',
+                                days_streak: 'Días de racha', grade: 'Calificación', go_to_chat_ask: '¡Ve al chat y pregunta!',
+                                previous: 'Anterior', next: 'Siguiente', privacy_policy: 'Política de privacidad', terms_of_service: 'Términos de servicio',
+                                the_boutique: 'La Boutique', owned: 'Comprado ✅', unequip: 'Quitar', equip: 'Equipar',
+                                buy_item: 'Comprar artículo', seasonal_event_support: 'Soporte de evento estacional',
+                                seasonal_event_live: '¡El evento estacional está ACTIVO! 🎊', seasonal_challenges: 'Desafíos estacionales',
+                                open_seasonal_shop: 'Abrir tienda estacional 🛍️', daily_rewards_sub: '¡Vuelve todos los días por monedas gratis!',
+                                mon: 'Lun', tue: 'Mar', wed: 'Mié', thu: 'Jue', fri: 'Vie', sat: 'Sáb', sun: 'Dom',
+                                join_premium_claim: '¡Únete a Premium para reclamar! 👑', claim_coins: '¡Reclama {amount} monedas! ✨',
+                                switch_explorer: 'Cambiar explorador 🗺️',
+                                magic_auras_sub: '¡Añade efectos mágicos a tu profesor!',
+                                the_boutique_sub: '¡Viste a tu tutor con sombreros y gafas increíbles!',
+                                boutique_sub: '¡Viste a tu tutor con sombreros y gafas increíbles!',
                                 history: 'Historia', robots: 'Matemáticas', space: 'Exploración Espacial', science: 'Ciencia', nature: 'Naturaleza',
                                 char_dino_name: 'Profesor Dino', char_milo_name: 'Milo Mono', char_starry_name: 'Alienígena Estrellado', char_cat_name: 'Gato Mágico', char_bee_name: 'Abeja Saltarina',
                                 char_dino_personality: 'Profesor de Historia', char_milo_personality: 'Profesor de Matemáticas', char_starry_personality: 'Profesor del Espacio', char_cat_personality: 'Profesor de Ciencias', char_bee_personality: 'Profesor de la Naturaleza',
@@ -5133,7 +5228,63 @@
                                 suggest_2plus2: '¿Cuánto es 2 + 2? 🍌', suggest_count10: '¡Cuenta hasta 10! 🔟', suggest_circle: '¿Qué es un círculo? 🔵',
                                 suggest_sun_hot: '¿Qué tan caliente es el sol? ☀️', suggest_black_hole: '¿Qué es un agujero negro? 🕳️', suggest_planets: '¿Cuántos planetas hay? 🪐',
                                 suggest_ice_melt: '¿Por qué se derrite el hielo? 🧊', suggest_signature: '¿Qué es una firma? 🍎', suggest_magnets: '¿Cómo funcionan los imanes? 🧲',
-                                suggest_honey: '¿Por qué las abejas hacen miel? 🍯', suggest_flowers: '¿Cómo crecen las flores? 🌻', suggest_sky_blue: '¿Por qué el cielo es azul? ☁️'
+                                suggest_honey: '¿Por qué las abejas hacen miel? 🍯', suggest_flowers: '¿Cómo crecen las flores? 🌻', suggest_sky_blue: '¿Por qué el cielo es azul? ☁️',
+                                syncing_magic: 'Sincronizando magia...', certificate_title: 'Certificado de Logro',
+                                award_presented_to: 'Este premio se presenta con orgullo a', your_teacher: 'Tu Profesor', date: 'Fecha',
+
+                                // Dashboard Stats
+                                xp: 'PX', level: 'Nivel', coins: 'Monedas', streak: 'Racha', learning_score: 'Puntaje de Aprendizaje', daily_quests: 'Misiones Diarias',
+                                sticker_book: 'Libro de Calcomanías', trophy_room: 'Sala de Trofeos', offline_lessons: 'Lecciones sin Conexión', skill_tree: 'Árbol de Habilidades',
+                                scavenger_hunt: 'Búsqueda del Tesoro', ai_sprint: 'Sprint de IA', music_on: 'ENCENDIDO', music_off: 'APAGADO', select_music: 'Seleccionar Música',
+                                free_trial: 'Prueba Gratuita', trial_expired: 'Prueba Expirada', days_left: 'Días Restantes', kidsafe_ai: 'IA Segura para Niños',
+                                switch_child: 'Cambiar Niño', secret_quest: 'Misión Secreta', story_time: 'Hora del Cuento', leaderboard: 'Tabla de Clasificación', help_support: 'Ayuda y Soporte',
+
+                                // Onboarding
+                                welcome_to: 'Bienvenido a', welcome_subtitle: 'La forma interactiva y divertida para que tu hijo aprenda cualquier cosa con compañeros de IA inteligentes.',
+                                instant_voice: 'Chat de Voz Instantáneo', instant_voice_sub: 'Habla naturalmente sin escribir',
+                                kidsafe_onboarding: '100% Seguro para Niños', kidsafe_onboarding_sub: 'Cero datos vendidos. Cumple con COPPA.',
+                                adaptive_learning: 'Aprendizaje Adaptativo', adaptive_learning_sub: 'Crece con la edad de tu hijo',
+                                continue: 'Continuar', skip_intro: 'Omitir Intro', get_started_free: '¡Empieza Gratis! 🚀',
+                                how_old: '¿Qué edad tiene tu hijo?', age_sub: 'Ajustaremos automáticamente el vocabulario, las matemáticas y los conceptos a su nivel exacto.',
+                                age_4_6: '4-6 Años', age_4_6_sub: 'Fonética y conceptos básicos',
+                                age_7_9: '7-9 Años', age_7_9_sub: 'Lectura y lógica básica',
+                                age_10_13: '10-13 Años', age_10_13_sub: 'Ciencia y matemáticas complejas',
+                                premium_magic: '7 Días de Magia Premium', premium_magic_sub: 'Prueba todas las funciones durante 7 días. No se requiere tarjeta de crédito para empezar.',
+                                unlimited_chat: 'Chat de IA Ilimitado', unlimited_chat_sub: 'Sin límites de preguntas diarias durante 7 días',
+                                unlock_teachers: 'Desbloquear Todos los Profesores', unlock_teachers_sub: 'Matemáticas, Ciencia, Lectura y Naturaleza',
+                                adventure_sprints: 'Mapas de Aventuras y Sprints', adventure_sprints_sub: 'Explora todo el currículo',
+
+                                // Login & Parent Portal
+                                parent_setup: 'Configuración y Login de Padres', adult_verify: 'Verificación de Adultos', solve_to_continue: 'Por favor, resuelve esto para continuar:',
+                                verify_adult: 'Verificar que soy Adulto', parent_gate_sub: 'Este "Portal Parental" garantiza que los niños no proporcionen datos personales sin supervisión de un adulto, de acuerdo con COPPA y GDPR-K.',
+                                parent_name: 'Nombre Completo del Padre', child_age_label: 'Edad del Niño (Ajusta la Dificultad)', email_address: 'Correo Electrónico',
+                                create_pin: 'Crear PIN', confirm_legal: 'Confirmo que soy el padre/tutor y acepto la', policy_terms: 'Política de Privacidad y Términos',
+                                consent_ai: 'Consiento el procesamiento de IA segura para niños (COPPA/GDPR).', start_learning: '¡Empieza a Aprender! 🚀',
+                                strict_privacy: 'Privacidad Estricta: No se venden datos a terceros.', already_account: '¿Ya tienes cuenta? Iniciar sesión',
+                                authorized_device: 'Dispositivo Autorizado', enter_pin: 'Ingresa PIN para Desbloquear', unlock_app: 'Desbloquear App 🔓',
+                                sign_out: 'Cerrar Sesión / Cambiar Cuenta', welcome_back: 'Bienvenido de Nuevo', forgot_pin: '¿Olvidaste tu PIN?', create_new_account: 'Crear Nueva Cuenta',
+                                legal_privacy: 'Legal y Privacidad', difficulty: 'Dificultad', beginner: 'Principiante', intermediate: 'Intermedio', advanced: 'Avanzado',
+                                update_profile: 'Actualizar Perfil', screen_time: 'Tiempo de Pantalla Diario', unlimited: 'Ilimitado ♾️',
+                                manage_children: 'Gestionar Todos los Niños', restart_tutorial: 'Reiniciar Tutorial', outcomes_30d: 'Resultados en 30 Días',
+                                guardrails_active: 'Protecciones de IA Activas', app_language: 'Idioma de la App', regional_curriculum: 'Currículo Regional',
+                                curriculum_aligned: 'Alineado con el Currículo', curriculum_sub: 'Las respuestas de la IA están restringidas a temas educativos apropiados para la edad.',
+                                learning_wins: 'Resúmenes de Logros de Aprendizaje', reports_active: 'Informes Diarios Automatizados Activos',
+                                streak_reminders: 'Recordatorios de Racha', streak_reminders_sub: 'Recibe notificaciones push de "¡No rompas tu racha!" en este dispositivo.',
+                                weekly_report: 'Informe de Progreso Semanal 📊', weekly_report_sub: 'Entrega un resumen automático de hitos de aprendizaje a tu correo todos los lunes.',
+                                auto_email: 'Correo Automático de Lunes', send_report_now: 'Enviar Informe Ahora', progress_score: 'Puntaje de Progreso de Aprendizaje',
+                                keep_learning: '¡Sigue aprendiendo para ver tu gráfico de progreso!', proficiency_score: 'Puntaje de competencia general',
+                                formula: 'Fórmula: XP + Quizzes + Racha + Vocabulario', shared_missions: 'Misiones Compartidas 🎯',
+                                active_mission: 'Misión Activa:', secret_code: 'Código Secreto:', unlocked: 'DESBLOQUEADO',
+                                mission_sub: 'Las misiones compartidas fomentan la unión. ¡Dale el código a tu hijo una vez que terminen la actividad juntos!',
+                                generate_mission: 'Generar Nueva Misión', emotional_insights: 'Perspectivas Emocionales (Nuevo)', reveal_patterns: '¡Hacer más preguntas revelará patrones emocionales!',
+                                membership: 'Membresía', premium: 'Premium', free: 'Gratis',
+                                membership_sub_premium: 'Todos los profesores y funciones desbloqueados.', membership_sub_free: 'Limitado a 5 preguntas por día.',
+                                renews_on: 'Se renueva el:', cancel_sub: 'Cancelar Suscripción', upgrade_now: 'Actualizar Ahora ($4.99/mes)',
+                                monthly_report: 'Informe Mensual', monthly_report_sub: 'Un análisis detallado de temas aprendidos, preguntas hechas e hitos de vocabulario.',
+                                download_report: 'Descargar Informe (PDF)', learning_journey: 'Viaje de Aprendizaje',
+                                questions_asked: 'Preguntas Hechas', words_read: 'Palabras Leídas', coins_earned: 'Monedas Ganadas', total_xp: 'XP Total',
+                                mastery_levels: 'Niveles de Dominio Basados en Evidencia', no_mastery_data: 'Aún no hay datos de dominio. ¡Empieza a hacer preguntas!',
+                                recent_questions: 'Preguntas Recientes', clear_history: 'Borrar Historial'
                             }},
                             'fr': { translation: {
                                 adventure_map: 'Carte d\'Aventure 🗺️', magic_auras: 'Auras Magiques', daily_gift: 'Cadeau Quotidien',
@@ -5153,7 +5304,20 @@
                                 suggest_2plus2: 'Combien font 2 + 2? 🍌', suggest_count10: 'Compte jusqu\'à 10! 🔟', suggest_circle: 'Qu\'est-ce qu\'un cercle? 🔵',
                                 suggest_sun_hot: 'Quelle est la température du soleil? ☀️', suggest_black_hole: 'Qu\'est-ce qu\'un trou noir? 🕳️', suggest_planets: 'Combien y a-t-il de planètes? 🪐',
                                 suggest_ice_melt: 'Pourquoi la glace fond-elle? 🧊', suggest_signature: 'Qu\'est-ce qu\'une signature? 🍎', suggest_magnets: 'Comment fonctionnent les aimants? 🧲',
-                                suggest_honey: 'Pourquoi les abeilles font-elles du miel? 🍯', suggest_flowers: 'Comment poussent les fleurs? 🌻', suggest_sky_blue: 'Pourquoi le ciel est-il bleu? ☁️'
+                                suggest_honey: 'Pourquoi les abeilles font-elles du miel? 🍯', suggest_flowers: 'Comment poussent les fleurs? 🌻', suggest_sky_blue: 'Pourquoi le ciel est-il bleu? ☁️',
+                                current_progress_day: 'Progression actuelle : Jour {day} sur {total}',
+                                quick_check: 'Vérification Rapide !', super_star: 'Super Star !', completed_week_1: 'Vous avez terminé la semaine 1 !',
+                                days_streak: 'Jours de série', grade: 'Note', go_to_chat_ask: 'Aller au chat et demander !',
+                                previous: 'Précédent', next: 'Suivant', privacy_policy: 'Politique de confidentialité', terms_of_service: 'Conditions d\'utilisation',
+                                the_boutique: 'La Boutique', owned: 'Possédé ✅', unequip: 'Retirer', equip: 'Équiper',
+                                buy_item: 'Acheter l\'objet', seasonal_event_support: 'Assistance pour événements saisonniers',
+                                seasonal_event_live: 'L\'événement saisonnier est EN DIRECT ! 🎊', seasonal_challenges: 'Défis saisonniers',
+                                open_seasonal_shop: 'Ouvrir la boutique saisonnière 🛍️', daily_rewards_sub: 'Revenez chaque jour pour des pièces gratuites !',
+                                mon: 'Lun', tue: 'Mar', wed: 'Mer', thu: 'Jeu', fri: 'Ven', sat: 'Sam', sun: 'Dim',
+                                join_premium_claim: 'Devenez Premium pour réclamer ! 👑', claim_coins: 'Réclamer {amount} pièces ! ✨',
+                                switch_explorer: 'Changer d\'explorateur 🗺️',
+                                magic_auras_sub: 'Ajoutez des effets magiques à votre professeur !',
+                                boutique_sub: 'Habillez votre tuteur avec des chapeaux et des lunettes incroyables !',
                             }},
                             'de': { translation: {
                                 adventure_map: 'Abenteuerkarte 🗺️', magic_auras: 'Magische Auren', daily_gift: 'Tägliches Geschenk',
@@ -5173,7 +5337,20 @@
                                 suggest_2plus2: 'Was ist 2 + 2? 🍌', suggest_count10: 'Zähle bis 10! 🔟', suggest_circle: 'Was ist ein Kreis? 🔵',
                                 suggest_sun_hot: 'Wie heiß ist die Sonne? ☀️', suggest_black_hole: 'Was ist ein Schwarzes Loch? 🕳️', suggest_planets: 'Wie viele Planeten gibt es? 🪐',
                                 suggest_ice_melt: 'Warum schmilzt Eis? 🧊', suggest_signature: 'Was ist eine Unterschrift? 🍎', suggest_magnets: 'Wie funktionieren Magnete? 🧲',
-                                suggest_honey: 'Warum machen Bienen Honig? 🍯', suggest_flowers: 'Wie wachsen Blumen? 🌻', suggest_sky_blue: 'Warum ist der Himmel blau? ☁️'
+                                suggest_honey: 'Warum machen Bienen Honig? 🍯', suggest_flowers: 'Wie wachsen Blumen? 🌻', suggest_sky_blue: 'Warum ist der Himmel blau? ☁️',
+                                current_progress_day: 'Aktueller Fortschritt: Tag {day} von {total}',
+                                quick_check: 'Kurzer Check!', super_star: 'Superstar!', completed_week_1: 'Du hast Woche 1 abgeschlossen!',
+                                days_streak: 'Tage raga', grade: 'Note', go_to_chat_ask: 'Geh zum Chat & Frag!',
+                                previous: 'Zurück', next: 'Weiter', privacy_policy: 'Datenschutzerklärung', terms_of_service: 'Nutzungsbedingungen',
+                                the_boutique: 'Die Boutique', owned: 'Besessen ✅', unequip: 'Ablegen', equip: 'Ausrüsten',
+                                buy_item: 'Gegenstand kaufen', seasonal_event_support: 'Saisonale Event-Unterstützung',
+                                seasonal_event_live: 'Das saisonale Event ist LIVE! 🎊', seasonal_challenges: 'Saisonale Herausforderungen',
+                                open_seasonal_shop: 'Saisonalen Shop öffnen 🛍️', daily_rewards_sub: 'Komm jeden Tag zurück für kostenlose Münzen!',
+                                mon: 'Mo', tue: 'Di', wed: 'Mi', thu: 'Do', fri: 'Fr', sat: 'Sa', sun: 'So',
+                                join_premium_claim: 'Werde Premium zum Einfordern! 👑', claim_coins: 'Fordere {amount} Münzen ein! ✨',
+                                switch_explorer: 'Entdecker wechseln 🗺️',
+                                magic_auras_sub: 'Füge deinem Lehrer magische Effekte hinzu!',
+                                boutique_sub: 'Style deinen Tutor mit tollen Hüten und Brillen!',
                             }},
                             'ar': { translation: {
                                 adventure_map: 'خريطة المغامرة 🗺️', magic_auras: 'الهالات السحرية', daily_gift: 'هدية يومية',
@@ -5193,7 +5370,20 @@
                                 suggest_2plus2: 'كم يساوي 2 + 2؟ 🍌', suggest_count10: 'عد إلى 10! 🔟', suggest_circle: 'ما هي الدائرة؟ 🔵',
                                 suggest_sun_hot: 'كم تبلغ حرارة الشمس؟ ☀️', suggest_black_hole: 'ما هو الثقب الأسود؟ 🕳️', suggest_planets: 'كم عدد الكواكب؟ 🪐',
                                 suggest_ice_melt: 'لماذا يذوب الجليد؟ 🧊', suggest_signature: 'ما هو التوقيع؟ 🍎', suggest_magnets: 'كيف تعمل المغناطيسات؟ 🧲',
-                                suggest_honey: 'لماذا يصنع النحل العسل؟ 🍯', suggest_flowers: 'كيف تنمو الزهور؟ 🌻', suggest_sky_blue: 'لماذا السماء زرقاء؟ ☁️'
+                                suggest_honey: 'لماذا يصنع النحل العسل؟ 🍯', suggest_flowers: 'كيف تنمو الزهور؟ 🌻', suggest_sky_blue: 'لماذا السماء زرقاء؟ ☁️',
+                                current_progress_day: 'التقدم الحالي: اليوم {day} من {total}',
+                                quick_check: 'تحقق سريع!', super_star: 'نجم سوبر!', completed_week_1: 'لقد أكملت الأسبوع الأول!',
+                                days_streak: 'أيام متتالية', grade: 'الدرجة', go_to_chat_ask: 'اذهب إلى الدردشة واسأل!',
+                                previous: 'السابق', next: 'التالي', privacy_policy: 'سياسة الخصوصية', terms_of_service: 'شروط الخدمة',
+                                the_boutique: 'البوتيك', owned: 'تم الاقتناء ✅', unequip: 'إزالة', equip: 'تجهيز',
+                                buy_item: 'شراء القطعة', seasonal_event_support: 'دعم الفعاليات الموسمية',
+                                seasonal_event_live: 'الفعالية الموسمية نشطة الآن! 🎊', seasonal_challenges: 'التحديات الموسمية',
+                                open_seasonal_shop: 'فتح المتجر الموسمي 🛍️', daily_rewards_sub: 'عد كل يوم للحصول على عملات مجانية!',
+                                mon: 'ن', tue: 'ث', wed: 'ر', thu: 'خ', fri: 'ج', sat: 'س', sun: 'ح',
+                                join_premium_claim: 'انضم إلى بريميوم للمطالبة! 👑', claim_coins: 'طالب بـ {amount} عملة! ✨',
+                                switch_explorer: 'تبديل المستكشف 🗺️',
+                                magic_auras_sub: 'أضف تأثيرات سحرية لمعلمك!',
+                                boutique_sub: 'نسق مظهر معلمك بقبعات ونظارات مذهلة!',
                             }}
                         };
 
