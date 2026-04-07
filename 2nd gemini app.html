@@ -8356,10 +8356,6 @@
                              if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
                          }
  
-                        // Persist Skill Tree Data
-                        safeStats.skill_tree_data = JSON.parse(JSON.stringify(this.skillTreeData));
-                        safeStats.skill_tree_node_progress = JSON.parse(JSON.stringify(this.skillTreeNodeProgress));
-
                         // Persistent Seasonal Data
                         this.learningStats.event_tokens = this.eventTokens;
                         this.learningStats.seasonal_quests = this.seasonalQuests;
@@ -8369,6 +8365,10 @@
                         const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
                         const safeInventory = JSON.parse(JSON.stringify(this.inventory));
                         const safeStats = JSON.parse(JSON.stringify(this.learningStats));
+
+                        // Persist Skill Tree Data
+                        safeStats.skill_tree_data = JSON.parse(JSON.stringify(this.skillTreeData));
+                        safeStats.skill_tree_node_progress = JSON.parse(JSON.stringify(this.skillTreeNodeProgress));
 
                         // Embed missing columns into learning_stats to avoid schema errors
                         safeStats.daily_usage = {
