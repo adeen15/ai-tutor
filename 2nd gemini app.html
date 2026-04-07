@@ -3093,6 +3093,21 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="flex items-start gap-3 pt-3 border-t border-slate-50">
+                                            <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 mt-1 flex-shrink-0"><i class="fas fa-bell"></i></div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <p class="text-xs font-bold text-slate-700 uppercase">Streak Reminders</p>
+                                                    <button @click="setupPushNotifications()" 
+                                                            class="w-10 h-5 rounded-full transition-colors relative"
+                                                            :class="pushNotificationsEnabled ? 'bg-green-400' : 'bg-slate-300'">
+                                                        <div class="absolute top-1 w-3 h-3 bg-white rounded-full transition-all"
+                                                             :class="pushNotificationsEnabled ? 'right-1' : 'left-1'"></div>
+                                                    </button>
+                                                </div>
+                                                <p class="text-[10px] text-slate-500 leading-tight mt-1">Get "Don't break your streak!" push notifications on this device.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -4111,6 +4126,7 @@
                     isLoading: true, // Start in loading state
                     isLoggedIn: false,
                     showLeaderboardRewardModal: false,
+                    pushNotificationsEnabled: 'Notification' in window && Notification.permission === 'granted',
 
 
 
@@ -5215,6 +5231,11 @@
                             console.log("⚡ Trial started: " + new Date(this.trialStartDate).toLocaleDateString());
                         }
 
+                        // Update push notification status
+                        if ('Notification' in window) {
+                            this.pushNotificationsEnabled = Notification.permission === 'granted';
+                        }
+
                         // Initialize Daily Quests
                         this.initDailyQuests();
                         window.app = this; // Expose for easy console testing
@@ -5437,12 +5458,37 @@
                     async setupPushNotifications() {
                         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                             console.warn("Push notifications not supported");
+                            alert("Oops! Your browser doesn't support push notifications.");
+                            return;
+                        }
+
+                        // If already enabled, ask to disable
+                        if (this.pushNotificationsEnabled) {
+                            if (confirm("Would you like to turn off streak reminders?")) {
+                                try {
+                                    await fetch('/api/save-subscription', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            email: this.registeredEmail,
+                                            subscription: null
+                                        })
+                                    });
+                                    this.pushNotificationsEnabled = false;
+                                    alert("Notifications turned off!");
+                                } catch (err) {
+                                    console.error("Failed to disable notifications:", err);
+                                }
+                            }
                             return;
                         }
 
                         try {
                             const permission = await Notification.requestPermission();
-                            if (permission !== 'granted') return;
+                            if (permission !== 'granted') {
+                                alert("Permission denied. To enable notifications later, you may need to update your browser settings.");
+                                return;
+                            }
 
                             const registration = await navigator.serviceWorker.ready;
                             
@@ -5450,7 +5496,9 @@
                             const keysRes = await fetch('/api/config/vapid');
                             const { publicKey } = await keysRes.json();
                             
-                            if (!publicKey) return;
+                            if (!publicKey) {
+                                throw new Error("No VAPID public key received from server");
+                            }
 
                             const subscription = await registration.pushManager.subscribe({
                                 userVisibleOnly: true,
@@ -5462,6 +5510,7 @@
                             // Save to Supabase via backend
                             await fetch('/api/save-subscription', {
                                 method: 'POST',
+                                cloud: true,
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
                                     email: this.registeredEmail,
@@ -5469,8 +5518,12 @@
                                 })
                             });
 
+                            this.pushNotificationsEnabled = true;
+                            alert("✅ Awesome! You'll now get \"Don't break your streak!\" reminders on this device.");
+
                         } catch (err) {
                             console.error("❌ Push subscription failed:", err);
+                            alert("Oops! Something went wrong while setting up notifications.");
                         }
                     },
 
@@ -8647,7 +8700,7 @@
                     },
 
                     updateDailyStreak() {
-                        const today = new Date().toDateString();
+                        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
                         if (this.lastStreakDate !== today) {
                             if (!this.lastStreakDate) {
                                 // First time ever
@@ -8656,7 +8709,7 @@
                                 const yesterday = new Date();
                                 yesterday.setDate(yesterday.getDate() - 1);
                                 
-                                if (this.lastStreakDate === yesterday.toDateString()) {
+                                if (this.lastStreakDate === yesterday.toISOString().split('T')[0]) {
                                     // Consecutive day
                                     this.streak++;
                                     this.streakFreezeUsed = false; // Reset freeze for the new day
