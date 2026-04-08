@@ -597,17 +597,6 @@
                     <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
                 </button>
 
-                <!-- Trial Active Badge -->
-                <button x-show="isTrialActive && !isPremium" 
-                        @click="showPremiumModal = true; toggleScroll(true)" 
-                        class="bg-white px-3 sm:px-5 py-2 sm:py-4 rounded-2xl shadow-lg hover:scale-105 transition-transform border-b-4 border-green-400 flex flex-col items-center justify-center min-w-[80px] sm:min-w-[120px]">
-                    <div class="flex items-center gap-1 sm:gap-2">
-                        <span class="text-lg sm:text-2xl animate-pulse">✨</span>
-                        <span class="text-[10px] sm:text-sm font-kids text-green-600" x-text="trialDaysLeft + ' Days Left'"></span>
-                    </div>
-                    <span class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Free Trial Active</span>
-                </button>
-
                 <!-- Learning Score Badge -->
                 <div class="flex daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
