@@ -2956,7 +2956,7 @@
                         </ul>
                         <div class="text-center">
                             <div class="text-3xl font-kids text-blue-600 mb-4">$4.99<span class="text-sm">/mo</span></div>
-                            <button @click="window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_monthly'}))" 
+                            <button @click="showPremiumModal = false; toggleScroll(false); openParentPortal(); if(window.ReactNativeWebView) window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_monthly'}))" 
                                     class="w-full py-4 bg-yellow-400 text-yellow-900 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600 active:translate-y-1 transition-all">
                                 7-Day Trial, then $4.99/mo
                             </button>
@@ -2977,7 +2977,7 @@
                         </ul>
                         <div class="text-center">
                             <div class="text-3xl font-kids mb-4">$9.99<span class="text-sm">/mo</span></div>
-                            <button @click="window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_family'}))" 
+                            <button @click="showPremiumModal = false; toggleScroll(false); openParentPortal(); if(window.ReactNativeWebView) window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_family'}))" 
                                     class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-indigo-200 active:translate-y-1 transition-all">
                                 7-Day Trial, then $9.99/mo
                             </button>
