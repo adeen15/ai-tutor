@@ -438,92 +438,105 @@
 
             <!-- EXISTING LOGIN FLOW -->
             <div x-show="hasCompletedOnboarding" class="min-h-full w-full p-0 sm:p-4 block sm:flex sm:items-center sm:justify-center animate__animated animate__fadeIn" x-cloak>
-                <div class="bg-white m-0 w-full min-w-full sm:min-w-0 min-h-screen sm:min-h-0 sm:rounded-[2rem] p-6 sm:p-12 sm:max-w-md shadow-2xl text-center relative overflow-hidden animate__animated animate__zoomIn sm:my-8 sm:border-8 border-white/20">
+                <div class="bg-white m-0 w-full min-w-full sm:min-w-0 min-h-screen sm:min-h-0 sm:rounded-[4rem] p-6 sm:p-12 sm:max-w-4xl shadow-2xl text-center relative overflow-hidden animate__animated animate__zoomIn sm:my-8 sm:border-8 border-white/20">
                     
-                    <div class="absolute top-0 left-0 w-32 h-32 bg-yellow-300 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-                    <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-300 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
+                    <div class="absolute top-0 left-0 w-64 h-64 bg-yellow-300 rounded-full blur-[80px] opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
+                    <div class="absolute bottom-0 right-0 w-64 h-64 bg-pink-300 rounded-full blur-[80px] opacity-30 translate-x-1/2 translate-y-1/2"></div>
 
                     <div class="relative z-10">
                         <div class="text-6xl mb-4 animate__animated animate__bounceIn delay-500">🎓</div>
                         <h1 class="text-4xl font-kids text-slate-800 mb-2" x-text="t('welcome_to') + ' AI Tutor'">AI Tutor</h1>
                         <p class="text-slate-500 font-bold mb-8" x-text="t('parent_setup')">Parent Setup & Login</p>
 
-                        <div x-show="!hasAccount" class="space-y-4 text-left">
-                            <div x-show="!gateVerified" class="animate__animated animate__fadeIn">
-                                <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-200">
-                                    <h3 class="font-kids text-blue-800 mb-2" x-text="t('adult_verify')">Adult Verification</h3>
-                                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4" x-text="t('solve_to_continue')">Please solve this to continue:</p>
-                                    <div class="flex items-center gap-4 mb-4">
-                                        <span class="text-2xl font-kids text-blue-600" x-text="gateQuestion"></span>
-                                        <input type="number" x-model="gateAnswer" placeholder="?" class="w-20 p-3 bg-white border-2 border-blue-300 rounded-xl text-center font-bold text-xl">
+                        <div x-show="!hasAccount" class="animate__animated animate__fadeIn">
+                            <div x-show="!gateVerified" class="max-w-md mx-auto">
+                                <div class="bg-blue-50 p-8 rounded-[2.5rem] border-2 border-blue-200 shadow-inner">
+                                    <h3 class="font-kids text-2xl text-blue-800 mb-2" x-text="t('adult_verify')">Adult Verification</h3>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6" x-text="t('solve_to_continue')">Please solve this to continue:</p>
+                                    <div class="flex items-center justify-center gap-6 mb-8">
+                                        <span class="text-4xl font-kids text-blue-600 drop-shadow-sm" x-text="gateQuestion"></span>
+                                        <input type="number" x-model="gateAnswer" placeholder="?" class="w-24 p-4 bg-white border-4 border-blue-300 rounded-2xl text-center font-bold text-2xl shadow-lg focus:border-blue-500 outline-none transition-all">
                                     </div>
-                                    <button @click="verifyGate" class="w-full py-3 bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 transition-colors" x-text="t('verify_adult')">
+                                    <button @click="verifyGate" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-kids text-lg shadow-lg hover:bg-blue-600 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest" x-text="t('verify_adult')">
                                         Verify I am an Adult
                                     </button>
-                                    <p class="text-[10px] text-slate-400 mt-4 leading-tight italic" x-text="t('parent_gate_sub')">This "Parental Gate" ensures children cannot provide personal data without adult supervision, in compliance with COPPA and GDPR-K.</p>
+                                    <p class="text-[10px] text-slate-400 mt-6 leading-relaxed italic px-4" x-text="t('parent_gate_sub')">This "Parental Gate" ensures children cannot provide personal data without adult supervision, in compliance with COPPA and GDPR-K.</p>
                                 </div>
                             </div>
 
-                            <div x-show="gateVerified" class="animate__animated animate__fadeInUp">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2" x-text="t('parent_name')">Parent Full Name</label>
-                                    <input type="text" x-model="loginForm.name" :placeholder="t('parent_name')" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
-                                </div>
+                            <div x-show="gateVerified" class="animate__animated animate__fadeIn">
+                                <div class="sm:grid sm:grid-cols-2 sm:gap-12 sm:text-left text-left">
+                                    <!-- Column 1: Parent Identity -->
+                                    <div class="space-y-6">
+                                        <div class="bg-slate-50/50 p-2 rounded-3xl">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-3" x-text="t('parent_name')">Parent Full Name</label>
+                                            <input type="text" x-model="loginForm.name" :placeholder="t('parent_name')" class="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none font-bold text-slate-700 transition-all text-base">
+                                        </div>
 
-                                <div class="animate__animated animate__fadeIn mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-2" x-text="t('child_age_label')">Child's Age (Auto-Adjusts Difficulty)</label>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <button @click="loginForm.ageRange = '4-6'" 
-                                                :class="loginForm.ageRange === '4-6' ? 'bg-blue-500 text-white border-blue-600 shadow-md ring-2 ring-blue-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
-                                                class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">🐣</span>
-                                            <span>4-6 (Basic)</span>
-                                        </button>
-                                        <button @click="loginForm.ageRange = '7-9'" 
-                                                :class="loginForm.ageRange === '7-9' ? 'bg-green-500 text-white border-green-600 shadow-md ring-2 ring-green-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
-                                                class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">🎒</span>
-                                            <span>7-9 (Logic)</span>
-                                        </button>
-                                        <button @click="loginForm.ageRange = '10-13'" 
-                                                :class="loginForm.ageRange === '10-13' ? 'bg-purple-500 text-white border-purple-600 shadow-md ring-2 ring-purple-200' : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'"
-                                                class="p-2 rounded-2xl border-2 font-bold transition-all text-xs flex flex-col items-center justify-center">
-                                            <span class="text-lg">🚀</span>
-                                            <span>10-13 (Science)</span>
+                                        <div class="bg-slate-50/50 p-2 rounded-3xl">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-3" x-text="t('email_address')">Email Address</label>
+                                            <input type="email" x-model="loginForm.email" :placeholder="t('email_address')" class="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none font-bold text-slate-700 transition-all text-base">
+                                        </div>
+
+                                        <div class="bg-slate-50/50 p-2 rounded-3xl">
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-3" x-text="t('create_pin')">Create PIN</label>
+                                            <input type="password" x-model="loginForm.password" placeholder="****" maxlength="4" class="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none font-bold text-slate-700 transition-all text-center text-2xl tracking-[0.5em]">
+                                        </div>
+                                    </div>
+
+                                    <!-- Column 2: Child & Legal -->
+                                    <div class="space-y-6 mt-8 sm:mt-0">
+                                        <div>
+                                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-3" x-text="t('child_age_label')">Child's Age (Difficulty)</label>
+                                            <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-2">
+                                                <button @click="loginForm.ageRange = '4-6'" 
+                                                        :class="loginForm.ageRange === '4-6' ? 'bg-blue-500 text-white border-blue-600 shadow-lg ring-4 ring-blue-100 scale-105' : 'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'"
+                                                        class="p-3 rounded-2xl border-2 font-bold transition-all text-[10px] flex flex-col items-center justify-center gap-1">
+                                                    <span class="text-xl">🐣</span>
+                                                    <span class="whitespace-nowrap">4-6 (Basic)</span>
+                                                </button>
+                                                <button @click="loginForm.ageRange = '7-9'" 
+                                                        :class="loginForm.ageRange === '7-9' ? 'bg-green-500 text-white border-green-600 shadow-lg ring-4 ring-green-100 scale-105' : 'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'"
+                                                        class="p-3 rounded-2xl border-2 font-bold transition-all text-[10px] flex flex-col items-center justify-center gap-1">
+                                                    <span class="text-xl">🎒</span>
+                                                    <span class="whitespace-nowrap">7-9 (Logic)</span>
+                                                </button>
+                                                <button @click="loginForm.ageRange = '10-13'" 
+                                                        :class="loginForm.ageRange === '10-13' ? 'bg-purple-500 text-white border-purple-600 shadow-lg ring-4 ring-purple-100 scale-105' : 'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'"
+                                                        class="p-3 rounded-2xl border-2 font-bold transition-all text-[10px] flex flex-col items-center justify-center gap-1">
+                                                    <span class="text-xl">🚀</span>
+                                                    <span class="whitespace-nowrap">10-13 (Sci)</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="p-6 bg-slate-50 rounded-[2rem] border-2 border-slate-100 shadow-inner">
+                                            <label class="flex items-start gap-4 cursor-pointer group">
+                                                <div class="relative mt-1">
+                                                    <input type="checkbox" x-model="legalAccepted" class="peer h-6 w-6 rounded-lg border-2 border-slate-300 text-blue-500 focus:ring-0 checked:bg-blue-500 checked:border-blue-500 transition-all appearance-none cursor-pointer">
+                                                    <i class="fas fa-check absolute inset-0 text-white text-[10px] flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></i>
+                                                </div>
+                                                <span class="text-[10px] font-bold text-slate-500 leading-relaxed uppercase group-hover:text-slate-700 transition-colors">
+                                                    <span x-text="t('confirm_legal')">I confirm I am the parent/guardian and agree to the</span> 
+                                                    <a href="/privacy.html" target="_blank" class="text-blue-500 underline decoration-blue-200 underline-offset-4" x-text="t('policy_terms')">Privacy Policy & Terms</a>. 
+                                                    <span x-text="t('consent_ai')">I consent to kid-safe AI processing (COPPA/GDPR).</span>
+                                                </span>
+                                            </label>
+                                        </div>
+
+                                        <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-[1.5rem] font-kids text-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-50 disabled:grayscale disabled:transform-none" x-text="t('start_learning')">
+                                            Start Learning! 🚀
                                         </button>
                                     </div>
                                 </div>
-                                <div class="mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2" x-text="t('email_address')">Email Address</label>
-                                    <input type="email" x-model="loginForm.email" :placeholder="t('email_address')" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
-                                </div>
-                                <div class="mt-4">
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-2" x-text="t('create_pin')">Create PIN</label>
-                                    <input type="password" x-model="loginForm.password" placeholder="****" maxlength="4" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white outline-none font-bold text-slate-700 transition-all text-base">
-                                </div>
-                                
-                                <div class="mt-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
-                                    <label class="flex items-start gap-3 cursor-pointer">
-                                        <input type="checkbox" x-model="legalAccepted" class="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                        <span class="text-[10px] font-bold text-slate-500 leading-tight uppercase">
-                                            <span x-text="t('confirm_legal')">I confirm I am the parent/guardian and agree to the</span> 
-                                            <a href="/privacy.html" target="_blank" class="text-blue-500 underline" x-text="t('policy_terms')">Privacy Policy & Terms</a>. 
-                                            <span x-text="t('consent_ai')">I consent to kid-safe AI processing (COPPA/GDPR).</span>
-                                        </span>
-                                    </label>
-                                </div>
 
-                                <button @click="handleSignup" :disabled="!legalAccepted" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-kids text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-4 disabled:opacity-50 disabled:grayscale" x-text="t('start_learning')">
-                                    Start Learning! 🚀
-                                </button>
-                                
-                                <div class="flex items-center justify-center gap-2 mt-4 opacity-80 border-t pt-4">
-                                    <i class="fas fa-shield-alt text-green-500"></i>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide" x-text="t('strict_privacy')">Strict Privacy: No Data is ever Sold to 3rd Parties.</p>
+                                <div class="flex items-center justify-center gap-3 mt-10 opacity-60 border-t border-slate-100 pt-6">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-500"><i class="fas fa-shield-alt"></i></div>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]" x-text="t('strict_privacy')">Strict Privacy: No Data is ever Sold to 3rd Parties.</p>
                                 </div>
                             </div>
                             
-                            <p class="text-center mt-4 text-xs font-bold text-gray-400 cursor-pointer hover:text-blue-500" @click="hasAccount = true" x-text="t('already_account')">Already have an account? Login</p>
+                            <p class="text-center mt-8 text-xs font-black text-gray-400 uppercase tracking-widest cursor-pointer hover:text-blue-500 transition-colors" @click="hasAccount = true" x-text="t('already_account')">Already have an account? Login</p>
                         </div>
 
                         <div x-show="hasAccount" class="space-y-6">
