@@ -597,6 +597,17 @@
                     <span class="text-[8px] sm:text-[10px] font-bold text-pink-500 uppercase leading-none mt-1" x-text="t('daily_gift')">Daily Gift</span>
                 </button>
 
+                <!-- Trial Active Badge -->
+                <button x-show="isTrialActive && !isPremium" 
+                        @click="showPremiumModal = true; toggleScroll(true)" 
+                        class="bg-white px-3 sm:px-5 py-2 sm:py-4 rounded-2xl shadow-lg hover:scale-105 transition-transform border-b-4 border-green-400 flex flex-col items-center justify-center min-w-[80px] sm:min-w-[120px]">
+                    <div class="flex items-center gap-1 sm:gap-2">
+                        <span class="text-lg sm:text-2xl animate-pulse">✨</span>
+                        <span class="text-[10px] sm:text-sm font-kids text-green-600" x-text="trialDaysLeft + ' Days Left'"></span>
+                    </div>
+                    <span class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Free Trial Active</span>
+                </button>
+
                 <!-- Learning Score Badge -->
                 <div class="flex daily-reward-btn bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 sm:w-24 sm:h-24 p-2 sm:p-4 rounded-2xl shadow-lg border-b-4 border-indigo-700 flex-col items-center justify-center animate__animated animate__bounceIn delay-700 overflow-hidden relative group">
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
@@ -2958,7 +2969,7 @@
                             <div class="text-3xl font-kids text-blue-600 mb-4">$4.99<span class="text-sm">/mo</span></div>
                             <button @click="window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_monthly'}))" 
                                     class="w-full py-4 bg-yellow-400 text-yellow-900 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-yellow-600 active:translate-y-1 transition-all">
-                                Get Individual
+                                7-Day Trial, then $4.99/mo
                             </button>
                         </div>
                     </div>
@@ -2979,13 +2990,19 @@
                             <div class="text-3xl font-kids mb-4">$9.99<span class="text-sm">/mo</span></div>
                             <button @click="window.ReactNativeWebView.postMessage(JSON.stringify({type: 'IAP_PURCHASE_REQUEST', productId: 'premium_family'}))" 
                                     class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-kids text-xl shadow-lg border-b-4 border-indigo-200 active:translate-y-1 transition-all">
-                                Get Family Plan
+                                7-Day Trial, then $9.99/mo
                             </button>
                         </div>
                     </div>
                 </div>
                 
                 <p class="text-center text-[10px] text-yellow-800 uppercase font-bold tracking-widest opacity-60">Cancel Anytime • Secure Payment</p>
+                
+                <div class="mt-6 pt-4 border-t border-yellow-200/50 flex justify-center">
+                    <button @click="restorePurchases()" class="text-xs font-bold text-yellow-900/60 uppercase hover:text-yellow-900 transition-colors py-2 px-4 rounded-xl border border-yellow-900/10">
+                        <i class="fas fa-history mr-1"></i> Restore Purchase
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -5029,6 +5046,17 @@
                             });
                         }
                     },
+
+                    restorePurchases() {
+                        if (window.ReactNativeWebView) {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                type: 'RESTORE_PURCHASES'
+                            }));
+                        } else {
+                            alert("Restore purchase is only available in the mobile app. If you are on the web, please contact support.");
+                        }
+                    },
+
 
 
                     dailyPathData: {
