@@ -883,7 +883,7 @@
 
             <div class="flex sm:hidden flex-row gap-2 justify-end">
                 <!-- Weekly Leaderboard -->
-                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : (loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" :title="t('leaderboard')">
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : (socialTab = 'arena', showSocialModal = true, loadLeaderboard(), toggleScroll(true))" class="bg-white p-2 rounded-2xl shadow-lg hover:scale-110 transition-transform border-b-4 border-yellow-400" :title="t('leaderboard')">
                     <span class="text-xl">🏆</span>
                 </button>
 
