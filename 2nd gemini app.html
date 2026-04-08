@@ -710,9 +710,24 @@
                 <i class="fas fa-shield-alt text-[10px]"></i> <span class="leading-none" x-text="t('kidsafe_ai')">Kid-Safe AI</span>
             </div>
 
-            <!-- Mobile Only Row 5: Kid-Safe AI (Left-aligned) -->
-            <div class="flex sm:hidden bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1">
-                <i class="fas fa-shield-alt"></i> Kid-Safe AI
+            <!-- Mobile Row 4: Kid-Safe AI + Moved Buttons -->
+            <div class="flex sm:hidden flex-row gap-2 items-center">
+                <div class="bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1">
+                    <i class="fas fa-shield-alt"></i> Kid-Safe AI
+                </div>
+
+                <!-- Moved from Right Side -->
+                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('story_time')">
+                    <span class="text-xl">📖</span>
+                </button>
+
+                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('switch_child')">
+                    <span class="text-xl">👤</span>
+                </button>
+
+                <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" :title="t('help_support')">
+                    <span class="text-xl">❓</span>
+                </a>
             </div>
 
         </div>
@@ -883,22 +898,7 @@
                 </button>
             </div>
 
-            <div class="flex sm:hidden flex-row gap-2 justify-end">
-                <!-- Story Time -->
-                <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('story_time')">
-                    <span class="text-xl">📖</span>
-                </button>
-
-                <!-- Profile Switcher -->
-                <button @click="showProfileSwitcher = true; toggleScroll(true)" class="bg-white p-2 border-b-4 border-orange-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('switch_child')">
-                    <span class="text-xl">👤</span>
-                </button>
-
-                <!-- Help & Support -->
-                <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" :title="t('help_support')">
-                    <span class="text-xl">❓</span>
-                </a>
-            </div>
+            <!-- Row 5 was moved to left side Row 4 -->
 
         </div>
 
