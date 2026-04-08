@@ -902,32 +902,6 @@
 
         </div>
 
-        <!-- NEW: Full-Width Daily Quest Tracker Container (Mobile Only) -->
-        <div class="absolute top-[315px] left-0 w-full px-4 md:hidden z-40">
-            <div class="w-full bg-gradient-to-r from-indigo-600 to-purple-700 p-3 rounded-3xl shadow-xl flex items-center justify-between animate__animated animate__fadeInUp border-4 border-indigo-400">
-                <div class="flex flex-col gap-1 items-start">
-                    <div class="flex items-center gap-2">
-                         <span class="text-[10px] font-black text-white uppercase tracking-widest opacity-80">Daily Goals</span>
-                         <button @click="showDailyQuests = true" class="text-[8px] font-black text-white underline uppercase tracking-tighter bg-white bg-opacity-20 px-2 rounded-full">View All</button>
-                    </div>
-                    <div class="flex gap-4 items-center">
-                        <template x-for="quest in dailyQuests" :key="quest.id">
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="w-9 h-9 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30">
-                                    <span class="text-xl" x-text="quest.icon"></span>
-                                </div>
-                                <div class="w-7 h-1 bg-black/20 rounded-full overflow-hidden">
-                                    <div class="h-full bg-white transition-all duration-700" :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-                <div class="flex flex-col items-center justify-center p-2 bg-white/10 rounded-2xl border border-white/20">
-                     <span class="text-2xl animate-bounce">🎯</span>
-                </div>
-            </div>
-        </div>
 
         <div class="container max-w-6xl mx-auto px-4 pt-[560px] sm:pt-20 pb-8 sm:pb-12">
             <div class="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
@@ -3786,57 +3760,6 @@
             </div>
         </div>
 
-        <!-- Daily Quests Modal -->
-        <div x-show="showDailyQuests" x-cloak class="fixed inset-0 z-[150] bg-indigo-900 bg-opacity-90 flex items-center justify-center p-0 sm:p-8" x-transition.opacity>
-            <div @click.away="showDailyQuests = false; toggleScroll(false)" 
-                 class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-lg w-full h-full sm:h-auto sm:max-h-[90vh] p-6 sm:p-8 shadow-2xl relative animate__animated animate__backInDown border-0 sm:border-8 border-indigo-400 overflow-y-auto">
-                
-                <button @click="showDailyQuests = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-indigo-600 z-50 transition-colors">
-                    <i class="fas fa-times-circle"></i>
-                </button>
-                
-                <div class="text-center mb-6 sm:mb-10">
-                    <div class="text-4xl sm:text-6xl mb-2 sm:mb-4 animate-bounce">🎯</div>
-                    <h2 class="text-2xl sm:text-4xl font-kids text-indigo-900 leading-tight">Daily Goals!</h2>
-                    <p class="text-indigo-400 font-bold uppercase tracking-widest text-[10px] sm:text-sm mt-1 sm:mt-2">Finish these to win big!</p>
-                </div>
-
-                <div class="space-y-6">
-                    <template x-for="quest in dailyQuests" :key="quest.id">
-                        <div class="bg-indigo-50 p-6 rounded-[2rem] border-2 border-indigo-100 relative overflow-hidden group transition-all hover:scale-[1.02]">
-                            <div class="flex justify-between items-center mb-4 relative z-10">
-                                <div class="flex items-center gap-4">
-                                    <span class="text-4xl" x-text="quest.icon"></span>
-                                    <div>
-                                        <h4 class="font-kids text-xl text-indigo-900" x-text="quest.title"></h4>
-                                        <p class="text-xs font-bold text-indigo-400" x-text="quest.desc"></p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-sm" x-text="'+' + quest.reward + ' 🪙'"></span>
-                                </div>
-                            </div>
-                            
-                            <div class="w-full bg-indigo-100 rounded-full h-4 overflow-hidden shadow-inner relative z-10">
-                                <div class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-1000" :style="'width: ' + (quest.progress / quest.target * 100) + '%'"></div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center mt-2 relative z-10">
-                                <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest" x-text="quest.progress + ' / ' + quest.target + ' completed'"></span>
-                                <span x-show="quest.progress === quest.target" class="text-green-500 font-bold text-xs animate-pulse">✨ DONE! ✨</span>
-                            </div>
-
-                            <!-- Success Glow -->
-                            <div x-show="quest.progress === quest.target" class="absolute inset-0 bg-green-400 bg-opacity-5 pointer-events-none"></div>
-                        </div>
-                    </template>
-                </div>
-
-                <button @click="showDailyQuests = false; toggleScroll(false)" class="w-full mt-10 bg-indigo-600 text-white font-kids text-2xl py-4 rounded-full shadow-lg hover:shadow-indigo-200/50 hover:bg-indigo-700 transition-all active:scale-95 border-b-4 border-indigo-800">
-                    Keep Learning! 🚀
-                </button>
-            </div>
-        </div>
 
         <!-- Social Modal -->
         <div x-show="showSocialModal" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-80 flex items-center justify-center p-0 sm:p-8" x-transition.opacity>
@@ -4495,8 +4418,6 @@
                         this.coins += finalCoins;
                         this.incrementWeeklyXP(finalXp);
                         
-                        // Update Daily Quest
-                        this.updateDailyQuestProgress('sprint', this.sprintTotalCorrect);
 
                         
                         this.playPing();
@@ -4786,33 +4707,6 @@
                         } else {
                             // Load existing progress
                             const saved = JSON.parse(localStorage.getItem('daily_quest_progress') || '[]');
-                            if (saved.length > 0) {
-                                this.dailyQuests.forEach((q, i) => {
-                                    if (saved[i]) q.progress = saved[i].progress;
-                                });
-                            }
-                        }
-                    },
-
-                    saveDailyQuestProgress() {
-                        localStorage.setItem('daily_quest_progress', JSON.stringify(this.dailyQuests.map(q => ({ progress: q.progress }))));
-                    },
-
-                    updateDailyQuestProgress(type, amount = 1) {
-                        this.dailyQuests.forEach(quest => {
-                            if (quest.type === type && quest.progress < quest.target) {
-                                quest.progress = Math.min(quest.progress + amount, quest.target);
-                                if (quest.progress === quest.target) {
-                                    // Victory!
-                                    this.playPing();
-                                    this.coins += quest.reward;
-                                    this.xp += Math.round(quest.reward / 2);
-                                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
-                                }
-                                this.saveDailyQuestProgress();
-                            }
-                        });
-                    },
 
 
                     async generateSkillTree(subject) {
@@ -5165,50 +5059,6 @@
                         return item ? item.icon : '';
                     },
 
-                    dailyQuests: [
-                        { id: 'ask_ai', text: 'Ask the Professor a question', progress: 0, target: 1, completed: false, reward: 50, icon: '💬', claimed: false },
-                        { id: 'complete_quiz', text: 'Complete any Lesson Quiz', progress: 0, target: 1, completed: false, reward: 100, icon: '📝', claimed: false },
-                        { id: 'generate_story', text: 'Generate a Magic Story', progress: 0, target: 1, completed: false, reward: 75, icon: '📖', claimed: false }
-                    ],
-
-                    updateQuest(id) {
-                        const quest = this.dailyQuests.find(q => q.id === id);
-                        if (quest && !quest.completed) {
-                            quest.progress++;
-                            if (quest.progress >= quest.target) {
-                                quest.completed = true;
-                                this.playPing();
-                                // Optional: Auto-claim or show notification
-                            }
-                        }
-                    },
-
-                    claimQuestReward(quest) {
-                        if (quest.completed && !quest.claimed) {
-                            this.coins += quest.reward;
-                            quest.claimed = true;
-                            this.playPing();
-                            confetti({
-                                particleCount: 100,
-                                spread: 70,
-                                origin: { y: 0.6 }
-                            });
-                            this.syncData();
-                        }
-                    },
-
-                    resetDailyQuests() {
-                        const lastReset = localStorage.getItem('last_quest_reset');
-                        const today = new Date().toDateString();
-                        if (lastReset !== today) {
-                            this.dailyQuests.forEach(q => {
-                                q.progress = 0;
-                                q.completed = false;
-                                q.claimed = false;
-                            });
-                            localStorage.setItem('last_quest_reset', today);
-                        }
-                    },
                     characters: [
                         { 
                             nameKey: "char_dino_name", 
@@ -7797,8 +7647,7 @@
                             let cleanJson = (typeof data.response === 'string' ? data.response : JSON.stringify(data.response)).replace(/```json/g, '').replace(/```/g, '').trim();
                             this.currentStory = JSON.parse(cleanJson);
                             this.isStoryThinking = false;
-                            this.updateQuest('generate_story');
-
+    
                         } catch (e) {
                             console.error("Story Error", e);
                             this.currentStory = {
@@ -9105,10 +8954,6 @@
 
                     async askTutor() {
                         if (!this.userQuery.trim()) return;
-
-                        // Increment quest progress
-                        this.updateDailyQuestProgress('questions');
-                        this.updateQuest('ask_ai');
 
 
                         // --- NEW: Offline Generative AI Fallback ---
