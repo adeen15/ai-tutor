@@ -3312,10 +3312,12 @@
                                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
                                     <div class="flex justify-between items-start">
                                         <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-crown text-yellow-500 mr-2"></i><span x-text="t('membership')">Membership</span></h3>
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" :class="isPremium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'" x-text="isPremium ? t('premium') : t('free')"></span>
+                                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" 
+                                              :class="isPremium ? 'bg-green-100 text-green-700' : (isTrialActive ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500')" 
+                                              x-text="isPremium ? t('premium') : (isTrialActive ? t('free_trial') : t('free'))"></span>
                                     </div>
                                     <div class="mt-4">
-                                        <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? t('membership_sub_premium') : t('membership_sub_free')"></p>
+                                        <p class="text-sm text-gray-600 mb-4" x-text="isPremium ? t('membership_sub_premium') : (isTrialActive ? t('membership_sub_trial') : t('membership_sub_free'))"></p>
                                         
                                         <template x-if="isPremium && premiumExpiry">
                                             <p class="text-xs text-gray-400 font-bold mb-3">
@@ -5376,9 +5378,11 @@
                                 active_mission: 'Active Mission:', secret_code: 'Secret Code:', unlocked: 'UNLOCKED',
                                 mission_sub: 'Shared missions encourage bonding. Give your child the code once you finish the activity together!',
                                 generate_mission: 'Generate New Mission', emotional_insights: 'Emotional Insights (New)', reveal_patterns: 'Asking more questions will reveal emotional patterns!',
-                                membership: 'Membership', premium: 'Premium', free: 'Free',
-                                membership_sub_premium: 'All teachers and features unlocked.', membership_sub_free: 'Limited to 5 questions per day.',
-                                renews_on: 'Renews on:', cancel_sub: 'Cancel Subscription', upgrade_now: 'Upgrade Now ($4.99/mo)',
+                                membership: 'Membership', premium: 'Premium', free: 'Free', free_trial: 'Free Trial',
+                                membership_sub_premium: 'All teachers and features unlocked.', 
+                                membership_sub_free: 'Limited to 5 questions per day.',
+                                membership_sub_trial: 'Unlimited Questions (Trial Active) 🌟',
+                                renews_on: 'Renews on:', cancel_sub: 'Cancel Subscription', upgrade_now: 'Upgrade Now ($4.99/mo) or Family Plan',
                                 monthly_report: 'Monthly Report', monthly_report_sub: 'A detailed analysis of subjects learned, questions asked, and vocabulary milestones.',
                                 download_report: 'Download Report (PDF)', learning_journey: 'Learning Journey',
                                 questions_asked: 'Questions Asked', words_read: 'Words Read', coins_earned: 'Coins Earned', total_xp: 'Total XP',
@@ -5467,9 +5471,11 @@
                                 active_mission: 'Misión Activa:', secret_code: 'Código Secreto:', unlocked: 'DESBLOQUEADO',
                                 mission_sub: 'Las misiones compartidas fomentan la unión. ¡Dale el código a tu hijo una vez que terminen la actividad juntos!',
                                 generate_mission: 'Generar Nueva Misión', emotional_insights: 'Perspectivas Emocionales (Nuevo)', reveal_patterns: '¡Hacer más preguntas revelará patrones emocionales!',
-                                membership: 'Membresía', premium: 'Premium', free: 'Gratis',
-                                membership_sub_premium: 'Todos los profesores y funciones desbloqueados.', membership_sub_free: 'Limitado a 5 preguntas por día.',
-                                renews_on: 'Se renueva el:', cancel_sub: 'Cancelar Suscripción', upgrade_now: 'Actualizar Ahora ($4.99/mes)',
+                                membership: 'Membresía', premium: 'Premium', free: 'Gratis', free_trial: 'Prueba Gratis',
+                                membership_sub_premium: 'Todos los profesores y funciones desbloqueados.', 
+                                membership_sub_free: 'Limitado a 5 preguntas por día.',
+                                membership_sub_trial: 'Preguntas Ilimitadas (Prueba Activa) 🌟',
+                                renews_on: 'Se renueva el:', cancel_sub: 'Cancelar Suscripción', upgrade_now: 'Actualizar Ahora ($4.99/mes) o Plan Familiar',
                                 monthly_report: 'Informe Mensual', monthly_report_sub: 'Un análisis detallado de temas aprendidos, preguntas hechas e hitos de vocabulario.',
                                 download_report: 'Descargar Informe (PDF)', learning_journey: 'Viaje de Aprendizaje',
                                 questions_asked: 'Preguntas Hechas', words_read: 'Palabras Leídas', coins_earned: 'Monedas Ganadas', total_xp: 'XP Total',
