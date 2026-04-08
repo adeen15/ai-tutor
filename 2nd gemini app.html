@@ -710,13 +710,8 @@
                 <i class="fas fa-shield-alt text-[10px]"></i> <span class="leading-none" x-text="t('kidsafe_ai')">Kid-Safe AI</span>
             </div>
 
-            <!-- Mobile Row 4: Kid-Safe AI + Moved Buttons -->
-            <div class="flex sm:hidden flex-row gap-2 items-center">
-                <div class="bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1">
-                    <i class="fas fa-shield-alt"></i> Kid-Safe AI
-                </div>
-
-                <!-- Moved from Right Side -->
+            <!-- Mobile Row 4: Action Buttons (Left-aligned under Coins/Music) -->
+            <div class="flex sm:hidden flex-row gap-2">
                 <button @click="!isPremium && !isTrialActive ? (showPremiumModal = true, toggleScroll(true)) : generateStory()" class="bg-white p-2 border-b-4 border-pink-400 rounded-2xl shadow-lg hover:scale-110 transition-transform" :title="t('story_time')">
                     <span class="text-xl">📖</span>
                 </button>
@@ -728,6 +723,11 @@
                 <a href="/support" target="_blank" class="bg-white p-2 border-b-4 border-slate-300 rounded-2xl shadow-lg hover:scale-110 transition-transform flex items-center justify-center" :title="t('help_support')">
                     <span class="text-xl">❓</span>
                 </a>
+            </div>
+
+            <!-- Mobile Row 5: Kid-Safe AI (Shifted down to avoid overcrowding Row 4) -->
+            <div class="flex sm:hidden bg-green-500 text-white px-3 py-1.5 rounded-full items-center justify-center gap-2 text-[10px] font-bold uppercase shadow-md animate__animated animate__fadeInLeft w-max ml-1">
+                <i class="fas fa-shield-alt"></i> Kid-Safe AI
             </div>
 
         </div>
