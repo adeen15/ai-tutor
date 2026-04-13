@@ -5774,6 +5774,14 @@
                                     this.loadHearts(); // Restore hearts from localStorage
                                     this.setupPushNotifications(); // Ask for push permission on login
                                     setTimeout(() => window.scrollTo(0, 0), 500); // Robust scroll to top after login
+
+                                    // Trigger onboarding if needed - Now done after profile load for reliability
+                                    if (!this.hasCompletedOnboarding) {
+                                        this.onboardingStep = 0;
+                                        this.showOnboarding = true;
+                                        this.toggleScroll(true);
+                                    }
+
                                     // Identify user in RevenueCat for purchase linking & restoration
                                     if (window.ReactNativeWebView) {
                                         window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -5793,14 +5801,6 @@
                             // spinner handled by session state
                             this.isLoading = false;
                             setTimeout(() => window.scrollTo(0, 0), 1000); // Delayed robust scroll to top
-                            
-                            // Show onboarding fully logged in users
-                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
-                                setTimeout(() => {
-                                    this.showOnboarding = true;
-                                    this.toggleScroll(true);
-                                }, 1000);
-                            }
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -7518,7 +7518,13 @@
                         this.inventory = this.learningStats.inventory || data.inventory || [];
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
-                        this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
+                        
+                        // Prioritize database status for logged-in users to fix multi-account local storage issues
+                        if (this.learningStats.has_completed_onboarding !== undefined) {
+                            this.hasCompletedOnboarding = this.learningStats.has_completed_onboarding;
+                        } else {
+                            this.hasCompletedOnboarding = !!localStorage.getItem('onboarding_completed');
+                        }
                         
                         // Hydrate Streak Data (Favor learning_stats for consistency)
                         this.streak = this.learningStats.streak || data.streak || 0;
@@ -8488,13 +8494,6 @@
                             clearTimeout(loginTimeout); // Clear the safety timer
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
-                            
-                            // Check for Onboarding - Triggered for new users after signup/login
-                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
-                                this.onboardingStep = 0; // Ensure it starts at Professor Dino's Welcome
-                                this.showOnboarding = true;
-                                this.toggleScroll(true);
-                            }
                         }
                     },
 
