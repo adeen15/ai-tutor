@@ -7681,6 +7681,18 @@
                             this.learningStats.learningScoreInitialized = true;
                             this.syncData();
                         }
+
+                        // --- Auto-show Professor Dino Tutorial for First-Time Users ---
+                        // This check runs AFTER the DB profile is fully loaded, so it is
+                        // reliable regardless of localStorage state on the device.
+                        if (this.learningStats.has_completed_onboarding === false) {
+                            console.log("🦖 First-time user detected — launching Professor Dino tutorial!");
+                            setTimeout(() => {
+                                this.showOnboarding = true;
+                                this.onboardingStep = 0;
+                                this.toggleScroll(true);
+                            }, 800);
+                        }
                     },
 
 
@@ -8335,7 +8347,8 @@
                             achievements: [],
                             quizzesCompleted: 0,
                             quizHistory: [],
-                            learningScoreInitialized: true
+                            learningScoreInitialized: true,
+                            has_completed_onboarding: false
                         };
 
                         try {
