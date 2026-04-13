@@ -5794,13 +5794,7 @@
                             this.isLoading = false;
                             setTimeout(() => window.scrollTo(0, 0), 1000); // Delayed robust scroll to top
                             
-                            // Show onboarding fully logged in users
-                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
-                                setTimeout(() => {
-                                    this.showOnboarding = true;
-                                    this.toggleScroll(true);
-                                }, 1000);
-                            }
+                            // Show onboarding fully logged in users is now handled within loadUserProfile to ensure profile data is available first
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -7381,7 +7375,19 @@
                                 this.populateUserData(data);
                                 this.isLoading = false; 
                                 this.playPing();
-                                if (!this.rewardClaimedToday) {
+                                // Check if this is a first-time user who needs the Professor Dino tutorial
+                                const needsTutorial = localStorage.getItem('pending_tutorial') === 'true'
+                                    || this.learningStats.has_completed_onboarding === false;
+                                if (needsTutorial) {
+                                    console.log('🦖 First-time user — showing Professor Dino tutorial!');
+                                    localStorage.removeItem('pending_tutorial');
+                                    setTimeout(() => {
+                                        this.showOnboarding = true;
+                                        this.onboardingStep = 0;
+                                        this.toggleScroll(true);
+                                    }, 600);
+                                } else if (!this.rewardClaimedToday) {
+                                    // Only show daily rewards for returning users (not first-timers)
                                     setTimeout(() => {
                                         this.showRewards = true;
                                         this.toggleScroll(true);
@@ -7406,7 +7412,8 @@
                                         achievements: [],
                                         quizzesCompleted: 0,
                                         quizHistory: [],
-                                        learningScoreInitialized: true
+                                        learningScoreInitialized: true,
+                                        has_completed_onboarding: false
                                     },
                                     parent_logs: []
                                 };
@@ -7421,6 +7428,20 @@
                                     console.log("✅ Profile repaired successfully!");
                                     this.populateUserData(repairedProfile);
                                     this.isLoading = false;
+
+                                    // Check for Professor Dino tutorial even in repair path
+                                    const needsTutorial = localStorage.getItem('pending_tutorial') === 'true'
+                                        || (this.learningStats && this.learningStats.has_completed_onboarding === false);
+                                    
+                                    if (needsTutorial) {
+                                        console.log('🦖 First-time user (repaired) — showing Professor Dino tutorial!');
+                                        localStorage.removeItem('pending_tutorial');
+                                        setTimeout(() => {
+                                            this.showOnboarding = true;
+                                            this.onboardingStep = 0;
+                                            this.toggleScroll(true);
+                                        }, 600);
+                                    }
                                 } else {
                                     console.error("Critical: Profile repair failed", repairError);
                                     this.isLoggedIn = false;
@@ -7682,17 +7703,7 @@
                             this.syncData();
                         }
 
-                        // --- Auto-show Professor Dino Tutorial for First-Time Users ---
-                        // This check runs AFTER the DB profile is fully loaded, so it is
-                        // reliable regardless of localStorage state on the device.
-                        if (this.learningStats.has_completed_onboarding === false) {
-                            console.log("🦖 First-time user detected — launching Professor Dino tutorial!");
-                            setTimeout(() => {
-                                this.showOnboarding = true;
-                                this.onboardingStep = 0;
-                                this.toggleScroll(true);
-                            }, 800);
-                        }
+                        // (Tutorial trigger is handled in loadUserProfile after populateUserData returns)
                     },
 
 
@@ -8383,6 +8394,9 @@
                             this.isLoading = false;
                             clearTimeout(signupTimeout);
 
+                            // Mark this device so the Professor Dino tutorial fires on first login
+                            localStorage.setItem('pending_tutorial', 'true');
+
                             alert("Account created! Please check your email to confirm your account, then login.");
                             this.hasAccount = true;
 
@@ -8501,11 +8515,7 @@
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
                             
-                            // Check for Onboarding
-                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
-                                this.showOnboarding = true;
-                                this.toggleScroll(true);
-                            }
+                            // Tutorial check is now handled within loadUserProfile/onAuthStateChange
                         }
                     },
 
