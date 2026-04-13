@@ -8335,6 +8335,7 @@
                             achievements: [],
                             quizzesCompleted: 0,
                             quizHistory: [],
+                            has_completed_onboarding: false,
                             learningScoreInitialized: true
                         };
 
@@ -8488,8 +8489,9 @@
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
                             
-                            // Check for Onboarding
+                            // Check for Onboarding - Triggered for new users after signup/login
                             if (this.isLoggedIn && !this.hasCompletedOnboarding) {
+                                this.onboardingStep = 0; // Ensure it starts at Professor Dino's Welcome
                                 this.showOnboarding = true;
                                 this.toggleScroll(true);
                             }
@@ -9415,6 +9417,7 @@
                     completeOnboarding() {
                         const isFirstTime = !this.hasCompletedOnboarding;
                         this.hasCompletedOnboarding = true;
+                        if (this.learningStats) this.learningStats.has_completed_onboarding = true;
                         localStorage.setItem('onboarding_completed', 'true');
                         this.showOnboarding = false;
                         this.toggleScroll(false);
