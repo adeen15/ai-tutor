@@ -518,7 +518,7 @@
                                                 </div>
                                                 <span class="text-[10px] font-bold text-slate-500 leading-relaxed uppercase group-hover:text-slate-700 transition-colors">
                                                     <span x-text="t('confirm_legal')">I confirm I am the parent/guardian and agree to the</span> 
-                                                    <a href="/privacy.html" target="_blank" class="text-blue-500 underline decoration-blue-200 underline-offset-4" x-text="t('policy_terms')">Privacy Policy & Terms</a>. 
+                                                    <a href="#" @click.prevent="showLegalDoc('privacy')" class="text-blue-500 underline decoration-blue-200 underline-offset-4" x-text="t('policy_terms')">Privacy Policy & Terms</a>. 
                                                     <span x-text="t('consent_ai')">I consent to kid-safe AI processing (COPPA/GDPR).</span>
                                                 </span>
                                             </label>
@@ -592,9 +592,10 @@
                         <div class="mt-8 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center">
                             <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2" x-text="t('legal_privacy')">Legal & Privacy</h3>
                             <div class="flex justify-center gap-6">
-                                <a href="/privacy.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest" x-text="t('policy_terms').split('&')[0]">Privacy Policy</a>
-                                <a href="/terms.html" target="_blank" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest" x-text="t('policy_terms').split('&')[1]">Terms of Service</a>
+                                <a href="#" @click.prevent="showLegalDoc('privacy')" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest" x-text="t('policy_terms').split('&')[0]">Privacy Policy</a>
+                                <a href="#" @click.prevent="showLegalDoc('terms')" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest" x-text="t('policy_terms').split('&')[1]">Terms of Service</a>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -4104,6 +4105,35 @@
             </div>
         </div>
 
+        <!-- Legal Modal -->
+        <div x-show="showLegalModal" x-cloak class="fixed inset-0 z-[200] bg-black bg-opacity-80 flex items-center justify-center p-0 sm:p-8" x-transition.opacity>
+            <div @click.away="showLegalModal = false; toggleScroll(false)" 
+                 class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[85vh] p-6 sm:p-10 shadow-2xl relative animate__animated animate__zoomIn border-0 sm:border-4 border-blue-100 flex flex-col">
+                
+                <button @click="showLegalModal = false; toggleScroll(false)" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-2xl text-gray-400 hover:text-gray-600 z-10 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <div class="mb-6 flex items-center gap-4">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl shadow-sm border-2 border-white">⚖️</div>
+                    <div>
+                        <h3 class="text-2xl font-kids text-slate-800" x-text="legalModalTitle"></h3>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">AI Tutor Official Document</p>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scroll pr-4 text-slate-600 leading-relaxed text-sm sm:text-base">
+                    <div x-html="legalModalContent"></div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-gray-100 flex justify-end">
+                    <button @click="showLegalModal = false; toggleScroll(false)" class="bg-blue-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-blue-600 transition-colors shadow-lg active:scale-95 transform transition-transform text-sm">
+                        I Understand
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div x-show="showStoryModal" x-cloak class="fixed inset-0 z-[160] bg-black bg-opacity-90 flex items-center justify-center p-0 sm:p-4" x-transition.opacity>
             <div @click.away="!isStoryThinking ? (showStoryModal = false; toggleScroll(false)) : null" class="bg-white rounded-none sm:rounded-[3rem] max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-0 relative animate__animated animate__zoomIn border-0 sm:border-4 border-pink-200 shadow-2xl">
                 
@@ -4251,7 +4281,48 @@
 
                     
                     legalAccepted: false,
-                    showLegalDoc: null,
+                    showLegalModal: false,
+                    legalModalTitle: '',
+                    legalModalContent: '',
+                    
+                    showLegalDoc(type) {
+                        if (type === 'privacy') {
+                            this.legalModalTitle = 'Privacy Policy';
+                            this.legalModalContent = `
+                                <div class="space-y-4">
+                                    <div class="bg-green-50 p-4 rounded-xl border border-green-100 flex items-center gap-3">
+                                        <div class="text-2xl">🛡️</div>
+                                        <p class="text-xs font-bold text-green-700 uppercase">Strict No Data Sale Policy</p>
+                                    </div>
+                                    <p class="text-sm">We collect only the minimum data necessary to provide the service: Parent Email, Encrypted Password, and Child's First Name & Age Range.</p>
+                                    <h4 class="font-bold text-slate-800">What We Do NOT Collect:</h4>
+                                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                                        <li>We do NOT store voice recordings.</li>
+                                        <li>We do NOT store photos or camera images.</li>
+                                        <li>We do NOT collect GPS location.</li>
+                                        <li>We do NOT use advertising SDKs.</li>
+                                    </ul>
+                                    <h4 class="font-bold text-slate-800">Third Parties:</h4>
+                                    <p class="text-xs">We use Supabase (Auth), OpenRouter (AI), and RevenueCat (Purchases). Your data is protected by industry-standard encryption.</p>
+                                </div>
+                            `;
+                        } else {
+                            this.legalModalTitle = 'Terms of Service';
+                            this.legalModalContent = `
+                                <div class="space-y-4">
+                                    <p class="text-sm">By using AI Tutor, you agree to these terms. This application is designed for educational use by children under parental supervision.</p>
+                                    <h4 class="font-bold text-slate-800">1. Parental Responsibility</h4>
+                                    <p class="text-sm">Parents or legal guardians are responsible for the child's use of the app and for maintaining the confidentiality of the account PIN.</p>
+                                    <h4 class="font-bold text-slate-800">2. Subscriptions</h4>
+                                    <p class="text-sm">Premium features are available via in-app purchases. Subscriptions are managed through the Apple App Store or Google Play Store.</p>
+                                    <h4 class="font-bold text-slate-800">3. Educational Content</h4>
+                                    <p class="text-sm">AI Tutor uses artificial intelligence to provide educational responses. responses should be viewed as educational aids rather than absolute facts.</p>
+                                </div>
+                            `;
+                        }
+                        this.showLegalModal = true;
+                        this.toggleScroll(true);
+                    },
 
                     // Adaptive Difficulty State
                     consecutiveMistakes: 0,
@@ -5611,6 +5682,24 @@
 
                     isProfileLoading: false,
                     async init() {
+                        // --- AUTH REDIRECT HANDLER ---
+                        // Check for access_token or type=recovery in the URL hash/query
+                        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                        const queryParams = new URLSearchParams(window.location.search);
+                        
+                        if (hashParams.has('access_token') || queryParams.has('code')) {
+                            console.log("🔐 Auth landing detected! Managing secure redirect...");
+                            this.isLoading = true;
+                            // The Supabase client will automatically handle the session 
+                            // via onAuthStateChange, but we keep the loader on until it's ready.
+                            
+                            // Optional: Clear the URL to prevent "double-init" or messy URLs
+                            if (window.history.replaceState) {
+                                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                                window.history.replaceState({}, document.title, cleanUrl);
+                            }
+                        }
+
                         // Initialize Trial Start Date for everyone
                         if (!this.trialStartDate) {
                             this.trialStartDate = Date.now();
@@ -8746,28 +8835,34 @@
                         }
                     },
                     async cancelSubscription() {
-                        if(confirm("Are you sure you want to cancel? You will lose access to premium features immediately.")) {
+                        if(confirm("Are you sure you want to cancel? You will keep all your earned coins and items, but will lose access to premium teachers immediately.")) {
                             this.isPremium = false;
+                            this.isFamilyPlan = false;
                             this.premiumExpiry = null;
-                            this.coins = 0;
-                            this.inventory = [];
-                            this.equippedItem = null;
-                            this.rewardClaimedToday = false;
-                            localStorage.removeItem('last_reward_date_' + this.registeredEmail);
-                            this.setChar(this.characters[0]);
+                            
+                            // Ensure character is reset to free version if 
+                            // they were using a premium character
+                            if (this.currentChar && this.currentChar.premium) {
+                                this.setChar(this.characters[0]);
+                            }
                             
                             // Explicit DB update for cancellation
-                            await this.supabase
-                                .from('profiles')
-                                .update({ 
-                                    is_premium: false, 
-                                    premium_expiry: null 
-                                })
-                                .eq('email', this.registeredEmail);
+                            if (this.supabase) {
+                                await this.supabase
+                                    .from('profiles')
+                                    .update({ 
+                                        is_premium: false,
+                                        is_family_plan: false,
+                                        premium_expiry: null 
+                                    })
+                                    .eq('email', this.registeredEmail);
+                            }
                                 
                             await this.syncData();
+                            alert("Subscription cancelled. You've kept your coins and rewards, but premium features are now locked.");
                         }
                     },
+
                     
                     async claimReward() {
                         if (!this.isPremium) {
