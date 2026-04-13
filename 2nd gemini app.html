@@ -5795,13 +5795,8 @@
                             this.isLoading = false;
                             setTimeout(() => window.scrollTo(0, 0), 1000); // Delayed robust scroll to top
                             
-                            // Show onboarding fully logged in users
-                            if (this.isLoggedIn && !this.hasSeenTour) {
-                                setTimeout(() => {
-                                    this.showOnboarding = true;
-                                    this.toggleScroll(true);
-                                }, 1000);
-                            }
+                            // Tour trigger has been moved to populateUserData for better reliability.
+                        }
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -7520,7 +7515,17 @@
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
                         this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
-                        this.hasSeenTour = (this.learningStats.has_seen_tour !== undefined) ? this.learningStats.has_seen_tour : !!localStorage.getItem('onboarding_completed'); // Fallback to onboarding status for existing users
+                        this.hasSeenTour = (this.learningStats.has_seen_tour !== undefined) ? this.learningStats.has_seen_tour : !!localStorage.getItem('tutorial_tour_completed'); 
+                        
+                        // NEW: Explicitly trigger the tour if the user is confirmed as NEW and hasn't seen it yet
+                        if (!this.hasSeenTour) {
+                            console.log("🚀 User hasn't seen the tour - triggering automatically...");
+                            setTimeout(() => {
+                                this.showOnboarding = true;
+                                this.onboardingStep = 0;
+                                this.toggleScroll(true);
+                            }, 2000); // 2 second delay to let the dashboard render first
+                        }
                         
                         // Hydrate Streak Data (Favor learning_stats for consistency)
                         this.streak = this.learningStats.streak || data.streak || 0;
@@ -8337,7 +8342,8 @@
                             achievements: [],
                             quizzesCompleted: 0,
                             quizHistory: [],
-                            learningScoreInitialized: true
+                            learningScoreInitialized: true,
+                            has_seen_tour: false
                         };
 
                         try {
@@ -8490,11 +8496,8 @@
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
                             
-                            // Check for Onboarding / Tour
-                            if (this.isLoggedIn && !this.hasSeenTour) {
-                                this.showOnboarding = true;
-                                this.toggleScroll(true);
-                            }
+                            // Tour trigger has been moved to populateUserData for better reliability 
+                            // after the database profile is fully loaded.
                         }
                     },
 
@@ -9420,6 +9423,7 @@
                         this.hasSeenTour = true;
                         this.hasCompletedOnboarding = true;
                         localStorage.setItem('onboarding_completed', 'true');
+                        localStorage.setItem('tutorial_tour_completed', 'true');
                         this.showOnboarding = false;
                         this.toggleScroll(false);
                         if (isFirstTime) {
