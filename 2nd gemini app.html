@@ -3053,7 +3053,7 @@
                                         <button @click="showManageChildren = true" class="w-full py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold uppercase hover:bg-slate-200 transition-colors">
                                             <i class="fas fa-users-cog mr-2"></i><span x-text="t('manage_children')">Manage All Children</span>
                                         </button>
-                                        <button @click="showOnboarding = true; onboardingStep = 0; showParentPortal = false; hasSeenTour = false" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold uppercase hover:bg-blue-200 transition-colors mt-2">
+                                        <button @click="showOnboarding = true; onboardingStep = 0; showParentPortal = false" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold uppercase hover:bg-blue-200 transition-colors mt-2">
                                             <i class="fas fa-redo mr-2"></i><span x-text="t('restart_tutorial')">Restart Tutorial</span>
                                         </button>
                                     </div>
@@ -4430,7 +4430,6 @@
                     showOnboarding: false,
                     onboardingStep: 0,
                     hasCompletedOnboarding: false,
-                    hasSeenTour: false,
 
                     // Time Tracking State
                     timeUsedToday: 0,
@@ -5795,8 +5794,13 @@
                             this.isLoading = false;
                             setTimeout(() => window.scrollTo(0, 0), 1000); // Delayed robust scroll to top
                             
-                            // Tour trigger has been moved to populateUserData for better reliability.
-                        }
+                            // Show onboarding fully logged in users
+                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
+                                setTimeout(() => {
+                                    this.showOnboarding = true;
+                                    this.toggleScroll(true);
+                                }, 1000);
+                            }
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -7515,17 +7519,6 @@
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
                         this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
-                        this.hasSeenTour = (this.learningStats.has_seen_tour !== undefined) ? this.learningStats.has_seen_tour : !!localStorage.getItem('tutorial_tour_completed'); 
-                        
-                        // NEW: Explicitly trigger the tour if the user is confirmed as NEW and hasn't seen it yet
-                        if (!this.hasSeenTour) {
-                            console.log("🚀 User hasn't seen the tour - triggering automatically...");
-                            setTimeout(() => {
-                                this.showOnboarding = true;
-                                this.onboardingStep = 0;
-                                this.toggleScroll(true);
-                            }, 2000); // 2 second delay to let the dashboard render first
-                        }
                         
                         // Hydrate Streak Data (Favor learning_stats for consistency)
                         this.streak = this.learningStats.streak || data.streak || 0;
@@ -8342,8 +8335,7 @@
                             achievements: [],
                             quizzesCompleted: 0,
                             quizHistory: [],
-                            learningScoreInitialized: true,
-                            has_seen_tour: false
+                            learningScoreInitialized: true
                         };
 
                         try {
@@ -8496,8 +8488,11 @@
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
                             
-                            // Tour trigger has been moved to populateUserData for better reliability 
-                            // after the database profile is fully loaded.
+                            // Check for Onboarding
+                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
+                                this.showOnboarding = true;
+                                this.toggleScroll(true);
+                            }
                         }
                     },
 
@@ -8677,7 +8672,6 @@
                             safeStats.equipped_item = this.equippedItem;
                             safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum));
                             safeStats.has_completed_onboarding = this.hasCompletedOnboarding;
-                            safeStats.has_seen_tour = this.hasSeenTour;
                             
                             safeStats.monthly_quests_used = this.monthlyQuestsUsed;
                             safeStats.last_quest_month = this.lastQuestMonth;
@@ -9419,11 +9413,9 @@
                     
 
                     completeOnboarding() {
-                        const isFirstTime = !this.hasSeenTour;
-                        this.hasSeenTour = true;
+                        const isFirstTime = !this.hasCompletedOnboarding;
                         this.hasCompletedOnboarding = true;
                         localStorage.setItem('onboarding_completed', 'true');
-                        localStorage.setItem('tutorial_tour_completed', 'true');
                         this.showOnboarding = false;
                         this.toggleScroll(false);
                         if (isFirstTime) {
