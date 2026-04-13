@@ -5774,14 +5774,6 @@
                                     this.loadHearts(); // Restore hearts from localStorage
                                     this.setupPushNotifications(); // Ask for push permission on login
                                     setTimeout(() => window.scrollTo(0, 0), 500); // Robust scroll to top after login
-
-                                    // Trigger onboarding if needed - Now done after profile load for reliability
-                                    if (!this.hasCompletedOnboarding) {
-                                        this.onboardingStep = 0;
-                                        this.showOnboarding = true;
-                                        this.toggleScroll(true);
-                                    }
-
                                     // Identify user in RevenueCat for purchase linking & restoration
                                     if (window.ReactNativeWebView) {
                                         window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -5801,6 +5793,14 @@
                             // spinner handled by session state
                             this.isLoading = false;
                             setTimeout(() => window.scrollTo(0, 0), 1000); // Delayed robust scroll to top
+                            
+                            // Show onboarding fully logged in users
+                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
+                                setTimeout(() => {
+                                    this.showOnboarding = true;
+                                    this.toggleScroll(true);
+                                }, 1000);
+                            }
                         }
 
                         this.$watch('safetySettings.blockedWords', value => localStorage.setItem('blocked_words', value));
@@ -7406,7 +7406,6 @@
                                         achievements: [],
                                         quizzesCompleted: 0,
                                         quizHistory: [],
-                                        has_completed_onboarding: false,
                                         learningScoreInitialized: true
                                     },
                                     parent_logs: []
@@ -7481,8 +7480,7 @@
                              xp_this_week: 0,
                              weekly_report_opt_out: false,
                              boutique_inventory: [],
-                             equipped_accessories: {},
-                             has_completed_onboarding: false
+                             equipped_accessories: {}
                          };
 
                         // Update push notification toggle to reflect actual subscription status from DB
@@ -7520,13 +7518,7 @@
                         this.inventory = this.learningStats.inventory || data.inventory || [];
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
-                        
-                        // Prioritize database status for logged-in users to fix multi-account local storage issues
-                        if (this.learningStats.has_completed_onboarding !== undefined) {
-                            this.hasCompletedOnboarding = this.learningStats.has_completed_onboarding;
-                        } else {
-                            this.hasCompletedOnboarding = !!localStorage.getItem('onboarding_completed');
-                        }
+                        this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
                         
                         // Hydrate Streak Data (Favor learning_stats for consistency)
                         this.streak = this.learningStats.streak || data.streak || 0;
@@ -8343,7 +8335,6 @@
                             achievements: [],
                             quizzesCompleted: 0,
                             quizHistory: [],
-                            has_completed_onboarding: false,
                             learningScoreInitialized: true
                         };
 
@@ -8496,6 +8487,12 @@
                             clearTimeout(loginTimeout); // Clear the safety timer
                             console.log("Login finally block - turning off loading");
                             this.isLoading = false;
+                            
+                            // Check for Onboarding
+                            if (this.isLoggedIn && !this.hasCompletedOnboarding) {
+                                this.showOnboarding = true;
+                                this.toggleScroll(true);
+                            }
                         }
                     },
 
@@ -9418,7 +9415,6 @@
                     completeOnboarding() {
                         const isFirstTime = !this.hasCompletedOnboarding;
                         this.hasCompletedOnboarding = true;
-                        if (this.learningStats) this.learningStats.has_completed_onboarding = true;
                         localStorage.setItem('onboarding_completed', 'true');
                         this.showOnboarding = false;
                         this.toggleScroll(false);
