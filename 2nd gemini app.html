@@ -1243,6 +1243,23 @@
                         <canvas x-ref="cameraCanvas" class="hidden"></canvas>
                     </div>
 
+                    <!-- Permission Denied Helping Hand -->
+                    <div x-show="cameraPermissionDenied" x-cloak class="w-full p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 animate__animated animate__fadeIn">
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">👋</div>
+                            <h3 class="font-kids text-xl text-slate-800 mb-2">Need a helping hand?</h3>
+                            <p class="text-sm text-slate-600 mb-4 leading-relaxed">It looks like the camera is shy! Ask your parent to help you enable camera access in your browser settings so we can see the magic! ✨</p>
+                            <div class="bg-white p-3 rounded-xl border border-blue-100 text-left">
+                                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2 text-center">Parent Quick Tip 🔒</p>
+                                <ul class="text-[11px] text-slate-500 space-y-1">
+                                    <li>• Tap the <b>lock icon</b> 🔒 next to the web address</li>
+                                    <li>• Make sure <b>Camera</b> is turned <b>ON</b></li>
+                                    <li>• Refresh the page and try again!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
                     <div x-show="isThinking" class="flex flex-col items-center">
                         <div class="spinner border-blue-500 mb-2"></div>
                         <p class="font-kids text-blue-500 animate-pulse" x-text="t('analyzing_magic')">Analyzing magic...</p>
@@ -4262,6 +4279,8 @@
                     // Adaptive Difficulty State
                     consecutiveMistakes: 0,
                     isVisualMode: false,
+                    isSyncing: false, // Prevents race conditions during DB updates
+                    cameraPermissionDenied: false, // For graceful native permission handling
 
                     // Parental Gate State
                     gateVerified: false,
@@ -7360,9 +7379,6 @@
                             if (data) {
                                 console.log("Profile found! Populating...");
                                 this.populateUserData(data);
-                                // Note: We do NOT set isLoggedIn = true here anymore.
-                                // The user must enter their PIN to unlock the app if it's a session restoration.
-                                // If they just logged in, we set isLoggedIn elsewhere or here if we detect it's a fresh login.
                                 this.isLoading = false; 
                                 this.playPing();
                                 if (!this.rewardClaimedToday) {
@@ -7372,12 +7388,47 @@
                                     }, 1000);
                                 }
                             } else {
-                                console.warn("No profile found - possibly deleted.");
-                                this.isLoggedIn = false;
-                                this.isLoading = false;
-                                await this.supabase.auth.signOut();
-                                alert("We couldn't find your profile data. Please create a new account.");
-                                this.hasAccount = false; 
+                                // --- Launch-Perfect: Profile Repair Logic ---
+                                console.warn("No profile found - attempting auto-repair for:", email);
+                                
+                                // Construct a default starter profile
+                                const repairData = {
+                                    email: email,
+                                    name: email.split('@')[0], // Fallback name
+                                    coins: 50,
+                                    xp: 0,
+                                    learning_stats: {
+                                        wordsLearned: 0,
+                                        subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                                        child_profile: { name: email.split('@')[0], ageRange: '6-7' },
+                                        recent_mistakes: [],
+                                        emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
+                                        achievements: [],
+                                        quizzesCompleted: 0,
+                                        quizHistory: [],
+                                        learningScoreInitialized: true
+                                    },
+                                    parent_logs: []
+                                };
+
+                                const { data: repairedProfile, error: repairError } = await this.supabase
+                                    .from('profiles')
+                                    .insert([repairData])
+                                    .select()
+                                    .single();
+
+                                if (repairedProfile) {
+                                    console.log("✅ Profile repaired successfully!");
+                                    this.populateUserData(repairedProfile);
+                                    this.isLoading = false;
+                                } else {
+                                    console.error("Critical: Profile repair failed", repairError);
+                                    this.isLoggedIn = false;
+                                    this.isLoading = false;
+                                    await this.supabase.auth.signOut();
+                                    alert("We're having trouble setting up your profile. Please check your internet and try again.");
+                                    this.hasAccount = false; 
+                                }
                             }
                         } catch (e) {
                             console.error("Sync error in loadUserProfile:", e);
@@ -8555,100 +8606,104 @@
                     },
 
                     async syncData() {
-                        if (!this.registeredEmail) return;
-
-                        // 1. IMPORTANT: Update the active child profile collection with the latest local state (coins, inventory, etc.)
-                        this.saveCurrentProfileToCollection();
-
-                        // --- Native Bridge: UPDATE_STATS ---
-                        if (window.ReactNativeWebView) {
-                            window.ReactNativeWebView.postMessage(JSON.stringify({
-                                type: 'UPDATE_STATS',
-                                subjects: this.learningStats.subjects,
-                                currentChar: this.currentChar.name
-                            }));
-                        }
-
-                        // 2. Prepare transient states
-                        this.learningStats.path_progress = this.pathProgress;
-                        this.learningStats.child_profile = this.childProfile;
-
-                        // Store daily score snapshot
-                        const todayStr = new Date().toDateString();
-                        if (!this.learningStats.daily_snapshots) this.learningStats.daily_snapshots = [];
-                        const existingIdx = this.learningStats.daily_snapshots.findIndex(s => s.date === todayStr);
-                        if (existingIdx !== -1) {
-                            this.learningStats.daily_snapshots[existingIdx].score = this.learningScore;
-                        } else {
-                            this.learningStats.daily_snapshots.push({ date: todayStr, score: this.learningScore });
-                            if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
-                        }
-
-                        // Persistent Seasonal Data
-                        this.learningStats.event_tokens = this.eventTokens;
-                        this.learningStats.seasonal_quests = this.seasonalQuests;
-                        this.learningStats.current_season_name = this.currentSeason.name;
-
-                        // 3. Deep copy EVERYTHING to remove reactivity proxies for Supabase
-                        const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
-                        const safeInventory = JSON.parse(JSON.stringify(this.inventory));
-                        const safeStats = JSON.parse(JSON.stringify(this.learningStats));
-
-                        // 4. Sync specific properties into the safeStats blob
-                        safeStats.all_profiles = JSON.parse(JSON.stringify(this.allProfiles));
-                        safeStats.active_profile_id = this.activeProfileId;
-                        safeStats.inventory = safeInventory;
-                        safeStats.coins = this.coins;
-                        safeStats.xp = this.xp;
-                        
-                        safeStats.skill_tree_data = JSON.parse(JSON.stringify(this.skillTreeData));
-                        safeStats.skill_tree_node_progress = JSON.parse(JSON.stringify(this.skillTreeNodeProgress));
-
-                        safeStats.daily_usage = {
-                            date: new Date().toDateString(),
-                            questions_used: this.dailyQuestionsUsed,
-                            reward_claimed: this.rewardClaimedToday
-                        };
-                        safeStats.is_premium = this.isPremium;
-                        safeStats.is_family_plan = this.isFamilyPlan;
-                        safeStats.premium_expiry = this.premiumExpiry;
-                        safeStats.total_minutes = this.totalMinutesLearned;
-                        safeStats.email_summary_enabled = this.emailSummaryEnabled;
-                        safeStats.last_summary_date = this.lastSummaryDate;
-                        safeStats.current_language = this.currentLanguage;
-                        safeStats.equipped_item = this.equippedItem;
-                        safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum));
-                        safeStats.has_completed_onboarding = this.hasCompletedOnboarding;
-                        
-                        safeStats.monthly_quests_used = this.monthlyQuestsUsed;
-                        safeStats.last_quest_month = this.lastQuestMonth;
-                        safeStats.time_used_today = this.timeUsedToday;
-                        safeStats.daily_time_limit = this.dailyTimeLimit;
-                        safeStats.boutique_inventory = this.boutiqueInventory;
-                        safeStats.equipped_accessories = this.equippedAccessories;
-                        safeStats.friends = this.friends;
-                        safeStats.high_fives = this.highFivesReceived;
-                        safeStats.streak = this.streak;
-                        safeStats.last_streak_date = this.lastStreakDate;
-                        safeStats.streak_freeze_used = this.streakFreezeUsed;
-
-                        const updateData = {
-                            coins: this.coins,
-                            xp: this.xp,
-                            learning_stats: safeStats,
-                            parent_logs: safeLogs,
-                            daily_usage: safeStats.daily_usage
-                        };
+                        if (!this.registeredEmail || this.isSyncing) return;
+                        this.isSyncing = true;
 
                         try {
+                            // 1. IMPORTANT: Update the active child profile collection with the latest local state
+                            this.saveCurrentProfileToCollection();
+
+                            // --- Native Bridge: UPDATE_STATS ---
+                            if (window.ReactNativeWebView) {
+                                window.ReactNativeWebView.postMessage(JSON.stringify({
+                                    type: 'UPDATE_STATS',
+                                    subjects: this.learningStats.subjects,
+                                    currentChar: this.currentChar.name
+                                }));
+                            }
+
+                            // 2. Prepare transient states
+                            this.learningStats.path_progress = this.pathProgress;
+                            this.learningStats.child_profile = this.childProfile;
+
+                            // Store daily score snapshot
+                            const todayStr = new Date().toDateString();
+                            if (!this.learningStats.daily_snapshots) this.learningStats.daily_snapshots = [];
+                            const existingIdx = this.learningStats.daily_snapshots.findIndex(s => s.date === todayStr);
+                            if (existingIdx !== -1) {
+                                this.learningStats.daily_snapshots[existingIdx].score = this.learningScore;
+                            } else {
+                                this.learningStats.daily_snapshots.push({ date: todayStr, score: this.learningScore });
+                                if (this.learningStats.daily_snapshots.length > 7) this.learningStats.daily_snapshots.shift();
+                            }
+
+                            // Persistent Seasonal Data
+                            this.learningStats.event_tokens = this.eventTokens;
+                            this.learningStats.seasonal_quests = this.seasonalQuests;
+                            this.learningStats.current_season_name = this.currentSeason.name;
+
+                            // 3. Deep copy EVERYTHING to remove reactivity proxies for Supabase
+                            const safeLogs = JSON.parse(JSON.stringify(this.parentLogs));
+                            const safeInventory = JSON.parse(JSON.stringify(this.inventory));
+                            const safeStats = JSON.parse(JSON.stringify(this.learningStats));
+
+                            // 4. Sync specific properties into the safeStats blob
+                            safeStats.all_profiles = JSON.parse(JSON.stringify(this.allProfiles));
+                            safeStats.active_profile_id = this.activeProfileId;
+                            safeStats.inventory = safeInventory;
+                            safeStats.coins = this.coins;
+                            safeStats.xp = this.xp;
+                            
+                            safeStats.skill_tree_data = JSON.parse(JSON.stringify(this.skillTreeData));
+                            safeStats.skill_tree_node_progress = JSON.parse(JSON.stringify(this.skillTreeNodeProgress));
+
+                            safeStats.daily_usage = {
+                                date: new Date().toDateString(),
+                                questions_used: this.dailyQuestionsUsed,
+                                reward_claimed: this.rewardClaimedToday
+                            };
+                            safeStats.is_premium = this.isPremium;
+                            safeStats.is_family_plan = this.isFamilyPlan;
+                            safeStats.premium_expiry = this.premiumExpiry;
+                            safeStats.total_minutes = this.totalMinutesLearned;
+                            safeStats.email_summary_enabled = this.emailSummaryEnabled;
+                            safeStats.last_summary_date = this.lastSummaryDate;
+                            safeStats.current_language = this.currentLanguage;
+                            safeStats.equipped_item = this.equippedItem;
+                            safeStats.curriculum = JSON.parse(JSON.stringify(this.curriculum));
+                            safeStats.has_completed_onboarding = this.hasCompletedOnboarding;
+                            
+                            safeStats.monthly_quests_used = this.monthlyQuestsUsed;
+                            safeStats.last_quest_month = this.lastQuestMonth;
+                            safeStats.time_used_today = this.timeUsedToday;
+                            safeStats.daily_time_limit = this.dailyTimeLimit;
+                            safeStats.boutique_inventory = this.boutiqueInventory;
+                            safeStats.equipped_accessories = this.equippedAccessories;
+                            safeStats.friends = this.friends;
+                            safeStats.high_fives = this.highFivesReceived;
+                            safeStats.streak = this.streak;
+                            safeStats.last_streak_date = this.lastStreakDate;
+                            safeStats.streak_freeze_used = this.streakFreezeUsed;
+
+                            const updateData = {
+                                coins: this.coins,
+                                xp: this.xp,
+                                learning_stats: safeStats,
+                                parent_logs: safeLogs,
+                                daily_usage: safeStats.daily_usage
+                            };
+
                             const { error } = await this.supabase
                                 .from('profiles')
                                 .update(updateData)
                                 .eq('email', this.registeredEmail);
 
                             if (error) throw error;
+                            
                         } catch (err) {
                             console.error("Sync Error:", err);
+                        } finally {
+                            this.isSyncing = false;
                         }
                     },
 
@@ -8995,6 +9050,7 @@
                     closeVisionModal() {
                         this.stopCamera();
                         this.showVisionModal = false;
+                        this.cameraPermissionDenied = false;
                         this.visionFile = null;
                         this.visionPreview = null;
                         this.toggleScroll(false);
@@ -9002,6 +9058,7 @@
                     
                     // --- CAMERA METHODS ---
                     async startCamera() {
+                        this.cameraPermissionDenied = false;
                         this.isCameraActive = true;
                         this.visionPreview = null;
                         this.visionFile = null;
@@ -9012,7 +9069,7 @@
                             this.$refs.cameraFeed.srcObject = stream;
                         } catch (err) {
                             console.error("Camera Error:", err);
-                            alert("Could not access camera. Please allow permissions.");
+                            this.cameraPermissionDenied = true;
                             this.isCameraActive = false;
                         }
                     },
