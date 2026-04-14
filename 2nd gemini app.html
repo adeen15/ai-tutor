@@ -7540,8 +7540,8 @@
                         this.pathProgress = this.learningStats.path_progress || {};
                         this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
                         
-                        // Hydrate Trial Start Date (Strictly from DB)
-                        this.trialStartDate = this.learningStats.trial_start_date ?? Date.now();
+                        // Hydrate Trial Start Date (Strictly from DB) - Ensure 0 doesn't mark it as expired
+                        this.trialStartDate = (this.learningStats.trial_start_date && this.learningStats.trial_start_date > 0) ? this.learningStats.trial_start_date : Date.now();
                         this.learningStats.trial_start_date = this.trialStartDate; // Backfill for older users
                         
                         // Hydrate Streak Data (Prevent falsy 0 from being overridden by DB column defaults)
@@ -7719,13 +7719,15 @@
                     },
 
                     get learningScore() {
+                        if (!this.learningStats) return 0; // Pre-init safety check
                         const xp = this.xp || 0;
                         const quizzes = this.learningStats.quizzesCompleted || 0;
                         const streak = this.streak || 0;
                         const words = this.learningStats.wordsLearned || 0;
                         
-                        // Adjusted formula so that initial state (streak: 1, others: 0) returns 0 score
-                        return Math.max(0, Math.round((xp * 1) + (quizzes * 3) + ((streak - 1) * 2) + (words * 0.1)));
+                        // Adjusted formula: (streak - 1) ensure initial streak of 1 gives 0 points
+                        const score = Math.round((xp * 1) + (quizzes * 3) + ((streak > 0 ? streak - 1 : 0) * 2) + (words * 0.1));
+                        return Math.max(0, score);
                     },
 
                     getTopSubjects() {
