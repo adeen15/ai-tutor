@@ -8352,6 +8352,8 @@
                         const initialStats = {
                             wordsLearned: 0,
                             subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
+                            streak: 1, // New accounts start with Day 1
+                            last_streak_date: new Date().toISOString().split('T')[0],
                             child_profile: initialChildProfile,
                             recent_mistakes: [],
                             emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
@@ -9202,36 +9204,39 @@
 
                     updateDailyStreak() {
                         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-                        if (this.lastStreakDate !== today) {
-                            if (!this.lastStreakDate) {
-                                // First time ever
-                                this.streak = 1;
+                        
+                        // Prevent any logic if streak is already updated today
+                        if (this.lastStreakDate === today) return;
+
+                        if (!this.lastStreakDate || this.lastStreakDate === "") {
+                            // First time ever: Start at 1
+                            this.streak = 1;
+                        } else {
+                            const yesterday = new Date();
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            const yesterdayStr = yesterday.toISOString().split('T')[0];
+                            
+                            if (this.lastStreakDate === yesterdayStr) {
+                                // Consecutive day
+                                this.streak++;
+                                this.streakFreezeUsed = false; // Reset freeze for the new day
                             } else {
-                                const yesterday = new Date();
-                                yesterday.setDate(yesterday.getDate() - 1);
-                                
-                                if (this.lastStreakDate === yesterday.toISOString().split('T')[0]) {
-                                    // Consecutive day
-                                    this.streak++;
-                                    this.streakFreezeUsed = false; // Reset freeze for the new day
+                                // Gap of more than 1 day
+                                if (this.isPremium && !this.streakFreezeUsed) {
+                                    // Auto-activate Streak Freeze for Premium users
+                                    console.log("Streak Freeze activated! Streak maintained.");
+                                    this.streakFreezeUsed = true;
+                                    // Streak remains the same
                                 } else {
-                                    // Gap of more than 1 day
-                                    if (this.isPremium && !this.streakFreezeUsed) {
-                                        // Auto-activate Streak Freeze for Premium users
-                                        console.log("Streak Freeze activated! Streak maintained.");
-                                        this.streakFreezeUsed = true;
-                                        // Streak remains the same
-                                    } else {
-                                        this.streak = 1; // Reset to 1 since they are active today
-                                    }
+                                    this.streak = 1; // Reset to 1 since they are active today
                                 }
                             }
-                            this.lastStreakDate = today;
-                            // Update learning_stats too just in case
-                            this.learningStats.streak = this.streak;
-                            this.learningStats.last_streak_date = this.lastStreakDate;
-                            this.learningStats.streak_freeze_used = this.streakFreezeUsed;
                         }
+                        this.lastStreakDate = today;
+                        // Update learning_stats too just in case
+                        this.learningStats.streak = this.streak;
+                        this.learningStats.last_streak_date = this.lastStreakDate;
+                        this.learningStats.streak_freeze_used = this.streakFreezeUsed;
                     },
 
                     async askTutor() {
