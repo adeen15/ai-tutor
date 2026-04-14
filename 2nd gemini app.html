@@ -7375,8 +7375,8 @@
                                 this.isLoading = false; 
                                 this.playPing();
                                 // Check if this is a first-time user who needs the Professor Dino tutorial
-                                const needsTutorial = (localStorage.getItem('pending_tutorial_' + email) === 'true'
-                                    || this.learningStats.has_completed_onboarding === false) && this.isLoggedIn;
+                                const needsTutorial = localStorage.getItem('pending_tutorial_' + email) === 'true'
+                                    || this.learningStats.has_completed_onboarding === false;
                                 if (needsTutorial) {
                                     console.log('🦖 First-time user — showing Professor Dino tutorial!');
                                     localStorage.removeItem('pending_tutorial_' + email);
@@ -7433,8 +7433,8 @@
 
                                     // Check for Professor Dino tutorial (isolated by email)
                                     const emailKey = email || 'guest';
-                                    const needsTutorial = (localStorage.getItem('pending_tutorial_' + emailKey) === 'true'
-                                        || (this.learningStats && this.learningStats.has_completed_onboarding === false)) && this.isLoggedIn;
+                                    const needsTutorial = localStorage.getItem('pending_tutorial_' + emailKey) === 'true'
+                                        || (this.learningStats && this.learningStats.has_completed_onboarding === false);
                                     
                                     if (needsTutorial) {
                                         console.log('🦖 First-time user (repaired) — showing Professor Dino tutorial!');
