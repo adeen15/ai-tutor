@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ai-tutor-v5';
+const CACHE_NAME = 'ai-tutor-v6';
 const PRECACHE_URLS = [
   '/',
   '2nd gemini app.html',
