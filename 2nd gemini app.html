@@ -7541,13 +7541,18 @@
                         this.pathProgress = this.learningStats.path_progress || {};
                         this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
                         
+                        // Hydrate Trial Start Date (Favor learning_stats for account isolation)
+                        this.trialStartDate = this.learningStats.trial_start_date || (localStorage.getItem('trial_start_date') ? parseInt(localStorage.getItem('trial_start_date')) : Date.now());
+                        if (!this.learningStats.trial_start_date) this.learningStats.trial_start_date = this.trialStartDate; // Backfill for existing users
+                        
                         // Hydrate Streak Data (Favor learning_stats for consistency)
                         this.streak = this.learningStats.streak || data.streak || 0;
                         this.lastStreakDate = this.learningStats.last_streak_date || data.last_streak_date || null;
                         this.streakFreezeUsed = this.learningStats.streak_freeze_used || false;
                         
-                        // --- Fix: Auto-increment streak on login if active yesterday ---
-                        this.updateDailyStreak();
+                        // NOTE: Removed auto-increment on login to prevent double-counting. 
+                        // Streaks are now updated via updateDailyStreak() in askTutor or handleCorrect.
+                        // this.updateDailyStreak();
 
                         
                         // Load Monthly Quotas
@@ -8352,8 +8357,9 @@
                         const initialStats = {
                             wordsLearned: 0,
                             subjects: { history: 0, robots: 0, space: 0, science: 0, nature: 0 },
-                            streak: 1, // New accounts start with Day 1
-                            last_streak_date: new Date().toISOString().split('T')[0],
+                            streak: 0, // Starts at 0, becomes 1 on first action
+                            last_streak_date: null,
+                            trial_start_date: Date.now(), // Account-specific trial start
                             child_profile: initialChildProfile,
                             recent_mistakes: [],
                             emotions: { excited: 0, curious: 0, frustrated: 0, happy: 0, neutral: 0 },
@@ -8424,6 +8430,9 @@
 
                     async handleLogout() {
                         await this.supabase.auth.signOut();
+                        this.trialStartDate = null;
+                        this.streak = 0;
+                        this.lastStreakDate = null;
                         this.refreshAppState();
                         this.closeParentPortal();
                     },
@@ -8709,6 +8718,7 @@
                             safeStats.streak = this.streak;
                             safeStats.last_streak_date = this.lastStreakDate;
                             safeStats.streak_freeze_used = this.streakFreezeUsed;
+                            safeStats.trial_start_date = this.trialStartDate;
 
                             const updateData = {
                                 coins: this.coins,
