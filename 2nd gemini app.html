@@ -596,6 +596,13 @@
                                 <a href="#" @click.prevent="showLegalDoc('terms')" class="text-blue-500 font-bold text-[10px] hover:underline uppercase tracking-widest" x-text="t('policy_terms').split('&')[1]">Terms of Service</a>
                             </div>
 
+                            <!-- New: Reset Introduction Link -->
+                            <div class="mt-6">
+                                <button @click="hasCompletedOnboarding = false; onboardingStep = 1" 
+                                        class="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] hover:text-blue-500 transition-colors flex items-center justify-center gap-2 mx-auto">
+                                    <i class="fas fa-play-circle"></i> View Introduction Tour
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -7001,6 +7008,8 @@
                         // Recalculate if guest onboarding should show (since we are now logged out)
                         const onboardingCompleted = localStorage.getItem('onboarding_completed_guest');
                         this.hasCompletedOnboarding = onboardingCompleted === 'true';
+                        
+                        // CRITICAL: Always reset tutorial steps on logout to prevent blank screens
                         this.onboardingStep = 1; 
                         this.showOnboarding = false;
                         this.tutorialStep = 0;
