@@ -5631,7 +5631,8 @@
                     hasCompletedOnboarding: false,
                     finishOnboarding() {
                         this.hasCompletedOnboarding = true;
-                        localStorage.setItem('onboarding_completed', 'true');
+                        const emailKey = this.registeredEmail || 'guest';
+                        localStorage.setItem('onboarding_completed_' + emailKey, 'true');
                     },
 
                     isProfileLoading: false,
@@ -5682,8 +5683,9 @@
                             }
                         }, { once: true });
                         
-                        // Check if user has completed onboarding
-                        const onboardingCompleted = localStorage.getItem('onboarding_completed');
+                        // Check if user has completed onboarding (isolated by email)
+                        const emailKey = this.registeredEmail || 'guest';
+                        const onboardingCompleted = localStorage.getItem('onboarding_completed_' + emailKey);
                         this.hasCompletedOnboarding = onboardingCompleted === 'true';
 
                         // --- NEW: Real-time Connection Listeners ---
@@ -7372,11 +7374,11 @@
                                 this.isLoading = false; 
                                 this.playPing();
                                 // Check if this is a first-time user who needs the Professor Dino tutorial
-                                const needsTutorial = localStorage.getItem('pending_tutorial') === 'true'
+                                const needsTutorial = localStorage.getItem('pending_tutorial_' + email) === 'true'
                                     || this.learningStats.has_completed_onboarding === false;
                                 if (needsTutorial) {
                                     console.log('🦖 First-time user — showing Professor Dino tutorial!');
-                                    localStorage.removeItem('pending_tutorial');
+                                    localStorage.removeItem('pending_tutorial_' + email);
                                     setTimeout(() => {
                                         this.showOnboarding = true;
                                         this.onboardingStep = 0;
@@ -7428,13 +7430,14 @@
                                     this.populateUserData(repairedProfile);
                                     this.isLoading = false;
 
-                                    // Check for Professor Dino tutorial even in repair path
-                                    const needsTutorial = localStorage.getItem('pending_tutorial') === 'true'
+                                    // Check for Professor Dino tutorial (isolated by email)
+                                    const emailKey = email || 'guest';
+                                    const needsTutorial = localStorage.getItem('pending_tutorial_' + emailKey) === 'true'
                                         || (this.learningStats && this.learningStats.has_completed_onboarding === false);
                                     
                                     if (needsTutorial) {
                                         console.log('🦖 First-time user (repaired) — showing Professor Dino tutorial!');
-                                        localStorage.removeItem('pending_tutorial');
+                                        localStorage.removeItem('pending_tutorial_' + emailKey);
                                         setTimeout(() => {
                                             this.showOnboarding = true;
                                             this.onboardingStep = 0;
@@ -7543,7 +7546,8 @@
                         this.inventory = this.learningStats.inventory || data.inventory || [];
                         this.equippedItem = this.learningStats.equipped_item || data.equipped_item || null;
                         this.pathProgress = this.learningStats.path_progress || {};
-                        this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
+                        const emailKey = this.registeredEmail || 'guest';
+                        this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed_' + emailKey);
                         
                         // Hydrate Trial Start Date (Strictly from DB) - Ensure 0 doesn't mark it as expired
                         this.trialStartDate = (this.learningStats.trial_start_date && this.learningStats.trial_start_date > 0) ? this.learningStats.trial_start_date : Date.now();
@@ -8349,6 +8353,14 @@
                         const email = this.loginForm.email.toLowerCase().trim();
                         const password = this.loginForm.password.trim();
 
+                        // 🦖 FINAL BUG FIX: Force clean state before signup to prevent data leaks from previous session
+                        this.streak = 1;
+                        this.lastStreakDate = new Date().toISOString().split('T')[0];
+                        this.xp = 0;
+                        this.learningStats = null; 
+                        localStorage.removeItem('onboarding_completed_' + email);
+                        localStorage.removeItem('pending_tutorial_' + email);
+
                         const initialChildProfile = { 
                             name: this.loginForm.name, 
                             age: '', 
@@ -8405,8 +8417,8 @@
                             this.isLoading = false;
                             clearTimeout(signupTimeout);
 
-                            // Mark this device so the Professor Dino tutorial fires on first login
-                            localStorage.setItem('pending_tutorial', 'true');
+                            // Mark this device so the Professor Dino tutorial fires on first login (isolated by email)
+                            localStorage.setItem('pending_tutorial_' + email, 'true');
 
                             alert("Account created! Please check your email to confirm your account, then login.");
                             this.hasAccount = true;
@@ -9456,7 +9468,8 @@
                     completeOnboarding() {
                         const isFirstTime = !this.hasCompletedOnboarding;
                         this.hasCompletedOnboarding = true;
-                        localStorage.setItem('onboarding_completed', 'true');
+                        const emailKey = this.registeredEmail || 'guest';
+                        localStorage.setItem('onboarding_completed_' + emailKey, 'true');
                         this.showOnboarding = false;
                         this.toggleScroll(false);
                         if (isFirstTime) {
