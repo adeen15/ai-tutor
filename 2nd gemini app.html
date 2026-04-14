@@ -3053,7 +3053,7 @@
                                         <button @click="showManageChildren = true" class="w-full py-2 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold uppercase hover:bg-slate-200 transition-colors">
                                             <i class="fas fa-users-cog mr-2"></i><span x-text="t('manage_children')">Manage All Children</span>
                                         </button>
-                                        <button @click="showOnboarding = true; onboardingStep = 0; showParentPortal = false" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold uppercase hover:bg-blue-200 transition-colors mt-2">
+                                        <button @click="showOnboarding = true; tutorialStep = 0; showParentPortal = false" class="w-full py-2 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold uppercase hover:bg-blue-200 transition-colors mt-2">
                                             <i class="fas fa-redo mr-2"></i><span x-text="t('restart_tutorial')">Restart Tutorial</span>
                                         </button>
                                     </div>
@@ -3459,16 +3459,16 @@
                 
                 <!-- Progress Bar -->
                 <div class="absolute top-0 left-0 right-0 h-2 bg-gray-100">
-                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500" :style="'width: ' + ((onboardingStep + 1) / 5 * 100) + '%'"></div>
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500" :style="'width: ' + ((tutorialStep + 1) / 5 * 100) + '%'"></div>
                 </div>
 
                 <!-- Skip Button -->
-                <button @click="skipOnboarding()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-sm font-bold uppercase tracking-widest">
+                <button @click="skipTutorial()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 text-sm font-bold uppercase tracking-widest">
                     Skip Tour
                 </button>
 
                 <!-- Step 0: Welcome -->
-                <div x-show="onboardingStep === 0" class="text-center py-4 sm:py-8 animate__animated animate__fadeIn">
+                <div x-show="tutorialStep === 0" class="text-center py-4 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-5xl sm:text-8xl mb-3 sm:mb-6 animate-bounce">🦖</div>
                     <h2 class="text-2xl sm:text-4xl font-kids text-slate-800 mb-2 sm:mb-4">Welcome to AI Tutor!</h2>
                     <p class="text-base sm:text-xl text-gray-600 mb-4 sm:mb-8 leading-relaxed">Hi there! I'm Professor Dino, and I'll be your guide today! Let me show you around this amazing learning adventure!</p>
@@ -3481,13 +3481,13 @@
                             <li>👑 Discover Premium features</li>
                         </ul>
                     </div>
-                    <button @click="nextOnboardingStep()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-2xl font-kids text-xl sm:text-2xl shadow-lg hover:scale-105 transition-transform">
+                    <button @click="nextTutorialStep()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-2xl font-kids text-xl sm:text-2xl shadow-lg hover:scale-105 transition-transform">
                         Let's Start! 🚀
                     </button>
                 </div>
 
                 <!-- Step 1: Meet Your Teachers -->
-                <div x-show="onboardingStep === 1" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                <div x-show="tutorialStep === 1" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
                         <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">👨‍🏫</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Meet Your Teachers!</h2>
@@ -3509,17 +3509,17 @@
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
+                        <button @click="prevTutorialStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
+                        <button @click="nextTutorialStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
                             Next →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 2: How to Ask Questions -->
-                <div x-show="onboardingStep === 2" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                <div x-show="tutorialStep === 2" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
                         <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">💬</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Ask Me Anything!</h2>
@@ -3548,17 +3548,17 @@
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
+                        <button @click="prevTutorialStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
+                        <button @click="nextTutorialStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
                             Next →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 3: Earn Coins & Rewards -->
-                <div x-show="onboardingStep === 3" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                <div x-show="tutorialStep === 3" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
                         <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">💰</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Earn Coins & Rewards!</h2>
@@ -3592,17 +3592,17 @@
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
+                        <button @click="prevTutorialStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
+                        <button @click="nextTutorialStep()" class="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base">
                             Next →
                         </button>
                     </div>
                 </div>
 
                 <!-- Step 4: Premium Benefits -->
-                <div x-show="onboardingStep === 4" class="py-3 sm:py-8 animate__animated animate__fadeIn">
+                <div x-show="tutorialStep === 4" class="py-3 sm:py-8 animate__animated animate__fadeIn">
                     <div class="text-center mb-4 sm:mb-6">
                         <div class="text-4xl sm:text-6xl mb-2 sm:mb-4">👑</div>
                         <h2 class="text-2xl sm:text-3xl font-kids text-slate-800 mb-1 sm:mb-2">Unlock Premium!</h2>
@@ -3643,10 +3643,10 @@
                     </div>
                     
                     <div class="flex gap-3">
-                        <button @click="prevOnboardingStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
+                        <button @click="prevTutorialStep()" class="flex-1 bg-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm sm:text-base">
                             ← Back
                         </button>
-                        <button @click="nextOnboardingStep()" class="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg text-sm sm:text-base">
+                        <button @click="nextTutorialStep()" class="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg text-sm sm:text-base">
                             Finish Tour! 🎉
                         </button>
                     </div>
@@ -3655,7 +3655,7 @@
                 <!-- Step Indicator -->
                 <div class="flex justify-center gap-2 mt-6">
                     <template x-for="i in 5">
-                        <div class="w-2 h-2 rounded-full transition-all" :class="onboardingStep === (i - 1) ? 'bg-blue-500 w-8' : 'bg-gray-300'"></div>
+                        <div class="w-2 h-2 rounded-full transition-all" :class="tutorialStep === (i - 1) ? 'bg-blue-500 w-8' : 'bg-gray-300'"></div>
                     </template>
                 </div>
             </div>
@@ -4428,7 +4428,8 @@
 
                     // Onboarding State
                     showOnboarding: false,
-                    onboardingStep: 0,
+                    onboardingStep: 1, // Landing Page Slides (1-3)
+                    tutorialStep: 0,   // Professor Dino Tutorial (0-4)
                     hasCompletedOnboarding: false,
 
                     // Time Tracking State
@@ -7382,7 +7383,7 @@
                                     localStorage.removeItem('pending_tutorial_' + email);
                                     setTimeout(() => {
                                         this.showOnboarding = true;
-                                        this.onboardingStep = 0;
+                                        this.tutorialStep = 0;
                                         this.toggleScroll(true);
                                     }, 600);
                                 } else if (!this.rewardClaimedToday) {
@@ -7441,7 +7442,7 @@
                                         localStorage.removeItem('pending_tutorial_' + emailKey);
                                         setTimeout(() => {
                                             this.showOnboarding = true;
-                                            this.onboardingStep = 0;
+                                            this.tutorialStep = 0;
                                             this.toggleScroll(true);
                                         }, 600);
                                     }
@@ -9448,19 +9449,19 @@
                         window.speechSynthesis.speak(msg);
                     },
 
-                    // Onboarding Methods
-                    nextOnboardingStep() {
-                        if (this.onboardingStep < 4) {
-                            this.onboardingStep++;
+                    // Onboarding Methods (Dino Tutorial)
+                    nextTutorialStep() {
+                        if (this.tutorialStep < 4) {
+                            this.tutorialStep++;
                             this.playPing();
                         } else {
                             this.completeOnboarding();
                         }
                     },
                     
-                    prevOnboardingStep() {
-                        if (this.onboardingStep > 0) {
-                            this.onboardingStep--;
+                    prevTutorialStep() {
+                        if (this.tutorialStep > 0) {
+                            this.tutorialStep--;
                             this.playPing();
                         }
                     },
@@ -9486,7 +9487,7 @@
                         this.speak("Congratulations! You're all set to start learning! Let's have fun together!");
                     },
                     
-                    skipOnboarding() {
+                    skipTutorial() {
                         if (confirm("Are you sure you want to skip the tour? You can always restart it from settings.")) {
                             this.completeOnboarding();
                         }
