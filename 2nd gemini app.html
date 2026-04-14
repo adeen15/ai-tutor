@@ -5692,9 +5692,8 @@
                             }
                         }, { once: true });
                         
-                        // Check if user has completed onboarding (isolated by email)
-                        const emailKey = this.registeredEmail || 'guest';
-                        const onboardingCompleted = localStorage.getItem('onboarding_completed_' + emailKey);
+                        // Check if device has completed the landing page introduction (strictly once per download)
+                        const onboardingCompleted = localStorage.getItem('onboarding_completed_guest');
                         this.hasCompletedOnboarding = onboardingCompleted === 'true';
                         this.showOnboarding = false; // Always ensure tutorial is closed on init/reload
 
@@ -8438,8 +8437,8 @@
 
                             // Mark this device so the Professor Dino tutorial fires on first login (isolated by email)
                             localStorage.setItem('pending_tutorial_' + email, 'true');
-                            // Also ensure they don't see the Landing Page onboarding again
-                            localStorage.setItem('onboarding_completed_' + email, 'true');
+                            // Note: Guest onboarding completed flag is already handled by finishOnboarding() 
+                            // as a device-run event. No need to set it per-email anymore.
 
                             alert("Account created! Please check your email to confirm your account, then login.");
                             this.hasAccount = true;
@@ -8549,10 +8548,6 @@
 
                             console.log("Login successful, session established.");
                             
-                            // Mark landing page as completed for this user (prevent slide 3 pop-back)
-                            localStorage.setItem('onboarding_completed_' + email, 'true');
-                            this.hasCompletedOnboarding = true;
-
                             this.isLoggedIn = true; 
                             this.loginForm.password = '';
 
