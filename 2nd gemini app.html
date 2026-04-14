@@ -4428,8 +4428,8 @@
 
                     // Onboarding State
                     showOnboarding: false,
-                    onboardingStep: 1, // Landing Page Slides (1-3)
-                    tutorialStep: 0,   // Professor Dino Tutorial (0-4)
+                    onboardingStep: 1, // Landing Page Progress (1-3)
+                    tutorialStep: 0,   // Dino Tutorial Progress (0-4)
                     hasCompletedOnboarding: false,
 
                     // Time Tracking State
@@ -5628,8 +5628,7 @@
                         document.body.dir = (this.currentLanguage === 'Arabic') ? 'rtl' : 'ltr';
                     },
                     
-                    onboardingStep: 1,
-                    hasCompletedOnboarding: false,
+
                     finishOnboarding() {
                         this.hasCompletedOnboarding = true;
                         const emailKey = this.registeredEmail || 'guest';
@@ -6998,6 +6997,13 @@
                             learningScoreInitialized: true // Mark as initialized to 0
                         };
                         this.dailyQuestionsUsed = 0;
+                        
+                        // Recalculate if guest onboarding should show (since we are now logged out)
+                        const onboardingCompleted = localStorage.getItem('onboarding_completed_guest');
+                        this.hasCompletedOnboarding = onboardingCompleted === 'true';
+                        this.onboardingStep = 1; 
+                        this.showOnboarding = false;
+                        this.tutorialStep = 0;
                         this.rewardClaimedToday = false;
                         this.timeUsedToday = 0;
                         this.isTimeUp = false;
