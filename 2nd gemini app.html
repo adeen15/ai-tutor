@@ -5634,6 +5634,8 @@
                         this.hasCompletedOnboarding = true;
                         const emailKey = this.registeredEmail || 'guest';
                         localStorage.setItem('onboarding_completed_' + emailKey, 'true');
+                        // Reset pointer so if it's ever seen again (different device/email), it starts at slide 1
+                        this.onboardingStep = 1;
                     },
 
                     isProfileLoading: false,
@@ -8421,6 +8423,8 @@
 
                             // Mark this device so the Professor Dino tutorial fires on first login (isolated by email)
                             localStorage.setItem('pending_tutorial_' + email, 'true');
+                            // Also ensure they don't see the Landing Page onboarding again
+                            localStorage.setItem('onboarding_completed_' + email, 'true');
 
                             alert("Account created! Please check your email to confirm your account, then login.");
                             this.hasAccount = true;
@@ -8529,9 +8533,11 @@
                             if (error) throw error;
 
                             console.log("Login successful, session established.");
-                            // For fresh logins, we might want to auto-enter or still require PIN.
-                            // Let's auto-enter for fresh login to make it easier, 
-                            // but session restoration (init) will keep isLoggedIn = false.
+                            
+                            // Mark landing page as completed for this user (prevent slide 3 pop-back)
+                            localStorage.setItem('onboarding_completed_' + email, 'true');
+                            this.hasCompletedOnboarding = true;
+
                             this.isLoggedIn = true; 
                             this.loginForm.password = '';
 
