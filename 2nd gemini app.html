@@ -4309,7 +4309,7 @@
                     // --- 7-DAY FREE TRIAL SYSTEM ---
                     trialStartDate: null, // Strictly DB driven to prevent device sharing leaks
                     get trialDaysLeft() {
-                        if (!this.trialStartDate) return 7;
+                        if (!this.trialStartDate || this.trialStartDate <= 0) return 7;
                         const elapsedMs = Date.now() - this.trialStartDate;
                         const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
                         return Math.max(0, 7 - elapsedDays);
@@ -4333,8 +4333,8 @@
                     maxHearts: 5,
                     heartsRefillTime: null,
                     showOutOfHeartsModal: false,
-                    streak: 0,
-                    lastStreakDate: null,
+                    streak: 1, // Default for new users
+                    lastStreakDate: new Date().toISOString().split('T')[0], // Default for new users
                     streakFreezeUsed: false,
                     
                     showRewards: false,
@@ -7509,6 +7509,11 @@
                         }
  
                         // Ensure required fields exist in existing learningStats
+                        const today = new Date().toISOString().split('T')[0];
+                        const dbStreak = (this.learningStats.streak !== undefined && this.learningStats.streak !== null) ? this.learningStats.streak : data.streak;
+                        this.streak = (dbStreak !== undefined && dbStreak !== null) ? dbStreak : 1;
+                        this.lastStreakDate = this.learningStats.last_streak_date ?? data.last_streak_date ?? today;
+
                         if (this.learningStats.xp_this_week === undefined) this.learningStats.xp_this_week = 0;
                         if (this.learningStats.weekly_report_opt_out === undefined) this.learningStats.weekly_report_opt_out = false;
 
@@ -7545,8 +7550,6 @@
                         this.learningStats.trial_start_date = this.trialStartDate; // Backfill for older users
                         
                         // Hydrate Streak Data (Prevent falsy 0 from being overridden by DB column defaults)
-                        this.streak = this.learningStats.streak ?? data.streak ?? 0;
-                        this.lastStreakDate = this.learningStats.last_streak_date ?? data.last_streak_date ?? null;
                         this.streakFreezeUsed = this.learningStats.streak_freeze_used || false;
                         
                         // NOTE: Removed auto-increment on login to prevent double-counting. 
@@ -7593,11 +7596,11 @@
                         // Load Daily Usage & Time Tracking
                         const dailyData = data.daily_usage || this.learningStats.daily_usage || {};
                         const lastDailyDate = dailyData.date;
-                        const today = new Date().toDateString();
+                        const todayDate = new Date().toDateString();
 
-                        this.dailyQuestionsUsed = (lastDailyDate === today) ? (dailyData.questions_used || 0) : 0;
-                        this.rewardClaimedToday = (lastDailyDate === today && dailyData.reward_claimed);
-                        this.timeUsedToday = (lastDailyDate === today) ? (this.learningStats.time_used_today || 0) : 0;
+                        this.dailyQuestionsUsed = (lastDailyDate === todayDate) ? (dailyData.questions_used || 0) : 0;
+                        this.rewardClaimedToday = (lastDailyDate === todayDate && dailyData.reward_claimed);
+                        this.timeUsedToday = (lastDailyDate === todayDate) ? (this.learningStats.time_used_today || 0) : 0;
                         this.dailyTimeLimit = this.learningStats.daily_time_limit || 0;
                         this.isTimeUp = (this.dailyTimeLimit > 0 && this.timeUsedToday >= this.dailyTimeLimit);
                         if (this.isTimeUp) this.parentVerified = false;
