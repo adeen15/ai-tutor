@@ -3454,7 +3454,7 @@
         </div>
 
         <!-- Interactive Onboarding Modal -->
-        <div x-show="showOnboarding" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-90 flex items-center justify-center p-0 sm:p-4" x-transition.opacity>
+        <div x-show="showOnboarding && isLoggedIn" x-cloak class="fixed inset-0 z-[150] bg-black bg-opacity-90 flex items-center justify-center p-0 sm:p-4" x-transition.opacity>
             <div class="bg-white rounded-none sm:rounded-[3rem] max-w-none sm:max-w-2xl w-full h-full sm:h-auto sm:max-h-[95vh] p-4 sm:p-8 shadow-2xl relative animate__animated animate__zoomIn overflow-y-auto flex flex-col">
                 
                 <!-- Progress Bar -->
@@ -5687,6 +5687,7 @@
                         const emailKey = this.registeredEmail || 'guest';
                         const onboardingCompleted = localStorage.getItem('onboarding_completed_' + emailKey);
                         this.hasCompletedOnboarding = onboardingCompleted === 'true';
+                        this.showOnboarding = false; // Always ensure tutorial is closed on init/reload
 
                         // --- NEW: Real-time Connection Listeners ---
                         window.addEventListener('online', () => {
@@ -7374,8 +7375,8 @@
                                 this.isLoading = false; 
                                 this.playPing();
                                 // Check if this is a first-time user who needs the Professor Dino tutorial
-                                const needsTutorial = localStorage.getItem('pending_tutorial_' + email) === 'true'
-                                    || this.learningStats.has_completed_onboarding === false;
+                                const needsTutorial = (localStorage.getItem('pending_tutorial_' + email) === 'true'
+                                    || this.learningStats.has_completed_onboarding === false) && this.isLoggedIn;
                                 if (needsTutorial) {
                                     console.log('🦖 First-time user — showing Professor Dino tutorial!');
                                     localStorage.removeItem('pending_tutorial_' + email);
@@ -7432,8 +7433,8 @@
 
                                     // Check for Professor Dino tutorial (isolated by email)
                                     const emailKey = email || 'guest';
-                                    const needsTutorial = localStorage.getItem('pending_tutorial_' + emailKey) === 'true'
-                                        || (this.learningStats && this.learningStats.has_completed_onboarding === false);
+                                    const needsTutorial = (localStorage.getItem('pending_tutorial_' + emailKey) === 'true'
+                                        || (this.learningStats && this.learningStats.has_completed_onboarding === false)) && this.isLoggedIn;
                                     
                                     if (needsTutorial) {
                                         console.log('🦖 First-time user (repaired) — showing Professor Dino tutorial!');
