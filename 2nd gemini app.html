@@ -4307,7 +4307,7 @@
                     checkoutForm: { name: '', card: '', expiry: '', cvv: '' },
                     
                     // --- 7-DAY FREE TRIAL SYSTEM ---
-                    trialStartDate: localStorage.getItem('trial_start_date') ? parseInt(localStorage.getItem('trial_start_date')) : null,
+                    trialStartDate: null, // Strictly DB driven to prevent device sharing leaks
                     get trialDaysLeft() {
                         if (!this.trialStartDate) return 7;
                         const elapsedMs = Date.now() - this.trialStartDate;
@@ -5656,11 +5656,7 @@
                         }
 
                         // Initialize Trial Start Date for everyone
-                        if (!this.trialStartDate) {
-                            this.trialStartDate = Date.now();
-                            localStorage.setItem('trial_start_date', this.trialStartDate.toString());
-                            console.log("⚡ Trial started: " + new Date(this.trialStartDate).toLocaleDateString());
-                        }
+                        // (Removed: Trial logic is now strictly driven by DB profiles to prevent device-sharing bugs)
 
                         // Update push notification status
                         if ('Notification' in window) {
@@ -7412,6 +7408,9 @@
                                         achievements: [],
                                         quizzesCompleted: 0,
                                         quizHistory: [],
+                                        streak: 0,
+                                        last_streak_date: null,
+                                        trial_start_date: Date.now(),
                                         learningScoreInitialized: true,
                                         has_completed_onboarding: false
                                     },
@@ -7541,13 +7540,13 @@
                         this.pathProgress = this.learningStats.path_progress || {};
                         this.hasCompletedOnboarding = (this.learningStats.has_completed_onboarding !== undefined) ? this.learningStats.has_completed_onboarding : !!localStorage.getItem('onboarding_completed');
                         
-                        // Hydrate Trial Start Date (Favor learning_stats for account isolation)
-                        this.trialStartDate = this.learningStats.trial_start_date || (localStorage.getItem('trial_start_date') ? parseInt(localStorage.getItem('trial_start_date')) : Date.now());
-                        if (!this.learningStats.trial_start_date) this.learningStats.trial_start_date = this.trialStartDate; // Backfill for existing users
+                        // Hydrate Trial Start Date (Strictly from DB)
+                        this.trialStartDate = this.learningStats.trial_start_date ?? Date.now();
+                        this.learningStats.trial_start_date = this.trialStartDate; // Backfill for older users
                         
-                        // Hydrate Streak Data (Favor learning_stats for consistency)
-                        this.streak = this.learningStats.streak || data.streak || 0;
-                        this.lastStreakDate = this.learningStats.last_streak_date || data.last_streak_date || null;
+                        // Hydrate Streak Data (Prevent falsy 0 from being overridden by DB column defaults)
+                        this.streak = this.learningStats.streak ?? data.streak ?? 0;
+                        this.lastStreakDate = this.learningStats.last_streak_date ?? data.last_streak_date ?? null;
                         this.streakFreezeUsed = this.learningStats.streak_freeze_used || false;
                         
                         // NOTE: Removed auto-increment on login to prevent double-counting. 
