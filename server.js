@@ -908,7 +908,7 @@ async function sendWeeklyReportToUser(email, stats) {
             'Authorization': `Bearer ${resendKey}`
         },
         body: JSON.stringify({
-            from: 'AI Tutor <onboarding@resend.dev>',
+            from: 'AI Tutor <support@aitutor.app>',
             to:   [email],
             subject: `📊 ${childName}'s Weekly Learning Report — AI Tutor`,
             html: htmlContent
@@ -1399,7 +1399,7 @@ app.post('/api/send-email', authLimit, async (req, res) => {
                 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
             },
             body: JSON.stringify({
-                from: 'AI Tutor <onboarding@resend.dev>',
+                from: 'AI Tutor <support@aitutor.app>',
                 to: [to],
                 subject: subject,
                 html: htmlContent
