@@ -5168,6 +5168,7 @@
                      initializeCurrentChar() {
                          if (!this.currentChar && this.characters && this.characters.length > 0) {
                              this.currentChar = this.characters[0];
+                             this.currentChar.subject = this.t(this.currentChar.subjectKey);
                          }
                      },
 
@@ -5698,6 +5699,9 @@
                             const langMap = { 'English': 'en', 'Spanish': 'es', 'French': 'fr', 'German': 'de', 'Arabic': 'ar' };
                             i18next.changeLanguage(langMap[value] || 'en');
                             this.updateRTL();
+                            if (this.currentChar) {
+                                this.currentChar.subject = this.t(this.currentChar.subjectKey);
+                            }
                         });
                         this.$watch('isTimeUp', value => {
                             if (value) this.parentVerified = false;
@@ -7730,6 +7734,7 @@
 
                     startDailyLesson() {
                         this.currentChar = this.characters[0]; // Force Professor Dino
+                        this.currentChar.subject = this.t(this.currentChar.subjectKey);
                         this.currentMoodIcon = this.currentChar.icon;
                         this.showDailyPath = true;
                         this.toggleScroll(true);
@@ -8963,6 +8968,7 @@
                         this.currentMoodIcon = char.icon;
                         const charName = this.t(char.nameKey);
                         const subject = this.t(char.subjectKey);
+                        this.currentChar.subject = subject;
                         this.displayText = `Hello! I'm ${charName}. I teach ${subject}! Ask me anything about it.`;
                         this.suggestions = char.suggestionsKeys.map(k => this.t(k));
                         this.hasAnswered = true; // Allow listening to the intro
