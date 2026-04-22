@@ -1174,8 +1174,8 @@
 
 
         <!-- Scavenger Hunt Modal -->
-        <div x-show="showScavengerModal" x-cloak class="fixed inset-0 z-[85] flex items-center justify-center p-6 bg-black bg-opacity-90" x-transition.opacity>
-            <div @click.away="!isAnalyzingScavenger ? (showScavengerModal = false, toggleScroll(false)) : null" class="bg-white rounded-[2.5rem] max-w-lg w-full p-8 shadow-2xl relative animate__animated animate__bounceIn border-4 border-emerald-400">
+        <div x-show="showScavengerModal" x-cloak class="fixed inset-0 z-[85] flex items-center justify-center p-0 sm:p-6 bg-black bg-opacity-90" x-transition.opacity>
+            <div @click.away="!isAnalyzingScavenger ? (showScavengerModal = false, toggleScroll(false)) : null" class="bg-white rounded-none sm:rounded-[2.5rem] sm:max-w-lg w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto p-8 shadow-2xl relative animate__animated animate__bounceIn border-0 sm:border-4 border-emerald-400">
                 <button @click="showScavengerModal = false; toggleScroll(false)" class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-red-500 transition-colors" x-show="!isAnalyzingScavenger"><i class="fas fa-times-circle"></i></button>
                 
                 <div class="text-center mb-6">
